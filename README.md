@@ -6,4 +6,7 @@ DSDT Editor
 
 
 
+
+![Win](https://github.com/ic005k/QtiASL/blob/master/qtiasl-win.png)
+
 ![Mac](https://github.com/ic005k/QtiASL/blob/master/qtiasl-mac.png)
