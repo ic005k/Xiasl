@@ -6,4 +6,4 @@ DSDT Editor
 
 
 截图：
-![Alt Mac](https://github.com/ic005k/QtiASL/blob/master/qtiasl-mac.png)
+![image](https://github.com/ic005k/QtiASL/blob/master/qtiasl-mac.png)
