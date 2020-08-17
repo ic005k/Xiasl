@@ -4,7 +4,7 @@
 
 用于在win或winpe下提取和编辑dsdt文件的工具，mac下也可以使用该工具来编辑和调试dsdt。
 
-写这个工具的初衷在于完善win和linux平台下的dsdt编辑器生态。
+写这个工具的初衷是完善win和linux平台下的dsdt编辑器生态。
 
 讨论区：
 
