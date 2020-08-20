@@ -15,4 +15,5 @@ insanelymac: https://www.insanelymac.com/forum/topic/344860-open-source-cross-pl
 
 ![Win](https://github.com/ic005k/QtiASL/blob/master/qiasl-win-light.png)
 
-![Mac](https://github.com/ic005k/QtiASL/blob/master/qtiasl-mac.png)
+![Mac-light](https://github.com/ic005k/QtiASL/blob/master/qtiasl-mac-light.png)
+![Mac-dark](https://github.com/ic005k/QtiASL/blob/master/qtiasl-mac-light.png)
