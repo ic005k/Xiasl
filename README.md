@@ -13,6 +13,6 @@ pcbeta远景：http://bbs.pcbeta.com/viewthread-1867564-1-1.html
 insanelymac: https://www.insanelymac.com/forum/topic/344860-open-source-cross-platform-dsdtssdt-analysis-editor/
 
 
-![Win](https://github.com/ic005k/QtiASL/blob/master/qtiasl-win.png)
+![Win](https://github.com/ic005k/QtiASL/blob/master/qiasl-win-light.png)
 
 ![Mac](https://github.com/ic005k/QtiASL/blob/master/qtiasl-mac.png)
