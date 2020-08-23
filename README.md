@@ -9,6 +9,7 @@ Linux下的二进制文件目前暂时无法提供，机器里面没安装Linux�
 写这个工具的初衷是为了完善win和linux平台下的dsdt编辑器生态。
 
 特别鸣谢以下两个开源项目：
+
 ACPI：https://acpica.org/source
 
 QSci：https://riverbankcomputing.com/software/qscintilla/download
