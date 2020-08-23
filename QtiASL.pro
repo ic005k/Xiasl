@@ -7,6 +7,17 @@ RC_FILE += myapp.rc
 
 CONFIG += c++11
 
+macx{
+LIBS+= \
+    libqscintilla2_qt5.15.0.0.dylib
+}
+
+win32{
+LIBS += \
+    qscintilla2_qt5.dll
+}
+
+
 # The following define makes your compiler emit warnings if you use
 # any Qt feature that has been marked deprecated (the exact warnings
 # depend on your compiler). Please consult the documentation of the
@@ -20,12 +31,63 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     main.cpp \
-    mainwindow.cpp \
-    myhighlighter.cpp
+    mainwindow.cpp
 
 HEADERS += \
-    mainwindow.h \
-    myhighlighter.h
+    Qsci/qsciabstractapis.h \
+    Qsci/qsciapis.h \
+    Qsci/qscicommand.h \
+    Qsci/qscicommandset.h \
+    Qsci/qscidocument.h \
+    Qsci/qsciglobal.h \
+    Qsci/qscilexer.h \
+    Qsci/qscilexeravs.h \
+    Qsci/qscilexerbash.h \
+    Qsci/qscilexerbatch.h \
+    Qsci/qscilexercmake.h \
+    Qsci/qscilexercoffeescript.h \
+    Qsci/qscilexercpp.h \
+    Qsci/qscilexercsharp.h \
+    Qsci/qscilexercss.h \
+    Qsci/qscilexercustom.h \
+    Qsci/qscilexerd.h \
+    Qsci/qscilexerdiff.h \
+    Qsci/qscilexeredifact.h \
+    Qsci/qscilexerfortran.h \
+    Qsci/qscilexerfortran77.h \
+    Qsci/qscilexerhtml.h \
+    Qsci/qscilexeridl.h \
+    Qsci/qscilexerjava.h \
+    Qsci/qscilexerjavascript.h \
+    Qsci/qscilexerjson.h \
+    Qsci/qscilexerlua.h \
+    Qsci/qscilexermakefile.h \
+    Qsci/qscilexermarkdown.h \
+    Qsci/qscilexermatlab.h \
+    Qsci/qscilexeroctave.h \
+    Qsci/qscilexerpascal.h \
+    Qsci/qscilexerperl.h \
+    Qsci/qscilexerpo.h \
+    Qsci/qscilexerpostscript.h \
+    Qsci/qscilexerpov.h \
+    Qsci/qscilexerproperties.h \
+    Qsci/qscilexerpython.h \
+    Qsci/qscilexerruby.h \
+    Qsci/qscilexerspice.h \
+    Qsci/qscilexersql.h \
+    Qsci/qscilexertcl.h \
+    Qsci/qscilexertex.h \
+    Qsci/qscilexerverilog.h \
+    Qsci/qscilexervhdl.h \
+    Qsci/qscilexerxml.h \
+    Qsci/qscilexeryaml.h \
+    Qsci/qscimacro.h \
+    Qsci/qsciprinter.h \
+    Qsci/qsciscintilla.h \
+    Qsci/qsciscintillabase.h \
+    Qsci/qscistyle.h \
+    Qsci/qscistyledtext.h \
+    mainwindow.h
 
 FORMS += \
     mainwindow.ui
