@@ -4,7 +4,14 @@
 
 用于在win或winpe下提取和编辑dsdt文件的工具，mac下也可以使用该工具来编辑和调试dsdt。
 
-写这个工具的初衷是完善win和linux平台下的dsdt编辑器生态。
+Linux下的二进制文件目前暂时无法提供，机器里面没安装Linux。需要在Linux下使用的同学，可下载源码自行编译研究。
+
+写这个工具的初衷是为了完善win和linux平台下的dsdt编辑器生态。
+
+特别鸣谢以下两个开源项目：
+ACPI：https://acpica.org/source
+
+QSci：https://riverbankcomputing.com/software/qscintilla/download
 
 讨论区：
 
