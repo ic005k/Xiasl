@@ -21,6 +21,24 @@
 #include <QTreeWidget>
 #include <QDesktopWidget>
 #include <QSplitter>
+#include <QScreen>
+#include <QDateTime>
+#include <QTimer>
+#include <QThread>
+//#include "mythread.h"
+
+class QsciScintilla;
+#include <Qsci/qsciscintilla.h>
+#include <Qsci/qscilexercpp.h>
+#include <Qsci/qscilexerbatch.h>
+#include <Qsci/qsciapis.h>
+class QscilexerCppAttach : public QsciLexerCPP
+{
+    Q_OBJECT
+public:
+    const char *keywords(int set) const;
+};
+
 
 QT_BEGIN_NAMESPACE
 
@@ -33,6 +51,12 @@ namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
 class LineNumberArea;
+class thread_one;
+
+void refreshTree(QTreeWidget *treeWidgetBack);
+void getMembers(QString str_member, QsciScintilla *textEdit, QTreeWidget *treeWidget);
+QString findKey(QString str, QString stf_sub, int f_null);
+
 
 class MainWindow : public QMainWindow
 {
@@ -47,16 +71,33 @@ public:
     void about();
     void getErrorLine(int i);
 
+
+
     QString curFile;
     QProcess *co;
-    QPlainTextEdit *textEdit;
+    QFont font;
+    QsciScintilla *textEdit;
 
     int current_line = 0;
 
-    bool loading = true;
+    thread_one *mythread; //线程对象
+    QSplitter *splitterMain;
+
+
+
+
+public slots:
 
 
 private slots:
+    void treeWidgetBack_itemClicked(QTreeWidgetItem *item, int column);
+
+    void dealover();//处理新线程返回的结束信号
+
+    void on_btnRefreshTree_clicked();
+
+    void timer_linkage();
+
     void readResult(int exitCode);
 
     void btnOpen_clicked();
@@ -71,6 +112,8 @@ private slots:
 
     void textEdit_cursorPositionChanged();
 
+    void textEdit_linesChanged();
+
     void textEdit_textChanged();
 
     void on_btnReplace_clicked();
@@ -83,10 +126,6 @@ private slots:
 
     void on_treeWidget_itemClicked(QTreeWidgetItem *item, int column);
 
-    void on_btnRefreshTree_clicked();
-
-    void on_treeWidget_itemSelectionChanged();
-
     void on_editShowMsg_cursorPositionChanged();
 
     void on_btnNextError_clicked();
@@ -97,16 +136,41 @@ private slots:
 
     void on_editFind_returnPressed();
 
+    void on_MainWindow_destroyed();
+
+    void on_chkScope_clicked();
+
+    void on_chkDevice_clicked();
+
+    void on_chkMethod_clicked();
+
+    void on_chkName_clicked();
+
 private:
     Ui::MainWindow *ui;
 
     void setCurrentFile(const QString &fileName);
 
-
-
     bool maybeSave();
 
+    QString ver;
+
+    QTimer *timer;
+
+    int row = 0;
+    int row_current = 0;
+    bool linkage = false;
+
     bool saveFile(const QString &fileName);
+
+    void mem_linkage(QTreeWidget * tw);
+
+    void init_edit();
+
+    void init_treeWidget(QTreeWidget *treeWidgetBack, int w);
+
+    void update_ui_tw();
+
 
 };
 
@@ -152,6 +216,18 @@ protected:
 
 private:
     CodeEditor *codeEditor;
+};
+
+class thread_one : public QThread
+{
+    Q_OBJECT
+public:
+    explicit thread_one(QObject *parent = nullptr);
+protected:
+    void run();
+signals:
+    void over();
+public slots:
 };
 
 
