@@ -4,9 +4,9 @@
 #include <QPainter>
 #include <QTextBlock>
 
-//线程中使用
+
 bool loading = true;
-bool thread_end = true; //线程是否结束
+bool thread_end = true;
 QTreeWidget *treeWidgetBack;
 QsciScintilla *textEditBack;
 
@@ -37,9 +37,8 @@ MainWindow::MainWindow(QWidget *parent)
     ver = "QtiASL V1.0.5    ";
     setWindowTitle(ver);
 
-    //线程
     mythread = new thread_one();
-    connect(mythread,&thread_one::over,this,&MainWindow::dealover);//线程结束
+    connect(mythread,&thread_one::over,this,&MainWindow::dealover);
 
     //主菜单
     connect(ui->actionOpen, &QAction::triggered, this, &MainWindow::btnOpen_clicked);
@@ -50,11 +49,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->actionGenerate, &QAction::triggered, this, &MainWindow::btnGenerate_clicked);
     connect(ui->actionCompiling, &QAction::triggered, this, &MainWindow::btnCompile_clicked);
 
-    //textEdit = new CodeEditor(this);
     textEdit = new QsciScintilla(this);
-    textEditBack = new QsciScintilla();//用于后台处理数据
+    textEditBack = new QsciScintilla();
 
-    //connect(textEdit, SIGNAL(textChanged()), this, SLOT(documentWasModified()));
     connect(textEdit, &QsciScintilla::cursorPositionChanged, this, &MainWindow::textEdit_cursorPositionChanged);
     connect(textEdit, &QsciScintilla::textChanged, this, &MainWindow::textEdit_textChanged);
     connect(textEdit, &QsciScintilla::linesChanged, this, &MainWindow::textEdit_linesChanged);
@@ -100,12 +97,9 @@ MainWindow::MainWindow(QWidget *parent)
     splitterRight->addWidget(ui->tabWidget);
     ui->gridLayout->addWidget(splitterMain);
 
-
     //联动判断
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(timer_linkage()));
-
-
 
 }
 
@@ -160,19 +154,11 @@ void MainWindow::loadFile(const QString &fileName)
     on_btnRefreshTree_clicked();
     ui->treeWidget->repaint();
 
-    //刷新树表,装入文件不采用线程，采用阻塞方式，以让文件正常读入
-    //textEditBack->clear();
-    //textEditBack->setText(textEdit->text());
-    //refreshTree(treeWidgetBack);
-    //dealover();
-
-
 }
 
 void MainWindow::setCurrentFile(const QString &fileName)
 {
     curFile = fileName;
-    //textEdit->document()->setModified(false);
     textEdit->setModified(false);
     setWindowModified(false);
 
@@ -218,16 +204,8 @@ void MainWindow::btnOpen_clicked()
             }
 
             loadFile(fileName);
-
-
-
-
         }
-
-
     }
-
-
 }
 
 bool MainWindow::maybeSave()
@@ -300,7 +278,6 @@ bool MainWindow::saveFile(const QString &fileName)
     setCurrentFile(fileName);
     statusBar()->showMessage(tr("File saved"), 2000);
 
-    //刷新成员树
     on_btnRefreshTree_clicked();
 
     return true;
@@ -310,12 +287,6 @@ void MainWindow::btnGenerate_clicked()
 {
     QFileInfo appInfo(qApp->applicationDirPath());
     qDebug() << appInfo.filePath();
-    //QString mydir = appInfo.filePath() + "/mydsdt";
-    //QDir dir;
-    //if(dir.mkpath(mydir))
-    //{
-
-    //}
 
     QProcess dump;
     QProcess iasl;
@@ -340,10 +311,6 @@ void MainWindow::btnGenerate_clicked()
     iasl.execute(appInfo.filePath() + "/iasl" , QStringList() << "-d" << "dsdt.dat");
 
 #endif
-
-
-
-    //qDebug() << iasl.waitForStarted();
 
     loadFile(appInfo.filePath() + "/dsdt.dsl");
 
@@ -453,14 +420,12 @@ void MainWindow::readResult(int exitCode)
     for(int i = 0; i < textEditTemp->document()->lineCount(); i++)
     {
         QString str = textEditTemp->document()->findBlockByNumber(i).text();
-        //ui->editShowMsg->append(str);
+
         list.push_back(str);
         QString str_sub = str.trimmed();
         if(str_sub.mid(0, 5) == "Error" || str_sub.mid(0, 7) == "Warning" || str_sub.mid(0, 6) == "Remark")
         {
-            //QTextBlock block = ui->editErrors->document()->findBlockByNumber(i);
-            //ui->editErrors-> setTextCursor(QTextCursor(block));
-            for(int j = 0; j < i - 2; j++)
+             for(int j = 0; j < i - 2; j++)
                 ui->editShowMsg->append(list.at(j));
 
             break;
@@ -468,7 +433,6 @@ void MainWindow::readResult(int exitCode)
     }
 
     //分离信息
-    //警告
     separ_info("Warning", ui->editWarnings);
     separ_info("Remark", ui->editRemarks);
     separ_info("Error", ui->editErrors);
@@ -500,9 +464,6 @@ void MainWindow::readResult(int exitCode)
         on_btnNextError_clicked();
     }
 
-    //setMark();
-
-
 }
 
 void MainWindow::textEdit_cursorPositionChanged()
@@ -513,11 +474,7 @@ void MainWindow::textEdit_cursorPositionChanged()
     ui->statusbar->showMessage(QString::number(RowNum + 1) + "    " + QString::number(ColNum));
 
     //联动treeWidget
-    if(ui->treeWidget->isVisible())
-        mem_linkage(ui->treeWidget);
-    else
-        mem_linkage(treeWidgetBack);
-
+    mem_linkage(ui->treeWidget);
 
 }
 
@@ -689,7 +646,7 @@ void CodeEditor::highlightCurrentLine()
 
 void MainWindow::on_btnReplace_clicked()
 {
-    //textEdit->textCursor().insertText(ui->editReplace->text().trimmed());
+
     textEdit->replace(ui->editReplace->text());
 
 }
@@ -711,12 +668,9 @@ void MainWindow::on_btnFindNext_clicked()
 void MainWindow::on_btnFindPrevious_clicked()
 {
 
-    //查找
-    //textEdit->find(ui->editFind->text().trimmed() , QTextDocument::FindBackward);
 
     if(textEdit->findFirst(ui->editFind->text().trimmed() , true , false , false , false, false))
-    //if(textEdit->findFirstInSelection(ui->editFind->text(), true, false, false, false))
-        textEdit->findNext();
+          textEdit->findNext();
 
 }
 
@@ -729,9 +683,6 @@ void MainWindow::on_treeWidget_itemClicked(QTreeWidgetItem *item, int column)
         int lines = item->text(1).toInt();
         textEdit->setCursorPosition(lines , 0);
         textEdit->setFocus();
-
-        //QTreeWidgetItem *item = ui->treeWidget->currentItem();
-        //item->setBackgroundColor(0, QColor(Qt::blue).lighter(150));
 
     }
 
@@ -749,9 +700,6 @@ void MainWindow::treeWidgetBack_itemClicked(QTreeWidgetItem *item, int column)
         textEdit->setCursorPosition(lines , 0);
         textEdit->setFocus();
 
-        //QTreeWidgetItem *item = ui->treeWidget->currentItem();
-        //item->setBackgroundColor(0, QColor(Qt::blue).lighter(150));
-
     }
 
 
@@ -767,8 +715,6 @@ void MainWindow::on_btnRefreshTree_clicked()
     //将textEdit的内容读到后台
     textEditBack->clear();
     textEditBack->setText(textEdit->text());
-
-    //splitterMain->replaceWidget(0, ui->treeWidget);
 
     mythread->start();
 
@@ -837,9 +783,6 @@ void getMembers(QString str_member, QsciScintilla *textEdit, QTreeWidget *treeWi
                        if(str_member == "Method")
                        {
 
-                           //font.setItalic(true);
-                           //twItem0->setFont(0 , font);
-
                            color = QColor(34, 139, 34);
                            twItem0->setForeground(0, color);
 
@@ -877,7 +820,7 @@ void getMembers(QString str_member, QsciScintilla *textEdit, QTreeWidget *treeWi
          }
         else
             break;
-    //qDebug() << "Hi" << j;
+
     }
 
 }
@@ -1065,28 +1008,12 @@ void MainWindow::gotoLine(QTextEdit *edit)
                 line = str3.toInt();
                 textEdit->setCursorPosition(line - 1 , 0);
 
-
-
-                /*//SCI_MARKERGET 参数用来设置标记，默认为圆形标记
-                textEdit->SendScintilla(QsciScintilla::SCI_MARKERGET, line - 1);
-                //SCI_MARKERSETFORE，SCI_MARKERSETBACK设置标记前景和背景标记
-                textEdit->SendScintilla(QsciScintilla::SCI_MARKERSETFORE, 0, QColor(Qt::red));
-                textEdit->SendScintilla(QsciScintilla::SCI_MARKERSETBACK, 0, QColor(Qt::red));
-                textEdit->SendScintilla(QsciScintilla::SCI_MARKERADD, line - 1);
-                //下划线
-                //textEdit->SendScintilla(QsciScintilla::SCI_STYLESETUNDERLINE,line,true);
-                //textEdit->SendScintilla(QsciScintilla::SCI_MARKERDEFINE,0,QsciScintilla::SC_MARK_UNDERLINE);
-                */
-
                 textEdit->setFocus();
 
                 break;
             }
         }
     }
-
-    //qDebug() << line << text;
-
 
 }
 
@@ -1141,9 +1068,6 @@ void MainWindow::on_editShowMsg_selectionChanged()
     int row_num = row.toUInt();
     if(row_num > 0)
     {
-        //QTextBlock block = textEdit->document()->findBlockByNumber(row_num - 1);
-
-        //textEdit->setTextCursor(QTextCursor(block));
 
         textEdit->setCursorPosition(row_num - 1 , 0);
 
@@ -1221,7 +1145,6 @@ QString findKey(QString str, QString str_sub, int f_null)
 void MainWindow::textEdit_linesChanged()
 {
 
-    //qDebug() << "行号已更改  " + QTime::currentTime().toString();
     timer->start(2000);
 
 }
@@ -1247,16 +1170,11 @@ void thread_one::run()
 void MainWindow::dealover()//线程结束信号
 {
 
-
-    //splitterMain->replaceWidget(0, treeWidgetBack);
-
     update_ui_tw();
 
     thread_end = true;
     mythread->quit();  //test
     mythread->wait();
-
-
 
     qDebug() << "线程结束";
 
@@ -1267,8 +1185,6 @@ void MainWindow::update_ui_tw()
     ui->treeWidget->clear();
 
     ui->treeWidget->update();
-    //ui->treeWidget->repaint();
-
 
     for(int i = 0; i < treeWidgetBack->topLevelItemCount(); ++i)
     {
@@ -1290,9 +1206,6 @@ void MainWindow::update_ui_tw()
         if(str_member == "Meth" && ui->chkMethod->isChecked())
         {
 
-            //font.setItalic(true);
-            //twItem0->setFont(0 , font);
-
             color = QColor(34, 139, 34);
             twItem0->setForeground(0, color);
 
@@ -1313,7 +1226,6 @@ void MainWindow::update_ui_tw()
         if(str_member == "Name" && ui->chkName->isChecked())
         {
 
-
             color = QColor(30, 144, 255);
             twItem0->setForeground(0, color);
 
@@ -1322,14 +1234,8 @@ void MainWindow::update_ui_tw()
         }
 
 
-
-        //qDebug() << i << item->text(0) << item->text(1);
-
-
     }
 
-
-    //ui->treeWidget->repaint();
     ui->treeWidget->update();
 
     textEdit_cursorPositionChanged();
@@ -1353,7 +1259,7 @@ void refreshTree(QTreeWidget *treeWidgetBack)
 
 #ifdef Q_OS_MAC
 // mac
-   treeWidgetBack->repaint();//mac下重要
+   treeWidgetBack->repaint();
 
 
 #endif
@@ -1388,17 +1294,13 @@ void refreshTree(QTreeWidget *treeWidgetBack)
 
 #ifdef Q_OS_MAC
 // mac
-   treeWidgetBack->repaint();//mac下重要
+   treeWidgetBack->repaint();
 
 
 #endif
 
-
     loading = false;
-
     qDebug() << "刷新成员列表已完成 " + QTime::currentTime().toString();
-
-
 
 }
 
@@ -1465,7 +1367,6 @@ void MainWindow::init_edit()
      textEdit->setLexer(textLexer1);
      //textLexer1->setPaper(QColor(255,255,255, 255));//文本区域背景色
 
-
      //设置行号栏宽度、颜色
      textEdit->setMarginWidth(0, 70);
      textEdit->setMarginLineNumbers(0, true);
@@ -1486,11 +1387,6 @@ void MainWindow::init_edit()
          textEdit->setMatchedBraceBackgroundColor(QColor(Qt::green));
          textEdit->setMatchedBraceForegroundColor(QColor(Qt::red));
      }
-
-
-
-
-
 
      textEdit->setTabWidth(4);
 
@@ -1569,7 +1465,7 @@ void MainWindow::init_edit()
 
 void MainWindow::init_treeWidget(QTreeWidget *treeWidgetBack, int w)
 {
-    //treeWidgetBack = new QTreeWidget();//后台处理数据
+
     connect(treeWidgetBack, &QTreeWidget::itemClicked, this, &MainWindow::treeWidgetBack_itemClicked);
     treeWidgetBack->setColumnCount(2);
     treeWidgetBack->setMinimumWidth(300);
@@ -1605,8 +1501,6 @@ void MainWindow::on_chkName_clicked()
 
 void MainWindow::separ_info(QString str_key, QTextEdit *editInfo)
 {
-    //const QTextCursor cursor = textEditTemp->textCursor();
-    //int RowNum = cursor.blockNumber();
 
     editInfo->clear();
 
@@ -1626,9 +1520,6 @@ void MainWindow::separ_info(QString str_key, QTextEdit *editInfo)
 
         if(sub.mid(0 , str_key.count()) == str_key)
         {
-
-            //QTextBlock block1 = textEditTemp->document()->findBlockByNumber(i);
-            //textEditTemp->setTextCursor(QTextCursor(block1));
 
             editInfo->append(textEditTemp->document()->findBlockByNumber(i - 1).text());
             editInfo->append(str);
