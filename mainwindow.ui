@@ -14,8 +14,8 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout_2">
-    <item row="0" column="0">
+   <layout class="QGridLayout" name="gridLayout_7">
+    <item row="0" column="0" colspan="2">
      <widget class="QCheckBox" name="chkScope">
       <property name="text">
        <string>S</string>
@@ -25,7 +25,7 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="1">
+    <item row="0" column="2">
      <widget class="QCheckBox" name="chkDevice">
       <property name="text">
        <string>D</string>
@@ -35,7 +35,7 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="2">
+    <item row="0" column="3">
      <widget class="QCheckBox" name="chkMethod">
       <property name="text">
        <string>M</string>
@@ -45,44 +45,44 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="3">
+    <item row="0" column="4">
      <widget class="QCheckBox" name="chkName">
       <property name="text">
        <string>N</string>
       </property>
       <property name="checked">
-       <bool>true</bool>
+       <bool>false</bool>
       </property>
      </widget>
     </item>
-    <item row="0" column="4">
+    <item row="0" column="5">
      <widget class="QLineEdit" name="editFind"/>
     </item>
-    <item row="0" column="5">
+    <item row="0" column="6">
      <widget class="QPushButton" name="btnFindPrevious">
       <property name="text">
        <string>查找上一个-FindPrevious</string>
       </property>
      </widget>
     </item>
-    <item row="0" column="6">
+    <item row="0" column="7">
      <widget class="QPushButton" name="btnFindNext">
       <property name="text">
        <string>查找下一个-FindNext</string>
       </property>
      </widget>
     </item>
-    <item row="0" column="7">
+    <item row="0" column="8">
      <widget class="QLineEdit" name="editReplace"/>
     </item>
-    <item row="0" column="8">
+    <item row="0" column="9">
      <widget class="QPushButton" name="btnReplace">
       <property name="text">
        <string>替换-Replace</string>
       </property>
      </widget>
     </item>
-    <item row="0" column="9">
+    <item row="0" column="10">
      <widget class="QPushButton" name="btnPreviousError">
       <property name="enabled">
        <bool>false</bool>
@@ -92,7 +92,7 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="10">
+    <item row="0" column="11">
      <widget class="QPushButton" name="btnNextError">
       <property name="enabled">
        <bool>false</bool>
@@ -102,59 +102,164 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="11">
+    <item row="0" column="12">
      <widget class="QPushButton" name="btnRefreshTree">
       <property name="text">
        <string>刷新成员列表-RefreshTree</string>
       </property>
      </widget>
     </item>
-    <item row="1" column="0" rowspan="2" colspan="12">
+    <item row="1" column="0" rowspan="2" colspan="13">
      <layout class="QGridLayout" name="gridLayout"/>
     </item>
-    <item row="2" column="5" colspan="2">
-     <widget class="QTextEdit" name="editShowMsg">
+    <item row="2" column="1" colspan="5">
+     <widget class="QTreeWidget" name="treeWidget">
       <property name="font">
        <font>
         <family>SauceCodePro Nerd Font</family>
        </font>
       </property>
-      <property name="lineWrapMode">
-       <enum>QTextEdit::NoWrap</enum>
+      <property name="columnCount">
+       <number>2</number>
       </property>
-      <property name="readOnly">
-       <bool>false</bool>
-      </property>
+      <column>
+       <property name="text">
+        <string notr="true">1</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string notr="true">2</string>
+       </property>
+      </column>
      </widget>
     </item>
    </layout>
-   <widget class="QTreeWidget" name="treeWidget">
+   <widget class="QTabWidget" name="tabWidget">
     <property name="geometry">
      <rect>
-      <x>30</x>
-      <y>340</y>
-      <width>211</width>
-      <height>181</height>
+      <x>300</x>
+      <y>400</y>
+      <width>414</width>
+      <height>255</height>
      </rect>
     </property>
-    <property name="font">
-     <font>
-      <family>SauceCodePro Nerd Font</family>
-     </font>
-    </property>
-    <property name="columnCount">
+    <property name="currentIndex">
      <number>2</number>
     </property>
-    <column>
-     <property name="text">
-      <string notr="true">1</string>
-     </property>
-    </column>
-    <column>
-     <property name="text">
-      <string notr="true">2</string>
-     </property>
-    </column>
+    <property name="documentMode">
+     <bool>true</bool>
+    </property>
+    <widget class="QWidget" name="tabBasicInfo">
+     <attribute name="title">
+      <string>BasicInfo</string>
+     </attribute>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="0" column="0">
+       <widget class="QTextEdit" name="editShowMsg">
+        <property name="font">
+         <font>
+          <family>SauceCodePro Nerd Font</family>
+         </font>
+        </property>
+        <property name="lineWrapMode">
+         <enum>QTextEdit::NoWrap</enum>
+        </property>
+        <property name="readOnly">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+    <widget class="QWidget" name="tabErrors">
+     <attribute name="title">
+      <string>Errors</string>
+     </attribute>
+     <layout class="QGridLayout" name="gridLayout_3">
+      <item row="0" column="0">
+       <widget class="QTextEdit" name="editErrors">
+        <property name="font">
+         <font>
+          <family>SauceCodePro Nerd Font</family>
+         </font>
+        </property>
+        <property name="lineWrapMode">
+         <enum>QTextEdit::NoWrap</enum>
+        </property>
+        <property name="readOnly">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+    <widget class="QWidget" name="tabWarnings">
+     <attribute name="title">
+      <string>Warnings</string>
+     </attribute>
+     <layout class="QGridLayout" name="gridLayout_4">
+      <item row="0" column="0">
+       <widget class="QTextEdit" name="editWarnings">
+        <property name="font">
+         <font>
+          <family>SauceCodePro Nerd Font</family>
+         </font>
+        </property>
+        <property name="lineWrapMode">
+         <enum>QTextEdit::NoWrap</enum>
+        </property>
+        <property name="readOnly">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+    <widget class="QWidget" name="tabRemarks">
+     <attribute name="title">
+      <string>Remarks</string>
+     </attribute>
+     <layout class="QGridLayout" name="gridLayout_5">
+      <item row="0" column="0">
+       <widget class="QTextEdit" name="editRemarks">
+        <property name="font">
+         <font>
+          <family>SauceCodePro Nerd Font</family>
+         </font>
+        </property>
+        <property name="lineWrapMode">
+         <enum>QTextEdit::NoWrap</enum>
+        </property>
+        <property name="readOnly">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+    <widget class="QWidget" name="tabOptimizations">
+     <attribute name="title">
+      <string>Optimizations</string>
+     </attribute>
+     <layout class="QGridLayout" name="gridLayout_6">
+      <item row="0" column="0">
+       <widget class="QTextEdit" name="editOptimizations">
+        <property name="font">
+         <font>
+          <family>SauceCodePro Nerd Font</family>
+         </font>
+        </property>
+        <property name="lineWrapMode">
+         <enum>QTextEdit::NoWrap</enum>
+        </property>
+        <property name="readOnly">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -163,7 +268,7 @@
      <x>0</x>
      <y>0</y>
      <width>1440</width>
-     <height>24</height>
+     <height>30</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">

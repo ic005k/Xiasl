@@ -34,7 +34,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    ver = "QtiASL V1.0.3    ";
+    ver = "QtiASL V1.0.5    ";
     setWindowTitle(ver);
 
     //线程
@@ -90,24 +90,16 @@ MainWindow::MainWindow(QWidget *parent)
    init_treeWidget(treeWidgetBack, w);
    init_treeWidget(ui->treeWidget, w);
 
-    //textEdit->setLineWrapMode(textEdit->NoWrap);
-    ui->editShowMsg->setLineWrapMode(ui->editShowMsg->NoWrap);
-    ui->editShowMsg->setReadOnly(true);
-    ui->editShowMsg->setMaximumHeight(200);
-    ui->editShowMsg->setMinimumHeight(100);
-
+    init_info_edit();
 
     splitterMain = new QSplitter(Qt::Horizontal,this);
     splitterMain->addWidget(ui->treeWidget);
     QSplitter *splitterRight = new QSplitter(Qt::Vertical,splitterMain);
     splitterRight->setOpaqueResize(true);
     splitterRight->addWidget(textEdit);
-    splitterRight->addWidget(ui->editShowMsg);
+    splitterRight->addWidget(ui->tabWidget);
     ui->gridLayout->addWidget(splitterMain);
 
-    //MyHighLighter *highlighter;
-    //highlighter = new MyHighLighter();
-    //highlighter->setDocument(textEdit->document());
 
     //联动判断
     timer = new QTimer(this);
@@ -452,9 +444,39 @@ void MainWindow::readResult(int exitCode)
     ui->editShowMsg->append(result);
     ui->editShowMsg->append(co->readAllStandardError());
 
+    textEditTemp->clear();
+    textEditTemp->setText(ui->editShowMsg->toPlainText());
+
+    //分离基本信息
+    ui->editShowMsg->clear();
+    QVector<QString> list;
+    for(int i = 0; i < textEditTemp->document()->lineCount(); i++)
+    {
+        QString str = textEditTemp->document()->findBlockByNumber(i).text();
+        //ui->editShowMsg->append(str);
+        list.push_back(str);
+        QString str_sub = str.trimmed();
+        if(str_sub.mid(0, 5) == "Error" || str_sub.mid(0, 7) == "Warning" || str_sub.mid(0, 6) == "Remark")
+        {
+            //QTextBlock block = ui->editErrors->document()->findBlockByNumber(i);
+            //ui->editErrors-> setTextCursor(QTextCursor(block));
+            for(int j = 0; j < i - 2; j++)
+                ui->editShowMsg->append(list.at(j));
+
+            break;
+        }
+    }
+
+    //分离信息
+    //警告
+    separ_info("Warning", ui->editWarnings);
+    separ_info("Remark", ui->editRemarks);
+    separ_info("Error", ui->editErrors);
+    separ_info("Optimization", ui->editOptimizations);
+
     //回到第一行
-    QTextBlock block = ui->editShowMsg->document()->findBlockByNumber(0);
-    ui->editShowMsg->setTextCursor(QTextCursor(block));
+    QTextBlock block = ui->editErrors->document()->findBlockByNumber(0);
+    ui->editErrors->setTextCursor(QTextCursor(block));
 
     //清除所有标记
     textEdit->SendScintilla(QsciScintilla::SCI_MARKERDELETEALL);
@@ -464,6 +486,7 @@ void MainWindow::readResult(int exitCode)
 
         ui->btnPreviousError->setEnabled(false);
         ui->btnNextError->setEnabled(false);
+        ui->tabWidget->setCurrentIndex(0);
 
         QMessageBox::information(this , "编译(Compiling)" , "编译成功(Compiled successfully)");
 
@@ -472,6 +495,7 @@ void MainWindow::readResult(int exitCode)
     {
         ui->btnPreviousError->setEnabled(true);
         ui->btnNextError->setEnabled(true);
+        ui->tabWidget->setCurrentIndex(1);
 
         on_btnNextError_clicked();
     }
@@ -860,42 +884,47 @@ void getMembers(QString str_member, QsciScintilla *textEdit, QTreeWidget *treeWi
 
 void MainWindow::on_editShowMsg_cursorPositionChanged()
 {
+    set_cursor_line_color(ui->editShowMsg);
+}
+
+void MainWindow::set_cursor_line_color(QTextEdit * edit)
+{
     QList<QTextEdit::ExtraSelection> extraSelection;
     QTextEdit::ExtraSelection selection;
     QColor lineColor = QColor(255,255,0, 50);
     //QColor lineColor = QColor(Qt::red).lighter(150);
     selection.format.setBackground(lineColor);
     selection.format.setProperty(QTextFormat::FullWidthSelection,true);
-    selection.cursor = ui->editShowMsg->textCursor();
+    selection.cursor = edit->textCursor();
     //selection.cursor.clearSelection();
     extraSelection.append(selection);
-    ui->editShowMsg->setExtraSelections(extraSelection);
+    edit->setExtraSelections(extraSelection);
 }
 
 void MainWindow::on_btnNextError_clicked()
 {
 
-    const QTextCursor cursor = ui->editShowMsg->textCursor();
+    const QTextCursor cursor = ui->editErrors->textCursor();
     int RowNum = cursor.blockNumber();
 
-    QTextBlock block = ui->editShowMsg->document()->findBlockByNumber(RowNum);
-    ui->editShowMsg->setTextCursor(QTextCursor(block));
+    QTextBlock block = ui->editErrors->document()->findBlockByNumber(RowNum);
+    ui->editErrors->setTextCursor(QTextCursor(block));
 
 
-    for(int i = RowNum + 1; i < ui->editShowMsg->document()->lineCount(); i++)
+    for(int i = RowNum + 1; i < ui->editErrors->document()->lineCount(); i++)
     {
-        QTextBlock block = ui->editShowMsg->document()->findBlockByNumber(i);
-        ui->editShowMsg->setTextCursor(QTextCursor(block));
+        QTextBlock block = ui->editErrors->document()->findBlockByNumber(i);
+        ui->editErrors->setTextCursor(QTextCursor(block));
 
 
-        QString str = ui->editShowMsg->document()->findBlockByLineNumber(i).text();
+        QString str = ui->editErrors->document()->findBlockByLineNumber(i).text();
         QString sub = str.trimmed();
 
 
         if(sub.mid(0 , 5) == "Error")
         {
-            QTextBlock block = ui->editShowMsg->document()->findBlockByNumber(i);
-            ui->editShowMsg->setTextCursor(QTextCursor(block));
+            QTextBlock block = ui->editErrors->document()->findBlockByNumber(i);
+            ui->editErrors->setTextCursor(QTextCursor(block));
 
             QList<QTextEdit::ExtraSelection> extraSelection;
             QTextEdit::ExtraSelection selection;
@@ -904,13 +933,15 @@ void MainWindow::on_btnNextError_clicked()
             selection.format.setForeground(Qt::white);
             selection.format.setBackground(lineColor);
             selection.format.setProperty(QTextFormat::FullWidthSelection,true);
-            selection.cursor = ui->editShowMsg->textCursor();
+            selection.cursor = ui->editErrors->textCursor();
             selection.cursor.clearSelection();
             extraSelection.append(selection);
-            ui->editShowMsg->setExtraSelections(extraSelection);
+            ui->editErrors->setExtraSelections(extraSelection);
 
             //定位到错误行
             getErrorLine(i);
+
+            ui->tabWidget->setCurrentIndex(1);
 
             break;
 
@@ -927,26 +958,26 @@ void MainWindow::on_btnNextError_clicked()
 void MainWindow::on_btnPreviousError_clicked()
 {
 
-    const QTextCursor cursor = ui->editShowMsg->textCursor();
+    const QTextCursor cursor = ui->editErrors->textCursor();
     int RowNum = cursor.blockNumber();
 
-    QTextBlock block = ui->editShowMsg->document()->findBlockByNumber(RowNum);
-    ui->editShowMsg->setTextCursor(QTextCursor(block));
+    QTextBlock block = ui->editErrors->document()->findBlockByNumber(RowNum);
+    ui->editErrors->setTextCursor(QTextCursor(block));
 
 
     for(int i = RowNum - 1; i > -1; i--)
     {
-        QTextBlock block = ui->editShowMsg->document()->findBlockByNumber(i);
-        ui->editShowMsg->setTextCursor(QTextCursor(block));
+        QTextBlock block = ui->editErrors->document()->findBlockByNumber(i);
+        ui->editErrors->setTextCursor(QTextCursor(block));
 
 
-        QString str = ui->editShowMsg->document()->findBlockByLineNumber(i).text();
+        QString str = ui->editErrors->document()->findBlockByLineNumber(i).text();
         QString sub = str.trimmed();
 
         if(sub.mid(0 , 5) == "Error")
         {
-            QTextBlock block = ui->editShowMsg->document()->findBlockByNumber(i);
-            ui->editShowMsg->setTextCursor(QTextCursor(block));
+            QTextBlock block = ui->editErrors->document()->findBlockByNumber(i);
+            ui->editErrors->setTextCursor(QTextCursor(block));
 
             QList<QTextEdit::ExtraSelection> extraSelection;
             QTextEdit::ExtraSelection selection;
@@ -955,13 +986,15 @@ void MainWindow::on_btnPreviousError_clicked()
             selection.format.setForeground(Qt::white);
             selection.format.setBackground(lineColor);
             selection.format.setProperty(QTextFormat::FullWidthSelection,true);
-            selection.cursor = ui->editShowMsg->textCursor();
+            selection.cursor = ui->editErrors->textCursor();
             selection.cursor.clearSelection();
             extraSelection.append(selection);
-            ui->editShowMsg->setExtraSelections(extraSelection);
+            ui->editErrors->setExtraSelections(extraSelection);
 
             //定位到错误行
             getErrorLine(i);
+
+            ui->tabWidget->setCurrentIndex(1);
 
             break;
 
@@ -973,10 +1006,94 @@ void MainWindow::on_btnPreviousError_clicked()
 
 }
 
+void MainWindow::gotoLine(QTextEdit *edit)
+{
+    QString text, str2, str3;
+    int line = 0;
+    bool skip = true;
+    const QTextCursor cursor = edit->textCursor();
+    int RowNum = cursor.blockNumber();
+
+    //QTextBlock block = ui->editErrors->document()->findBlockByNumber(RowNum);
+    //ui->editErrors->setTextCursor(QTextCursor(block));
+
+    text = edit->document()->findBlockByNumber(RowNum).text().trimmed();
+
+    if(text != "")
+    {
+        for(int j = 3; j < text.count(); j++)
+        {
+
+            if(text.mid(j , 1) == ":")
+            {
+                str2 = text.mid(0 , j);
+                skip = false;
+                break;
+            }
+
+
+        }
+
+        if(skip)
+        {
+            //再看看上一行
+            text = edit->document()->findBlockByNumber(RowNum - 1).text().trimmed();
+            if(text != "")
+            {
+                for(int j = 3; j < text.count(); j++)
+                {
+
+                    if(text.mid(j , 1) == ":")
+                    {
+                        str2 = text.mid(0 , j);
+
+                        break;
+                    }
+                }
+
+            }
+        }
+
+
+        for(int k = str2.count(); k > 0; k--)
+        {
+            if(str2.mid(k - 1 , 1) == " ")
+            {
+                str3 = str2.mid(k , str2.count() - k);
+
+                //定位到错误行
+                line = str3.toInt();
+                textEdit->setCursorPosition(line - 1 , 0);
+
+
+
+                /*//SCI_MARKERGET 参数用来设置标记，默认为圆形标记
+                textEdit->SendScintilla(QsciScintilla::SCI_MARKERGET, line - 1);
+                //SCI_MARKERSETFORE，SCI_MARKERSETBACK设置标记前景和背景标记
+                textEdit->SendScintilla(QsciScintilla::SCI_MARKERSETFORE, 0, QColor(Qt::red));
+                textEdit->SendScintilla(QsciScintilla::SCI_MARKERSETBACK, 0, QColor(Qt::red));
+                textEdit->SendScintilla(QsciScintilla::SCI_MARKERADD, line - 1);
+                //下划线
+                //textEdit->SendScintilla(QsciScintilla::SCI_STYLESETUNDERLINE,line,true);
+                //textEdit->SendScintilla(QsciScintilla::SCI_MARKERDEFINE,0,QsciScintilla::SC_MARK_UNDERLINE);
+                */
+
+                textEdit->setFocus();
+
+                break;
+            }
+        }
+    }
+
+    //qDebug() << line << text;
+
+
+}
+
 void MainWindow::getErrorLine(int i)
 {
     //定位到错误行
-    QString str1 = ui->editShowMsg->document()->findBlockByLineNumber(i - 1).text().trimmed();
+    QString str1 = ui->editErrors->document()->findBlockByLineNumber(i - 1).text().trimmed();
     QString str2 , str3;
     if(str1 != "")
     {
@@ -1291,6 +1408,32 @@ void MainWindow::on_MainWindow_destroyed()
 
 }
 
+void MainWindow::init_info_edit()
+{
+    textEditTemp = new QTextEdit();
+
+    ui->tabWidget->setMaximumHeight(250);
+    ui->tabWidget->setMinimumHeight(150);
+
+    ui->editShowMsg->setLineWrapMode(ui->editShowMsg->NoWrap);
+    ui->editShowMsg->setReadOnly(true);
+
+    ui->editErrors->setLineWrapMode(ui->editErrors->NoWrap);
+    ui->editErrors->setReadOnly(true);
+
+    ui->editWarnings->setLineWrapMode(ui->editWarnings->NoWrap);
+    ui->editWarnings->setReadOnly(true);
+
+    ui->editRemarks->setLineWrapMode(ui->editRemarks->NoWrap);
+    ui->editRemarks->setReadOnly(true);
+
+    ui->editOptimizations->setLineWrapMode(ui->editOptimizations->NoWrap);
+    ui->editOptimizations->setReadOnly(true);
+    ui->tabWidget->removeTab(4);//暂时不用"优化"这项
+
+
+}
+
 void MainWindow::init_edit()
 {
     //设置字体
@@ -1322,6 +1465,7 @@ void MainWindow::init_edit()
      textEdit->setLexer(textLexer1);
      //textLexer1->setPaper(QColor(255,255,255, 255));//文本区域背景色
 
+
      //设置行号栏宽度、颜色
      textEdit->setMarginWidth(0, 70);
      textEdit->setMarginLineNumbers(0, true);
@@ -1336,7 +1480,16 @@ void MainWindow::init_edit()
 
      //匹配大小括弧
      textEdit->setBraceMatching(QsciScintilla::SloppyBraceMatch);
-     //textEdit->setBraceMatching(QsciScintilla::StrictBraceMatch);
+     //textEdit->setBraceMatching(QsciScintilla::StrictBraceMatch));//不推荐
+     if(red > 55) //亮模式，mac下阈值为50
+     {
+         textEdit->setMatchedBraceBackgroundColor(QColor(Qt::green));
+         textEdit->setMatchedBraceForegroundColor(QColor(Qt::red));
+     }
+
+
+
+
 
 
      textEdit->setTabWidth(4);
@@ -1420,7 +1573,7 @@ void MainWindow::init_treeWidget(QTreeWidget *treeWidgetBack, int w)
     connect(treeWidgetBack, &QTreeWidget::itemClicked, this, &MainWindow::treeWidgetBack_itemClicked);
     treeWidgetBack->setColumnCount(2);
     treeWidgetBack->setMinimumWidth(300);
-    treeWidgetBack->setMaximumWidth(w/3);
+    treeWidgetBack->setMaximumWidth(w/3 - 50);
     treeWidgetBack->setColumnWidth(0 , 500);
     treeWidgetBack->setHeaderItem(new QTreeWidgetItem(QStringList() << "Members" << "Lines"));
     //设置水平滚动条
@@ -1448,4 +1601,80 @@ void MainWindow::on_chkMethod_clicked()
 void MainWindow::on_chkName_clicked()
 {
     update_ui_tw();
+}
+
+void MainWindow::separ_info(QString str_key, QTextEdit *editInfo)
+{
+    //const QTextCursor cursor = textEditTemp->textCursor();
+    //int RowNum = cursor.blockNumber();
+
+    editInfo->clear();
+
+    QTextBlock block = textEditTemp->document()->findBlockByNumber(0);
+    textEditTemp->setTextCursor(QTextCursor(block));
+
+    int info_count = 0;
+    for(int i = 0; i < textEditTemp->document()->lineCount(); i++)
+    {
+        QTextBlock block = textEditTemp->document()->findBlockByNumber(i);
+        textEditTemp->setTextCursor(QTextCursor(block));
+
+
+        QString str = textEditTemp->document()->findBlockByLineNumber(i).text();
+        QString sub = str.trimmed();
+
+
+        if(sub.mid(0 , str_key.count()) == str_key)
+        {
+
+            //QTextBlock block1 = textEditTemp->document()->findBlockByNumber(i);
+            //textEditTemp->setTextCursor(QTextCursor(block1));
+
+            editInfo->append(textEditTemp->document()->findBlockByNumber(i - 1).text());
+            editInfo->append(str);
+            editInfo->append("");
+
+            info_count++;
+
+
+        }
+
+    }
+
+    //标记tab头
+    if(str_key == "Error")
+        ui->tabWidget->setTabText(1, "Errors (" + QString::number(info_count) +")");
+    if(str_key == "Warning")
+        ui->tabWidget->setTabText(2, "Warnings (" + QString::number(info_count) +")");
+    if(str_key == "Remark")
+        ui->tabWidget->setTabText(3, "Remarks (" + QString::number(info_count) +")");
+    if(str_key == "Optimization")
+        ui->tabWidget->setTabText(4, "Optimizations (" + QString::number(info_count) +")");
+
+}
+
+void MainWindow::on_editErrors_cursorPositionChanged()
+{
+    set_cursor_line_color(ui->editErrors);
+    gotoLine(ui->editErrors);
+}
+
+void MainWindow::on_editWarnings_cursorPositionChanged()
+{
+    set_cursor_line_color(ui->editWarnings);
+
+    gotoLine(ui->editWarnings);
+
+}
+
+void MainWindow::on_editRemarks_cursorPositionChanged()
+{
+    set_cursor_line_color(ui->editRemarks);
+    gotoLine(ui->editRemarks);
+}
+
+void MainWindow::on_editOptimizations_cursorPositionChanged()
+{
+    set_cursor_line_color(ui->editOptimizations);
+    gotoLine(ui->editOptimizations);
 }

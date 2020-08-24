@@ -146,6 +146,14 @@ private slots:
 
     void on_chkName_clicked();
 
+    void on_editErrors_cursorPositionChanged();
+
+    void on_editWarnings_cursorPositionChanged();
+
+    void on_editRemarks_cursorPositionChanged();
+
+    void on_editOptimizations_cursorPositionChanged();
+
 private:
     Ui::MainWindow *ui;
 
@@ -157,6 +165,8 @@ private:
 
     QTimer *timer;
 
+    QTextEdit *textEditTemp;
+
     int row = 0;
     int row_current = 0;
     bool linkage = false;
@@ -165,11 +175,19 @@ private:
 
     void mem_linkage(QTreeWidget * tw);
 
+    void init_info_edit();
+
     void init_edit();
 
     void init_treeWidget(QTreeWidget *treeWidgetBack, int w);
 
     void update_ui_tw();
+
+    void separ_info(QString str_key, QTextEdit *editInfo);
+
+    void set_cursor_line_color(QTextEdit * edit);//光标所在行的背景色
+
+    void gotoLine(QTextEdit *edit);
 
 
 };
