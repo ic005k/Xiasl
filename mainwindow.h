@@ -83,16 +83,12 @@ public:
     thread_one *mythread; //线程对象
     QSplitter *splitterMain;
 
-
-
-
 public slots:
-
 
 private slots:
     void treeWidgetBack_itemClicked(QTreeWidgetItem *item, int column);
 
-    void dealover();//处理新线程返回的结束信号
+    void dealover();//处理线程返回的结束信号
 
     void on_btnRefreshTree_clicked();
 
@@ -185,7 +181,7 @@ private:
 
     void separ_info(QString str_key, QTextEdit *editInfo);
 
-    void set_cursor_line_color(QTextEdit * edit);//光标所在行的背景色
+    void set_cursor_line_color(QTextEdit * edit);
 
     void gotoLine(QTextEdit *edit);
 

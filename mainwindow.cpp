@@ -40,7 +40,6 @@ MainWindow::MainWindow(QWidget *parent)
     mythread = new thread_one();
     connect(mythread,&thread_one::over,this,&MainWindow::dealover);
 
-    //主菜单
     connect(ui->actionOpen, &QAction::triggered, this, &MainWindow::btnOpen_clicked);
     connect(ui->actionSave, &QAction::triggered, this, &MainWindow::btnSave_clicked);
     connect(ui->actionSaveAs, &QAction::triggered, this, &MainWindow::btnSaveAs_clicked);
@@ -83,7 +82,7 @@ MainWindow::MainWindow(QWidget *parent)
    init_edit();
 
    int w = screen()->size().width();
-   treeWidgetBack = new QTreeWidget();//后台处理数据
+   treeWidgetBack = new QTreeWidget();
    init_treeWidget(treeWidgetBack, w);
    init_treeWidget(ui->treeWidget, w);
 
@@ -97,7 +96,6 @@ MainWindow::MainWindow(QWidget *parent)
     splitterRight->addWidget(ui->tabWidget);
     ui->gridLayout->addWidget(splitterMain);
 
-    //联动判断
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(timer_linkage()));
 
@@ -136,7 +134,6 @@ void MainWindow::loadFile(const QString &fileName)
 #ifndef QT_NO_CURSOR
     QGuiApplication::setOverrideCursor(Qt::WaitCursor);
 #endif
-    //textEdit->setPlainText(in.readAll());
 
     textEdit->setText(QString::fromUtf8(file.readAll()));
 
@@ -314,7 +311,6 @@ void MainWindow::btnGenerate_clicked()
 
     loadFile(appInfo.filePath() + "/dsdt.dsl");
 
-
 }
 
 void MainWindow::btnCompile_clicked()
@@ -373,7 +369,6 @@ void MainWindow::setMark()
             QTextCursor highlight_cursor(document);
             QTextCursor cursor(document);
 
-            //开始
             cursor.beginEditBlock();
             QTextCharFormat color_format(highlight_cursor.charFormat());
             color_format.setForeground(Qt::red);
@@ -389,13 +384,10 @@ void MainWindow::setMark()
                     if(!found)
                         found = true;
 
-
                     highlight_cursor.mergeCharFormat(color_format);
-
 
                 }
             }
-
 
            cursor.endEditBlock();
 
@@ -497,9 +489,6 @@ void MainWindow::mem_linkage(QTreeWidget * tw)
 
     if(!loading && tw->topLevelItemCount() > 0)
     {
-
-
-
         int cu; //当前位置
         int cu1;//下一个位置
 
@@ -546,7 +535,6 @@ void MainWindow::mem_linkage(QTreeWidget * tw)
            tw->setCurrentItem(tw->topLevelItem(t - 1));
 
         }
-
 
     }
 
@@ -640,7 +628,6 @@ void CodeEditor::highlightCurrentLine()
 
     setExtraSelections(extraSelections);
 
-
 }
 
 
@@ -677,7 +664,6 @@ void MainWindow::on_btnFindPrevious_clicked()
 void MainWindow::on_treeWidget_itemClicked(QTreeWidgetItem *item, int column)
 {
 
-
     if(column == 0)
     {
         int lines = item->text(1).toInt();
@@ -685,15 +671,12 @@ void MainWindow::on_treeWidget_itemClicked(QTreeWidgetItem *item, int column)
         textEdit->setFocus();
 
     }
-
-
 
 }
 
 void MainWindow::treeWidgetBack_itemClicked(QTreeWidgetItem *item, int column)
 {
 
-
     if(column == 0)
     {
         int lines = item->text(1).toInt();
@@ -701,8 +684,6 @@ void MainWindow::treeWidgetBack_itemClicked(QTreeWidgetItem *item, int column)
         textEdit->setFocus();
 
     }
-
-
 
 }
 
@@ -743,12 +724,9 @@ void getMembers(QString str_member, QsciScintilla *textEdit, QTreeWidget *treeWi
 
            str = textEdit->text(RowNum);
 
-           //qDebug() << "str" << str;
-
            QString space = findKey(str, str_member.mid(0, 1), 4);
 
            QString sub = str.trimmed();
-           //qDebug() << "sub" << sub;
 
            bool zs = false;//当前行是否存在注释
            for(int k = ColNum; k > -1; k--)
@@ -756,7 +734,7 @@ void getMembers(QString str_member, QsciScintilla *textEdit, QTreeWidget *treeWi
                if(str.mid(k - 2 , 2) == "//" || str.mid(k - 2 , 2) == "/*")
                {
                    zs = true;
-                   //qDebug() << str.mid(k - 2 , 2);
+
                    break;
                }
            }
@@ -793,22 +771,16 @@ void getMembers(QString str_member, QsciScintilla *textEdit, QTreeWidget *treeWi
                            font.setItalic(true);
                            twItem0->setFont(0 , font);
 
-                           //color = QColor(34, 139, 34);
-                           //twItem0->setForeground(0, color);
-
                        }
                        if(str_member == "Device")
                        {
 
-                           //color = QColor(Qt::yellow).lighter(150);
                            color = QColor(160, 32, 240 );
                            twItem0->setForeground(0, color);
 
                        }
 
                        treeWidget->addTopLevelItem(twItem0);
-
-                       //qDebug() <<"strend" << str_end;
 
                        break;
 
@@ -835,7 +807,6 @@ void MainWindow::set_cursor_line_color(QTextEdit * edit)
     QList<QTextEdit::ExtraSelection> extraSelection;
     QTextEdit::ExtraSelection selection;
     QColor lineColor = QColor(255,255,0, 50);
-    //QColor lineColor = QColor(Qt::red).lighter(150);
     selection.format.setBackground(lineColor);
     selection.format.setProperty(QTextFormat::FullWidthSelection,true);
     selection.cursor = edit->textCursor();
@@ -871,7 +842,6 @@ void MainWindow::on_btnNextError_clicked()
 
             QList<QTextEdit::ExtraSelection> extraSelection;
             QTextEdit::ExtraSelection selection;
-            //QColor lineColor = QColor(Qt::gray).lighter(150);
             QColor lineColor = QColor(Qt::red);
             selection.format.setForeground(Qt::white);
             selection.format.setBackground(lineColor);
@@ -956,9 +926,6 @@ void MainWindow::gotoLine(QTextEdit *edit)
     bool skip = true;
     const QTextCursor cursor = edit->textCursor();
     int RowNum = cursor.blockNumber();
-
-    //QTextBlock block = ui->editErrors->document()->findBlockByNumber(RowNum);
-    //ui->editErrors->setTextCursor(QTextCursor(block));
 
     text = edit->document()->findBlockByNumber(RowNum).text().trimmed();
 
@@ -1162,8 +1129,6 @@ void thread_one::run()
 
     //sleep(10);
 
-
-
     emit over();  //发送完成信号
 }
 
@@ -1341,7 +1306,6 @@ void MainWindow::init_edit()
     //设置字体
     textEdit->setFont(font);
     textEdit->setMarginsFont(font);
-    //QFontMetrics fontmetrics = QFontMetrics(font);
 
      //设置语言解析器
      //QsciLexerBatch *textLexer = new QsciLexerBatch(this);
@@ -1365,7 +1329,6 @@ void MainWindow::init_edit()
      textLexer1->setColor(QColor(160,32,250, 255), QsciLexerCPP::KeywordSet2);
      textLexer1->setFont(font);
      textEdit->setLexer(textLexer1);
-     //textLexer1->setPaper(QColor(255,255,255, 255));//文本区域背景色
 
      //设置行号栏宽度、颜色
      textEdit->setMarginWidth(0, 70);
@@ -1424,12 +1387,12 @@ void MainWindow::init_edit()
 
      //设置自动补全
      textEdit->setCaretLineVisible(true);
-     //Acs[None|All|Document|APIs]
+     //[Acs|None|All|Document|APIs]
      //禁用自动补全提示功能、所有可用的资源、当前文档中出现的名称都自动补全提示、使用QsciAPIs类加入的名称都自动补全提示
      textEdit->setAutoCompletionSource(QsciScintilla::AcsAll);//自动补全,对于所有Ascii字符
      textEdit->setAutoCompletionCaseSensitivity(false);//大小写敏感度
      textEdit->setAutoCompletionThreshold(2);//设置每输入一个字符就会出现自动补全的提示
-     //editor->setAutoCompletionReplaceWord(false);//是否用补全的字符串替代光标右边的字符串
+     //textEdit->setAutoCompletionReplaceWord(false);//是否用补全的字符串替代光标右边的字符串
 
      //设置缩进参考线
      textEdit->setIndentationGuides(true);
@@ -1438,7 +1401,6 @@ void MainWindow::init_edit()
 
      //设置光标所在行背景色
      QColor lineColor;
-     //lineColor = QColor(Qt::yellow).lighter(150);
      lineColor = QColor(255, 255, 0, 50);
      textEdit->setCaretLineBackgroundColor(lineColor);
      textEdit->setCaretLineVisible(true);
