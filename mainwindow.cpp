@@ -9,7 +9,9 @@ bool loading = true;
 bool thread_end = true;
 QTreeWidget *treeWidgetBack;
 QsciScintilla *textEditBack;
-
+QString fileName;
+QVector<QString> filelist;
+QWidgetList wdlist;
 
 thread_one::thread_one(QObject *parent) : QThread(parent)
 {
@@ -34,33 +36,21 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    ver = "QtiASL V1.0.5    ";
+    ver = "QtiASL V1.0.6    ";
     setWindowTitle(ver);
 
     mythread = new thread_one();
     connect(mythread,&thread_one::over,this,&MainWindow::dealover);
 
-    connect(ui->actionOpen, &QAction::triggered, this, &MainWindow::btnOpen_clicked);
-    connect(ui->actionSave, &QAction::triggered, this, &MainWindow::btnSave_clicked);
-    connect(ui->actionSaveAs, &QAction::triggered, this, &MainWindow::btnSaveAs_clicked);
-    connect(ui->actionAbout, &QAction::triggered, this, &MainWindow::about);
-
-    connect(ui->actionGenerate, &QAction::triggered, this, &MainWindow::btnGenerate_clicked);
-    connect(ui->actionCompiling, &QAction::triggered, this, &MainWindow::btnCompile_clicked);
-
-    textEdit = new QsciScintilla(this);
-    textEditBack = new QsciScintilla();
-
-    connect(textEdit, &QsciScintilla::cursorPositionChanged, this, &MainWindow::textEdit_cursorPositionChanged);
-    connect(textEdit, &QsciScintilla::textChanged, this, &MainWindow::textEdit_textChanged);
-    connect(textEdit, &QsciScintilla::linesChanged, this, &MainWindow::textEdit_linesChanged);
-
+    init_menu();
 
 #ifdef Q_OS_WIN32
 // win
     //QFont font("SauceCodePro Nerd Font", 9, QFont::Normal);
     font.setFamily("SauceCodePro Nerd Font");
     font.setPointSize(9);
+
+    regACPI_win();
 
 #endif
 
@@ -99,6 +89,16 @@ MainWindow::MainWindow(QWidget *parent)
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(timer_linkage()));
 
+    //最近打开的文件
+    //Mac:"/Users/../Library/Preferences/com.github-com-ic005k-qtiasl.V1.plist"
+    //Win:"\\HKEY_CURRENT_USER\\Software\\QtiASL\\V1"
+    QCoreApplication::setOrganizationName("QtiASL");
+    QCoreApplication::setOrganizationDomain("github.com/ic005k/QtiASL");
+    QCoreApplication::setApplicationName("V1");
+    m_recentFiles = new RecentFiles(this);
+    m_recentFiles->attachToMenuAfterItem(ui->menu_File, "", SLOT(recentOpen(QString)));//在分隔符菜单项下插入
+    m_recentFiles->setNumOfRecentFiles(10);//最多显示最近的10个文件
+
 }
 
 MainWindow::~MainWindow()
@@ -107,7 +107,6 @@ MainWindow::~MainWindow()
 
     mythread->quit();
     mythread->wait();
-
 
 }
 void MainWindow::about()
@@ -118,6 +117,43 @@ void MainWindow::about()
     QMessageBox::about(this , tr("About") ,
                        QString::fromLocal8Bit("<a style='color: blue;' href = https://github.com/ic005k/QtiASL>QtiASL Editor</a>") + last);
 }
+
+QString MainWindow::openFile(QString fileName)
+{
+
+    QSettings settings;
+    QFileInfo fInfo(fileName);
+    settings.setValue("currentDirectory", fInfo.absolutePath());
+    qDebug() << settings.fileName();
+    m_recentFiles->setMostRecentFile(fileName);
+
+    if(fInfo.suffix() == "aml" || fInfo.suffix() == "dat")
+    {
+        QFileInfo appInfo(qApp->applicationDirPath());
+        #ifdef Q_OS_WIN32
+        // win
+            QProcess::execute(appInfo.filePath() + "/iasl.exe" , QStringList() << "-d" << fileName);
+        #endif
+
+        #ifdef Q_OS_LINUX
+        // linux
+            QProcess::execute(appInfo.filePath() + "/iasl" , QStringList() << "-d" << fileName);
+
+        #endif
+
+        #ifdef Q_OS_MAC
+        // mac
+            QProcess::execute(appInfo.filePath() + "/iasl" , QStringList() << "-d" << fileName);
+        #endif
+
+
+        fileName = fInfo.path() + "/" + fInfo.baseName() + ".dsl";
+
+    }
+
+    return  fileName;
+}
+
 void MainWindow::loadFile(const QString &fileName)
 {
    loading = true;
@@ -162,6 +198,8 @@ void MainWindow::setCurrentFile(const QString &fileName)
     QString shownName = curFile;
     if (curFile.isEmpty())
         shownName = "untitled.txt";
+
+
     setWindowFilePath(shownName);
 
     setWindowTitle(ver + shownName);
@@ -172,36 +210,15 @@ void MainWindow::btnOpen_clicked()
 {
     if (maybeSave())
     {
-        QString fileName = QFileDialog::getOpenFileName(this,"DSDT文件","","DSDT文件(*.aml *.dsl *.dat);;所有文件(*.*)");
+        fileName = QFileDialog::getOpenFileName(this,"DSDT","","DSDT(*.aml *.dsl *.dat);;All(*.*)");
+
         if (!fileName.isEmpty())
         {
-            QFileInfo fInfo(fileName);
-            if(fInfo.suffix() == "aml" || fInfo.suffix() == "dat")
-            {
-                QFileInfo appInfo(qApp->applicationDirPath());
-                #ifdef Q_OS_WIN32
-                // win
-                    QProcess::execute(appInfo.filePath() + "/iasl.exe" , QStringList() << "-d" << fileName);
-                #endif
-
-                #ifdef Q_OS_LINUX
-                // linux
-                    QProcess::execute(appInfo.filePath() + "/iasl" , QStringList() << "-d" << fileName);
-
-                #endif
-
-                #ifdef Q_OS_MAC
-                // mac
-                    QProcess::execute(appInfo.filePath() + "/iasl" , QStringList() << "-d" << fileName);
-                #endif
 
 
-                fileName = fInfo.path() + "/" + fInfo.baseName() + ".dsl";
-
-            }
-
-            loadFile(fileName);
+            loadFile(openFile(fileName));
         }
+
     }
 }
 
@@ -252,8 +269,6 @@ bool MainWindow::saveFile(const QString &fileName)
     QGuiApplication::setOverrideCursor(Qt::WaitCursor);
     QSaveFile file(fileName);
     if (file.open(QFile::WriteOnly | QFile::Text)) {
-
-        //textEdit->SendScintilla(QsciScintilla::SCI_SETSAVEPOINT);
 
         QTextStream out(&file);
         out << textEdit->text();
@@ -344,7 +359,6 @@ void MainWindow::btnCompile_clicked()
 
     connect(co , SIGNAL(finished(int)) , this , SLOT(readResult(int)));
     //connect(co , SIGNAL(readyReadStandardOutput()) , this , SLOT(readResult(int)));
-
     //QByteArray res = co.readAllStandardOutput(); //获取标准输出
     //qDebug() << "Out" << QString::fromLocal8Bit(res);
 
@@ -444,7 +458,7 @@ void MainWindow::readResult(int exitCode)
         ui->btnNextError->setEnabled(false);
         ui->tabWidget->setCurrentIndex(0);
 
-        QMessageBox::information(this , "编译(Compiling)" , "编译成功(Compiled successfully)");
+        QMessageBox::information(this , "编译(Compiling)" , "编译成功(Compiled successfully.)");
 
     }
     else
@@ -860,12 +874,9 @@ void MainWindow::on_btnNextError_clicked()
 
         }
 
-
-
         if(i == ui->editShowMsg->document()->lineCount() - 1)
             on_btnPreviousError_clicked();
     }
-
 }
 
 void MainWindow::on_btnPreviousError_clicked()
@@ -940,7 +951,6 @@ void MainWindow::gotoLine(QTextEdit *edit)
                 skip = false;
                 break;
             }
-
 
         }
 
@@ -1040,17 +1050,14 @@ void MainWindow::on_editShowMsg_selectionChanged()
 
         textEdit->setFocus();
 
-
     }
-
-
 }
 
 void MainWindow::textEdit_textChanged()
 {
     if(!loading)
     {
-        //on_btnRefreshTree_clicked();
+
     }
 }
 
@@ -1065,10 +1072,8 @@ const char * QscilexerCppAttach::keywords(int set) const
         return QsciLexerCPP::keywords(set);
     if(set == 2)
         return
-        //下面是自定义的想要有特殊颜色的关键字
+        //自定义特殊颜色的关键字
         "External Scope Device Method Name If While Break Return ElseIf Switch Case Else Default Field OperationRegion Package DefinitionBlock Offset CreateDWordField CreateBitField CreateWordField CreateQWordField ";
-
-
     return 0;
 }
 
@@ -1082,7 +1087,6 @@ QString findKey(QString str, QString str_sub, int f_null)
         if(str.mid(i, 1) == str_sub)
         {
             strs = str.mid(0, i);
-
 
             for(int j = 0; j < strs.count(); j++)
             {
@@ -1099,7 +1103,6 @@ QString findKey(QString str, QString str_sub, int f_null)
 
             for(int k = 0; k < total; k++)
                 space = space + " ";
-
 
             break;
 
@@ -1127,8 +1130,6 @@ void thread_one::run()
 
     refreshTree(treeWidgetBack);
 
-    //sleep(10);
-
     emit over();  //发送完成信号
 }
 
@@ -1138,8 +1139,6 @@ void MainWindow::dealover()//线程结束信号
     update_ui_tw();
 
     thread_end = true;
-    mythread->quit();  //test
-    mythread->wait();
 
     qDebug() << "线程结束";
 
@@ -1197,8 +1196,6 @@ void MainWindow::update_ui_tw()
             ui->treeWidget->addTopLevelItem(twItem0);
 
         }
-
-
     }
 
     ui->treeWidget->update();
@@ -1228,8 +1225,6 @@ void refreshTree(QTreeWidget *treeWidgetBack)
 
 
 #endif
-
-
 
     //枚举"Scope"
     getMembers("Scope", textEditBack, treeWidgetBack);
@@ -1301,8 +1296,38 @@ void MainWindow::init_info_edit()
 
 }
 
+void MainWindow::init_menu()
+{
+
+    ui->actionOpen->setShortcut(tr("ctrl+o"));
+    connect(ui->actionOpen, &QAction::triggered, this, &MainWindow::btnOpen_clicked);
+
+    ui->actionSave->setShortcut(tr("ctrl+s"));
+    connect(ui->actionSave, &QAction::triggered, this, &MainWindow::btnSave_clicked);
+
+    ui->actionSaveAs->setShortcut(tr("ctrl+shift+s"));
+    connect(ui->actionSaveAs, &QAction::triggered, this, &MainWindow::btnSaveAs_clicked);
+
+    connect(ui->actionAbout, &QAction::triggered, this, &MainWindow::about);
+
+    ui->actionGenerate->setShortcut(tr("ctrl+g"));
+    connect(ui->actionGenerate, &QAction::triggered, this, &MainWindow::btnGenerate_clicked);
+
+    ui->actionCompiling->setShortcut(tr("ctrl+m"));
+    connect(ui->actionCompiling, &QAction::triggered, this, &MainWindow::btnCompile_clicked);
+
+}
+
 void MainWindow::init_edit()
 {
+
+    textEdit = new QsciScintilla(this);
+    textEditBack = new QsciScintilla();
+
+    connect(textEdit, &QsciScintilla::cursorPositionChanged, this, &MainWindow::textEdit_cursorPositionChanged);
+    connect(textEdit, &QsciScintilla::textChanged, this, &MainWindow::textEdit_textChanged);
+    connect(textEdit, &QsciScintilla::linesChanged, this, &MainWindow::textEdit_linesChanged);
+
     //设置字体
     textEdit->setFont(font);
     textEdit->setMarginsFont(font);
@@ -1409,7 +1434,6 @@ void MainWindow::init_edit()
      if(red < 55) //暗模式，mac下为50
          textEdit->setCaretForegroundColor(QColor(Qt::white));
      textEdit->setCaretWidth(2);
-
 
      //自动折叠区域
      textEdit->setMarginType(3, QsciScintilla::SymbolMargin);
@@ -1531,3 +1555,119 @@ void MainWindow::on_editOptimizations_cursorPositionChanged()
     set_cursor_line_color(ui->editOptimizations);
     gotoLine(ui->editOptimizations);
 }
+
+void MainWindow::regACPI_win()
+{
+        QString appPath = qApp->applicationFilePath();
+
+        QString dir = qApp->applicationDirPath();
+        // 注意路径的替换
+        appPath.replace("/", "\\");
+        QString type = "QtiASL";
+        QSettings *regType = new QSettings("HKEY_CLASSES_ROOT\\.dsl", QSettings::NativeFormat);
+        QSettings *regIcon = new QSettings("HKEY_CLASSES_ROOT\\.dsl\\DefaultIcon", QSettings::NativeFormat);
+        QSettings *regShell = new QSettings("HKEY_CLASSES_ROOT\\QtiASL\\shell\\open\\command", QSettings::NativeFormat);
+
+        QSettings *regType1 = new QSettings("HKEY_CLASSES_ROOT\\.aml", QSettings::NativeFormat);
+        QSettings *regIcon1 = new QSettings("HKEY_CLASSES_ROOT\\.aml\\DefaultIcon", QSettings::NativeFormat);
+        QSettings *regShell1 = new QSettings("HKEY_CLASSES_ROOT\\QtiASL\\shell\\open\\command", QSettings::NativeFormat);
+
+        regType->remove("Default");
+        regType->setValue("Default", type);
+
+        regType1->remove("Default");
+        regType1->setValue("Default", type);
+
+        regIcon->remove("Default");
+        // 0 使用当前程序内置图标
+        regIcon->setValue("Default", appPath + ",1");
+
+        regIcon1->remove("Default");
+        // 0 使用当前程序内置图标
+        regIcon1->setValue("Default", appPath + ",0");
+
+         // 百分号问题
+        QString shell = "\"" + appPath + "\" ";
+        shell = shell + "\"%1\"";
+
+        regShell->remove("Default");
+        regShell->setValue("Default", shell);
+
+        regShell1->remove("Default");
+        regShell1->setValue("Default", shell);
+
+        delete regIcon;
+        delete regShell;
+        delete regType;
+
+        delete regIcon1;
+        delete regShell1;
+        delete regType1;
+        // 通知系统刷新
+#ifdef Q_OS_WIN32
+        //::SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST|SHCNF_FLUSH, 0, 0);
+#endif
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+
+    if(textEdit->isModified())
+    {
+        QMessageBox message;
+        message.setText("The document has been modified.");
+        message.setInformativeText("Do you want to save your changes?");
+        message.setStandardButtons(QMessageBox::Save|QMessageBox::Discard|QMessageBox::Cancel);
+        message.setDefaultButton(QMessageBox::Save);
+
+        int choice = message.exec();
+        switch (choice) {
+            case QMessageBox::Save:
+            btnSave_clicked();
+            event->accept();
+            break;
+        case QMessageBox::Discard:
+            event->accept();
+            break;
+        case QMessageBox::Cancel:
+            event->ignore();
+            break;
+        }
+    }
+    else
+    {
+    event->accept();
+    }
+    //多窗口中，关闭窗体，删除自己
+    for(int i = 0; i < wdlist.count(); i++)
+    {
+        if(this == wdlist.at(i))
+        {
+            wdlist.removeAt(i);
+            filelist.removeAt(i);
+        }
+    }
+
+    //关闭线程
+    if(!thread_end)
+    {
+        mythread->quit();
+        mythread->wait();
+    }
+
+
+}
+
+void MainWindow::recentOpen(QString filename)
+{
+    if(!thread_end)
+    {
+        mythread->quit();
+        mythread->wait();
+    }
+
+    if (maybeSave())
+        loadFile(openFile(filename));
+}
+
+

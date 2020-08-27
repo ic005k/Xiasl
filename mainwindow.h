@@ -1,6 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include "recentfiles.h"
 #include <QMainWindow>
 #include <QFile>
 #include <QMessageBox>
@@ -25,33 +26,35 @@
 #include <QDateTime>
 #include <QTimer>
 #include <QThread>
-//#include "mythread.h"
+#include <QSettings>
+#include <QApplication>
+#include <QFileOpenEvent>
+#include <QtDebug>
+#include <QCloseEvent>
 
-class QsciScintilla;
+#ifdef Q_OS_WIN32
+#include <windows.h>
+#include <stdio.h>
+#include <Shlobj.h>
+#endif
+
 #include <Qsci/qsciscintilla.h>
 #include <Qsci/qscilexercpp.h>
 #include <Qsci/qscilexerbatch.h>
 #include <Qsci/qsciapis.h>
-class QscilexerCppAttach : public QsciLexerCPP
-{
-    Q_OBJECT
-public:
-    const char *keywords(int set) const;
-};
-
 
 QT_BEGIN_NAMESPACE
+namespace Ui { class MainWindow; }
+QT_END_NAMESPACE
 
 class QPaintEvent;
 class QResizeEvent;
 class QSize;
 class QWidget;
-
-namespace Ui { class MainWindow; }
-QT_END_NAMESPACE
-
 class LineNumberArea;
+class QsciScintilla;
 class thread_one;
+
 
 void refreshTree(QTreeWidget *treeWidgetBack);
 void getMembers(QString str_member, QsciScintilla *textEdit, QTreeWidget *treeWidget);
@@ -66,24 +69,32 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-    void loadFile(const QString &fileName);
     void setMark();
     void about();
     void getErrorLine(int i);
+    void loadFile(const QString &fileName);
 
-
+    void setCurrentFile(const QString &fileName);
 
     QString curFile;
     QProcess *co;
     QFont font;
     QsciScintilla *textEdit;
+    RecentFiles *m_recentFiles;
 
     int current_line = 0;
 
     thread_one *mythread; //线程对象
+
     QSplitter *splitterMain;
 
+protected:
+    void closeEvent(QCloseEvent *event);
+
+
 public slots:
+    void btnOpen_clicked();
+    QString openFile(QString fileName);
 
 private slots:
     void treeWidgetBack_itemClicked(QTreeWidgetItem *item, int column);
@@ -95,8 +106,8 @@ private slots:
     void timer_linkage();
 
     void readResult(int exitCode);
+    void recentOpen(QString filename);
 
-    void btnOpen_clicked();
 
     bool btnSave_clicked();
 
@@ -153,8 +164,6 @@ private slots:
 private:
     Ui::MainWindow *ui;
 
-    void setCurrentFile(const QString &fileName);
-
     bool maybeSave();
 
     QString ver;
@@ -171,6 +180,8 @@ private:
 
     void mem_linkage(QTreeWidget * tw);
 
+    void init_menu();
+
     void init_info_edit();
 
     void init_edit();
@@ -184,6 +195,10 @@ private:
     void set_cursor_line_color(QTextEdit * edit);
 
     void gotoLine(QTextEdit *edit);
+
+    void fileAndprog_Linux();
+
+    void regACPI_win();
 
 
 };
@@ -242,6 +257,13 @@ protected:
 signals:
     void over();
 public slots:
+};
+
+class QscilexerCppAttach : public QsciLexerCPP
+{
+    Q_OBJECT
+public:
+    const char *keywords(int set) const;
 };
 
 
