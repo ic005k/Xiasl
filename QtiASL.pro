@@ -31,7 +31,9 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    myapp.cpp \
+    recentfiles.cpp
 
 HEADERS += \
     Qsci/qsciabstractapis.h \
@@ -87,7 +89,9 @@ HEADERS += \
     Qsci/qsciscintillabase.h \
     Qsci/qscistyle.h \
     Qsci/qscistyledtext.h \
-    mainwindow.h
+    mainwindow.h \
+    myapp.h \
+    recentfiles.h
 
 FORMS += \
     mainwindow.ui
