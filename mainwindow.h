@@ -40,7 +40,9 @@
 
 #include <Qsci/qsciscintilla.h>
 #include <Qsci/qscilexercpp.h>
-#include <Qsci/qscilexerbatch.h>
+#include <Qsci/qscilexerverilog.h>
+#include <Qsci/qscilexercoffeescript.h>
+#include <Qsci/qscilexercpp.h>
 #include <Qsci/qsciapis.h>
 
 QT_BEGIN_NAMESPACE
@@ -56,8 +58,8 @@ class QsciScintilla;
 class thread_one;
 
 
-void refreshTree(QTreeWidget *treeWidgetBack);
-void getMembers(QString str_member, QsciScintilla *textEdit, QTreeWidget *treeWidget);
+void refreshTree();
+void getMembers(QString str_member, QsciScintilla *textEdit);
 QString findKey(QString str, QString stf_sub, int f_null);
 
 
@@ -199,6 +201,9 @@ private:
     void fileAndprog_Linux();
 
     void regACPI_win();
+
+    void setLexer(QsciLexer *textLexer);
+
 
 
 };

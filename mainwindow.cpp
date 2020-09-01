@@ -7,8 +7,16 @@
 
 bool loading = true;
 bool thread_end = true;
-QTreeWidget *treeWidgetBack;
+bool show_s = true;
+bool show_d = true;
+bool show_m = true;
+bool show_n = false;
+int s_count = 0;
+int m_count = 0;
+int d_count = 0;
+int n_count = 0;
 QsciScintilla *textEditBack;
+QList<QTreeWidgetItem *> twitems;
 QString fileName;
 QVector<QString> filelist;
 QWidgetList wdlist;
@@ -36,7 +44,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    ver = "QtiASL V1.0.6    ";
+    ver = "QtiASL V1.0.6a    ";
     setWindowTitle(ver);
 
     mythread = new thread_one();
@@ -72,8 +80,6 @@ MainWindow::MainWindow(QWidget *parent)
    init_edit();
 
    int w = screen()->size().width();
-   treeWidgetBack = new QTreeWidget();
-   init_treeWidget(treeWidgetBack, w);
    init_treeWidget(ui->treeWidget, w);
 
     init_info_edit();
@@ -97,7 +103,7 @@ MainWindow::MainWindow(QWidget *parent)
     QCoreApplication::setApplicationName("V1");
     m_recentFiles = new RecentFiles(this);
     m_recentFiles->attachToMenuAfterItem(ui->menu_File, "", SLOT(recentOpen(QString)));//在分隔符菜单项下插入
-    m_recentFiles->setNumOfRecentFiles(10);//最多显示最近的10个文件
+    m_recentFiles->setNumOfRecentFiles(15);//最多显示最近的10个文件
 
 }
 
@@ -115,7 +121,7 @@ void MainWindow::about()
     QString last = tr("最后的编译时间(Last modified): ") + appInfo.lastModified().toString("yyyy-MM-dd hh:mm:ss");
 
     QMessageBox::about(this , tr("About") ,
-                       QString::fromLocal8Bit("<a style='color: blue;' href = https://github.com/ic005k/QtiASL>QtiASL Editor</a>") + last);
+                       QString::fromLocal8Bit("<a style='color: blue;' href = https://github.com/ic005k/QtiASL>QtiASL Editor</a><br><br>") + last);
 }
 
 QString MainWindow::openFile(QString fileName)
@@ -184,8 +190,12 @@ void MainWindow::loadFile(const QString &fileName)
 
     ui->treeWidget->clear();
     ui->treeWidget->repaint();
+
     on_btnRefreshTree_clicked();
+
     ui->treeWidget->repaint();
+
+    loading = false;
 
 }
 
@@ -489,6 +499,7 @@ void MainWindow::timer_linkage()
     if(!loading)
     {
          on_btnRefreshTree_clicked();
+
          timer->stop();
 
     }
@@ -682,7 +693,7 @@ void MainWindow::on_treeWidget_itemClicked(QTreeWidgetItem *item, int column)
     {
         int lines = item->text(1).toInt();
         textEdit->setCursorPosition(lines , 0);
-        textEdit->setFocus();
+        //textEdit->setFocus();
 
     }
 
@@ -715,101 +726,7 @@ void MainWindow::on_btnRefreshTree_clicked()
 
 }
 
-void getMembers(QString str_member, QsciScintilla *textEdit, QTreeWidget *treeWidget)
-{
 
-    QString str;
-    int RowNum, ColNum;
-    int count;  //总行数
-    QTreeWidgetItem *twItem0;
-
-    count = textEdit->lines();
-
-    //回到第一行
-    textEdit->setCursorPosition(0, 0);
-
-    for(int j = 0; j < count; j++)
-    {
-        //正则、区分大小写、匹配整个单词、循环搜索
-        if(textEdit->findFirst(str_member , true , true , true , false))
-        {
-
-           textEdit->getCursorPosition(&RowNum, &ColNum);
-
-           str = textEdit->text(RowNum);
-
-           QString space = findKey(str, str_member.mid(0, 1), 4);
-
-           QString sub = str.trimmed();
-
-           bool zs = false;//当前行是否存在注释
-           for(int k = ColNum; k > -1; k--)
-           {
-               if(str.mid(k - 2 , 2) == "//" || str.mid(k - 2 , 2) == "/*")
-               {
-                   zs = true;
-
-                   break;
-               }
-           }
-
-           QString str_end;
-           if(sub.mid(0 , str_member.count()) == str_member && !zs)
-           {
-
-               for(int i = 0; i < sub.count(); i++)
-               {
-                   if(sub.mid(i , 1) == ")")
-                   {
-                       str_end = sub.mid(0 , i + 1);
-
-                       twItem0 = new QTreeWidgetItem(QStringList() << space + str_end << QString("%1").arg(RowNum, 7, 10, QChar('0')));//QString::number(RowNum));
-                       QFont font;
-                       QColor color;
-                       if(str_member == "Scope")
-                       {
-
-                           font.setBold(true);
-                           twItem0->setFont(0 , font);
-                       }
-                       if(str_member == "Method")
-                       {
-
-                           color = QColor(34, 139, 34);
-                           twItem0->setForeground(0, color);
-
-                       }
-                       if(str_member == "Name")
-                       {
-
-                           font.setItalic(true);
-                           twItem0->setFont(0 , font);
-
-                       }
-                       if(str_member == "Device")
-                       {
-
-                           color = QColor(160, 32, 240 );
-                           twItem0->setForeground(0, color);
-
-                       }
-
-                       treeWidget->addTopLevelItem(twItem0);
-
-                       break;
-
-                   }
-               }
-
-
-           }
-         }
-        else
-            break;
-
-    }
-
-}
 
 void MainWindow::on_editShowMsg_cursorPositionChanged()
 {
@@ -1068,14 +985,60 @@ void MainWindow::on_editFind_returnPressed()
 
 const char * QscilexerCppAttach::keywords(int set) const
 {
-    if(set == 1 || set == 3)
-        return QsciLexerCPP::keywords(set);
-    if(set == 2)
-        return
-        //自定义特殊颜色的关键字
-        "External Scope Device Method Name If While Break Return ElseIf Switch Case Else Default Field OperationRegion Package DefinitionBlock Offset CreateDWordField CreateBitField CreateWordField CreateQWordField ";
+    //if(set == 1 || set == 3)
+    //    return QsciLexerCPP::keywords(set);
+
+    if (set == 1)
+            return
+                "and and_eq asm auto bitand bitor bool break case "
+                "catch char class compl const const_cast continue "
+                "default delete do double dynamic_cast else enum "
+                "explicit export extern false float for friend goto if "
+                "inline int long mutable namespace new not not_eq "
+                "operator or or_eq private protected public register "
+                "reinterpret_cast return short signed sizeof static "
+                "static_cast struct switch template this throw true "
+                "try typedef typeid typename union unsigned using "
+                "virtual void volatile wchar_t while xor xor_eq "
+                ""
+                "External Scope Device Method Name If While Break Return ElseIf Switch Case Else "
+                "Default Field OperationRegion Package DefinitionBlock Offset CreateDWordField CreateByteField "
+                "CreateBitField CreateWordField CreateQWordField Buffer ToInteger ToString ToUUID "
+                "Include CondRefOf FindSetLeftBit FindSetRightBit FromBcd Function CreateField ";
+
+
+    if (set == 2)
+            return
+                 "Local0 Local1 Local2 Local3 Local4 Local5 Local6 Local7 "
+                 "Arg0 Arg1 Arg2 Arg3 Arg4 Arg5 Arg6 "
+                 "One Ones Zero Revision "
+                 "key dict array "
+                 "MethodObj UnknownObj IntObj DeviceObj MutexObj PkgObj FieldUnitObj StrObj";
+
+
+    if (set == 3)
+            return
+                "a addindex addtogroup anchor arg attention author b "
+                "brief bug c class code date def defgroup deprecated "
+                "dontinclude e em endcode endhtmlonly endif "
+                "endlatexonly endlink endverbatim enum example "
+                "exception f$ f[ f] file fn hideinitializer "
+                "htmlinclude htmlonly if image include ingroup "
+                "internal invariant interface latexonly li line link "
+                "mainpage name namespace nosubgrouping note overload "
+                "p page par param post pre ref relates remarks return "
+                "retval sa section see showinitializer since skip "
+                "skipline struct subsection test throw todo typedef "
+                "union until var verbatim verbinclude version warning "
+                "weakgroup $ @ \\ & < > # { }";
+
+
+
+
     return 0;
+
 }
+
 
 QString findKey(QString str, QString str_sub, int f_null)
 {
@@ -1114,8 +1077,8 @@ QString findKey(QString str, QString str_sub, int f_null)
 
 void MainWindow::textEdit_linesChanged()
 {
-
-    timer->start(2000);
+    if(!loading)
+       timer->start(2000);
 
 }
 
@@ -1128,7 +1091,7 @@ void thread_one::run()
     qDebug() << "线程开始 " + QTime::currentTime().toString();
     thread_end = false;
 
-    refreshTree(treeWidgetBack);
+    refreshTree();
 
     emit over();  //发送完成信号
 }
@@ -1150,117 +1113,142 @@ void MainWindow::update_ui_tw()
 
     ui->treeWidget->update();
 
-    for(int i = 0; i < treeWidgetBack->topLevelItemCount(); ++i)
-    {
+    ui->treeWidget->addTopLevelItems(twitems);
+    ui->treeWidget->sortItems(1 , Qt::AscendingOrder);//排序
 
-        QTreeWidgetItem *item  = treeWidgetBack->topLevelItem(i);
-
-        QString str_member = item->text(0).trimmed().mid(0, 4);
-        QTreeWidgetItem *twItem0 = new QTreeWidgetItem(QStringList() << item->text(0) << item->text(1));//QString::number(RowNum));
-        QFont font;
-        QColor color;
-        if(str_member == "Scop" && ui->chkScope->isChecked())
-        {
-
-            font.setBold(true);
-            twItem0->setFont(0 , font);
-
-            ui->treeWidget->addTopLevelItem(twItem0);
-        }
-        if(str_member == "Meth" && ui->chkMethod->isChecked())
-        {
-
-            color = QColor(34, 139, 34);
-            twItem0->setForeground(0, color);
-
-            ui->treeWidget->addTopLevelItem(twItem0);
-
-        }
-        if(str_member == "Devi" && ui->chkDevice->isChecked())
-        {
-
-            //color = QColor(Qt::yellow).lighter(150);
-            color = QColor(160, 32, 240 );
-            twItem0->setForeground(0, color);
-
-            ui->treeWidget->addTopLevelItem(twItem0);
-
-        }
-
-        if(str_member == "Name" && ui->chkName->isChecked())
-        {
-
-            color = QColor(30, 144, 255);
-            twItem0->setForeground(0, color);
-
-            ui->treeWidget->addTopLevelItem(twItem0);
-
-        }
-    }
-
+    ui->treeWidget->setHeaderLabel("S(" + QString::number(s_count) + ")  " + "D(" + QString::number(d_count) + ")  " + "M(" + QString::number(m_count) + ")  "  + "N(" + QString::number(n_count) + ")");
     ui->treeWidget->update();
 
     textEdit_cursorPositionChanged();
 }
 
-void refreshTree(QTreeWidget *treeWidgetBack)
+void refreshTree()
 {
     loading = true;
 
-    treeWidgetBack->clear();
-
-#ifdef Q_OS_WIN32
-// win
-
-#endif
-
-#ifdef Q_OS_LINUX
-// linux
-
-#endif
-
-#ifdef Q_OS_MAC
-// mac
-   treeWidgetBack->repaint();
-
-
-#endif
+    twitems.clear();
+    s_count = 0;
+    m_count = 0;
+    d_count = 0;
+    n_count = 0;
 
     //枚举"Scope"
-    getMembers("Scope", textEditBack, treeWidgetBack);
+    getMembers("Scope", textEditBack);
 
     //枚举"Device"
-    getMembers("Device", textEditBack, treeWidgetBack);
+    getMembers("Device", textEditBack);
 
     //枚举"Method"
-    getMembers("Method", textEditBack, treeWidgetBack);
+    getMembers("Method", textEditBack);
 
     //枚举"Name"
-    getMembers("Name", textEditBack, treeWidgetBack);
-
-    //ui->treeWidget->header()->sortIndicatorOrder();
-    treeWidgetBack->sortItems(1 , Qt::AscendingOrder);//排序
-
-
-#ifdef Q_OS_WIN32
-// win
-
-#endif
-
-#ifdef Q_OS_LINUX
-// linux
-
-#endif
-
-#ifdef Q_OS_MAC
-// mac
-   treeWidgetBack->repaint();
-
-
-#endif
+    getMembers("Name", textEditBack);
 
     loading = false;
+
     qDebug() << "刷新成员列表已完成 " + QTime::currentTime().toString();
+
+}
+
+void getMembers(QString str_member, QsciScintilla *textEdit)
+{
+
+
+    QString str;
+    int RowNum, ColNum;
+    int count;  //总行数
+    QTreeWidgetItem *twItem0;
+
+    count = textEdit->lines();
+
+    //回到第一行
+    textEdit->setCursorPosition(0, 0);
+
+    for(int j = 0; j < count; j++)
+    {
+        //正则、区分大小写、匹配整个单词、循环搜索
+        if(textEdit->findFirst(str_member , true , true , true , false))
+        {
+
+           textEdit->getCursorPosition(&RowNum, &ColNum);
+
+           str = textEdit->text(RowNum);
+
+           QString space = findKey(str, str_member.mid(0, 1), 4);
+
+           QString sub = str.trimmed();
+
+           bool zs = false;//当前行是否存在注释
+           for(int k = ColNum; k > -1; k--)
+           {
+               if(str.mid(k - 2 , 2) == "//" || str.mid(k - 2 , 2) == "/*")
+               {
+                   zs = true;
+
+                   break;
+               }
+           }
+
+           QString str_end;
+           if(sub.mid(0 , str_member.count()) == str_member && !zs)
+           {
+
+               for(int i = 0; i < sub.count(); i++)
+               {
+                   if(sub.mid(i , 1) == ")")
+                   {
+                       str_end = sub.mid(0 , i + 1);
+
+                       twItem0 = new QTreeWidgetItem(QStringList() << space + str_end << QString("%1").arg(RowNum, 7, 10, QChar('0')));//QString::number(RowNum));
+
+                       if(str_member == "Scope" && show_s)
+                       {
+
+                           twItem0->setIcon(0, QIcon(":/icon/s.png"));
+
+                           twitems.append(twItem0);
+                           s_count++;
+                       }
+                       if(str_member == "Method" && show_m)
+                       {
+
+                           twItem0->setIcon(0, QIcon(":/icon/m.png"));
+
+                           twitems.append(twItem0);
+                           m_count++;
+
+                       }
+                       if(str_member == "Name" && show_n)
+                       {
+
+                           twItem0->setIcon(0, QIcon(":/icon/n.png"));
+
+                           twitems.append(twItem0);
+                           n_count++;
+
+                       }
+                       if(str_member == "Device" && show_d)
+                       {
+
+                           twItem0->setIcon(0, QIcon(":/icon/d.png"));
+
+                           twitems.append(twItem0);
+                           d_count++;
+
+                       }
+
+                       break;
+
+                   }
+               }
+
+
+           }
+         }
+        else
+            break;
+
+    }
 
 }
 
@@ -1318,6 +1306,152 @@ void MainWindow::init_menu()
 
 }
 
+void MainWindow::setLexer(QsciLexer *textLexer)
+{
+
+    //设置光标所在行背景色
+    QColor lineColor;
+
+    //获取背景色
+    QPalette pal = this->palette();
+    QBrush brush = pal.window();
+    int red = brush.color().red();
+
+    if(red < 55) //暗模式，mac下为50
+    {
+        lineColor = QColor(255, 255, 0, 250);
+        textEdit->setCaretLineBackgroundColor(lineColor);
+        textEdit->setCaretLineFrameWidth(1);
+        textEdit->setCaretLineVisible(true);
+
+        //textLexer->setColor(QColor(255,255,255, 255), -1);
+        textLexer->setColor(QColor(Qt::green), QsciLexerCPP::CommentLine);//"//"注释颜色
+        textLexer->setColor(QColor(Qt::green), QsciLexerCPP::Comment);
+
+        //textLexer->setColor(QColor(152, 245, 255 ), QsciLexerCPP::Identifier);
+        textLexer->setColor(QColor(255, 150, 147), QsciLexerCPP::Number);
+        textLexer->setColor(QColor(152, 245, 255), QsciLexerCPP::Keyword);
+        textLexer->setColor(QColor(210, 32, 240 ), QsciLexerCPP::KeywordSet2);
+        textLexer->setColor(QColor(245, 245, 255 ), QsciLexerCPP::Operator);
+        textLexer->setColor(QColor(84, 255, 159 ), QsciLexerCPP::DoubleQuotedString);//双引号
+
+    }
+    else
+    {
+
+        lineColor = QColor(255, 255, 0, 50);
+        textEdit->setCaretLineBackgroundColor(lineColor);
+        textEdit->setCaretLineVisible(true);
+
+
+        textLexer->setColor(QColor(255, 0, 0), QsciLexerCPP::Number);
+        textLexer->setColor(QColor(0, 0, 255), QsciLexerCPP::Keyword);
+        textLexer->setColor(QColor(0, 0, 0 ), QsciLexerCPP::Identifier);
+        textLexer->setColor(QColor(255, 0, 255), QsciLexerCPP::KeywordSet2);
+        textLexer->setColor(QColor(205, 38, 38), QsciLexerCPP::DoubleQuotedString);//双引号
+
+    }
+
+
+    textLexer->setFont(font);
+
+    //QFont font1;
+    //font1.setBold(true);
+    //textLexer->setFont(font1, QsciLexerCPP::KeywordSet2);
+
+    textEdit->setLexer(textLexer);
+
+    //设置行号栏宽度、颜色
+    textEdit->setMarginWidth(0, 70);
+    textEdit->setMarginLineNumbers(0, true);
+    if(red < 55) //暗模式，mac下为50
+    {
+        textEdit->setMarginsBackgroundColor(QColor(50, 50 ,50));
+        textEdit->setMarginsForegroundColor(Qt::white);
+
+
+    }
+
+    //设置编码为UTF-8
+    textEdit->SendScintilla(QsciScintilla::SCI_SETCODEPAGE,QsciScintilla::SC_CP_UTF8);
+
+    //匹配大小括弧
+    textEdit->setBraceMatching(QsciScintilla::SloppyBraceMatch);
+    //textEdit->setBraceMatching(QsciScintilla::StrictBraceMatch));//不推荐
+    if(red > 55) //亮模式，mac下阈值为50
+    {
+        textEdit->setMatchedBraceBackgroundColor(QColor(Qt::green));
+        textEdit->setMatchedBraceForegroundColor(QColor(Qt::red));
+    }
+
+    textEdit->setTabWidth(4);
+
+    //设置括号等自动补全
+    textEdit->setAutoIndent(true);
+    textEdit->setTabIndents(true);//True如果行前空格数少于tabWidth，补齐空格数,False如果在文字前tab同true，如果在行首tab，则直接增加tabwidth个空格
+
+    //代码提示
+    QsciAPIs *apis = new QsciAPIs(textLexer);
+    apis->add(QString("Device"));
+    apis->add(QString("Scope"));
+    apis->add(QString("Method"));
+    apis->add(QString("Return"));
+    apis->add(QString("CreateWordField"));
+    apis->add(QString("If"));
+    apis->add(QString("Else"));
+    apis->add(QString("Switch"));
+    apis->add(QString("Case"));
+    apis->add(QString("Zero"));
+    apis->add(QString("Name"));
+    apis->add(QString("Field"));
+    apis->add(QString("Offset"));
+    apis->add(QString("Buffer"));
+    apis->add(QString("DefinitionBlock"));
+    apis->add(QString("External"));
+    apis->add(QString("Arg"));
+    apis->add(QString("Alias"));
+    apis->add(QString("Package"));
+    apis->add(QString("Serialized"));
+    apis->add(QString("NotSerialized"));
+    apis->add(QString("ToInteger"));
+    apis->add(QString("ToUUID"));
+    apis->add(QString("Local"));
+    apis->prepare();
+
+    //设置自动补全
+    textEdit->setCaretLineVisible(true);
+    //[Acs|None|All|Document|APIs]
+    //禁用自动补全提示功能、所有可用的资源、当前文档中出现的名称都自动补全提示、使用QsciAPIs类加入的名称都自动补全提示
+    textEdit->setAutoCompletionSource(QsciScintilla::AcsAll);//自动补全,对于所有Ascii字符
+    textEdit->setAutoCompletionCaseSensitivity(false);//大小写敏感度
+    textEdit->setAutoCompletionThreshold(2);//设置每输入一个字符就会出现自动补全的提示
+    //textEdit->setAutoCompletionReplaceWord(false);//是否用补全的字符串替代光标右边的字符串
+
+    //设置缩进参考线
+    textEdit->setIndentationGuides(true);
+    //textEdit->setIndentationGuidesBackgroundColor(QColor(Qt::white));
+    //textEdit->setIndentationGuidesForegroundColor(QColor(Qt::red));
+
+
+    //设置光标颜色
+    if(red < 55) //暗模式，mac下为50
+        textEdit->setCaretForegroundColor(QColor(Qt::white));
+    textEdit->setCaretWidth(2);
+
+    //自动折叠区域
+    textEdit->setMarginType(3, QsciScintilla::SymbolMargin);
+    textEdit->setMarginLineNumbers(3, false);
+    textEdit->setMarginWidth(3, 15);
+    textEdit->setMarginSensitivity(3, true);
+    textEdit->setFolding(QsciScintilla::BoxedTreeFoldStyle);//折叠样式
+    if(red < 55) //暗模式，mac下为50
+    {
+        //textEdit->setFoldMarginColors(Qt::gray,Qt::lightGray);//折叠栏颜色
+        textEdit->setFoldMarginColors(Qt::gray,Qt::black);
+    }
+
+}
+
 void MainWindow::init_edit()
 {
 
@@ -1333,119 +1467,9 @@ void MainWindow::init_edit()
     textEdit->setMarginsFont(font);
 
      //设置语言解析器
-     //QsciLexerBatch *textLexer = new QsciLexerBatch(this);
-     //textEdit->setLexer(textLexer);
+     QscilexerCppAttach *textLexer = new QscilexerCppAttach;
+     setLexer(textLexer);
 
-     QscilexerCppAttach *textLexer1 = new QscilexerCppAttach;
-     //获取背景色
-     QPalette pal = this->palette();
-     QBrush brush = pal.window();
-     int red = brush.color().red();
-     if(red < 55) //暗模式，mac下为50
-     {
-         textLexer1->setColor(QColor(255,255,255, 255), -1);
-         textLexer1->setColor(QColor(Qt::green), QsciLexerCPP::CommentLine);//"//"注释颜色
-         textLexer1->setColor(QColor(Qt::yellow), QsciLexerCPP::Number);
-         textLexer1->setColor(QColor(Qt::green), QsciLexerCPP::Comment);
-         //textLexer1->setColor(QColor(Qt::red), QsciLexerCPP::Operator);
-         //textLexer1->setColor(QColor(Qt::red), QsciLexerCPP::EscapeSequence);
-
-     }
-     textLexer1->setColor(QColor(160,32,250, 255), QsciLexerCPP::KeywordSet2);
-     textLexer1->setFont(font);
-     textEdit->setLexer(textLexer1);
-
-     //设置行号栏宽度、颜色
-     textEdit->setMarginWidth(0, 70);
-     textEdit->setMarginLineNumbers(0, true);
-     if(red < 55) //暗模式，mac下为50
-     {
-         textEdit->setMarginsBackgroundColor(QColor(50, 50 ,50));
-         textEdit->setMarginsForegroundColor(Qt::white);
-     }
-
-     //设置编码为UTF-8
-     textEdit->SendScintilla(QsciScintilla::SCI_SETCODEPAGE,QsciScintilla::SC_CP_UTF8);
-
-     //匹配大小括弧
-     textEdit->setBraceMatching(QsciScintilla::SloppyBraceMatch);
-     //textEdit->setBraceMatching(QsciScintilla::StrictBraceMatch));//不推荐
-     if(red > 55) //亮模式，mac下阈值为50
-     {
-         textEdit->setMatchedBraceBackgroundColor(QColor(Qt::green));
-         textEdit->setMatchedBraceForegroundColor(QColor(Qt::red));
-     }
-
-     textEdit->setTabWidth(4);
-
-     //设置括号等自动补全
-     textEdit->setAutoIndent(true);
-     textEdit->setTabIndents(true);//True如果行前空格数少于tabWidth，补齐空格数,False如果在文字前tab同true，如果在行首tab，则直接增加tabwidth个空格
-
-     //代码提示
-     QsciAPIs *apis = new QsciAPIs(textLexer1);
-     apis->add(QString("Device"));
-     apis->add(QString("Scope"));
-     apis->add(QString("Method"));
-     apis->add(QString("Return"));
-     apis->add(QString("CreateWordField"));
-     apis->add(QString("If"));
-     apis->add(QString("Else"));
-     apis->add(QString("Switch"));
-     apis->add(QString("Case"));
-     apis->add(QString("Zero"));
-     apis->add(QString("Name"));
-     apis->add(QString("Field"));
-     apis->add(QString("Offset"));
-     apis->add(QString("Buffer"));
-     apis->add(QString("DefinitionBlock"));
-     apis->add(QString("External"));
-     apis->add(QString("Arg"));
-     apis->add(QString("Alias"));
-     apis->add(QString("Package"));
-     apis->add(QString("Serialized"));
-     apis->add(QString("NotSerialized"));
-     apis->add(QString("ToInteger"));
-     apis->add(QString("ToUUID"));
-     apis->add(QString("Local"));
-     apis->prepare();
-
-     //设置自动补全
-     textEdit->setCaretLineVisible(true);
-     //[Acs|None|All|Document|APIs]
-     //禁用自动补全提示功能、所有可用的资源、当前文档中出现的名称都自动补全提示、使用QsciAPIs类加入的名称都自动补全提示
-     textEdit->setAutoCompletionSource(QsciScintilla::AcsAll);//自动补全,对于所有Ascii字符
-     textEdit->setAutoCompletionCaseSensitivity(false);//大小写敏感度
-     textEdit->setAutoCompletionThreshold(2);//设置每输入一个字符就会出现自动补全的提示
-     //textEdit->setAutoCompletionReplaceWord(false);//是否用补全的字符串替代光标右边的字符串
-
-     //设置缩进参考线
-     textEdit->setIndentationGuides(true);
-     //textEdit->setIndentationGuidesBackgroundColor(QColor(Qt::white));
-     //textEdit->setIndentationGuidesForegroundColor(QColor(Qt::red));
-
-     //设置光标所在行背景色
-     QColor lineColor;
-     lineColor = QColor(255, 255, 0, 50);
-     textEdit->setCaretLineBackgroundColor(lineColor);
-     textEdit->setCaretLineVisible(true);
-
-     //设置光标颜色
-     if(red < 55) //暗模式，mac下为50
-         textEdit->setCaretForegroundColor(QColor(Qt::white));
-     textEdit->setCaretWidth(2);
-
-     //自动折叠区域
-     textEdit->setMarginType(3, QsciScintilla::SymbolMargin);
-     textEdit->setMarginLineNumbers(3, false);
-     textEdit->setMarginWidth(3, 15);
-     textEdit->setMarginSensitivity(3, true);
-     textEdit->setFolding(QsciScintilla::BoxedTreeFoldStyle);//折叠样式
-     if(red < 55) //暗模式，mac下为50
-     {
-         //textEdit->setFoldMarginColors(Qt::gray,Qt::lightGray);//折叠栏颜色
-         textEdit->setFoldMarginColors(Qt::gray,Qt::black);
-     }
 
 }
 
@@ -1456,33 +1480,57 @@ void MainWindow::init_treeWidget(QTreeWidget *treeWidgetBack, int w)
     treeWidgetBack->setColumnCount(2);
     treeWidgetBack->setMinimumWidth(300);
     treeWidgetBack->setMaximumWidth(w/3 - 50);
-    treeWidgetBack->setColumnWidth(0 , 500);
+    treeWidgetBack->setColumnWidth(0 , 200);
+    treeWidgetBack->setColumnWidth(1 , 100);
     treeWidgetBack->setHeaderItem(new QTreeWidgetItem(QStringList() << "Members" << "Lines"));
     //设置水平滚动条
     treeWidgetBack->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
     treeWidgetBack->header()->setStretchLastSection(false);
+
     treeWidgetBack->setColumnHidden(1 , true);
+
     treeWidgetBack->setFont(font);
 }
 
 void MainWindow::on_chkScope_clicked()
 {
-    update_ui_tw();
+    if(ui->chkScope->isChecked())
+        show_s = true;
+    else
+        show_s = false;
+
+    on_btnRefreshTree_clicked();
+
 }
 
 void MainWindow::on_chkDevice_clicked()
 {
-    update_ui_tw();
+    if(ui->chkDevice->isChecked())
+        show_d = true;
+    else
+        show_d = false;
+
+    on_btnRefreshTree_clicked();
 }
 
 void MainWindow::on_chkMethod_clicked()
 {
-    update_ui_tw();
+    if(ui->chkMethod->isChecked())
+        show_m = true;
+    else
+        show_m = false;
+
+    on_btnRefreshTree_clicked();
 }
 
 void MainWindow::on_chkName_clicked()
 {
-    update_ui_tw();
+    if(ui->chkName->isChecked())
+        show_n = true;
+    else
+        show_n = false;
+
+    on_btnRefreshTree_clicked();
 }
 
 void MainWindow::separ_info(QString str_key, QTextEdit *editInfo)

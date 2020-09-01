@@ -102,4 +102,11 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 DISTFILES += \
+    icon/1.png \
+    icon/2.png \
+    icon/3.png \
+    icon/4.png \
     myapp.rc
+
+RESOURCES += \
+    my.qrc
