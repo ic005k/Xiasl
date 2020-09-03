@@ -4,5 +4,6 @@
         <file>icon/m.png</file>
         <file>icon/n.png</file>
         <file>icon/s.png</file>
+        <file>data/apis.txt</file>
     </qresource>
 </RCC>

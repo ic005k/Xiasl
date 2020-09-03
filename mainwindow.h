@@ -24,6 +24,7 @@
 #include <QSplitter>
 #include <QScreen>
 #include <QDateTime>
+#include <QElapsedTimer>
 #include <QTimer>
 #include <QThread>
 #include <QSettings>
@@ -31,6 +32,10 @@
 #include <QFileOpenEvent>
 #include <QtDebug>
 #include <QCloseEvent>
+#include <QMimeData>
+#include <QLabel>
+#include <QPainter>
+#include <QTextBlock>
 
 #ifdef Q_OS_WIN32
 #include <windows.h>
@@ -92,6 +97,8 @@ public:
 
 protected:
     void closeEvent(QCloseEvent *event);
+    void dragEnterEvent (QDragEnterEvent *e);
+    void dropEvent (QDropEvent *e);
 
 
 public slots:
@@ -108,8 +115,10 @@ private slots:
     void timer_linkage();
 
     void readResult(int exitCode);
+
     void recentOpen(QString filename);
 
+    void newFile();
 
     bool btnSave_clicked();
 
@@ -126,8 +135,6 @@ private slots:
     void textEdit_textChanged();
 
     void on_btnReplace_clicked();
-
-    void on_editShowMsg_textChanged();
 
     void on_btnFindNext_clicked();
 
@@ -174,6 +181,10 @@ private:
 
     QTextEdit *textEditTemp;
 
+    QLabel *lblMsg;
+
+    QElapsedTimer qTime;
+
     int row = 0;
     int row_current = 0;
     bool linkage = false;
@@ -190,6 +201,8 @@ private:
 
     void init_treeWidget(QTreeWidget *treeWidgetBack, int w);
 
+    void init_statusBar();
+
     void update_ui_tw();
 
     void separ_info(QString str_key, QTextEdit *editInfo);
@@ -203,6 +216,8 @@ private:
     void regACPI_win();
 
     void setLexer(QsciLexer *textLexer);
+
+    void update_member(bool show,  QString str_void, QList<QTreeWidgetItem *> tw_list);
 
 
 

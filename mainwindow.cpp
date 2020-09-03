@@ -1,9 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#include <QPainter>
-#include <QTextBlock>
-
 
 bool loading = true;
 bool thread_end = true;
@@ -17,6 +14,10 @@ int d_count = 0;
 int n_count = 0;
 QsciScintilla *textEditBack;
 QList<QTreeWidgetItem *> twitems;
+QList<QTreeWidgetItem *> tw_scope;
+QList<QTreeWidgetItem *> tw_device;
+QList<QTreeWidgetItem *> tw_method;
+QList<QTreeWidgetItem *> tw_name;
 QString fileName;
 QVector<QString> filelist;
 QWidgetList wdlist;
@@ -44,7 +45,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    ver = "QtiASL V1.0.6a    ";
+    ver = "QtiASL V1.0.7    ";
     setWindowTitle(ver);
 
     mythread = new thread_one();
@@ -102,8 +103,13 @@ MainWindow::MainWindow(QWidget *parent)
     QCoreApplication::setOrganizationDomain("github.com/ic005k/QtiASL");
     QCoreApplication::setApplicationName("V1");
     m_recentFiles = new RecentFiles(this);
-    m_recentFiles->attachToMenuAfterItem(ui->menu_File, "", SLOT(recentOpen(QString)));//在分隔符菜单项下插入
-    m_recentFiles->setNumOfRecentFiles(15);//最多显示最近的10个文件
+    m_recentFiles->attachToMenuAfterItem(ui->menu_File, "另存-SaveAS...", SLOT(recentOpen(QString)));//在分隔符菜单项下插入
+    m_recentFiles->setNumOfRecentFiles(15);//最多显示最近的15个文件
+
+    lblMsg = new QLabel(this);
+    ui->statusbar->addPermanentWidget(lblMsg);
+
+    textEdit->setFocus();
 
 }
 
@@ -118,7 +124,7 @@ MainWindow::~MainWindow()
 void MainWindow::about()
 {
     QFileInfo appInfo(qApp->applicationFilePath());
-    QString last = tr("最后的编译时间(Last modified): ") + appInfo.lastModified().toString("yyyy-MM-dd hh:mm:ss");
+    QString last = tr("Last modified: ") + appInfo.lastModified().toString("yyyy-MM-dd hh:mm:ss");
 
     QMessageBox::about(this , tr("About") ,
                        QString::fromLocal8Bit("<a style='color: blue;' href = https://github.com/ic005k/QtiASL>QtiASL Editor</a><br><br>") + last);
@@ -165,7 +171,8 @@ void MainWindow::loadFile(const QString &fileName)
    loading = true;
 
     QFile file(fileName);
-    if (!file.open(QFile::ReadOnly | QFile::Text)) {
+    if (!file.open(QFile::ReadOnly | QFile::Text))
+    {
         QMessageBox::warning(this, tr("Application"),
                              tr("Cannot read file %1:\n%2.")
                              .arg(QDir::toNativeSeparators(fileName), file.errorString()));
@@ -207,7 +214,7 @@ void MainWindow::setCurrentFile(const QString &fileName)
 
     QString shownName = curFile;
     if (curFile.isEmpty())
-        shownName = "untitled.txt";
+        shownName = "untitled.dsl";
 
 
     setWindowFilePath(shownName);
@@ -241,13 +248,15 @@ bool MainWindow::maybeSave()
                                tr("The document has been modified.\n"
                                   "Do you want to save your changes?"),
                                QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
-    switch (ret) {
+    switch (ret)
+    {
     case QMessageBox::Save:
         return btnSave_clicked();
     case QMessageBox::Cancel:
         return false;
     default:
         break;
+
     }
     return true;
 }
@@ -300,8 +309,6 @@ bool MainWindow::saveFile(const QString &fileName)
     setCurrentFile(fileName);
     statusBar()->showMessage(tr("File saved"), 2000);
 
-    on_btnRefreshTree_clicked();
-
     return true;
 }
 
@@ -349,6 +356,10 @@ void MainWindow::btnCompile_clicked()
 
     if(!curFile.isEmpty())
         btnSave_clicked();
+
+    lblMsg->setText("Compiling...");
+    qTime.start();
+
 
 #ifdef Q_OS_WIN32
 // win
@@ -420,10 +431,9 @@ void MainWindow::setMark()
 
 void MainWindow::readResult(int exitCode)
 {
-
-    QTextCodec* gbkCodec = QTextCodec::codecForName("UTF-8");
     ui->editShowMsg->clear();
-    QString result = gbkCodec->toUnicode(co->readAll());
+
+    QString result = QString::fromUtf8(co->readAll());
     ui->editShowMsg->append(result);
     ui->editShowMsg->append(co->readAllStandardError());
 
@@ -460,6 +470,10 @@ void MainWindow::readResult(int exitCode)
 
     //清除所有标记
     textEdit->SendScintilla(QsciScintilla::SCI_MARKERDELETEALL);
+
+    float a = qTime.elapsed()/1000.00;
+    lblMsg->setText("Compiled(" + QTime::currentTime().toString() + "    " + QString::number(a, 'f', 2) + " s)");
+
 
     if(exitCode == 0)
     {
@@ -663,17 +677,11 @@ void MainWindow::on_btnReplace_clicked()
 
 }
 
-void MainWindow::on_editShowMsg_textChanged()
-{
-
-}
-
 void MainWindow::on_btnFindNext_clicked()
 {
 
     //查找,第四个bool为是否循环查找
     textEdit->findFirst(ui->editFind->text().trimmed() , true , false , false , false);
-
 
 }
 
@@ -689,11 +697,11 @@ void MainWindow::on_btnFindPrevious_clicked()
 void MainWindow::on_treeWidget_itemClicked(QTreeWidgetItem *item, int column)
 {
 
-    if(column == 0)
+    if(column == 0 && !loading)
     {
         int lines = item->text(1).toInt();
         textEdit->setCursorPosition(lines , 0);
-        //textEdit->setFocus();
+        textEdit->setFocus();
 
     }
 
@@ -721,7 +729,8 @@ void MainWindow::on_btnRefreshTree_clicked()
     //将textEdit的内容读到后台
     textEditBack->clear();
     textEditBack->setText(textEdit->text());
-
+    lblMsg->setText("Refreshing...");
+    qTime.start();
     mythread->start();
 
 }
@@ -1001,19 +1010,43 @@ const char * QscilexerCppAttach::keywords(int set) const
                 "try typedef typeid typename union unsigned using "
                 "virtual void volatile wchar_t while xor xor_eq "
                 ""
+
                 "External Scope Device Method Name If While Break Return ElseIf Switch Case Else "
                 "Default Field OperationRegion Package DefinitionBlock Offset CreateDWordField CreateByteField "
-                "CreateBitField CreateWordField CreateQWordField Buffer ToInteger ToString ToUUID "
-                "Include CondRefOf FindSetLeftBit FindSetRightBit FromBcd Function CreateField ";
+                "CreateBitField CreateWordField CreateQWordField Buffer ToInteger ToString ToUUID ToUuid ToHexString ToDecimalString ToBuffer ToBcd"
+                "CondRefOf FindSetLeftBit FindSetRightBit FromBcd Function CreateField "
+
+                "Acquire Add Alias And "
+                "BankField AccessAs CondRefOf ExtendedMemory ExtendedSpace "
+                "BreakPoint Concatenate ConcatenateResTemplate Connection Continue CopyObject DataTableRegion Debug Decrement DerefOf "
+                "Divide Dma Arg0 Arg1 Arg2 Arg3 Arg4 Arg5 Arg6 "
+                "DWordIo EisaId EndDependentFn Event ExtendedIo Fatal FixedDma FixedIo GpioInt GpioIo "
+                "Increment Index IndexField Interrupt Io Irq IrqNoFlags "
+                "LAnd LEqual LGreater LGreaterEqual LLess LLessEqual LNot LNotEqual Load LOr Match Mid Mod Multiply "
+                "Mutex NAnd NoOp NOr Not Notify ObjectType Or PowerResource Revision "
+                "Memory32Fixed "
+                "DWordMemory Local0 Local1 Local2 Local3 Local4 Local5 Local6 Local7 "
+                "DWordSpace One Ones Processor QWordIo Memory24 Memory32 VendorLong VendorShort Wait WordBusNumber WordIo WordSpace "
+                "I2cSerialBusV2 Include LoadTable QWordMemory QWordSpace RawDataBuffer RefOf Register Release Reset ResourceTemplate ShiftLeft ShiftRight Signal SizeOf Sleep "
+                "SpiSerialBusV2 Stall StartDependentFn StartDependentFnNoPri Store Subtract ThermalZone Timer ToBcd UartSerialBusV2 Unicode Unload "
+                "Xor Zero ";
 
 
     if (set == 2)
             return
-                 "Local0 Local1 Local2 Local3 Local4 Local5 Local6 Local7 "
-                 "Arg0 Arg1 Arg2 Arg3 Arg4 Arg5 Arg6 "
-                 "One Ones Zero Revision "
-                 "key dict array "
-                 "MethodObj UnknownObj IntObj DeviceObj MutexObj PkgObj FieldUnitObj StrObj";
+                 "SubDecode PosDecode AttribBytes SubDecode PosDecode ReadWrite ReadOnly Width8bit Width16bit Width32bit Width64bit Width128bit Width256bit "
+                 "UserDefRegionSpace SystemIO SystemMemory TypeTranslation TypeStatic AttribRawBytes AttribRawProcessBytes Serialized NotSerialized "
+                 "key dict array TypeA TypeB TypeF AnyAcc ByteAcc Cacheable WriteCombining Prefetchable NonCacheable PullDefault PullUp PullDown PullNone "
+                 "MethodObj UnknownObj IntObj DeviceObj MutexObj PkgObj FieldUnitObj StrObj Edge Level ActiveHigh ActiveLow ActiveBoth "
+                 "BuffObj EventObj OpRegionObj PowerResObj ProcessorObj ThermalZoneObj BuffFieldObj DDBHandleObj None ReturnArg PolarityHigh PolarityLow ThreeWireMode FourWireMode "
+                 "MinFixed MinNotFixed MaxFixed MaxNotFixed ResourceConsumer ResourceProducer MinFixed MinNotFixed MaxFixed MaxNotFixed ClockPolarityLow ClockPolarityHigh "
+                 "ResourceConsumer ResourceProducer SubDecode PosDecode MaxFixed MaxNotFixed GeneralPurposeIo GenericSerialBus FFixedHW ClockPhaseFirst ClockPhaseSecond "
+                 "MTR MEQ MLE MLT MGE MGT WordAcc DWordAcc QWordAcc BufferAcc Lock NoLock AddressRangeMemory AddressRangeReserved AddressRangeNVS AddressRangeACPI FlowControlHardware "
+                 "AttribQuick AttribSendReceive AttribByte AttribWord AttribBlock AttribProcessCall AttribBlockProcessCall IoRestrictionNone IoRestrictionInputOnly IoRestrictionOutputOnly IoRestrictionNoneAndPreserve "
+                 "Preserve WriteAsOnes WriteAsZeros Compatibility BusMaster NotBusMaster Transfer8 Transfer16 Transfer8_16 DataBitsFive DataBitsSix DataBitsSeven ParityTypeOdd ParityTypeEven FlowControlNone FlowControlXon "
+                 "ResourceConsumer ResourceProducer SubDecode PosDecode MinFixed MinNotFixed PCI_Config EmbeddedControl SMBus SystemCMOS PciBarTarget IPMI BigEndian LittleEndian ParityTypeNone ParityTypeSpace ParityTypeMark "
+                 "ISAOnlyRanges NonISAOnlyRanges EntireRange TypeTranslation TypeStatic SparseTranslation DenseTranslation DataBitsEight DataBitsNine StopBitsZero StopBitsOne StopBitsOnePlusHalf StopBitsTwo "
+                 "Exclusive SharedAndWake ExclusiveAndWake Shared ControllerInitiated DeviceInitiated AddressingMode7Bit AddressingMode10Bit Decode16 Decode10 ";
 
 
     if (set == 3)
@@ -1088,7 +1121,6 @@ void thread_one::run()
     //在线程中刷新成员列表
     //QMetaObject::invokeMethod(this->parent(),"refreshTree");
 
-    qDebug() << "线程开始 " + QTime::currentTime().toString();
     thread_end = false;
 
     refreshTree();
@@ -1096,14 +1128,48 @@ void thread_one::run()
     emit over();  //发送完成信号
 }
 
-void MainWindow::dealover()//线程结束信号
+void MainWindow::dealover()//收到线程结束信号
 {
 
     update_ui_tw();
 
     thread_end = true;
 
-    qDebug() << "线程结束";
+
+}
+
+void MainWindow::update_member(bool show, QString str_void, QList<QTreeWidgetItem *> tw_list)
+{
+    if(!show)
+    {
+
+        tw_list.clear();
+        for(int i = 0; i < ui->treeWidget->topLevelItemCount(); i++)
+        {
+            QString str = ui->treeWidget->topLevelItem(i)->text(0).trimmed();
+            if(str.mid(0 , str_void.count()) == str_void)
+            {
+                tw_list.append(ui->treeWidget->takeTopLevelItem(i));
+                i = -1;
+
+            }
+        }
+    }
+    else
+    {
+        //if(tw_list.count() > 0)
+        //{
+            ui->treeWidget->addTopLevelItems(tw_list);
+            ui->treeWidget->sortItems(1 , Qt::AscendingOrder);
+
+        //}
+        //else
+        //    on_btnRefreshTree_clicked();
+
+        qDebug() << tw_list.count();
+
+    }
+
 
 }
 
@@ -1114,10 +1180,14 @@ void MainWindow::update_ui_tw()
     ui->treeWidget->update();
 
     ui->treeWidget->addTopLevelItems(twitems);
+
     ui->treeWidget->sortItems(1 , Qt::AscendingOrder);//排序
 
     ui->treeWidget->setHeaderLabel("S(" + QString::number(s_count) + ")  " + "D(" + QString::number(d_count) + ")  " + "M(" + QString::number(m_count) + ")  "  + "N(" + QString::number(n_count) + ")");
     ui->treeWidget->update();
+
+    float a = qTime.elapsed()/1000.00;
+    lblMsg->setText("Refresh completed(" + QTime::currentTime().toString() + "    " + QString::number(a, 'f', 2) + " s)");
 
     textEdit_cursorPositionChanged();
 }
@@ -1127,6 +1197,7 @@ void refreshTree()
     loading = true;
 
     twitems.clear();
+
     s_count = 0;
     m_count = 0;
     d_count = 0;
@@ -1145,8 +1216,6 @@ void refreshTree()
     getMembers("Name", textEditBack);
 
     loading = false;
-
-    qDebug() << "刷新成员列表已完成 " + QTime::currentTime().toString();
 
 }
 
@@ -1207,6 +1276,7 @@ void getMembers(QString str_member, QsciScintilla *textEdit)
                            twItem0->setIcon(0, QIcon(":/icon/s.png"));
 
                            twitems.append(twItem0);
+
                            s_count++;
                        }
                        if(str_member == "Method" && show_m)
@@ -1215,6 +1285,7 @@ void getMembers(QString str_member, QsciScintilla *textEdit)
                            twItem0->setIcon(0, QIcon(":/icon/m.png"));
 
                            twitems.append(twItem0);
+
                            m_count++;
 
                        }
@@ -1224,6 +1295,7 @@ void getMembers(QString str_member, QsciScintilla *textEdit)
                            twItem0->setIcon(0, QIcon(":/icon/n.png"));
 
                            twitems.append(twItem0);
+
                            n_count++;
 
                        }
@@ -1233,6 +1305,7 @@ void getMembers(QString str_member, QsciScintilla *textEdit)
                            twItem0->setIcon(0, QIcon(":/icon/d.png"));
 
                            twitems.append(twItem0);
+
                            d_count++;
 
                        }
@@ -1260,6 +1333,8 @@ void MainWindow::on_MainWindow_destroyed()
 
 void MainWindow::init_info_edit()
 {
+
+
     textEditTemp = new QTextEdit();
 
     ui->tabWidget->setMaximumHeight(250);
@@ -1286,6 +1361,17 @@ void MainWindow::init_info_edit()
 
 void MainWindow::init_menu()
 {
+
+    ui->menu_File->addAction(ui->actionNew);
+    ui->menu_File->addAction(ui->actionOpen);
+    ui->menu_File->addAction(ui->actionSave);
+    ui->menu_File->addAction(ui->actionSaveAs);
+    ui->menu_File->addSeparator();
+    ui->menu_File->addSeparator();
+    ui->menu_File->addAction(ui->actionAbout);
+
+    ui->actionNew->setShortcut(tr("ctrl+n"));
+    connect(ui->actionNew, &QAction::triggered, this, &MainWindow::newFile);
 
     ui->actionOpen->setShortcut(tr("ctrl+o"));
     connect(ui->actionOpen, &QAction::triggered, this, &MainWindow::btnOpen_clicked);
@@ -1319,20 +1405,20 @@ void MainWindow::setLexer(QsciLexer *textLexer)
 
     if(red < 55) //暗模式，mac下为50
     {
-        lineColor = QColor(255, 255, 0, 250);
+        lineColor = QColor(180, 180, 0);
         textEdit->setCaretLineBackgroundColor(lineColor);
         textEdit->setCaretLineFrameWidth(1);
         textEdit->setCaretLineVisible(true);
 
         //textLexer->setColor(QColor(255,255,255, 255), -1);
-        textLexer->setColor(QColor(Qt::green), QsciLexerCPP::CommentLine);//"//"注释颜色
-        textLexer->setColor(QColor(Qt::green), QsciLexerCPP::Comment);
+        textLexer->setColor(QColor(30, 190, 30), QsciLexerCPP::CommentLine);//"//"注释颜色
+        textLexer->setColor(QColor(30, 190, 30), QsciLexerCPP::Comment);
 
-        //textLexer->setColor(QColor(152, 245, 255 ), QsciLexerCPP::Identifier);
-        textLexer->setColor(QColor(255, 150, 147), QsciLexerCPP::Number);
-        textLexer->setColor(QColor(152, 245, 255), QsciLexerCPP::Keyword);
+        textLexer->setColor(QColor(210, 210, 210 ), QsciLexerCPP::Identifier);
+        textLexer->setColor(QColor(245, 150, 147), QsciLexerCPP::Number);
+        textLexer->setColor(QColor(100, 100, 250), QsciLexerCPP::Keyword);
         textLexer->setColor(QColor(210, 32, 240 ), QsciLexerCPP::KeywordSet2);
-        textLexer->setColor(QColor(245, 245, 255 ), QsciLexerCPP::Operator);
+        textLexer->setColor(QColor(245, 245, 245 ), QsciLexerCPP::Operator);
         textLexer->setColor(QColor(84, 255, 159 ), QsciLexerCPP::DoubleQuotedString);//双引号
 
     }
@@ -1352,7 +1438,6 @@ void MainWindow::setLexer(QsciLexer *textLexer)
 
     }
 
-
     textLexer->setFont(font);
 
     //QFont font1;
@@ -1368,7 +1453,6 @@ void MainWindow::setLexer(QsciLexer *textLexer)
     {
         textEdit->setMarginsBackgroundColor(QColor(50, 50 ,50));
         textEdit->setMarginsForegroundColor(Qt::white);
-
 
     }
 
@@ -1388,34 +1472,17 @@ void MainWindow::setLexer(QsciLexer *textLexer)
 
     //设置括号等自动补全
     textEdit->setAutoIndent(true);
-    textEdit->setTabIndents(true);//True如果行前空格数少于tabWidth，补齐空格数,False如果在文字前tab同true，如果在行首tab，则直接增加tabwidth个空格
+    textEdit->setTabIndents(true);//true如果行前空格数少于tabWidth，补齐空格数,false如果在文字前tab同true，如果在行首tab，则直接增加tabwidth个空格
 
     //代码提示
     QsciAPIs *apis = new QsciAPIs(textLexer);
-    apis->add(QString("Device"));
-    apis->add(QString("Scope"));
-    apis->add(QString("Method"));
-    apis->add(QString("Return"));
-    apis->add(QString("CreateWordField"));
-    apis->add(QString("If"));
-    apis->add(QString("Else"));
-    apis->add(QString("Switch"));
-    apis->add(QString("Case"));
-    apis->add(QString("Zero"));
-    apis->add(QString("Name"));
-    apis->add(QString("Field"));
-    apis->add(QString("Offset"));
-    apis->add(QString("Buffer"));
-    apis->add(QString("DefinitionBlock"));
-    apis->add(QString("External"));
-    apis->add(QString("Arg"));
-    apis->add(QString("Alias"));
-    apis->add(QString("Package"));
-    apis->add(QString("Serialized"));
-    apis->add(QString("NotSerialized"));
-    apis->add(QString("ToInteger"));
-    apis->add(QString("ToUUID"));
-    apis->add(QString("Local"));
+    if(apis->load(":/data/apis.txt"))
+    {
+
+    }
+    else
+        apis->add(QString("Device"));
+
     apis->prepare();
 
     //设置自动补全
@@ -1424,14 +1491,13 @@ void MainWindow::setLexer(QsciLexer *textLexer)
     //禁用自动补全提示功能、所有可用的资源、当前文档中出现的名称都自动补全提示、使用QsciAPIs类加入的名称都自动补全提示
     textEdit->setAutoCompletionSource(QsciScintilla::AcsAll);//自动补全,对于所有Ascii字符
     textEdit->setAutoCompletionCaseSensitivity(false);//大小写敏感度
-    textEdit->setAutoCompletionThreshold(2);//设置每输入一个字符就会出现自动补全的提示
+    textEdit->setAutoCompletionThreshold(2);//从第几个字符开始出现自动补全的提示
     //textEdit->setAutoCompletionReplaceWord(false);//是否用补全的字符串替代光标右边的字符串
 
     //设置缩进参考线
     textEdit->setIndentationGuides(true);
     //textEdit->setIndentationGuidesBackgroundColor(QColor(Qt::white));
     //textEdit->setIndentationGuidesForegroundColor(QColor(Qt::red));
-
 
     //设置光标颜色
     if(red < 55) //暗模式，mac下为50
@@ -1462,13 +1528,17 @@ void MainWindow::init_edit()
     connect(textEdit, &QsciScintilla::textChanged, this, &MainWindow::textEdit_textChanged);
     connect(textEdit, &QsciScintilla::linesChanged, this, &MainWindow::textEdit_linesChanged);
 
-    //设置字体
     textEdit->setFont(font);
     textEdit->setMarginsFont(font);
 
-     //设置语言解析器
-     QscilexerCppAttach *textLexer = new QscilexerCppAttach;
-     setLexer(textLexer);
+    QscilexerCppAttach *textLexer = new QscilexerCppAttach;
+    setLexer(textLexer);
+
+    this->textEdit->setAcceptDrops(false);
+    this->setAcceptDrops(true);
+
+    ui->editFind->setClearButtonEnabled(true);
+    ui->editReplace->setClearButtonEnabled(true);
 
 
 }
@@ -1476,7 +1546,8 @@ void MainWindow::init_edit()
 void MainWindow::init_treeWidget(QTreeWidget *treeWidgetBack, int w)
 {
 
-    connect(treeWidgetBack, &QTreeWidget::itemClicked, this, &MainWindow::treeWidgetBack_itemClicked);
+    //connect(treeWidgetBack, &QTreeWidget::itemClicked, this, &MainWindow::treeWidgetBack_itemClicked);
+
     treeWidgetBack->setColumnCount(2);
     treeWidgetBack->setMinimumWidth(300);
     treeWidgetBack->setMaximumWidth(w/3 - 50);
@@ -1492,45 +1563,203 @@ void MainWindow::init_treeWidget(QTreeWidget *treeWidgetBack, int w)
     treeWidgetBack->setFont(font);
 }
 
+
 void MainWindow::on_chkScope_clicked()
 {
+
     if(ui->chkScope->isChecked())
         show_s = true;
     else
         show_s = false;
 
-    on_btnRefreshTree_clicked();
+
+    if(!show_s)
+    {
+
+        int count = ui->treeWidget->topLevelItemCount();
+        tw_scope.clear();
+        for(int i = 0; i < count; i++)
+        {
+            //重要，否则刷新非常慢
+            ui->treeWidget->setCurrentItem(ui->treeWidget->topLevelItem(count - 1));
+
+            QString str = ui->treeWidget->topLevelItem(i)->text(0).trimmed();
+            if(str.mid(0 , 4) == "Scop")
+            {
+                tw_scope.append(ui->treeWidget->takeTopLevelItem(i));
+
+                count--;
+                i = i - 1;
+
+            }
+
+        }
+    }
+    else
+    {
+        if(tw_scope.count() == s_count && s_count != 0)
+        {
+            ui->treeWidget->addTopLevelItems(tw_scope);
+            ui->treeWidget->sortItems(1 , Qt::AscendingOrder);
+
+        }
+
+        if(tw_scope.count() != s_count || s_count == 0)
+            on_btnRefreshTree_clicked();
+
+
+
+    }
+    ui->treeWidget->update();
+
+
+    textEdit_cursorPositionChanged();
+
 
 }
 
 void MainWindow::on_chkDevice_clicked()
 {
+    ui->treeWidget->update();
+
     if(ui->chkDevice->isChecked())
         show_d = true;
     else
         show_d = false;
 
-    on_btnRefreshTree_clicked();
+    if(!show_d)
+    {
+
+        int count = ui->treeWidget->topLevelItemCount();
+        tw_device.clear();
+        for(int i = 0; i < count; i++)
+        {
+            ui->treeWidget->setCurrentItem(ui->treeWidget->topLevelItem(count - 1));
+
+            QString str = ui->treeWidget->topLevelItem(i)->text(0).trimmed();
+            if(str.mid(0 , 4) == "Devi")
+            {
+                tw_device.append(ui->treeWidget->takeTopLevelItem(i));
+                ui->treeWidget->update();
+                count--;
+                i = i - 1;
+
+            }
+
+
+        }
+    }
+    else
+    {
+        if(tw_device.count() == d_count && d_count > 0)
+        {
+            ui->treeWidget->addTopLevelItems(tw_device);
+            ui->treeWidget->sortItems(1 , Qt::AscendingOrder);
+
+        }
+        if(tw_device.count() != d_count || d_count == 0)
+            on_btnRefreshTree_clicked();
+
+    }
+    ui->treeWidget->update();
+    textEdit_cursorPositionChanged();
+
 }
 
 void MainWindow::on_chkMethod_clicked()
 {
+    ui->treeWidget->update();
+
     if(ui->chkMethod->isChecked())
         show_m = true;
     else
         show_m = false;
 
-    on_btnRefreshTree_clicked();
+    if(!show_m)
+    {
+
+        int count = ui->treeWidget->topLevelItemCount();
+        tw_method.clear();
+        for(int i = 0; i < count; i++)
+        {
+            ui->treeWidget->setCurrentItem(ui->treeWidget->topLevelItem(count - 1));
+
+            QString str = ui->treeWidget->topLevelItem(i)->text(0).trimmed();
+            if(str.mid(0 , 4) == "Meth")
+            {
+                tw_method.append(ui->treeWidget->takeTopLevelItem(i));
+
+                count--;
+                i = i - 1;
+
+            }
+
+
+        }
+    }
+    else
+    {
+        if(tw_method.count() == m_count && m_count > 0)
+        {
+            ui->treeWidget->addTopLevelItems(tw_method);
+            ui->treeWidget->sortItems(1 , Qt::AscendingOrder);
+
+        }
+        if(tw_method.count() != m_count || m_count == 0)
+            on_btnRefreshTree_clicked();
+
+    }
+    ui->treeWidget->update();
+    textEdit_cursorPositionChanged();
+
 }
 
 void MainWindow::on_chkName_clicked()
 {
+    ui->treeWidget->update();
+
     if(ui->chkName->isChecked())
         show_n = true;
     else
         show_n = false;
 
-    on_btnRefreshTree_clicked();
+    if(!show_n)
+    {
+
+        int count = ui->treeWidget->topLevelItemCount();
+        tw_name.clear();
+        for(int i = 0; i < count; i++)
+        {
+            ui->treeWidget->setCurrentItem(ui->treeWidget->topLevelItem(count - 1));
+
+            QString str = ui->treeWidget->topLevelItem(i)->text(0).trimmed();
+            if(str.mid(0 , 4) == "Name")
+            {
+                tw_name.append(ui->treeWidget->takeTopLevelItem(i));
+                ui->treeWidget->update();
+                count--;
+                i = i - 1;
+
+            }
+
+
+        }
+    }
+    else
+    {
+        if(tw_name.count() == n_count && n_count > 0)
+        {
+            ui->treeWidget->addTopLevelItems(tw_name);
+            ui->treeWidget->sortItems(1 , Qt::AscendingOrder);
+
+        }
+        if(tw_name.count() != n_count || n_count == 0)
+            on_btnRefreshTree_clicked();
+
+    }
+    ui->treeWidget->update();
+    textEdit_cursorPositionChanged();
+
 }
 
 void MainWindow::separ_info(QString str_key, QTextEdit *editInfo)
@@ -1609,7 +1838,7 @@ void MainWindow::regACPI_win()
         QString appPath = qApp->applicationFilePath();
 
         QString dir = qApp->applicationDirPath();
-        // 注意路径的替换
+        //注意路径的替换
         appPath.replace("/", "\\");
         QString type = "QtiASL";
         QSettings *regType = new QSettings("HKEY_CLASSES_ROOT\\.dsl", QSettings::NativeFormat);
@@ -1716,6 +1945,68 @@ void MainWindow::recentOpen(QString filename)
 
     if (maybeSave())
         loadFile(openFile(filename));
+}
+
+void MainWindow::dragEnterEvent (QDragEnterEvent *e)
+{
+
+    if (e->mimeData()->hasFormat("text/uri-list")) {
+        e->acceptProposedAction();
+    }
+}
+
+void MainWindow::dropEvent (QDropEvent *e)
+{
+    QList<QUrl> urls = e->mimeData()->urls();
+    if (urls.isEmpty()) {
+        return;
+    }
+
+    QString fileName = urls.first().toLocalFile();
+    if (fileName.isEmpty()) {
+        return;
+    }
+
+    if (maybeSave())
+        loadFile(openFile(fileName));
+
+}
+
+void MainWindow::init_statusBar()
+{
+
+    lblMsg->setText("Ver");
+
+    ui->statusbar->addWidget(ui->chkScope);
+    ui->statusbar->addWidget(ui->chkDevice);
+    ui->statusbar->addWidget(ui->chkMethod);
+    ui->statusbar->addWidget(ui->chkName);
+    ui->statusbar->addWidget(ui->editFind);
+    ui->statusbar->addWidget(ui->btnFindPrevious);
+    ui->statusbar->addWidget(ui->btnFindNext);
+    ui->statusbar->addWidget(ui->editReplace);
+    ui->statusbar->addWidget(ui->btnReplace);
+    ui->statusbar->addWidget(ui->btnPreviousError);
+    ui->statusbar->addWidget(ui->btnNextError);
+    ui->statusbar->addWidget(ui->btnRefreshTree);
+
+    ui->statusbar->addPermanentWidget(lblMsg);
+}
+
+void MainWindow::newFile()
+{
+    if(maybeSave())
+    {
+
+        textEdit->clear();
+        ui->treeWidget->clear();
+        ui->editShowMsg->clear();
+        ui->editErrors->clear();
+        ui->editWarnings->clear();
+        ui->editRemarks->clear();
+        setCurrentFile("");
+
+    }
 }
 
 
