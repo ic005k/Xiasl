@@ -740,12 +740,12 @@ void MainWindow::on_btnFindNext_clicked()
         if(red < 55)
         {
             ui->editFind->setStyleSheet("background-color:rgba(50,50,50,255)");
-            ui->editFind->setStyleSheet("foreground-color:rgba(255,255,255,255)");
+
         }
         else
         {
             ui->editFind->setStyleSheet("background-color:rgba(255,255,255,255)");
-            ui->editFind->setStyleSheet("foreground-color:rgba(0,0,0,255)");
+
         }
 
     }
@@ -790,12 +790,12 @@ void MainWindow::on_btnFindPrevious_clicked()
         if(red < 55)
         {
             ui->editFind->setStyleSheet("background-color:rgba(50,50,50,255)");
-            ui->editFind->setStyleSheet("foreground-color:rgba(255,255,255,255)");
+
         }
         else
         {
             ui->editFind->setStyleSheet("background-color:rgba(255,255,255,255)");
-            ui->editFind->setStyleSheet("foreground-color:rgba(0,0,0,255)");
+
         }
     }
 
@@ -1760,7 +1760,7 @@ void MainWindow::setLexer(QsciLexer *textLexer)
         textEdit->setCaretLineVisible(true);
 
         //背景色
-        textLexer->setPaper(QColor(0, 0, 0));
+        textLexer->setPaper(QColor(28, 28, 28));
 
         //textLexer->setColor(QColor(255,255,255, 255), -1);
 
@@ -2486,12 +2486,12 @@ void MainWindow::on_editFind_textChanged(const QString &arg1)
         if(red < 55)
         {
             ui->editFind->setStyleSheet("background-color:rgba(50,50,50,255)");
-            ui->editFind->setStyleSheet("foreground-color:rgba(255,255,255,255)");
+
         }
         else
         {
             ui->editFind->setStyleSheet("background-color:rgba(255,255,255,255)");
-            ui->editFind->setStyleSheet("foreground-color:rgba(0,0,0,255)");
+
         }
     }
 }
@@ -2510,7 +2510,7 @@ void MainWindow::paintEvent(QPaintEvent *event)
         setLexer(textLexer);
 
         textEdit->repaint();
-        qDebug() << "setLexer";
+        //qDebug() << "setLexer";
     }
 
 
