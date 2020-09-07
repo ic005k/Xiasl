@@ -36,6 +36,9 @@
 #include <QLabel>
 #include <QPainter>
 #include <QTextBlock>
+#include <QStyleFactory>
+#include <QScrollBar>
+#include <QFontDialog>
 
 #ifdef Q_OS_WIN32
 #include <windows.h>
@@ -66,6 +69,7 @@ class thread_one;
 void refreshTree();
 void getMembers(QString str_member, QsciScintilla *textEdit);
 QString findKey(QString str, QString stf_sub, int f_null);
+QString getMemberName(QString str_member, QsciScintilla *textEdit);
 
 
 class MainWindow : public QMainWindow
@@ -83,6 +87,8 @@ public:
 
     void setCurrentFile(const QString &fileName);
 
+    void getMemberTree();
+
     QString curFile;
     QProcess *co;
     QFont font;
@@ -99,6 +105,7 @@ protected:
     void closeEvent(QCloseEvent *event);
     void dragEnterEvent (QDragEnterEvent *e);
     void dropEvent (QDropEvent *e);
+    void paintEvent(QPaintEvent *event);
 
 
 public slots:
@@ -107,6 +114,10 @@ public slots:
 
 private slots:
     void treeWidgetBack_itemClicked(QTreeWidgetItem *item, int column);
+
+    void set_font();
+
+    void set_wrap();
 
     void dealover();//处理线程返回的结束信号
 
@@ -170,10 +181,26 @@ private slots:
 
     void on_editOptimizations_cursorPositionChanged();
 
+    void on_btnReplaceFind_clicked();
+
+    void on_chkCaseSensitive_clicked();
+
+    void on_chkCaseSensitive_clicked(bool checked);
+
+    void on_editFind_textChanged(const QString &arg1);
+
 private:
     Ui::MainWindow *ui;
 
     bool maybeSave();
+
+    bool find_up;
+
+    bool find_down;
+
+    bool CaseSensitive = false;
+
+    int red;
 
     QString ver;
 

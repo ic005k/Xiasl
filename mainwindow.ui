@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1440</width>
-    <height>760</height>
+    <height>730</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -59,30 +59,47 @@
      <widget class="QLineEdit" name="editFind"/>
     </item>
     <item row="0" column="6">
-     <widget class="QPushButton" name="btnFindPrevious">
+     <widget class="QCheckBox" name="chkCaseSensitive">
       <property name="text">
-       <string>查找上一个-FindPrevious</string>
+       <string>CaseSensitive</string>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
       </property>
      </widget>
     </item>
     <item row="0" column="7">
-     <widget class="QPushButton" name="btnFindNext">
+     <widget class="QPushButton" name="btnFindPrevious">
       <property name="text">
-       <string>查找下一个-FindNext</string>
+       <string>FindPrevious</string>
       </property>
      </widget>
     </item>
     <item row="0" column="8">
-     <widget class="QLineEdit" name="editReplace"/>
-    </item>
-    <item row="0" column="9">
-     <widget class="QPushButton" name="btnReplace">
+     <widget class="QPushButton" name="btnFindNext">
       <property name="text">
-       <string>替换-Replace</string>
+       <string>FindNext</string>
       </property>
      </widget>
     </item>
+    <item row="0" column="9">
+     <widget class="QLineEdit" name="editReplace"/>
+    </item>
     <item row="0" column="10">
+     <widget class="QPushButton" name="btnReplace">
+      <property name="text">
+       <string>Replace</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="11">
+     <widget class="QPushButton" name="btnReplaceFind">
+      <property name="text">
+       <string>Replace &amp;&amp; Find</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="12">
      <widget class="QPushButton" name="btnPreviousError">
       <property name="enabled">
        <bool>false</bool>
@@ -92,7 +109,7 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="11">
+    <item row="0" column="13">
      <widget class="QPushButton" name="btnNextError">
       <property name="enabled">
        <bool>false</bool>
@@ -102,14 +119,14 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="12">
+    <item row="0" column="14">
      <widget class="QPushButton" name="btnRefreshTree">
       <property name="text">
-       <string>刷新成员列表-RefreshTree</string>
+       <string>RefreshTree</string>
       </property>
      </widget>
     </item>
-    <item row="1" column="0" rowspan="2" colspan="13">
+    <item row="1" column="0" rowspan="2" colspan="15">
      <layout class="QGridLayout" name="gridLayout"/>
     </item>
     <item row="2" column="1" colspan="5">
@@ -138,10 +155,10 @@
    <widget class="QTabWidget" name="tabWidget">
     <property name="geometry">
      <rect>
-      <x>300</x>
-      <y>400</y>
-      <width>414</width>
-      <height>255</height>
+      <x>494</x>
+      <y>57</y>
+      <width>405</width>
+      <height>258</height>
      </rect>
     </property>
     <property name="currentIndex">
@@ -268,7 +285,7 @@
      <x>0</x>
      <y>0</y>
      <width>1440</width>
-     <height>30</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -281,6 +298,7 @@
     <addaction name="separator"/>
     <addaction name="separator"/>
     <addaction name="actionAbout"/>
+    <addaction name="actionNew"/>
    </widget>
    <widget class="QMenu" name="menu_Tools">
     <property name="title">
@@ -290,8 +308,16 @@
     <addaction name="separator"/>
     <addaction name="actionCompiling"/>
    </widget>
+   <widget class="QMenu" name="menu_Preferences">
+    <property name="title">
+     <string>选项-Preferences</string>
+    </property>
+    <addaction name="actionFont_2"/>
+    <addaction name="actionWrapWord"/>
+   </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_Tools"/>
+   <addaction name="menu_Preferences"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionOpen">
@@ -322,6 +348,35 @@
   <action name="actionAbout">
    <property name="text">
     <string>关于-About</string>
+   </property>
+  </action>
+  <action name="actionNew">
+   <property name="text">
+    <string>新建-New</string>
+   </property>
+  </action>
+  <action name="actionFont">
+   <property name="text">
+    <string>字体-Font</string>
+   </property>
+  </action>
+  <action name="actionFont_2">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>字体-Font</string>
+   </property>
+  </action>
+  <action name="actionWrapWord">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>自动换行-WrapWord</string>
    </property>
   </action>
  </widget>
