@@ -1762,6 +1762,8 @@ void MainWindow::setLexer(QsciLexer *textLexer)
         //背景色
         textLexer->setPaper(QColor(28, 28, 28));
 
+        ui->editFind->setStyleSheet("background-color:rgba(28,28,28,255)");
+
         //textLexer->setColor(QColor(255,255,255, 255), -1);
 
         textLexer->setColor(QColor(30, 190, 30), QsciLexerCPP::CommentLine);//"//"注释颜色
@@ -1780,6 +1782,8 @@ void MainWindow::setLexer(QsciLexer *textLexer)
 
         //背景色
         textLexer->setPaper(QColor(255, 255, 255));
+
+        ui->editFind->setStyleSheet("background-color:rgba(255,255,255,255)");
 
         textEdit->setCaretLineBackgroundColor(QColor(255, 255, 0, 50));
         textEdit->setCaretLineFrameWidth(0);
