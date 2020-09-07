@@ -133,7 +133,7 @@ void MainWindow::about()
     QString last = tr("Last modified: ") + appInfo.lastModified().toString("yyyy-MM-dd hh:mm:ss");
 
     QMessageBox::about(this , tr("About") ,
-                       QString::fromLocal8Bit("<a style='color: blue;' href = https://github.com/ic005k/QtiASL>QtiASL Editor</a><br><br>") + last);
+                       QString::fromLocal8Bit("<a style='color:blue;' href = https://github.com/ic005k/QtiASL>QtiASL Editor</a><br><br>") + last);
 }
 
 QString MainWindow::openFile(QString fileName)
@@ -174,7 +174,7 @@ QString MainWindow::openFile(QString fileName)
     {
         ui->actionWrapWord->setChecked(false);//取消自动换行，影响dsl文件开启速度
         textEdit->setWrapMode(QsciScintilla::WrapNone);
-        ui->treeWidget->setHidden(false);
+
     }
     else
         ui->treeWidget->setHidden(true);
@@ -229,7 +229,7 @@ void MainWindow::loadFile(const QString &fileName)
 
     on_btnRefreshTree_clicked();
 
-    ui->treeWidget->repaint();
+    //ui->treeWidget->repaint();
 
     loading = false;
 
@@ -740,11 +740,17 @@ void MainWindow::on_btnFindNext_clicked()
         if(red < 55)
         {
             ui->editFind->setStyleSheet("background-color:rgba(50,50,50,255)");
+            QPalette palette;
+            palette.setColor(QPalette::Text,Qt::white);
+            ui->editFind->setPalette(palette);
 
         }
         else
         {
             ui->editFind->setStyleSheet("background-color:rgba(255,255,255,255)");
+            QPalette palette;
+            palette.setColor(QPalette::Text,Qt::black);
+            ui->editFind->setPalette(palette);
 
         }
 
@@ -1323,6 +1329,12 @@ void MainWindow::update_ui_tw()
 
     textEdit_cursorPositionChanged();
 
+    QFileInfo fi(curFile);
+    if(fi.suffix().toLower() == "dsl")
+    {
+        ui->treeWidget->setHidden(false);
+    }
+
 }
 
 void MainWindow::on_btnRefreshTree_clicked()
@@ -1754,17 +1766,15 @@ void MainWindow::setLexer(QsciLexer *textLexer)
     if(red < 55) //暗模式，mac下为50
     {
 
+        //背景色
+        //textLexer->setPaper(QColor(28, 28, 28));
+
+        //ui->editFind->setStyleSheet("background-color:rgba(28,28,28,255)");
+
         //设置光标所在行背景色
         textEdit->setCaretLineBackgroundColor(QColor(180, 180, 0));
         textEdit->setCaretLineFrameWidth(1);
         textEdit->setCaretLineVisible(true);
-
-        //背景色
-        textLexer->setPaper(QColor(28, 28, 28));
-
-        ui->editFind->setStyleSheet("background-color:rgba(28,28,28,255)");
-
-        //textLexer->setColor(QColor(255,255,255, 255), -1);
 
         textLexer->setColor(QColor(30, 190, 30), QsciLexerCPP::CommentLine);//"//"注释颜色
         textLexer->setColor(QColor(30, 190, 30), QsciLexerCPP::Comment);
@@ -1775,15 +1785,14 @@ void MainWindow::setLexer(QsciLexer *textLexer)
         textLexer->setColor(QColor(210, 32, 240 ), QsciLexerCPP::KeywordSet2);
         textLexer->setColor(QColor(245, 245, 245 ), QsciLexerCPP::Operator);
         textLexer->setColor(QColor(84, 255, 159 ), QsciLexerCPP::DoubleQuotedString);//双引号
-
-    }
+     }
     else
     {
 
         //背景色
-        textLexer->setPaper(QColor(255, 255, 255));
+        //textLexer->setPaper(QColor(255, 255, 255));
 
-        ui->editFind->setStyleSheet("background-color:rgba(255,255,255,255)");
+        //ui->editFind->setStyleSheet("background-color:rgba(255,255,255,255)");
 
         textEdit->setCaretLineBackgroundColor(QColor(255, 255, 0, 50));
         textEdit->setCaretLineFrameWidth(0);
@@ -1806,6 +1815,7 @@ void MainWindow::setLexer(QsciLexer *textLexer)
     //textLexer->setFont(font1, QsciLexerCPP::KeywordSet2);
 
     //设置行号栏宽度、颜色
+    textEdit->setMarginType(0, QsciScintilla::NumberMargin);
     textEdit->setMarginWidth(0, 70);
     textEdit->setMarginLineNumbers(0, true);
     if(red < 55) //暗模式，mac下为50
@@ -1886,6 +1896,27 @@ void MainWindow::setLexer(QsciLexer *textLexer)
         //textEdit->setMarginsForegroundColor(Qt::blue); //行号颜色
         textEdit->SendScintilla(QsciScintilla::SCI_SETFOLDFLAGS, 16);//设置折叠标志
     }
+
+    /*断点设置区域,为后面可能会用到的功能预留*/
+    /*textEdit->setMarginType(1, QsciScintilla::SymbolMargin);
+    textEdit->setMarginLineNumbers(1, false);
+    textEdit->setMarginWidth(1,20);
+    textEdit->setMarginSensitivity(1, true);    //设置是否可以显示断点
+    textEdit->setMarginsBackgroundColor(QColor("#bbfaae"));
+    textEdit->setMarginMarkerMask(1, 0x02);
+    connect(textEdit, SIGNAL(marginClicked(int, int, Qt::KeyboardModifiers)),this,
+            SLOT(on_margin_clicked(int, int, Qt::KeyboardModifiers)));
+    textEdit->markerDefine(QsciScintilla::Circle, 1);
+    textEdit->setMarkerBackgroundColor(QColor("#ee1111"), 1);*/
+    //单步执行显示区域
+    /*textEdit->setMarginType(2, QsciScintilla::SymbolMargin);
+    textEdit->setMarginLineNumbers(2, false);
+    textEdit->setMarginWidth(2, 20);
+    textEdit->setMarginSensitivity(2, false);
+    textEdit->setMarginMarkerMask(2, 0x04);
+    textEdit->markerDefine(QsciScintilla::RightArrow, 2);
+    textEdit->setMarkerBackgroundColor(QColor("#eaf593"), 2);*/
+
 
 }
 
@@ -2441,6 +2472,7 @@ void MainWindow::on_chkCaseSensitive_clicked()
 void MainWindow::on_chkCaseSensitive_clicked(bool checked)
 {
     CaseSensitive = checked;
+    on_btnFindNext_clicked();
 }
 
 /*菜单：设置字体*/
@@ -2511,10 +2543,10 @@ void MainWindow::paintEvent(QPaintEvent *event)
     int c_red = brush.color().red();
     if(c_red != red)
     {
-        setLexer(textLexer);
+        /*目前暂时停用。需要解决：1.代码折叠线的颜色 2.双引号输入时的背景色*/
+        //setLexer(textLexer);
+        //textEdit->repaint();
 
-        textEdit->repaint();
-        //qDebug() << "setLexer";
     }
 
 
