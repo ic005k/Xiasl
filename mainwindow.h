@@ -40,6 +40,7 @@
 #include <QScrollBar>
 #include <QFontDialog>
 
+
 #ifdef Q_OS_WIN32
 #include <windows.h>
 #include <stdio.h>
@@ -68,8 +69,11 @@ class thread_one;
 
 void refreshTree();
 void getMembers(QString str_member, QsciScintilla *textEdit);
+void getMemberTree(QsciScintilla *textEdit, QTreeWidget *tw);
 QString findKey(QString str, QString stf_sub, int f_null);
-QString getMemberName(QString str_member, QsciScintilla *textEdit);
+//QString getMemberName(QString str_member, QsciScintilla *textEdit, int RowNum);
+int getBraceScope(int start, int count, QsciScintilla *textEdit);
+bool chkMemberName(QString str, QString name);
 
 
 class MainWindow : public QMainWindow
@@ -86,8 +90,6 @@ public:
     void loadFile(const QString &fileName);
 
     void setCurrentFile(const QString &fileName);
-
-    void getMemberTree();
 
     QString curFile;
     QProcess *co;
@@ -192,6 +194,12 @@ private slots:
 private:
     Ui::MainWindow *ui;
 
+    QString getLayerName(QTreeWidgetItem *hItem);
+
+    int treeCount(QTreeWidget *tree, QTreeWidgetItem *parent);
+
+    int treeCount(QTreeWidget *tree);
+
     bool maybeSave();
 
     bool find_up;
@@ -209,6 +217,10 @@ private:
     QTextEdit *textEditTemp;
 
     QLabel *lblMsg;
+
+    QLabel *lblLayer;
+
+    QLineEdit *editLayer;
 
     QElapsedTimer qTime;
 
@@ -232,6 +244,8 @@ private:
 
     void update_ui_tw();
 
+    void update_ui_tree();
+
     void separ_info(QString str_key, QTextEdit *editInfo);
 
     void set_cursor_line_color(QTextEdit * edit);
@@ -245,6 +259,8 @@ private:
     void setLexer(QsciLexer *textLexer);
 
     void update_member(bool show,  QString str_void, QList<QTreeWidgetItem *> tw_list);
+
+    void set_mark(int linenr);
 
 
 

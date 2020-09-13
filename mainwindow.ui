@@ -15,50 +15,7 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_7">
-    <item row="0" column="0" colspan="2">
-     <widget class="QCheckBox" name="chkScope">
-      <property name="text">
-       <string>S</string>
-      </property>
-      <property name="checked">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="2">
-     <widget class="QCheckBox" name="chkDevice">
-      <property name="text">
-       <string>D</string>
-      </property>
-      <property name="checked">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="3">
-     <widget class="QCheckBox" name="chkMethod">
-      <property name="text">
-       <string>M</string>
-      </property>
-      <property name="checked">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="4">
-     <widget class="QCheckBox" name="chkName">
-      <property name="text">
-       <string>N</string>
-      </property>
-      <property name="checked">
-       <bool>false</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="5">
-     <widget class="QLineEdit" name="editFind"/>
-    </item>
-    <item row="0" column="6">
+    <item row="0" column="0">
      <widget class="QCheckBox" name="chkCaseSensitive">
       <property name="text">
        <string>CaseSensitive</string>
@@ -68,38 +25,41 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="7">
+    <item row="0" column="1">
+     <widget class="QLineEdit" name="editFind"/>
+    </item>
+    <item row="0" column="2">
      <widget class="QPushButton" name="btnFindPrevious">
       <property name="text">
        <string>FindPrevious</string>
       </property>
      </widget>
     </item>
-    <item row="0" column="8">
+    <item row="0" column="3">
      <widget class="QPushButton" name="btnFindNext">
       <property name="text">
        <string>FindNext</string>
       </property>
      </widget>
     </item>
-    <item row="0" column="9">
+    <item row="0" column="4">
      <widget class="QLineEdit" name="editReplace"/>
     </item>
-    <item row="0" column="10">
+    <item row="0" column="5">
      <widget class="QPushButton" name="btnReplace">
       <property name="text">
        <string>Replace</string>
       </property>
      </widget>
     </item>
-    <item row="0" column="11">
+    <item row="0" column="6">
      <widget class="QPushButton" name="btnReplaceFind">
       <property name="text">
        <string>Replace &amp;&amp; Find</string>
       </property>
      </widget>
     </item>
-    <item row="0" column="12">
+    <item row="0" column="7">
      <widget class="QPushButton" name="btnPreviousError">
       <property name="enabled">
        <bool>false</bool>
@@ -109,7 +69,7 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="13">
+    <item row="0" column="8">
      <widget class="QPushButton" name="btnNextError">
       <property name="enabled">
        <bool>false</bool>
@@ -119,43 +79,113 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="14">
+    <item row="0" column="9">
      <widget class="QPushButton" name="btnRefreshTree">
       <property name="text">
        <string>RefreshTree</string>
       </property>
      </widget>
     </item>
-    <item row="1" column="0" rowspan="2" colspan="15">
+    <item row="1" column="0" colspan="10">
      <layout class="QGridLayout" name="gridLayout"/>
     </item>
-    <item row="2" column="1" colspan="5">
-     <widget class="QTreeWidget" name="treeWidget">
-      <property name="font">
-       <font>
-        <family>SauceCodePro Nerd Font</family>
-       </font>
-      </property>
-      <property name="columnCount">
-       <number>2</number>
-      </property>
-      <column>
-       <property name="text">
-        <string notr="true">1</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string notr="true">2</string>
-       </property>
-      </column>
-     </widget>
-    </item>
    </layout>
+   <widget class="QTreeWidget" name="treeWidget">
+    <property name="geometry">
+     <rect>
+      <x>33</x>
+      <y>57</y>
+      <width>256</width>
+      <height>192</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>SauceCodePro Nerd Font</family>
+     </font>
+    </property>
+    <property name="columnCount">
+     <number>2</number>
+    </property>
+    <column>
+     <property name="text">
+      <string notr="true">1</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string notr="true">2</string>
+     </property>
+    </column>
+   </widget>
+   <widget class="QCheckBox" name="chkName">
+    <property name="geometry">
+     <rect>
+      <x>424</x>
+      <y>370</y>
+      <width>42</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>N</string>
+    </property>
+    <property name="checked">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="chkMethod">
+    <property name="geometry">
+     <rect>
+      <x>376</x>
+      <y>370</y>
+      <width>42</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>M</string>
+    </property>
+    <property name="checked">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="chkDevice">
+    <property name="geometry">
+     <rect>
+      <x>328</x>
+      <y>370</y>
+      <width>42</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>D</string>
+    </property>
+    <property name="checked">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="chkScope">
+    <property name="geometry">
+     <rect>
+      <x>280</x>
+      <y>370</y>
+      <width>42</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>S</string>
+    </property>
+    <property name="checked">
+     <bool>true</bool>
+    </property>
+   </widget>
    <widget class="QTabWidget" name="tabWidget">
     <property name="geometry">
      <rect>
-      <x>494</x>
+      <x>497</x>
       <y>57</y>
       <width>405</width>
       <height>258</height>
