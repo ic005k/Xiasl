@@ -17,6 +17,11 @@ LIBS += \
     qscintilla2_qt5.dll
 }
 
+unix{
+
+    LIBS += /home/zh/Qt5.14.2/5.14.2/gcc_64/lib/libqscintilla2_qt5.so
+}
+
 
 # The following define makes your compiler emit warnings if you use
 # any Qt feature that has been marked deprecated (the exact warnings
