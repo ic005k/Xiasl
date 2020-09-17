@@ -39,7 +39,7 @@
 #include <QStyleFactory>
 #include <QScrollBar>
 #include <QFontDialog>
-
+#include <QMetaType>
 
 #ifdef Q_OS_WIN32
 #include <windows.h>
@@ -66,10 +66,9 @@ class LineNumberArea;
 class QsciScintilla;
 class thread_one;
 
-
 void refreshTree();
 void getMembers(QString str_member, QsciScintilla *textEdit);
-void getMemberTree(QsciScintilla *textEdit, QTreeWidget *tw);
+void getMemberTree(QsciScintilla *textEdit);
 QString findKey(QString str, QString stf_sub, int f_null);
 //QString getMemberName(QString str_member, QsciScintilla *textEdit, int RowNum);
 int getBraceScope(int start, int count, QsciScintilla *textEdit);
@@ -91,8 +90,11 @@ public:
 
     void setCurrentFile(const QString &fileName);
 
+    void update_ui_tree();
+
     QString curFile;
     QProcess *co;
+    QProcess *pk;
     QFont font;
     QsciScintilla *textEdit;
     RecentFiles *m_recentFiles;
@@ -113,21 +115,26 @@ protected:
 public slots:
     void btnOpen_clicked();
     QString openFile(QString fileName);
+    void dealover();//处理线程返回的结束信号
 
 private slots:
     void treeWidgetBack_itemClicked(QTreeWidgetItem *item, int column);
+
+    void kextstat();
 
     void set_font();
 
     void set_wrap();
 
-    void dealover();//处理线程返回的结束信号
+
 
     void on_btnRefreshTree_clicked();
 
     void timer_linkage();
 
     void readResult(int exitCode);
+
+    void readKextstat();
 
     void recentOpen(QString filename);
 
@@ -225,8 +232,12 @@ private:
     QElapsedTimer qTime;
 
     int row = 0;
+
     int row_current = 0;
+
     bool linkage = false;
+
+    int preRow = 0;
 
     bool saveFile(const QString &fileName);
 
@@ -244,7 +255,7 @@ private:
 
     void update_ui_tw();
 
-    void update_ui_tree();
+
 
     void separ_info(QString str_key, QTextEdit *editInfo);
 
@@ -310,11 +321,13 @@ private:
     CodeEditor *codeEditor;
 };
 
+
 class thread_one : public QThread
 {
     Q_OBJECT
 public:
     explicit thread_one(QObject *parent = nullptr);
+
 protected:
     void run();
 signals:
