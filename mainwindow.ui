@@ -337,6 +337,8 @@
     <addaction name="actionGenerate"/>
     <addaction name="separator"/>
     <addaction name="actionCompiling"/>
+    <addaction name="separator"/>
+    <addaction name="actionKextstat"/>
    </widget>
    <widget class="QMenu" name="menu_Preferences">
     <property name="title">
@@ -407,6 +409,11 @@
    </property>
    <property name="text">
     <string>自动换行-WrapWord</string>
+   </property>
+  </action>
+  <action name="actionKextstat">
+   <property name="text">
+    <string>Kextstat</string>
    </property>
   </action>
  </widget>
