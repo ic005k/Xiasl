@@ -3,7 +3,9 @@
 
 写这个工具的初衷是为了完善win和linux平台下的dsdt编辑器生态。
 
-目前可用于在win或winpe下提取和编辑dsdt文件，mac或Linux下也可以使用该工具来编写和调试dsdt、ssdt。建议Linux用户执行 sudo cp lib* /usr/lib 将库文件拷贝到/usr/lib下面。
+目前可用于在win或winpe下提取和编辑dsdt文件，mac或Linux下也可以使用该工具来编写和调试dsdt、ssdt。
+
+建议Linux用户执行 sudo cp lib* /usr/lib 将库文件拷贝到/usr/lib下面。
 
 基本特征包括但不限于以下几点：
 
