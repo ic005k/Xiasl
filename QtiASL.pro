@@ -20,6 +20,7 @@ LIBS += \
 unix:!macx:{
 
     LIBS += -L$PWD libqscintilla2_qt5.so
+    QMAKE_LFLAGS += -no-pie
 }
 
 
