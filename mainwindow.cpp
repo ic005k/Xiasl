@@ -80,6 +80,7 @@ MainWindow::MainWindow(QWidget *parent)
     font.setPointSize(13);
 
     ui->actionKextstat->setEnabled(false);
+    ui->actionGenerate->setEnabled(false);
 #endif
 
 #ifdef Q_OS_MAC
@@ -590,11 +591,12 @@ void MainWindow::textEdit_cursorPositionChanged()
 
 }
 
-/*换行之后，2s后再刷新成员树*/
+/*换行之后，1s后再刷新成员树*/
 void MainWindow::timer_linkage()
 {
     if(!loading)
     {
+
          on_btnRefreshTree_clicked();
 
          timer->stop();
@@ -1259,7 +1261,7 @@ QString findKey(QString str, QString str_sub, int f_null)
 void MainWindow::textEdit_linesChanged()
 {
     if(!loading)
-        //on_btnRefreshTree_clicked();
+
         timer->start(1000);
 
 }
@@ -1465,7 +1467,8 @@ int getBraceScope(int start, int count, QsciScintilla *textEdit)
     int dkh1 = 0;
     int scope_end = 0;
     bool end = false;
-    for(int s = start; s < count; s++)
+    /*start-1,从当前行就开始解析，囊括Scope(){等这种紧跟{的写法*/
+    for(int s = start - 1; s < count; s++)
     {
 
         QString str = textEdit->text(s);

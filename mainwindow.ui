@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="../QtIASL/my.qrc">
+    <normaloff>:/icon/icon.png</normaloff>:/icon/icon.png</iconset>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_7">
     <item row="0" column="0">
@@ -417,6 +421,8 @@
    </property>
   </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="../QtIASL/my.qrc"/>
+ </resources>
  <connections/>
 </ui>
