@@ -17,9 +17,9 @@ LIBS += \
     qscintilla2_qt5.dll
 }
 
-unix{
+unix:!macx:{
 
-    LIBS += /home/zh/Qt5.14.2/5.14.2/gcc_64/lib/libqscintilla2_qt5.so
+    LIBS += -L$PWD libqscintilla2_qt5.so
 }
 
 
