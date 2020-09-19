@@ -18,15 +18,14 @@ LIBS += \
 }
 
 unix:!macx:{
-    #在编译的目标目录中调用共享库#
-    LIBS += -L./ libqscintilla2_qt5.so
+
+    LIBS += -L$PWD libqscintilla2_qt5.so
 
     QMAKE_RPATHDIR=$ORIGIN
     QMAKE_LFLAGS += -no-pie
     QMAKE_LFLAGS += "-Wl,-rpath,\'\$$ORIGIN/lib\'"
     QMAKE_LFLAGS += "-Wl,-rpath,\'\$$ORIGIN\'"
     QMAKE_LFLAGS += "-Wl,-rpath,\'\$$ORIGIN/platforms\'"
-
 }
 
 
