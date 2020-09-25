@@ -124,7 +124,7 @@
     <message>
         <location filename="mainwindow.ui" line="371"/>
         <source>SaveAS...</source>
-        <translation type="unfinished">另存</translation>
+        <translation type="unfinished">另存...</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="376"/>
