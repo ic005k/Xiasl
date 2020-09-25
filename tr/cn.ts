@@ -75,19 +75,19 @@
     </message>
     <message>
         <location filename="mainwindow.ui" line="228"/>
-        <location filename="mainwindow.cpp" line="3565"/>
+        <location filename="mainwindow.cpp" line="3596"/>
         <source>Errors</source>
         <translation type="unfinished">错误</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="250"/>
-        <location filename="mainwindow.cpp" line="3567"/>
+        <location filename="mainwindow.cpp" line="3598"/>
         <source>Warnings</source>
         <translation type="unfinished">警告</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="272"/>
-        <location filename="mainwindow.cpp" line="3569"/>
+        <location filename="mainwindow.cpp" line="3600"/>
         <source>Remarks</source>
         <translation type="unfinished">提醒</translation>
     </message>
@@ -138,9 +138,8 @@
     </message>
     <message>
         <location filename="mainwindow.ui" line="386"/>
-        <location filename="mainwindow.cpp" line="153"/>
         <source>About</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">关于</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="391"/>
@@ -165,145 +164,121 @@
     <message>
         <location filename="mainwindow.ui" line="420"/>
         <source>Kextstat</source>
-        <translation type="unfinished">Kext加载状态</translation>
+        <translation type="unfinished">查看Kext加载状态</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="151"/>
         <source>Last modified: </source>
-        <translation type="unfinished">最后修改：</translation>
+        <translation type="obsolete">最后修改：</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="214"/>
-        <location filename="mainwindow.cpp" line="309"/>
-        <location filename="mainwindow.cpp" line="367"/>
+        <location filename="mainwindow.cpp" line="224"/>
+        <location filename="mainwindow.cpp" line="327"/>
+        <location filename="mainwindow.cpp" line="398"/>
+        <location filename="mainwindow.cpp" line="3720"/>
         <source>Application</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="215"/>
+        <location filename="mainwindow.cpp" line="225"/>
         <source>Cannot read file %1:
 %2.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="243"/>
+        <location filename="mainwindow.cpp" line="254"/>
         <source>File loaded</source>
         <translation type="unfinished">文件已装入</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="310"/>
+        <location filename="mainwindow.cpp" line="328"/>
+        <location filename="mainwindow.cpp" line="3721"/>
         <source>The document has been modified.
 Do you want to save your changes?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="357"/>
+        <location filename="mainwindow.cpp" line="388"/>
         <source>Cannot write file %1:
 %2.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="361"/>
+        <location filename="mainwindow.cpp" line="392"/>
         <source>Cannot open file %1 for writing:
 %2.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="372"/>
+        <location filename="mainwindow.cpp" line="404"/>
         <source>File saved</source>
         <translation type="unfinished">文件已保存</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="466"/>
+        <location filename="mainwindow.cpp" line="500"/>
         <source>Empty search field</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="466"/>
+        <location filename="mainwindow.cpp" line="500"/>
         <source>The search field is empty.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="563"/>
+        <location filename="mainwindow.cpp" line="595"/>
         <source>Compiled</source>
         <translation>编译完成</translation>
-    </message>
-    <message>
-        <location filename="mainwindow.cpp" line="565"/>
-        <source>编译完成</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="mainwindow.cpp" line="3577"/>
-        <source>错误</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="mainwindow.cpp" line="3579"/>
-        <source>警告</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="mainwindow.cpp" line="3581"/>
-        <source>提醒</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Compilation successful.</source>
         <translation type="vanished">编译成功</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="1378"/>
+        <location filename="mainwindow.cpp" line="1409"/>
         <source>Refresh completed</source>
         <translation>刷新完成</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="1380"/>
-        <source>刷新完成</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="mainwindow.cpp" line="1448"/>
+        <location filename="mainwindow.cpp" line="1479"/>
         <source>Refreshing...</source>
         <translation>刷新中...</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="3040"/>
+        <location filename="mainwindow.cpp" line="3071"/>
         <source>ctrl+n</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="3043"/>
+        <location filename="mainwindow.cpp" line="3074"/>
         <source>ctrl+o</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="3046"/>
+        <location filename="mainwindow.cpp" line="3077"/>
         <source>ctrl+s</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="3049"/>
+        <location filename="mainwindow.cpp" line="3080"/>
         <source>ctrl+shift+s</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="3054"/>
+        <location filename="mainwindow.cpp" line="3085"/>
         <source>ctrl+g</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="3057"/>
+        <location filename="mainwindow.cpp" line="3088"/>
         <source>ctrl+m</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="3060"/>
+        <location filename="mainwindow.cpp" line="3091"/>
         <source>ctrl+f</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="3063"/>
+        <location filename="mainwindow.cpp" line="3094"/>
         <source>ctrl+w</source>
         <translation type="unfinished"></translation>
     </message>
@@ -311,9 +286,14 @@ Do you want to save your changes?</source>
 <context>
     <name>RecentFiles</name>
     <message>
-        <location filename="recentfiles.cpp" line="26"/>
+        <location filename="recentfiles.cpp" line="29"/>
         <source>Open Recent...</source>
         <translation>最近打开...</translation>
+    </message>
+    <message>
+        <location filename="recentfiles.cpp" line="31"/>
+        <source>最近打开...</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>
