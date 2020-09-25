@@ -6,5 +6,9 @@
         <file>icon/s.png</file>
         <file>data/apis.txt</file>
         <file>icon/icon.png</file>
+        <file>tr/cn.qm</file>
+        <file>tr/qt_zh_CN.qm</file>
+        <file>tr/widgets_zh_cn.qm</file>
+        <file>tr/qscintilla_cn.qm</file>
     </qresource>
 </RCC>

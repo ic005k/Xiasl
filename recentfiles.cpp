@@ -10,6 +10,8 @@
 #include <QSettings>
 #include <QRegExp>
 
+extern bool zh_cn;
+
 QString sanitizedFileName(const QString &name)
 {
     QString clean = name;
@@ -23,7 +25,11 @@ RecentFiles::RecentFiles(QMainWindow *parent)
 
 {
     // create the sub-menu
-    m_recentMenu->setTitle("最近打开(Open Recent...)");
+    if(!zh_cn)
+        m_recentMenu->setTitle(tr("Open Recent..."));
+    else
+        m_recentMenu->setTitle(tr("最近打开..."));
+
     m_recentMenu->setObjectName("RecentMenu");
 
     // create an action for all possible entries in the sub-menu
@@ -56,7 +62,7 @@ RecentFiles::~RecentFiles()
     m_recentMenu = (QMenu *)NULL;
 }
 
-//在menu菜单项下插一个text名称的菜单项，并且这个菜单关联slotname响应
+//在menu菜单项下插一个text名称的菜单项并关联slotname响应
 void RecentFiles::attachToMenuAfterItem(QMenu *menu,         /* menu that "Recent" sub-menu should be inserted into */
     QString text,        /* Action in menu after which Recent menu should be inserted */
     const char * slotName)

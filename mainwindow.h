@@ -40,6 +40,7 @@
 #include <QScrollBar>
 #include <QFontDialog>
 #include <QMetaType>
+#include <QTranslator>
 
 #ifdef Q_OS_WIN32
 #include <windows.h>
@@ -91,6 +92,8 @@ public:
     void setCurrentFile(const QString &fileName);
 
     void update_ui_tree();
+
+    void loadLocal();
 
     QString curFile;
     QProcess *co;

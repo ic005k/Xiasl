@@ -27,6 +27,10 @@ QVector<QString> filelist;
 QWidgetList wdlist;
 QscilexerCppAttach *textLexer;
 
+bool zh_cn = false;
+
+
+
 
 thread_one::thread_one(QObject *parent) : QThread(parent)
 {
@@ -51,6 +55,8 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    loadLocal();
 
     ver = "QtiASL V1.0.11    ";
     setWindowTitle(ver);
@@ -126,7 +132,7 @@ MainWindow::MainWindow(QWidget *parent)
     QCoreApplication::setOrganizationDomain("github.com/ic005k/QtiASL");
     QCoreApplication::setApplicationName("V1");
     m_recentFiles = new RecentFiles(this);
-    m_recentFiles->attachToMenuAfterItem(ui->menu_File, "另存-SaveAS...", SLOT(recentOpen(QString)));//在分隔符菜单项下插入
+    m_recentFiles->attachToMenuAfterItem(ui->menu_File, "SaveAS...", SLOT(recentOpen(QString)));//在分隔符菜单项下插入
     m_recentFiles->setNumOfRecentFiles(15);//最多显示最近的15个文件
 
     init_statusBar();
@@ -303,11 +309,29 @@ bool MainWindow::maybeSave()
 {
     if (!textEdit->isModified())
         return true;
-    const QMessageBox::StandardButton ret
-        = QMessageBox::warning(this, tr("Application"),
-                               tr("The document has been modified.\n"
-                                  "Do you want to save your changes?"),
-                               QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+
+    //QMessageBox::StandardButton ret;
+    int ret;
+    if(!zh_cn)
+    {
+
+            ret = QMessageBox::warning(this, tr("Application"),
+                                   tr("The document has been modified.\n"
+                                      "Do you want to save your changes?"),
+                                   QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+
+    }
+    else
+    {
+            QMessageBox box(QMessageBox::Warning,"提醒","文件内容已修改，是否保存？");
+            box.setStandardButtons (QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+            box.setButtonText (QMessageBox::Save,QString("保 存"));
+            box.setButtonText (QMessageBox::Cancel,QString("取 消"));
+            box.setButtonText (QMessageBox::Discard,QString("放 弃"));
+            ret = box.exec ();
+
+    }
+
     switch (ret)
     {
     case QMessageBox::Save:
@@ -417,7 +441,11 @@ void MainWindow::btnCompile_clicked()
     if(!curFile.isEmpty())
         btnSave_clicked();
 
-    lblMsg->setText("Compiling...");
+    if(!zh_cn)
+        lblMsg->setText("Compiling...");
+    else
+        lblMsg->setText("编译中...");
+
     qTime.start();
 
 
@@ -551,7 +579,11 @@ void MainWindow::readResult(int exitCode)
     textEdit->SendScintilla(QsciScintilla::SCI_MARKERDELETEALL);
 
     float a = qTime.elapsed()/1000.00;
-    lblMsg->setText("Compiled(" + QTime::currentTime().toString() + "    " + QString::number(a, 'f', 2) + " s)");
+    if(!zh_cn)
+        lblMsg->setText(tr("Compiled") + "(" + QTime::currentTime().toString() + "    " + QString::number(a, 'f', 2) + " s)");
+    else
+        lblMsg->setText(tr("编译完成") + "(" + QTime::currentTime().toString() + "    " + QString::number(a, 'f', 2) + " 秒)");
+
 
 
     if(exitCode == 0)
@@ -561,7 +593,15 @@ void MainWindow::readResult(int exitCode)
         ui->btnNextError->setEnabled(false);
         ui->tabWidget->setCurrentIndex(0);
 
-        QMessageBox::information(this , "编译(Compiling)" , "编译成功(Compilation successful).");
+        if(!zh_cn)
+            QMessageBox::information(this , "QtiASL" , "Compilation successful.");
+        else
+        {
+            QMessageBox message(QMessageBox::Information, "QtiASL","编译成功.");
+            message.setStandardButtons (QMessageBox::Ok);
+            message.setButtonText (QMessageBox::Ok, QString("确 定"));
+            message.exec();
+        }
 
     }
     else
@@ -576,6 +616,8 @@ void MainWindow::readResult(int exitCode)
     ui->tabWidget->setHidden(false);
 
     loading = false;
+
+
 
 }
 
@@ -1351,7 +1393,11 @@ void MainWindow::update_ui_tree()
     ui->treeWidget->update();
 
     float a = qTime.elapsed()/1000.00;
-    lblMsg->setText("Refresh completed(" + QTime::currentTime().toString() + "    " + QString::number(a, 'f', 2) + " s)");
+    if(!zh_cn)
+        lblMsg->setText(tr("Refresh completed") + "(" + QTime::currentTime().toString() + "    " + QString::number(a, 'f', 2) + " s)");
+    else
+        lblMsg->setText(tr("刷新完成") + "(" + QTime::currentTime().toString() + "    " + QString::number(a, 'f', 2) + " 秒)");
+
 
     textEdit_cursorPositionChanged();
 
@@ -1417,7 +1463,11 @@ void MainWindow::on_btnRefreshTree_clicked()
     textEditBack->clear();
     textEditBack->setText(textEdit->text());
 
-    lblMsg->setText("Refreshing...");
+    if(!zh_cn)
+        lblMsg->setText(tr("Refreshing..."));
+    else
+        lblMsg->setText("刷新中...");
+
     qTime.start();
     mythread->start();
 
@@ -3526,15 +3576,34 @@ void MainWindow::separ_info(QString str_key, QTextEdit *editInfo)
 
     }
 
+
     //标记tab头
-    if(str_key == "Error")
-        ui->tabWidget->setTabText(1, "Errors (" + QString::number(info_count) +")");
-    if(str_key == "Warning")
-        ui->tabWidget->setTabText(2, "Warnings (" + QString::number(info_count) +")");
-    if(str_key == "Remark")
-        ui->tabWidget->setTabText(3, "Remarks (" + QString::number(info_count) +")");
-    if(str_key == "Optimization")
-        ui->tabWidget->setTabText(4, "Optimizations (" + QString::number(info_count) +")");
+    if(!zh_cn)
+    {
+        if(str_key == "Error")
+            ui->tabWidget->setTabText(1, tr("Errors") + " (" + QString::number(info_count) +")");
+        if(str_key == "Warning")
+            ui->tabWidget->setTabText(2, tr("Warnings") + " (" + QString::number(info_count) +")");
+        if(str_key == "Remark")
+            ui->tabWidget->setTabText(3, tr("Remarks") + " (" + QString::number(info_count) +")");
+        if(str_key == "Optimization")
+            ui->tabWidget->setTabText(4, "Optimizations (" + QString::number(info_count) +")");
+
+    }
+    else
+    {
+        if(str_key == "Error")
+            ui->tabWidget->setTabText(1, tr("错误") + " (" + QString::number(info_count) +")");
+        if(str_key == "Warning")
+            ui->tabWidget->setTabText(2, tr("警告") + " (" + QString::number(info_count) +")");
+        if(str_key == "Remark")
+            ui->tabWidget->setTabText(3, tr("提醒") + " (" + QString::number(info_count) +")");
+        if(str_key == "Optimization")
+            ui->tabWidget->setTabText(4, "Optimizations (" + QString::number(info_count) +")");
+
+    }
+
+
 
 }
 
@@ -3631,13 +3700,30 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
     if(textEdit->isModified())
     {
-        QMessageBox message;
-        message.setText("The document has been modified.");
-        message.setInformativeText("Do you want to save your changes?");
-        message.setStandardButtons(QMessageBox::Save|QMessageBox::Discard|QMessageBox::Cancel);
-        message.setDefaultButton(QMessageBox::Save);
 
-        int choice = message.exec();
+        int choice;
+        if(!zh_cn)
+        {
+
+            choice = QMessageBox::warning(this, tr("Application"),
+                                   tr("The document has been modified.\n"
+                                      "Do you want to save your changes?"),
+                                   QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+
+        }
+        else
+        {
+            QMessageBox message(QMessageBox::Warning,"QtiASL","文件内容已修改，是否保存？");
+            message.setStandardButtons (QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+            message.setButtonText (QMessageBox::Save,QString("保 存"));
+            message.setButtonText (QMessageBox::Cancel,QString("取 消"));
+            message.setButtonText (QMessageBox::Discard,QString("放 弃"));
+            message.setDefaultButton(QMessageBox::Save);
+            choice = message.exec();
+
+        }
+
+
         switch (choice) {
             case QMessageBox::Save:
             btnSave_clicked();
@@ -3972,6 +4058,35 @@ void MainWindow::readKextstat()
     textEdit->append(result);
     ui->treeWidget->setHidden(true);
     ui->tabWidget->setHidden(true);
+}
+
+void MainWindow::loadLocal()
+{
+       QTextCodec *codec = QTextCodec::codecForName("System");
+       QTextCodec::setCodecForLocale(codec);
+
+       QTranslator translator;
+       QLocale locale;
+       if( locale.language() == QLocale::English )  //获取系统语言环境
+       {
+
+           zh_cn = false;
+
+       }
+       else if( locale.language() == QLocale::Chinese )
+       {
+
+           bool tr = false;
+           tr = translator.load(":/tr/cn.qm");
+           if(tr)
+           {
+               qApp->installTranslator(&translator);
+               zh_cn = true;
+           }
+
+           ui->retranslateUi(this);
+       }
+
 }
 
 

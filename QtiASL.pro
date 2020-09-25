@@ -28,6 +28,9 @@ unix:!macx:{
     QMAKE_LFLAGS += "-Wl,-rpath,\'\$$ORIGIN/platforms\'"
 }
 
+TRANSLATIONS += en.ts\
+                cn.ts
+
 
 # The following define makes your compiler emit warnings if you use
 # any Qt feature that has been marked deprecated (the exact warnings
@@ -117,7 +120,9 @@ DISTFILES += \
     icon/2.png \
     icon/3.png \
     icon/4.png \
-    myapp.rc
+    myapp.rc \
+    tr/cn.qm \
+    tr/qt_zh_CN.qm
 
 RESOURCES += \
     my.qrc

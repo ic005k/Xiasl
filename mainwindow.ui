@@ -324,7 +324,7 @@
    </property>
    <widget class="QMenu" name="menu_File">
     <property name="title">
-     <string>文件-File</string>
+     <string>File</string>
     </property>
     <addaction name="actionOpen"/>
     <addaction name="actionSave"/>
@@ -336,7 +336,7 @@
    </widget>
    <widget class="QMenu" name="menu_Tools">
     <property name="title">
-     <string>工具-Tools</string>
+     <string>Tools</string>
     </property>
     <addaction name="actionGenerate"/>
     <addaction name="separator"/>
@@ -346,7 +346,7 @@
    </widget>
    <widget class="QMenu" name="menu_Preferences">
     <property name="title">
-     <string>选项-Preferences</string>
+     <string>Preferences</string>
     </property>
     <addaction name="actionFont_2"/>
     <addaction name="actionWrapWord"/>
@@ -358,37 +358,37 @@
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionOpen">
    <property name="text">
-    <string>打开-Open</string>
+    <string>Open</string>
    </property>
   </action>
   <action name="actionSave">
    <property name="text">
-    <string>保存-Save</string>
+    <string>Save</string>
    </property>
   </action>
   <action name="actionSaveAs">
    <property name="text">
-    <string>另存-SaveAS...</string>
+    <string>SaveAS...</string>
    </property>
   </action>
   <action name="actionGenerate">
    <property name="text">
-    <string>获取-Generate</string>
+    <string>Generate</string>
    </property>
   </action>
   <action name="actionCompiling">
    <property name="text">
-    <string>编译-Compiling</string>
+    <string>Compiling</string>
    </property>
   </action>
   <action name="actionAbout">
    <property name="text">
-    <string>关于-About</string>
+    <string>About</string>
    </property>
   </action>
   <action name="actionNew">
    <property name="text">
-    <string>新建-New</string>
+    <string>New</string>
    </property>
   </action>
   <action name="actionFont">
@@ -404,7 +404,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>字体-Font</string>
+    <string>Font</string>
    </property>
   </action>
   <action name="actionWrapWord">
@@ -412,7 +412,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>自动换行-WrapWord</string>
+    <string>WrapWord</string>
    </property>
   </action>
   <action name="actionKextstat">
