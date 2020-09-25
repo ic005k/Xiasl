@@ -250,7 +250,10 @@ void MainWindow::loadFile(const QString &fileName)
 #endif
 
     setCurrentFile(fileName);
-    statusBar()->showMessage(tr("File loaded"), 2000);
+    if(!zh_cn)
+        statusBar()->showMessage(tr("File loaded"), 2000);
+    else
+        statusBar()->showMessage("文件已装入", 2000);
 
     ui->editShowMsg->clear();
 
@@ -397,7 +400,10 @@ bool MainWindow::saveFile(const QString &fileName)
     }
 
     setCurrentFile(fileName);
-    statusBar()->showMessage(tr("File saved"), 2000);
+    if(!zh_cn)
+        statusBar()->showMessage(tr("File saved"), 2000);
+    else
+        statusBar()->showMessage("文件已保存", 2000);
 
     return true;
 }
@@ -588,7 +594,7 @@ void MainWindow::readResult(int exitCode)
     if(!zh_cn)
         lblMsg->setText(tr("Compiled") + "(" + QTime::currentTime().toString() + "    " + QString::number(a, 'f', 2) + " s)");
     else
-        lblMsg->setText(tr("编译完成") + "(" + QTime::currentTime().toString() + "    " + QString::number(a, 'f', 2) + " 秒)");
+        lblMsg->setText("编译完成 (" + QTime::currentTime().toString() + "    " + QString::number(a, 'f', 2) + " 秒)");
 
 
 
@@ -603,7 +609,7 @@ void MainWindow::readResult(int exitCode)
             QMessageBox::information(this , "QtiASL" , "Compilation successful.");
         else
         {
-            QMessageBox message(QMessageBox::Information, "QtiASL","编译成功.");
+            QMessageBox message(QMessageBox::Information, "QtiASL", "编译成功.");
             message.setStandardButtons (QMessageBox::Ok);
             message.setButtonText (QMessageBox::Ok, QString("确 定"));
             message.exec();
@@ -1402,7 +1408,7 @@ void MainWindow::update_ui_tree()
     if(!zh_cn)
         lblMsg->setText(tr("Refresh completed") + "(" + QTime::currentTime().toString() + "    " + QString::number(a, 'f', 2) + " s)");
     else
-        lblMsg->setText(tr("刷新完成") + "(" + QTime::currentTime().toString() + "    " + QString::number(a, 'f', 2) + " 秒)");
+        lblMsg->setText("刷新完成 (" + QTime::currentTime().toString() + "    " + QString::number(a, 'f', 2) + " 秒)");
 
 
     textEdit_cursorPositionChanged();
@@ -3599,11 +3605,11 @@ void MainWindow::separ_info(QString str_key, QTextEdit *editInfo)
     else
     {
         if(str_key == "Error")
-            ui->tabWidget->setTabText(1, tr("错误") + " (" + QString::number(info_count) +")");
+            ui->tabWidget->setTabText(1, "错误 (" + QString::number(info_count) +")");
         if(str_key == "Warning")
-            ui->tabWidget->setTabText(2, tr("警告") + " (" + QString::number(info_count) +")");
+            ui->tabWidget->setTabText(2, "警告 (" + QString::number(info_count) +")");
         if(str_key == "Remark")
-            ui->tabWidget->setTabText(3, tr("提醒") + " (" + QString::number(info_count) +")");
+            ui->tabWidget->setTabText(3, "提醒 (" + QString::number(info_count) +")");
         if(str_key == "Optimization")
             ui->tabWidget->setTabText(4, "Optimizations (" + QString::number(info_count) +")");
 
