@@ -332,7 +332,7 @@ bool MainWindow::maybeSave()
     }
     else
     {
-            QMessageBox box(QMessageBox::Warning,"提醒","文件内容已修改，是否保存？");
+            QMessageBox box(QMessageBox::Warning, "QtiASL","文件内容已修改，是否保存？");
             box.setStandardButtons (QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
             box.setButtonText (QMessageBox::Save,QString("保 存"));
             box.setButtonText (QMessageBox::Cancel,QString("取 消"));
@@ -3609,7 +3609,7 @@ void MainWindow::separ_info(QString str_key, QTextEdit *editInfo)
         if(str_key == "Warning")
             ui->tabWidget->setTabText(2, "警告 (" + QString::number(info_count) +")");
         if(str_key == "Remark")
-            ui->tabWidget->setTabText(3, "提醒 (" + QString::number(info_count) +")");
+            ui->tabWidget->setTabText(3, "备注 (" + QString::number(info_count) +")");
         if(str_key == "Optimization")
             ui->tabWidget->setTabText(4, "Optimizations (" + QString::number(info_count) +")");
 
