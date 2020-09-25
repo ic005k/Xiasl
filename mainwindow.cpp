@@ -132,7 +132,10 @@ MainWindow::MainWindow(QWidget *parent)
     QCoreApplication::setOrganizationDomain("github.com/ic005k/QtiASL");
     QCoreApplication::setApplicationName("V1");
     m_recentFiles = new RecentFiles(this);
-    m_recentFiles->attachToMenuAfterItem(ui->menu_File, "SaveAS...", SLOT(recentOpen(QString)));//在分隔符菜单项下插入
+    if(!zh_cn)
+        m_recentFiles->attachToMenuAfterItem(ui->menu_File, "SaveAS...", SLOT(recentOpen(QString)));//在此处插入菜单
+    else
+         m_recentFiles->attachToMenuAfterItem(ui->menu_File, "另存...", SLOT(recentOpen(QString)));//在此处插入菜单
     m_recentFiles->setNumOfRecentFiles(15);//最多显示最近的15个文件
 
     init_statusBar();
@@ -817,17 +820,25 @@ void MainWindow::on_btnFindNext_clicked()
 
         if(red < 55)
         {
-            ui->editFind->setStyleSheet("background-color:rgba(50,50,50,255)");
+
             QPalette palette;
             palette.setColor(QPalette::Text,Qt::white);
+            ui->editFind->setPalette(palette);
+
+            palette = ui->editFind->palette();
+            palette.setColor(QPalette::Base, QColor(50,50,50,255));
             ui->editFind->setPalette(palette);
 
         }
         else
         {
-            ui->editFind->setStyleSheet("background-color:rgba(255,255,255,255)");
+
             QPalette palette;
             palette.setColor(QPalette::Text,Qt::black);
+            ui->editFind->setPalette(palette);
+
+            palette = ui->editFind->palette();
+            palette.setColor(QPalette::Base, Qt::white);
             ui->editFind->setPalette(palette);
 
         }
@@ -837,10 +848,14 @@ void MainWindow::on_btnFindNext_clicked()
     {
         if(str.count() > 0)
         {
-            ui->editFind->setStyleSheet("background-color:rgba(255,70,70)");
+
             //字色
             QPalette palette;
             palette.setColor(QPalette::Text,Qt::white);
+            ui->editFind->setPalette(palette);
+
+            palette = ui->editFind->palette();
+            palette.setColor(QPalette::Base, QColor(255,70,70));
             ui->editFind->setPalette(palette);
         }
     }
@@ -867,18 +882,18 @@ void MainWindow::on_btnFindPrevious_clicked()
     textEdit->SendScintilla(QsciScintilla::SCI_SEARCHANCHOR);
     if(textEdit->SendScintilla(QsciScintilla::SCI_SEARCHPREV, flags, ch) == -1)
     {
-        //ui->editFind->setStyleSheet("background-color:rgba(255,125,125,255)");//没找到
+
     }
     else
     {
         if(red < 55)
         {
-            ui->editFind->setStyleSheet("background-color:rgba(50,50,50,255)");
+
 
         }
         else
         {
-            ui->editFind->setStyleSheet("background-color:rgba(255,255,255,255)");
+
 
         }
 
@@ -3114,8 +3129,6 @@ void MainWindow::setLexer(QsciLexer *textLexer)
         //背景色
         //textLexer->setPaper(QColor(28, 28, 28));
 
-        //ui->editFind->setStyleSheet("background-color:rgba(28,28,28,255)");
-
         //设置光标所在行背景色
         textEdit->setCaretLineBackgroundColor(QColor(180, 180, 0));
         textEdit->setCaretLineFrameWidth(1);
@@ -3136,8 +3149,6 @@ void MainWindow::setLexer(QsciLexer *textLexer)
 
         //背景色
         //textLexer->setPaper(QColor(255, 255, 255));
-
-        //ui->editFind->setStyleSheet("background-color:rgba(255,255,255,255)");
 
         textEdit->setCaretLineBackgroundColor(QColor(255, 255, 0, 50));
         textEdit->setCaretLineFrameWidth(0);
@@ -3328,6 +3339,7 @@ void MainWindow::init_edit()
     this->setAcceptDrops(true);
 
     ui->editFind->setClearButtonEnabled(true);
+
     ui->editReplace->setClearButtonEnabled(true);
 
 
@@ -3931,18 +3943,29 @@ void MainWindow::set_wrap()
 
 void MainWindow::on_editFind_textChanged(const QString &arg1)
 {
+
+
     if(arg1.count() > 0)
         on_btnFindNext_clicked();
     else
     {
         if(red < 55)
         {
-            ui->editFind->setStyleSheet("background-color:rgba(50,50,50,255)");
+
+            QPalette palette;
+            palette = ui->editFind->palette();
+            palette.setColor(QPalette::Base, QColor(50,50,50));
+            ui->editFind->setPalette(palette);
 
         }
         else
         {
-            ui->editFind->setStyleSheet("background-color:rgba(255,255,255,255)");
+
+            QPalette palette;
+            palette = ui->editFind->palette();
+            palette.setColor(QPalette::Base, Qt::white);
+            ui->editFind->setPalette(palette);
+
 
         }
     }
