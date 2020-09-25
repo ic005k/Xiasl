@@ -152,10 +152,16 @@ MainWindow::~MainWindow()
 void MainWindow::about()
 {
     QFileInfo appInfo(qApp->applicationFilePath());
-    QString last = tr("Last modified: ") + appInfo.lastModified().toString("yyyy-MM-dd hh:mm:ss");
+    QString str;
+    if(!zh_cn)
+        str = "Last modified: ";
+    else
+        str = "最后修改：";
+    QString last = str + appInfo.lastModified().toString("yyyy-MM-dd hh:mm:ss");
+    QString str1 = "<a style='color:blue;' href = https://github.com/ic005k/QtiASL>QtiASL Editor</a><br><br>";
 
-    QMessageBox::about(this , tr("About") ,
-                       QString::fromLocal8Bit("<a style='color:blue;' href = https://github.com/ic005k/QtiASL>QtiASL Editor</a><br><br>") + last);
+    QMessageBox::about(this , "About", str1 + last);
+
 }
 
 QString MainWindow::openFile(QString fileName)
