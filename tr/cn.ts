@@ -35,134 +35,139 @@
     </message>
     <message>
         <location filename="mainwindow.ui" line="72"/>
-        <source>&lt;&lt;&lt;&lt;</source>
-        <translation></translation>
+        <source>Go to previous error</source>
+        <translation type="unfinished">跳转到上一个错误</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="82"/>
-        <source>&gt;&gt;&gt;&gt;</source>
-        <translation></translation>
+        <location filename="mainwindow.ui" line="95"/>
+        <source>Go to the next error</source>
+        <translation type="unfinished">跳转到下一个错误</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="89"/>
+        <location filename="mainwindow.ui" line="105"/>
         <source>RefreshTree</source>
         <translation>刷新树图</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="135"/>
+        <location filename="mainwindow.ui" line="163"/>
         <source>N</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="151"/>
+        <location filename="mainwindow.ui" line="179"/>
         <source>M</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="167"/>
+        <location filename="mainwindow.ui" line="195"/>
         <source>D</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="183"/>
+        <location filename="mainwindow.ui" line="211"/>
         <source>S</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="206"/>
+        <location filename="mainwindow.ui" line="234"/>
         <source>BasicInfo</source>
         <translation>基本信息</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="228"/>
-        <location filename="mainwindow.cpp" line="3593"/>
+        <location filename="mainwindow.ui" line="256"/>
+        <location filename="mainwindow.cpp" line="3603"/>
         <source>Errors</source>
         <translation>错误</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="250"/>
-        <location filename="mainwindow.cpp" line="3595"/>
+        <location filename="mainwindow.ui" line="278"/>
+        <location filename="mainwindow.cpp" line="3605"/>
         <source>Warnings</source>
         <translation>警告</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="272"/>
-        <location filename="mainwindow.cpp" line="3597"/>
+        <location filename="mainwindow.ui" line="300"/>
+        <location filename="mainwindow.cpp" line="3607"/>
         <source>Remarks</source>
         <translation>备注</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="294"/>
+        <location filename="mainwindow.ui" line="322"/>
         <source>Optimizations</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="327"/>
+        <location filename="mainwindow.ui" line="355"/>
         <source>File</source>
         <translation>文件</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="339"/>
+        <location filename="mainwindow.ui" line="367"/>
         <source>Tools</source>
         <translation>工具</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="349"/>
+        <location filename="mainwindow.ui" line="377"/>
         <source>Preferences</source>
         <translation>选项</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="361"/>
+        <location filename="mainwindow.ui" line="389"/>
         <source>Open</source>
         <translation>打开</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="366"/>
+        <location filename="mainwindow.ui" line="394"/>
         <source>Save</source>
         <translation>保存</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="371"/>
+        <location filename="mainwindow.ui" line="399"/>
         <source>SaveAS...</source>
         <translation>另存...</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="376"/>
+        <location filename="mainwindow.ui" line="404"/>
         <source>Generate</source>
         <translation>获取</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="381"/>
-        <source>Compiling</source>
+        <location filename="mainwindow.ui" line="82"/>
+        <location filename="mainwindow.ui" line="409"/>
+        <source>Compile</source>
         <translation>编译</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="386"/>
+        <source>Compiling</source>
+        <translation type="vanished">编译</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="414"/>
         <source>About</source>
         <translation>关于</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="391"/>
+        <location filename="mainwindow.ui" line="419"/>
         <source>New</source>
         <translation>新建</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="396"/>
+        <location filename="mainwindow.ui" line="424"/>
         <source>字体-Font</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="407"/>
+        <location filename="mainwindow.ui" line="435"/>
         <source>Font</source>
         <translation>字体</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="415"/>
+        <location filename="mainwindow.ui" line="443"/>
         <source>WrapWord</source>
         <translation>自动换行</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="420"/>
+        <location filename="mainwindow.ui" line="448"/>
         <source>Kextstat</source>
         <translation>查看Kext加载状态</translation>
     </message>
@@ -175,7 +180,7 @@
         <location filename="mainwindow.cpp" line="228"/>
         <location filename="mainwindow.cpp" line="331"/>
         <location filename="mainwindow.cpp" line="402"/>
-        <location filename="mainwindow.cpp" line="3702"/>
+        <location filename="mainwindow.cpp" line="3712"/>
         <source>Application</source>
         <translation type="unfinished"></translation>
     </message>
@@ -192,7 +197,7 @@
     </message>
     <message>
         <location filename="mainwindow.cpp" line="332"/>
-        <location filename="mainwindow.cpp" line="3703"/>
+        <location filename="mainwindow.cpp" line="3713"/>
         <source>The document has been modified.
 Do you want to save your changes?</source>
         <translation type="unfinished">文件内容已修改，是否保存？</translation>
@@ -250,12 +255,12 @@ Do you want to save your changes?</source>
         <translation>列</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="3345"/>
+        <location filename="mainwindow.cpp" line="3355"/>
         <source>Members</source>
         <translation>成员</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="3800"/>
+        <location filename="mainwindow.cpp" line="3810"/>
         <source> Layer </source>
         <translation>层级</translation>
     </message>
