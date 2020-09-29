@@ -6,7 +6,7 @@
     <message>
         <location filename="mainwindow.ui" line="14"/>
         <source>MainWindow</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="25"/>
@@ -51,22 +51,22 @@
     <message>
         <location filename="mainwindow.ui" line="135"/>
         <source>N</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="151"/>
         <source>M</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="167"/>
         <source>D</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="183"/>
         <source>S</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="206"/>
@@ -89,7 +89,7 @@
         <location filename="mainwindow.ui" line="272"/>
         <location filename="mainwindow.cpp" line="3597"/>
         <source>Remarks</source>
-        <translation type="unfinished">备注</translation>
+        <translation>备注</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="294"/>
@@ -238,6 +238,16 @@ Do you want to save your changes?</source>
         <location filename="mainwindow.cpp" line="611"/>
         <source>Ok</source>
         <translation>确  定</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="638"/>
+        <source>Row</source>
+        <translation>行</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="638"/>
+        <source>Column</source>
+        <translation>列</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="3345"/>
