@@ -635,7 +635,7 @@ void MainWindow::textEdit_cursorPositionChanged()
     int ColNum , RowNum;
     textEdit->getCursorPosition(&RowNum , &ColNum);
 
-    ui->statusbar->showMessage(QString::number(RowNum + 1) + "    " + QString::number(ColNum));
+    ui->statusbar->showMessage(tr("Row") + " : " + QString::number(RowNum + 1) + "    " + tr("Column") + " : " + QString::number(ColNum));
 
     //联动treeWidget
     mem_linkage(ui->treeWidget);
