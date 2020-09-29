@@ -58,7 +58,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     loadLocal();
 
-    ver = "QtiASL V1.0.11    ";
+    ver = "QtiASL V1.0.13    ";
     setWindowTitle(ver);
 
     QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
@@ -254,10 +254,7 @@ void MainWindow::loadFile(const QString &fileName)
 #endif
 
     setCurrentFile(fileName);
-    if(!zh_cn)
-        statusBar()->showMessage(tr("File loaded"), 2000);
-    else
-        statusBar()->showMessage("文件已装入", 2000);
+    statusBar()->showMessage(tr("File loaded"), 2000);
 
     ui->editShowMsg->clear();
 
@@ -300,6 +297,9 @@ void MainWindow::setCurrentFile(const QString &fileName)
     setWindowFilePath(shownName);
 
     setWindowTitle(ver + shownName);
+
+    ui->btnPreviousError->setEnabled(false);
+    ui->btnNextError->setEnabled(false);
 }
 
 
@@ -3098,6 +3098,16 @@ void MainWindow::init_menu()
 
     connect(ui->actionKextstat, &QAction::triggered, this, &MainWindow::kextstat);
 
+    QIcon icon;
+    icon.addFile(":/icon/1.png");
+    ui->btnPreviousError->setIcon(icon);
+
+    icon.addFile(":/icon/2.png");
+    ui->btnCompile->setIcon(icon);
+
+    icon.addFile(":/icon/3.png");
+    ui->btnNextError->setIcon(icon);
+
 
 }
 
@@ -4097,3 +4107,8 @@ void MainWindow::loadLocal()
 
 
 
+
+void MainWindow::on_btnCompile_clicked()
+{
+    btnCompile_clicked();
+}

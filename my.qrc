@@ -10,5 +10,8 @@
         <file>tr/qt_zh_CN.qm</file>
         <file>tr/widgets_zh_cn.qm</file>
         <file>tr/qscintilla_cn.qm</file>
+        <file>icon/1.png</file>
+        <file>icon/2.png</file>
+        <file>icon/3.png</file>
     </qresource>
 </RCC>

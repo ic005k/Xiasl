@@ -201,6 +201,8 @@ private slots:
 
     void on_editFind_textChanged(const QString &arg1);
 
+    void on_btnCompile_clicked();
+
 private:
     Ui::MainWindow *ui;
 

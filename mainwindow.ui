@@ -14,7 +14,7 @@
    <string>MainWindow</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../QtIASL/my.qrc">
+   <iconset>
     <normaloff>:/icon/icon.png</normaloff>:/icon/icon.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -68,29 +68,45 @@
       <property name="enabled">
        <bool>false</bool>
       </property>
+      <property name="toolTip">
+       <string>Go to previous error</string>
+      </property>
       <property name="text">
-       <string>&lt;&lt;&lt;&lt;</string>
+       <string/>
       </property>
      </widget>
     </item>
     <item row="0" column="8">
-     <widget class="QPushButton" name="btnNextError">
-      <property name="enabled">
-       <bool>false</bool>
+     <widget class="QPushButton" name="btnCompile">
+      <property name="toolTip">
+       <string>Compile</string>
       </property>
       <property name="text">
-       <string>&gt;&gt;&gt;&gt;</string>
+       <string/>
       </property>
      </widget>
     </item>
     <item row="0" column="9">
+     <widget class="QPushButton" name="btnNextError">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="toolTip">
+       <string>Go to the next error</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="10">
      <widget class="QPushButton" name="btnRefreshTree">
       <property name="text">
        <string>RefreshTree</string>
       </property>
      </widget>
     </item>
-    <item row="1" column="0" colspan="10">
+    <item row="1" column="0" colspan="11">
      <layout class="QGridLayout" name="gridLayout"/>
     </item>
    </layout>
@@ -107,6 +123,18 @@
      <font>
       <family>SauceCodePro Nerd Font</family>
      </font>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Sunken</enum>
+    </property>
+    <property name="lineWidth">
+     <number>1</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
     </property>
     <property name="columnCount">
      <number>2</number>
@@ -378,7 +406,7 @@
   </action>
   <action name="actionCompiling">
    <property name="text">
-    <string>Compiling</string>
+    <string>Compile</string>
    </property>
   </action>
   <action name="actionAbout">
@@ -421,8 +449,6 @@
    </property>
   </action>
  </widget>
- <resources>
-  <include location="../QtIASL/my.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>
