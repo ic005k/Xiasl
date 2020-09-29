@@ -131,11 +131,13 @@ MainWindow::MainWindow(QWidget *parent)
     QCoreApplication::setOrganizationName("QtiASL");
     QCoreApplication::setOrganizationDomain("github.com/ic005k/QtiASL");
     QCoreApplication::setApplicationName("V1");
+
     m_recentFiles = new RecentFiles(this);
     if(!zh_cn)
-        m_recentFiles->attachToMenuAfterItem(ui->menu_File, "SaveAS...", SLOT(recentOpen(QString)));//在此处插入菜单
+       m_recentFiles->attachToMenuAfterItem(ui->menu_File, "SaveAS...", SLOT(recentOpen(QString)));//在此处插入菜单
     else
-         m_recentFiles->attachToMenuAfterItem(ui->menu_File, "另存...", SLOT(recentOpen(QString)));//在此处插入菜单
+       m_recentFiles->attachToMenuAfterItem(ui->menu_File, "另存...", SLOT(recentOpen(QString)));//在此处插入菜单
+
     m_recentFiles->setNumOfRecentFiles(15);//最多显示最近的15个文件
 
     init_statusBar();
@@ -156,10 +158,9 @@ void MainWindow::about()
 {
     QFileInfo appInfo(qApp->applicationFilePath());
     QString str;
-    if(!zh_cn)
-        str = "Last modified: ";
-    else
-        str = "最后修改：";
+
+    str = tr("Last modified: ");
+
     QString last = str + appInfo.lastModified().toString("yyyy-MM-dd hh:mm:ss");
     QString str1 = "<a style='color:blue;' href = https://github.com/ic005k/QtiASL>QtiASL Editor</a><br><br>";
 
@@ -456,10 +457,7 @@ void MainWindow::btnCompile_clicked()
     if(!curFile.isEmpty())
         btnSave_clicked();
 
-    if(!zh_cn)
-        lblMsg->setText("Compiling...");
-    else
-        lblMsg->setText("编译中...");
+    lblMsg->setText(tr("Compiling..."));
 
     qTime.start();
 
@@ -594,11 +592,7 @@ void MainWindow::readResult(int exitCode)
     textEdit->SendScintilla(QsciScintilla::SCI_MARKERDELETEALL);
 
     float a = qTime.elapsed()/1000.00;
-    if(!zh_cn)
-        lblMsg->setText(tr("Compiled") + "(" + QTime::currentTime().toString() + "    " + QString::number(a, 'f', 2) + " s)");
-    else
-        lblMsg->setText("编译完成 (" + QTime::currentTime().toString() + "    " + QString::number(a, 'f', 2) + " 秒)");
-
+    lblMsg->setText(tr("Compiled") + "(" + QTime::currentTime().toString() + "    " + QString::number(a, 'f', 2) + " s)");
 
 
     if(exitCode == 0)
@@ -612,9 +606,9 @@ void MainWindow::readResult(int exitCode)
             QMessageBox::information(this , "QtiASL" , "Compilation successful.");
         else
         {
-            QMessageBox message(QMessageBox::Information, "QtiASL", "编译成功.");
+            QMessageBox message(QMessageBox::Information, "QtiASL", tr("Compilation successful."));
             message.setStandardButtons (QMessageBox::Ok);
-            message.setButtonText (QMessageBox::Ok, QString("确 定"));
+            message.setButtonText (QMessageBox::Ok, QString(tr("Ok")));
             message.exec();
         }
 
@@ -1420,11 +1414,7 @@ void MainWindow::update_ui_tree()
     ui->treeWidget->update();
 
     float a = qTime.elapsed()/1000.00;
-    if(!zh_cn)
-        lblMsg->setText(tr("Refresh completed") + "(" + QTime::currentTime().toString() + "    " + QString::number(a, 'f', 2) + " s)");
-    else
-        lblMsg->setText("刷新完成 (" + QTime::currentTime().toString() + "    " + QString::number(a, 'f', 2) + " 秒)");
-
+    lblMsg->setText(tr("Refresh completed") + "(" + QTime::currentTime().toString() + "    " + QString::number(a, 'f', 2) + " s)");
 
     textEdit_cursorPositionChanged();
 
@@ -1490,10 +1480,7 @@ void MainWindow::on_btnRefreshTree_clicked()
     textEditBack->clear();
     textEditBack->setText(textEdit->text());
 
-    if(!zh_cn)
-        lblMsg->setText(tr("Refreshing..."));
-    else
-        lblMsg->setText("刷新中...");
+    lblMsg->setText(tr("Refreshing..."));
 
     qTime.start();
     mythread->start();
@@ -3355,7 +3342,7 @@ void MainWindow::init_treeWidget(QTreeWidget *treeWidgetBack, int w)
     treeWidgetBack->setMaximumWidth(w/3 - 95);
     treeWidgetBack->setColumnWidth(0 , w/3 - 100);
     treeWidgetBack->setColumnWidth(1 , 100);
-    treeWidgetBack->setHeaderItem(new QTreeWidgetItem(QStringList() << "Members" << "Lines"));
+    treeWidgetBack->setHeaderItem(new QTreeWidgetItem(QStringList() << tr("Members") << "Lines"));
     //设置水平滚动条
     treeWidgetBack->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
     treeWidgetBack->header()->setStretchLastSection(false);
@@ -3602,31 +3589,14 @@ void MainWindow::separ_info(QString str_key, QTextEdit *editInfo)
 
 
     //标记tab头
-    if(!zh_cn)
-    {
-        if(str_key == "Error")
-            ui->tabWidget->setTabText(1, tr("Errors") + " (" + QString::number(info_count) +")");
-        if(str_key == "Warning")
-            ui->tabWidget->setTabText(2, tr("Warnings") + " (" + QString::number(info_count) +")");
-        if(str_key == "Remark")
-            ui->tabWidget->setTabText(3, tr("Remarks") + " (" + QString::number(info_count) +")");
-        if(str_key == "Optimization")
-            ui->tabWidget->setTabText(4, "Optimizations (" + QString::number(info_count) +")");
-
-    }
-    else
-    {
-        if(str_key == "Error")
-            ui->tabWidget->setTabText(1, "错误 (" + QString::number(info_count) +")");
-        if(str_key == "Warning")
-            ui->tabWidget->setTabText(2, "警告 (" + QString::number(info_count) +")");
-        if(str_key == "Remark")
-            ui->tabWidget->setTabText(3, "备注 (" + QString::number(info_count) +")");
-        if(str_key == "Optimization")
-            ui->tabWidget->setTabText(4, "Optimizations (" + QString::number(info_count) +")");
-
-    }
-
+    if(str_key == "Error")
+        ui->tabWidget->setTabText(1, tr("Errors") + " (" + QString::number(info_count) +")");
+    if(str_key == "Warning")
+        ui->tabWidget->setTabText(2, tr("Warnings") + " (" + QString::number(info_count) +")");
+    if(str_key == "Remark")
+        ui->tabWidget->setTabText(3, tr("Remarks") + " (" + QString::number(info_count) +")");
+    if(str_key == "Optimization")
+        ui->tabWidget->setTabText(4, "Optimizations (" + QString::number(info_count) +")");
 
 
 }
@@ -3827,7 +3797,7 @@ void MainWindow::init_statusBar()
     label_palette.setColor(QPalette::WindowText,Qt::white);
     lblLayer->setAutoFillBackground(true);
     lblLayer->setPalette(label_palette);
-    lblLayer->setText(" Layer ");
+    lblLayer->setText(tr(" Layer "));
     lblLayer->setTextInteractionFlags(Qt::TextSelectableByMouse); //允许选择其中的文字
 
     editLayer = new QLineEdit();
@@ -4100,7 +4070,7 @@ void MainWindow::loadLocal()
        QTextCodec *codec = QTextCodec::codecForName("System");
        QTextCodec::setCodecForLocale(codec);
 
-       QTranslator translator;
+       static QTranslator translator;  //注意：使translator一直生效
        QLocale locale;
        if( locale.language() == QLocale::English )  //获取系统语言环境
        {

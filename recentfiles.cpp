@@ -25,10 +25,7 @@ RecentFiles::RecentFiles(QMainWindow *parent)
 
 {
     // create the sub-menu
-    if(!zh_cn)
-        m_recentMenu->setTitle(tr("Open Recent..."));
-    else
-        m_recentMenu->setTitle(tr("最近打开..."));
+    m_recentMenu->setTitle(tr("Open Recent..."));
 
     m_recentMenu->setObjectName("RecentMenu");
 
