@@ -4024,7 +4024,7 @@
     <message>
         <location filename="qsciscintilla.cpp" line="4479"/>
         <source>&amp;Redo</source>
-        <translation type="unfinished">重做</translation>
+        <translation type="unfinished">恢复</translation>
     </message>
     <message>
         <location filename="qsciscintilla.cpp" line="4485"/>
@@ -4034,7 +4034,7 @@
     <message>
         <location filename="qsciscintilla.cpp" line="4490"/>
         <source>&amp;Copy</source>
-        <translation type="unfinished">拷贝</translation>
+        <translation type="unfinished">复制</translation>
     </message>
     <message>
         <location filename="qsciscintilla.cpp" line="4496"/>
