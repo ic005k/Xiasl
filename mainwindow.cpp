@@ -58,7 +58,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     loadLocal();
 
-    ver = "QtiASL V1.0.13    ";
+    ver = "QtiASL V1.0.15    ";
     setWindowTitle(ver);
 
     QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
@@ -461,21 +461,23 @@ void MainWindow::btnCompile_clicked()
 
     qTime.start();
 
+    QString op = ui->cboxCompilationOptions->currentText().trimmed();
+
 
 #ifdef Q_OS_WIN32
 // win
-   co->start(appInfo.filePath() + "/iasl.exe" , QStringList() << "-f" << curFile);
+   co->start(appInfo.filePath() + "/iasl.exe" , QStringList() << op << curFile);
 #endif
 
 #ifdef Q_OS_LINUX
 // linux
-   co->start(appInfo.filePath() + "/iasl" , QStringList() << "-f" << curFile);
+   co->start(appInfo.filePath() + "/iasl" , QStringList() << op << curFile);
 
 #endif
 
 #ifdef Q_OS_MAC
 // mac
-    co->start(appInfo.filePath() + "/iasl" , QStringList() << "-f" << curFile);
+    co->start(appInfo.filePath() + "/iasl" , QStringList() << op << curFile);
 
 #endif
 
@@ -3108,6 +3110,10 @@ void MainWindow::init_menu()
     icon.addFile(":/icon/3.png");
     ui->btnNextError->setIcon(icon);
 
+    ui->cboxCompilationOptions->addItem("-tp");
+    ui->cboxCompilationOptions->addItem("-f");
+    ui->cboxCompilationOptions->setEditable(true);
+
 
 }
 
@@ -3311,7 +3317,7 @@ void MainWindow::init_edit()
     textLexer = new QscilexerCppAttach;
     textEdit->setLexer(textLexer);
 
-    //读取字体
+    //读取字体和编译参数
     QString qfile = QDir::homePath() + "/QtiASL.ini";
     QFile file(qfile);
     QFileInfo fi(qfile);
@@ -3325,6 +3331,10 @@ void MainWindow::init_edit()
         font.setBold(Reg.value("FontBold").toBool());
         font.setItalic(Reg.value("FontItalic").toBool());
         font.setUnderline(Reg.value("FontUnderline").toBool());
+
+        QString op = Reg.value("options").toString().trimmed();
+        if(op.count() > 0)
+            ui->cboxCompilationOptions->setCurrentText(op);
 
     }
     textLexer->setFont(font);
@@ -3701,6 +3711,14 @@ void MainWindow::regACPI_win()
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
+
+    //存储编译选项
+    QString qfile = QDir::homePath() + "/QtiASL.ini";
+    QFile file(qfile);
+    //QSettings Reg(qfile, QSettings::NativeFormat);
+    QSettings Reg(qfile, QSettings::IniFormat);//全平台都采用ini格式
+    Reg.setValue("options" , ui->cboxCompilationOptions->currentText().trimmed());
+
 
     if(textEdit->isModified())
     {
