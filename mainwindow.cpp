@@ -3110,8 +3110,8 @@ void MainWindow::init_menu()
     icon.addFile(":/icon/3.png");
     ui->btnNextError->setIcon(icon);
 
-    ui->cboxCompilationOptions->addItem("-tp");
     ui->cboxCompilationOptions->addItem("-f");
+    ui->cboxCompilationOptions->addItem("-tp");
     ui->cboxCompilationOptions->setEditable(true);
 
 
