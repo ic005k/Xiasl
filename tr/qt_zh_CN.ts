@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="zh">
+<TS version="2.1" language="zh">
 <context>
     <name>MAC_APPLICATION_MENU</name>
     <message>
@@ -1759,7 +1759,7 @@ Do you want to delete it anyway?</source>
     <message>
         <location line="+7"/>
         <source>Date Modified</source>
-        <translation>日期被修改</translation>
+        <translation type="unfinished">修改日期</translation>
     </message>
     <message>
         <location filename="../src/gui/dialogs/qfilesystemmodel_p.h" line="+234"/>
