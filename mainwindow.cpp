@@ -305,7 +305,8 @@ void MainWindow::setCurrentFile(const QString &fileName)
     QFileInfo f(shownName);
     ui->treeView->setRootIndex(model->index(f.path()));
     fsm_Index = model->index(f.path());
-    ui->btnReturn->setText(shownName);
+
+    set_return_text(f.path());
 
     ui->treeView->setCurrentIndex(model->index(shownName));//并设置当前条目为打开的文件
     ui->treeView->setFocus();
@@ -333,6 +334,14 @@ void MainWindow::setCurrentFile(const QString &fileName)
 
         ui->tabWidget->setVisible(false);
     }
+
+}
+
+void MainWindow::set_return_text(QString text)
+{
+
+    QFontMetrics elideFont(ui->btnReturn->font());
+    ui->btnReturn->setText(elideFont.elidedText(text, Qt::ElideLeft, ui->tabWidget_misc->width() - 100)); //省略号显示在左边
 
 }
 
@@ -3428,6 +3437,8 @@ void MainWindow::init_filesystem()
     model->setRootPath("/Volumes");
 
     ui->treeView->setModel(model);
+    ui->treeView->setColumnWidth(3, 135);//注意顺序
+    ui->treeView->header()->setSectionResizeMode(QHeaderView::ResizeToContents);//表头列宽自适应
 
     ui->treeView->setAnimated(false);
     ui->treeView->setIndentation(20);
@@ -4207,7 +4218,7 @@ void MainWindow::on_treeView_doubleClicked(const QModelIndex &index)
             loadFile(openFile(fsm_Filepath));
     }
 
-    ui->btnReturn->setText(fsm_Filepath);
+    //ui->btnReturn->setText(fsm_Filepath);
 
 
 
@@ -4231,14 +4242,14 @@ void MainWindow::on_treeView_expanded(const QModelIndex &index)
 {
     fsm_Index = index;
     QString str = model->filePath(index);
-    ui->btnReturn->setText(str);
+    set_return_text(str);
 }
 
 void MainWindow::on_treeView_collapsed(const QModelIndex &index)
 {
     fsm_Index = index;
     QString str = model->filePath(index);
-    ui->btnReturn->setText(str);
+    set_return_text(str);
 }
 
 

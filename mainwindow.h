@@ -223,6 +223,8 @@ private:
 
     QString shownName;
 
+    void set_return_text(QString text);
+
     QString fsm_Filepath;
 
     QModelIndex fsm_Index;
