@@ -122,7 +122,7 @@
        <enum>QTabWidget::West</enum>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <property name="documentMode">
        <bool>true</bool>
@@ -168,7 +168,7 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="tab_treeView">
+      <widget class="QWidget" name="tab_misc2">
        <attribute name="title">
         <string>Filesystem Browser</string>
        </attribute>

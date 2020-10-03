@@ -115,10 +115,8 @@ MainWindow::MainWindow(QWidget *parent)
     splitterRight->addWidget(ui->tabWidget);
     ui->gridLayout->addWidget(splitterMain);
     ui->tabWidget->setHidden(true);
-    //ui->treeWidget->setHidden(true);
 
-    ui->tabWidget_misc->setMinimumWidth(300);
-    ui->tabWidget_misc->setMaximumWidth(w/3);
+    ui->tabWidget_misc->setMaximumWidth(w/3 - 20);
 
     ui->chkName->setVisible(false);
     ui->chkScope->setVisible(false);
@@ -332,6 +330,8 @@ void MainWindow::setCurrentFile(const QString &fileName)
         //设置编译功能屏蔽
         ui->actionCompiling->setEnabled(false);
         ui->btnCompile->setEnabled(false);
+
+        ui->tabWidget->setVisible(false);
     }
 
 }
@@ -3399,12 +3399,10 @@ void MainWindow::init_treeWidget(QTreeWidget *treeWidgetBack, int w)
     //connect(treeWidgetBack, &QTreeWidget::itemClicked, this, &MainWindow::treeWidgetBack_itemClicked);
     treeWidgetBack->setColumnHidden(1 , true);
     treeWidgetBack->setColumnCount(2);
-    treeWidgetBack->setMinimumWidth(300);
-    treeWidgetBack->setMaximumWidth(w/3 - 90);
-    treeWidgetBack->setColumnWidth(0 , w/3 - 100);
+
+    treeWidgetBack->setColumnWidth(0 , w/3);
     treeWidgetBack->setColumnWidth(1 , 100);
     treeWidgetBack->setHeaderItem(new QTreeWidgetItem(QStringList() << tr("Members") << "Lines"));
-
 
     //设置水平滚动条
     treeWidgetBack->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
