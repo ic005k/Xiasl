@@ -41,6 +41,11 @@
 #include <QFontDialog>
 #include <QMetaType>
 #include <QTranslator>
+#include <QFileSystemModel>
+#include <QCommandLineParser>
+#include <QCommandLineOption>
+#include <QStandardItem>
+#include <QStandardItemModel>
 
 #ifdef Q_OS_WIN32
 #include <windows.h>
@@ -114,11 +119,12 @@ protected:
     void dropEvent (QDropEvent *e);
     void paintEvent(QPaintEvent *event);
 
-
 public slots:
     void btnOpen_clicked();
     QString openFile(QString fileName);
     void dealover();//处理线程返回的结束信号
+
+    bool eventFilter(QObject *,QEvent *);
 
 private slots:
     void treeWidgetBack_itemClicked(QTreeWidgetItem *item, int column);
@@ -203,8 +209,23 @@ private slots:
 
     void on_btnCompile_clicked();
 
+    void on_treeView_doubleClicked(const QModelIndex &index);
+
+    void on_btnReturn_clicked();
+
+    void on_treeView_expanded(const QModelIndex &index);
+
+    void on_treeView_collapsed(const QModelIndex &index);
+
+
 private:
     Ui::MainWindow *ui;
+
+    QString shownName;
+
+    QString fsm_Filepath;
+
+    QModelIndex fsm_Index;
 
     QString getLayerName(QTreeWidgetItem *hItem);
 
@@ -257,6 +278,9 @@ private:
     void init_treeWidget(QTreeWidget *treeWidgetBack, int w);
 
     void init_statusBar();
+
+    void init_filesystem();
+    QFileSystemModel *model;
 
     void update_ui_tw();
 

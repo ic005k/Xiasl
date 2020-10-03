@@ -14,11 +14,11 @@
    <string>MainWindow</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../QtIASL/my.qrc">
+   <iconset resource="my.qrc">
     <normaloff>:/icon/icon.png</normaloff>:/icon/icon.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout_7">
+   <layout class="QGridLayout" name="gridLayout_9">
     <item row="0" column="0" colspan="2">
      <widget class="QCheckBox" name="chkCaseSensitive">
       <property name="text">
@@ -32,7 +32,7 @@
     <item row="0" column="2">
      <widget class="QLineEdit" name="editFind"/>
     </item>
-    <item row="0" column="4" colspan="4">
+    <item row="0" column="3" colspan="5">
      <widget class="QPushButton" name="btnFindPrevious">
       <property name="text">
        <string>FindPrevious</string>
@@ -113,44 +113,81 @@
       </property>
      </widget>
     </item>
-    <item row="1" column="0" rowspan="3" colspan="18">
+    <item row="1" column="0" rowspan="4" colspan="18">
      <layout class="QGridLayout" name="gridLayout"/>
     </item>
-    <item row="2" column="1" colspan="3">
-     <widget class="QTreeWidget" name="treeWidget">
-      <property name="font">
-       <font>
-        <family>SauceCodePro Nerd Font</family>
-       </font>
+    <item row="2" column="1" rowspan="2" colspan="6">
+     <widget class="QTabWidget" name="tabWidget_misc">
+      <property name="tabPosition">
+       <enum>QTabWidget::West</enum>
       </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Sunken</enum>
-      </property>
-      <property name="lineWidth">
+      <property name="currentIndex">
        <number>1</number>
       </property>
-      <property name="midLineWidth">
-       <number>0</number>
+      <property name="documentMode">
+       <bool>true</bool>
       </property>
-      <property name="columnCount">
-       <number>2</number>
-      </property>
-      <column>
-       <property name="text">
-        <string notr="true">1</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string notr="true">2</string>
-       </property>
-      </column>
+      <widget class="QWidget" name="tab_misc1">
+       <attribute name="title">
+        <string>Members</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_7">
+        <item row="0" column="0">
+         <widget class="QTreeWidget" name="treeWidget">
+          <property name="font">
+           <font>
+            <family>SauceCodePro Nerd Font</family>
+           </font>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Sunken</enum>
+          </property>
+          <property name="lineWidth">
+           <number>1</number>
+          </property>
+          <property name="midLineWidth">
+           <number>0</number>
+          </property>
+          <property name="columnCount">
+           <number>2</number>
+          </property>
+          <column>
+           <property name="text">
+            <string notr="true">1</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string notr="true">2</string>
+           </property>
+          </column>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_treeView">
+       <attribute name="title">
+        <string>Filesystem Browser</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_8">
+        <item row="0" column="0">
+         <widget class="QPushButton" name="btnReturn">
+          <property name="text">
+           <string>Return</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QTreeView" name="treeView"/>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </item>
-    <item row="2" column="9" colspan="4">
+    <item row="3" column="9" colspan="4">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
        <number>2</number>
@@ -270,7 +307,7 @@
       </widget>
      </widget>
     </item>
-    <item row="3" column="3" colspan="2">
+    <item row="4" column="4">
      <widget class="QCheckBox" name="chkScope">
       <property name="text">
        <string>S</string>
@@ -280,7 +317,7 @@
       </property>
      </widget>
     </item>
-    <item row="3" column="5">
+    <item row="4" column="5">
      <widget class="QCheckBox" name="chkDevice">
       <property name="text">
        <string>D</string>
@@ -290,7 +327,7 @@
       </property>
      </widget>
     </item>
-    <item row="3" column="6">
+    <item row="4" column="6">
      <widget class="QCheckBox" name="chkMethod">
       <property name="text">
        <string>M</string>
@@ -300,7 +337,7 @@
       </property>
      </widget>
     </item>
-    <item row="3" column="7" colspan="2">
+    <item row="4" column="7" colspan="2">
      <widget class="QCheckBox" name="chkName">
       <property name="text">
        <string>N</string>
@@ -318,7 +355,7 @@
      <x>0</x>
      <y>0</y>
      <width>1440</width>
-     <height>24</height>
+     <height>30</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -421,7 +458,7 @@
   </action>
  </widget>
  <resources>
-  <include location="../QtIASL/my.qrc"/>
+  <include location="my.qrc"/>
  </resources>
  <connections/>
 </ui>

@@ -58,7 +58,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     loadLocal();
 
-    ver = "QtiASL V1.0.15    ";
+    ver = "QtiASL V1.0.16    ";
     setWindowTitle(ver);
 
     QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
@@ -108,7 +108,7 @@ MainWindow::MainWindow(QWidget *parent)
     init_info_edit();
 
     splitterMain = new QSplitter(Qt::Horizontal,this);
-    splitterMain->addWidget(ui->treeWidget);
+    splitterMain->addWidget(ui->tabWidget_misc);
     QSplitter *splitterRight = new QSplitter(Qt::Vertical,splitterMain);
     splitterRight->setOpaqueResize(true);
     splitterRight->addWidget(textEdit);
@@ -116,6 +116,9 @@ MainWindow::MainWindow(QWidget *parent)
     ui->gridLayout->addWidget(splitterMain);
     ui->tabWidget->setHidden(true);
     //ui->treeWidget->setHidden(true);
+
+    ui->tabWidget_misc->setMinimumWidth(300);
+    ui->tabWidget_misc->setMaximumWidth(w/3);
 
     ui->chkName->setVisible(false);
     ui->chkScope->setVisible(false);
@@ -141,6 +144,8 @@ MainWindow::MainWindow(QWidget *parent)
     m_recentFiles->setNumOfRecentFiles(15);//最多显示最近的15个文件
 
     init_statusBar();
+
+    init_filesystem();
 
     textEdit->setFocus();
 
@@ -209,9 +214,6 @@ QString MainWindow::openFile(QString fileName)
         textEdit->setWrapMode(QsciScintilla::WrapNone);
 
     }
-    else
-        ui->treeWidget->setHidden(true);
-    ui->tabWidget->setHidden(true);
 
 
     return  fileName;
@@ -289,7 +291,7 @@ void MainWindow::setCurrentFile(const QString &fileName)
     textEdit->setModified(false);
     setWindowModified(false);
 
-    QString shownName = curFile;
+    shownName = curFile;
     if (curFile.isEmpty())
         shownName = "untitled.dsl";
 
@@ -300,6 +302,38 @@ void MainWindow::setCurrentFile(const QString &fileName)
 
     ui->btnPreviousError->setEnabled(false);
     ui->btnNextError->setEnabled(false);
+
+    //初始化fsm
+    QFileInfo f(shownName);
+    ui->treeView->setRootIndex(model->index(f.path()));
+    fsm_Index = model->index(f.path());
+    ui->btnReturn->setText(shownName);
+
+    ui->treeView->setCurrentIndex(model->index(shownName));//并设置当前条目为打开的文件
+    ui->treeView->setFocus();
+
+    QFileInfo fi(shownName);
+    if(fi.suffix().toLower() == "dsl")
+    {
+        ui->actionWrapWord->setChecked(false);//取消自动换行，影响dsl文件开启速度
+        textEdit->setWrapMode(QsciScintilla::WrapNone);
+
+        //设置编译功能使能
+        ui->actionCompiling->setEnabled(true);
+        ui->btnCompile->setEnabled(true);
+
+        ui->tabWidget_misc->setCurrentIndex(0);
+
+    }
+    else
+    {
+        ui->tabWidget_misc->setCurrentIndex(1);
+
+        //设置编译功能屏蔽
+        ui->actionCompiling->setEnabled(false);
+        ui->btnCompile->setEnabled(false);
+    }
+
 }
 
 
@@ -3110,9 +3144,16 @@ void MainWindow::init_menu()
     icon.addFile(":/icon/3.png");
     ui->btnNextError->setIcon(icon);
 
+    icon.addFile(":/icon/return.png");
+    ui->btnReturn->setIcon(icon);
+
     ui->cboxCompilationOptions->addItem("-f");
     ui->cboxCompilationOptions->addItem("-tp");
     ui->cboxCompilationOptions->setEditable(true);
+
+    //设置编译功能屏蔽
+    ui->actionCompiling->setEnabled(false);
+    ui->btnCompile->setEnabled(false);
 
 
 }
@@ -3359,18 +3400,47 @@ void MainWindow::init_treeWidget(QTreeWidget *treeWidgetBack, int w)
     treeWidgetBack->setColumnHidden(1 , true);
     treeWidgetBack->setColumnCount(2);
     treeWidgetBack->setMinimumWidth(300);
-    treeWidgetBack->setMaximumWidth(w/3 - 95);
+    treeWidgetBack->setMaximumWidth(w/3 - 90);
     treeWidgetBack->setColumnWidth(0 , w/3 - 100);
     treeWidgetBack->setColumnWidth(1 , 100);
     treeWidgetBack->setHeaderItem(new QTreeWidgetItem(QStringList() << tr("Members") << "Lines"));
+
+
     //设置水平滚动条
     treeWidgetBack->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
     treeWidgetBack->header()->setStretchLastSection(false);
 
     treeWidgetBack->setFont(font);
 
-    ui->treeWidget->setStyle(QStyleFactory::create("windows"));
+    ui->treeWidget->setStyle(QStyleFactory::create("windows")); //连接的虚线
     ui->treeWidget->setIconSize(QSize(12, 12));
+
+    ui->treeWidget->installEventFilter(this);
+    //ui->treeWidget->setAlternatingRowColors(true);//底色交替显示
+    //ui->treeWidget->setStyleSheet( "QTreeWidget::item:hover{background-color:rgb(0,0,255,20)}" "QTreeWidget::item:selected{background-color:rgb(135, 206, 255)}" );
+
+}
+
+void MainWindow::init_filesystem()
+{
+
+    ui->treeView->installEventFilter(this);//安装事件过滤器
+    //ui->treeView->setAlternatingRowColors(true);//不同的底色交替显示
+
+    model = new QFileSystemModel;
+    model->setRootPath("/Volumes");
+
+    ui->treeView->setModel(model);
+
+    ui->treeView->setAnimated(false);
+    ui->treeView->setIndentation(20);
+    ui->treeView->setSortingEnabled(true);
+    const QSize availableSize = ui->treeView->screen()->availableGeometry().size();
+    ui->treeView->resize(availableSize / 2);
+    ui->treeView->setColumnWidth(0, ui->treeView->width() / 3);
+
+    ui->tabWidget_misc->setCurrentIndex(0);
+
 
 }
 
@@ -4123,10 +4193,89 @@ void MainWindow::loadLocal()
 }
 
 
-
-
-
 void MainWindow::on_btnCompile_clicked()
 {
     btnCompile_clicked();
+}
+
+void MainWindow::on_treeView_doubleClicked(const QModelIndex &index)
+{
+
+    fsm_Filepath = model->filePath(index);
+    fsm_Index = index;
+
+    if(!model->isDir(index))
+        loadFile(openFile(fsm_Filepath));
+
+    ui->btnReturn->setText(fsm_Filepath);
+
+    //qDebug() << index.parent().data().toString();
+
+
+}
+
+void MainWindow::on_btnReturn_clicked()
+{
+
+    QString str = model->filePath(fsm_Index.parent());
+
+    ui->treeView->setRootIndex(model->index(str));
+
+    ui->btnReturn->setText(str);
+
+    fsm_Index = fsm_Index.parent();
+
+
+}
+
+void MainWindow::on_treeView_expanded(const QModelIndex &index)
+{
+    fsm_Index = index;
+    QString str = model->filePath(index);
+    ui->btnReturn->setText(str);
+}
+
+void MainWindow::on_treeView_collapsed(const QModelIndex &index)
+{
+    fsm_Index = index;
+    QString str = model->filePath(index);
+    ui->btnReturn->setText(str);
+}
+
+
+bool MainWindow::eventFilter(QObject *watched, QEvent *event)
+{
+     if (watched==ui->treeView)         //首先判断控件
+     {
+          if (event->type()==QEvent::FocusIn)     //然后再判断控件的具体事件 (这里指获得焦点事件)
+          {
+              //ui->treeView->setStyleSheet( "QTreeView::item:hover{background-color:rgb(0,255,0,0)}" "QTreeView::item:selected{background-color:rgb(255,0,5,200)}" );
+
+              //this->setStyleSheet("QTreeView::branch:selected{background-color:rgb(0,255,0,0);} QTreeView::item:selected{background-color:rgb(255,0,5,200);} ");
+
+          }
+          else if (event->type()==QEvent::FocusOut)    // 这里指控件的失去焦点事件
+          {
+
+              //ui->treeView->setStyleSheet( "QTreeView::item:hover{background-color:rgb(0,255,0,0)}" "QTreeView::item:selected{background-color:rgb(255,0,0,60)}" );
+              //this->setStyleSheet("QTreeView::branch:selected{background-color:rgb(0,255,0,0;} QTreeView::item:selected{background-color:rgb(255,0,5,200);} ");
+
+          }
+     }
+
+     if (watched==ui->treeWidget)         //首先判断控件
+     {
+          if (event->type()==QEvent::FocusIn)     //然后再判断控件的具体事件 (这里指获得焦点事件)
+          {
+              //ui->treeWidget->setStyleSheet( "QTreeWidget::item:hover{background-color:rgb(0,255,0,0)}" "QTreeWidget::item:selected{background-color:rgb(255,0,5)}" );
+
+          }
+          else if (event->type()==QEvent::FocusOut)    // 这里指控件的失去焦点事件
+          {
+             //ui->treeWidget->setStyleSheet( "QTreeWidget::item:hover{background-color:rgb(0,255,0,0)}" "QTreeWidget::item:selected{background-color:rgb(255,0,0)}" );
+          }
+     }
+
+     return QWidget::eventFilter(watched,event);
+
 }
