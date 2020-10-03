@@ -3073,8 +3073,7 @@ void MainWindow::init_info_edit()
 
     textEditTemp = new QTextEdit();
 
-    ui->tabWidget->setMaximumHeight(250);
-    ui->tabWidget->setMinimumHeight(150);
+    ui->tabWidget->setMaximumHeight(220);
 
     ui->editShowMsg->setLineWrapMode(ui->editShowMsg->NoWrap);
     ui->editShowMsg->setReadOnly(true);
@@ -4203,11 +4202,13 @@ void MainWindow::on_treeView_doubleClicked(const QModelIndex &index)
     fsm_Index = index;
 
     if(!model->isDir(index))
-        loadFile(openFile(fsm_Filepath));
+    {
+        if(maybeSave())
+            loadFile(openFile(fsm_Filepath));
+    }
 
     ui->btnReturn->setText(fsm_Filepath);
 
-    //qDebug() << index.parent().data().toString();
 
 
 }
@@ -4243,32 +4244,26 @@ void MainWindow::on_treeView_collapsed(const QModelIndex &index)
 
 bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 {
-     if (watched==ui->treeView)         //首先判断控件
+     if (watched==ui->treeView)
      {
-          if (event->type()==QEvent::FocusIn)     //然后再判断控件的具体事件 (这里指获得焦点事件)
+          if (event->type()==QEvent::FocusIn)
           {
-              //ui->treeView->setStyleSheet( "QTreeView::item:hover{background-color:rgb(0,255,0,0)}" "QTreeView::item:selected{background-color:rgb(255,0,5,200)}" );
-
-              //this->setStyleSheet("QTreeView::branch:selected{background-color:rgb(0,255,0,0);} QTreeView::item:selected{background-color:rgb(255,0,5,200);} ");
 
           }
-          else if (event->type()==QEvent::FocusOut)    // 这里指控件的失去焦点事件
+          else if (event->type()==QEvent::FocusOut)
           {
-
-              //ui->treeView->setStyleSheet( "QTreeView::item:hover{background-color:rgb(0,255,0,0)}" "QTreeView::item:selected{background-color:rgb(255,0,0,60)}" );
-              //this->setStyleSheet("QTreeView::branch:selected{background-color:rgb(0,255,0,0;} QTreeView::item:selected{background-color:rgb(255,0,5,200);} ");
 
           }
      }
 
-     if (watched==ui->treeWidget)         //首先判断控件
+     if (watched==ui->treeWidget)         //判断控件
      {
-          if (event->type()==QEvent::FocusIn)     //然后再判断控件的具体事件 (这里指获得焦点事件)
+          if (event->type()==QEvent::FocusIn)     //控件获得焦点事件)
           {
               //ui->treeWidget->setStyleSheet( "QTreeWidget::item:hover{background-color:rgb(0,255,0,0)}" "QTreeWidget::item:selected{background-color:rgb(255,0,5)}" );
 
           }
-          else if (event->type()==QEvent::FocusOut)    // 这里指控件的失去焦点事件
+          else if (event->type()==QEvent::FocusOut)    //控件失去焦点事件
           {
              //ui->treeWidget->setStyleSheet( "QTreeWidget::item:hover{background-color:rgb(0,255,0,0)}" "QTreeWidget::item:selected{background-color:rgb(255,0,0)}" );
           }
