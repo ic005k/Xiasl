@@ -104,7 +104,7 @@
         <location filename="mainwindow.ui" line="266"/>
         <location filename="mainwindow.cpp" line="3684"/>
         <source>Remarks</source>
-        <translation>备注</translation>
+        <translation type="unfinished">批注</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="288"/>
