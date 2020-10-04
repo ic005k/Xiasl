@@ -3434,10 +3434,24 @@ void MainWindow::init_filesystem()
     //ui->treeView->setAlternatingRowColors(true);//不同的底色交替显示
 
     model = new QFileSystemModel;
+
+#ifdef Q_OS_WIN32
+    model->setRootPath("");
+
+#endif
+
+#ifdef Q_OS_LINUX
+    model->setRootPath("");
+
+#endif
+
+#ifdef Q_OS_MAC
     model->setRootPath("/Volumes");
 
+#endif
+
     ui->treeView->setModel(model);
-    ui->treeView->setColumnWidth(3, 135);//注意顺序
+    ui->treeView->setColumnWidth(3, 200);//注意顺序
     ui->treeView->header()->setSectionResizeMode(QHeaderView::ResizeToContents);//表头列宽自适应
 
     ui->treeView->setAnimated(false);
