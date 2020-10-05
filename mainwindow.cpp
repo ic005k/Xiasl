@@ -116,6 +116,7 @@ MainWindow::MainWindow(QWidget *parent)
     textEditList.push_back(textEdit);
     textNumber = 0;
 
+    ui->tabWidget_textEdit->tabBar()->installEventFilter(this);//安装事件过滤器以禁用鼠标滚轮切换标签页
     ui->tabWidget_textEdit->addTab(textEditList.at(textNumber), tr("untitled") + ".dsl");
     connect(ui->tabWidget_textEdit, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
     openFileList.push_back(shownName);
@@ -1541,7 +1542,7 @@ void MainWindow::refresh_tree(QsciScintilla *textEdit)
         }
 
 
-    }
+     }
 
 
     //将textEdit的内容读到后台
@@ -4396,6 +4397,16 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
           }
      }
 
+     //禁用鼠标滚轮切换标签页
+     if(watched == ui->tabWidget_textEdit->tabBar())
+     {
+         if(event->type() == QEvent::Wheel)
+         {
+             return true;
+         }
+
+     }
+
      return QWidget::eventFilter(watched,event);
 
 }
@@ -4468,8 +4479,12 @@ void MainWindow::closeTab(int index)
 void MainWindow::on_tabWidget_textEdit_currentChanged(int index)
 {
 
-    if(ui->tabWidget_textEdit->tabBar()->count() > 1 && !loading)
+    if(index > 0){}
+    /*if(ui->tabWidget_textEdit->tabBar()->count() > 1 && !loading)
+    {
+
         on_tabWidget_textEdit_tabBarClicked(index);
+    }*/
 
 
 }
