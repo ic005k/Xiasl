@@ -4311,7 +4311,7 @@ void MainWindow::readKextstat()
     QString result = QString::fromUtf8(pk->readAll());
     newFile(false);
     textEditList.at(textNumber)->append(result);
-    ui->treeWidget->setHidden(true);
+
     ui->tabWidget->setHidden(true);
 }
 
