@@ -221,6 +221,16 @@ void MainWindow::loadFile(const QString &fileName)
 
     loading = true;
 
+    /*如果之前文件已打开，则返回已打开的文件*/
+    for(int i = 0; i < openFileList.count(); i++)
+    {
+        if(fileName == openFileList.at(i))
+        {
+            ui->tabWidget_textEdit->setCurrentIndex(i);
+            return;
+        }
+    }
+
     newFile(true);
 
     QFile file(fileName);
