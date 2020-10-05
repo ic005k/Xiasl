@@ -84,7 +84,7 @@ MainWindow::MainWindow(QWidget *parent)
 #ifdef Q_OS_LINUX
 // linux
     font.setFamily("SauceCodePro Nerd Font");
-    font.setPointSize(13);
+    font.setPointSize(12);
 
     ui->actionKextstat->setEnabled(false);
     ui->actionGenerate->setEnabled(false);
@@ -4468,7 +4468,8 @@ void MainWindow::closeTab(int index)
 void MainWindow::on_tabWidget_textEdit_currentChanged(int index)
 {
 
-    if(index > 0){}
+    if(ui->tabWidget_textEdit->tabBar()->count() > 1 && !loading)
+        on_tabWidget_textEdit_tabBarClicked(index);
 
 
 }
