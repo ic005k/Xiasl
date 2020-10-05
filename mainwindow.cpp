@@ -331,12 +331,12 @@ void MainWindow::setCurrentFile(const QString &fileName)
         ui->actionCompiling->setEnabled(true);
         ui->btnCompile->setEnabled(true);
 
-        ui->tabWidget_misc->setCurrentIndex(0);
+        //ui->tabWidget_misc->setCurrentIndex(0);
 
     }
     else
     {
-        ui->tabWidget_misc->setCurrentIndex(1);
+        //ui->tabWidget_misc->setCurrentIndex(1);
 
         //设置编译功能屏蔽
         ui->actionCompiling->setEnabled(false);
