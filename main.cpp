@@ -47,10 +47,6 @@ int main(int argc, char *argv[])
 
     }
 
-
-
-
-
     /*注册线程间信号槽传递自定义数据类型*/
     qRegisterMetaType<QList<QPersistentModelIndex>>("QList<QPersistentModelIndex>");
     qRegisterMetaType<QList<QPersistentModelIndex>>("QList<QPersistentModelIndex>&");

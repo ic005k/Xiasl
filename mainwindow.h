@@ -101,10 +101,11 @@ public:
     void loadLocal();
 
     QString curFile;
+    QVector<QString> openFileList;
     QProcess *co;
     QProcess *pk;
     QFont font;
-    QsciScintilla *textEdit;
+
     RecentFiles *m_recentFiles;
 
     int current_line = 0;
@@ -112,6 +113,9 @@ public:
     thread_one *mythread; //线程对象
 
     QSplitter *splitterMain;
+
+    //QsciScintilla *textEdit;
+    int textNumber = 0;
 
 protected:
     void closeEvent(QCloseEvent *event);
@@ -129,15 +133,16 @@ public slots:
 private slots:
     void treeWidgetBack_itemClicked(QTreeWidgetItem *item, int column);
 
+    void closeTab(int index);
+
     void kextstat();
 
     void set_font();
 
     void set_wrap();
 
-
-
     void on_btnRefreshTree_clicked();
+    void refresh_tree(QsciScintilla *textEdit);
 
     void timer_linkage();
 
@@ -147,7 +152,7 @@ private slots:
 
     void recentOpen(QString filename);
 
-    void newFile();
+    void newFile(bool open);
 
     bool btnSave_clicked();
 
@@ -218,6 +223,10 @@ private slots:
     void on_treeView_collapsed(const QModelIndex &index);
 
 
+    void on_tabWidget_textEdit_tabBarClicked(int index);
+
+    void on_tabWidget_textEdit_currentChanged(int index);
+
 private:
     Ui::MainWindow *ui;
 
@@ -269,13 +278,15 @@ private:
 
     bool saveFile(const QString &fileName);
 
-    void mem_linkage(QTreeWidget * tw);
+    void mem_linkage(QTreeWidget * tw, int RowNum);
 
     void init_menu();
 
+    void init_recentFiles();
+
     void init_info_edit();
 
-    void init_edit();
+    void init_edit(QsciScintilla *textEdit);
 
     void init_treeWidget(QTreeWidget *treeWidgetBack, int w);
 
@@ -286,7 +297,7 @@ private:
 
     void update_ui_tw();
 
-
+    void set_currsor_position(QsciScintilla *textEdit);
 
     void separ_info(QString str_key, QTextEdit *editInfo);
 
@@ -298,7 +309,7 @@ private:
 
     void regACPI_win();
 
-    void setLexer(QsciLexer *textLexer);
+    void setLexer(QsciLexer *textLexer, QsciScintilla *textEdit);
 
     void update_member(bool show,  QString str_void, QList<QTreeWidgetItem *> tw_list);
 

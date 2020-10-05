@@ -14,9 +14,13 @@ bool MyApplication::event(QEvent *event)
         fileName = openEvent->file();
 
         if(mw_one->isActiveWindow())
-            mw_one->close();
+        {
 
-        new_win();
+            //mw_one->close();
+        }
+
+        //new_win();
+        mw_one->loadFile(mw_one->openFile(fileName));
 
 
     }

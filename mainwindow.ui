@@ -30,7 +30,11 @@
      </widget>
     </item>
     <item row="0" column="2">
-     <widget class="QLineEdit" name="editFind"/>
+     <widget class="QLineEdit" name="editFind">
+      <property name="placeholderText">
+       <string>Find</string>
+      </property>
+     </widget>
     </item>
     <item row="0" column="3" colspan="5">
      <widget class="QPushButton" name="btnFindPrevious">
@@ -39,38 +43,42 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="8" colspan="2">
+    <item row="0" column="8" colspan="3">
      <widget class="QPushButton" name="btnFindNext">
       <property name="text">
        <string>FindNext</string>
       </property>
      </widget>
     </item>
-    <item row="0" column="10">
-     <widget class="QLineEdit" name="editReplace"/>
-    </item>
     <item row="0" column="11">
+     <widget class="QLineEdit" name="editReplace">
+      <property name="placeholderText">
+       <string>Replace</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="12">
      <widget class="QPushButton" name="btnReplace">
       <property name="text">
        <string>Replace</string>
       </property>
      </widget>
     </item>
-    <item row="0" column="12">
+    <item row="0" column="13">
      <widget class="QPushButton" name="btnReplaceFind">
       <property name="text">
        <string>Replace &amp;&amp; Find</string>
       </property>
      </widget>
     </item>
-    <item row="0" column="13">
+    <item row="0" column="14">
      <widget class="QComboBox" name="cboxCompilationOptions">
       <property name="toolTip">
        <string>Compilation options</string>
       </property>
      </widget>
     </item>
-    <item row="0" column="14">
+    <item row="0" column="15">
      <widget class="QPushButton" name="btnPreviousError">
       <property name="enabled">
        <bool>false</bool>
@@ -83,7 +91,7 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="15">
+    <item row="0" column="16">
      <widget class="QPushButton" name="btnCompile">
       <property name="toolTip">
        <string>Compile</string>
@@ -93,7 +101,7 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="16">
+    <item row="0" column="17">
      <widget class="QPushButton" name="btnNextError">
       <property name="enabled">
        <bool>false</bool>
@@ -106,14 +114,14 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="17">
+    <item row="0" column="18">
      <widget class="QPushButton" name="btnRefreshTree">
       <property name="text">
        <string>RefreshTree</string>
       </property>
      </widget>
     </item>
-    <item row="1" column="0" rowspan="4" colspan="18">
+    <item row="1" column="0" rowspan="5" colspan="19">
      <layout class="QGridLayout" name="gridLayout"/>
     </item>
     <item row="2" column="1" rowspan="2" colspan="6">
@@ -122,7 +130,7 @@
        <enum>QTabWidget::West</enum>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <property name="documentMode">
        <bool>true</bool>
@@ -187,7 +195,7 @@
       </widget>
      </widget>
     </item>
-    <item row="3" column="9" colspan="4">
+    <item row="3" column="10" colspan="4">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
        <number>2</number>
@@ -307,7 +315,29 @@
       </widget>
      </widget>
     </item>
-    <item row="4" column="4">
+    <item row="4" column="5" colspan="7">
+     <widget class="QTabWidget" name="tabWidget_textEdit">
+      <property name="currentIndex">
+       <number>-1</number>
+      </property>
+      <property name="usesScrollButtons">
+       <bool>true</bool>
+      </property>
+      <property name="documentMode">
+       <bool>true</bool>
+      </property>
+      <property name="tabsClosable">
+       <bool>false</bool>
+      </property>
+      <property name="movable">
+       <bool>false</bool>
+      </property>
+      <property name="tabBarAutoHide">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="4" colspan="2">
      <widget class="QCheckBox" name="chkScope">
       <property name="text">
        <string>S</string>
@@ -317,7 +347,7 @@
       </property>
      </widget>
     </item>
-    <item row="4" column="5">
+    <item row="5" column="6">
      <widget class="QCheckBox" name="chkDevice">
       <property name="text">
        <string>D</string>
@@ -327,7 +357,7 @@
       </property>
      </widget>
     </item>
-    <item row="4" column="6">
+    <item row="5" column="7">
      <widget class="QCheckBox" name="chkMethod">
       <property name="text">
        <string>M</string>
@@ -337,7 +367,7 @@
       </property>
      </widget>
     </item>
-    <item row="4" column="7" colspan="2">
+    <item row="5" column="9">
      <widget class="QCheckBox" name="chkName">
       <property name="text">
        <string>N</string>

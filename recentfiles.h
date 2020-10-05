@@ -39,7 +39,7 @@ public:
     /// returns how many recent files are being remenbered.  see setNumOfRecentFiles()
     int         numberOfRecentFilesToSave();
 
-    static const int MaxRecentFiles = 20;  ///< Max number of names we keep.
+    static const int MaxRecentFiles = 30;  ///< Max number of names we keep.
 
 public slots:
     /// The application can set the number of recent files retained/reported here

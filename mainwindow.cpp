@@ -14,6 +14,9 @@ int m_count = 0;
 int d_count = 0;
 int n_count = 0;
 QsciScintilla *textEditBack;
+
+QVector<QsciScintilla*> textEditList;
+
 QList<QTreeWidgetItem *> twitems;
 QList<QTreeWidgetItem *> tw_scope;
 QList<QTreeWidgetItem *> tw_device;
@@ -66,8 +69,6 @@ MainWindow::MainWindow(QWidget *parent)
     mythread = new thread_one();
     connect(mythread,&thread_one::over,this,&MainWindow::dealover);
 
-    init_menu();
-
 #ifdef Q_OS_WIN32
 // win
     //QFont font("SauceCodePro Nerd Font", 9, QFont::Normal);
@@ -101,9 +102,29 @@ MainWindow::MainWindow(QWidget *parent)
     int w = screen()->size().width();
     init_treeWidget(ui->treeWidget, w);
     treeWidgetBak = new QTreeWidget;
+
     init_treeWidget(treeWidgetBak, w);
 
-    init_edit();
+    ui->tabWidget_misc->setMaximumWidth(w/3 - 20);
+
+    init_filesystem();
+
+    init_menu();
+
+    QsciScintilla *textEdit;
+    textEdit = new QsciScintilla(this);
+    textEditList.push_back(textEdit);
+    textNumber = 0;
+
+    ui->tabWidget_textEdit->addTab(textEditList.at(textNumber), tr("untitled") + ".dsl");
+    connect(ui->tabWidget_textEdit, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
+    openFileList.push_back(shownName);
+
+    QIcon icon(":/icon/d.png");
+    ui->tabWidget_textEdit->setIconSize(QSize(8, 8));
+    ui->tabWidget_textEdit->tabBar()->setTabIcon(textNumber, icon);
+
+    init_edit(textEditList.at(textNumber));
 
     init_info_edit();
 
@@ -111,39 +132,17 @@ MainWindow::MainWindow(QWidget *parent)
     splitterMain->addWidget(ui->tabWidget_misc);
     QSplitter *splitterRight = new QSplitter(Qt::Vertical,splitterMain);
     splitterRight->setOpaqueResize(true);
-    splitterRight->addWidget(textEdit);
+    splitterRight->addWidget(ui->tabWidget_textEdit);
     splitterRight->addWidget(ui->tabWidget);
     ui->gridLayout->addWidget(splitterMain);
     ui->tabWidget->setHidden(true);
 
-    ui->tabWidget_misc->setMaximumWidth(w/3 - 20);
-
-    ui->chkName->setVisible(false);
-    ui->chkScope->setVisible(false);
-    ui->chkDevice->setVisible(false);
-    ui->chkMethod->setVisible(false);
-
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(timer_linkage()));
 
-    //最近打开的文件
-    //Mac:"/Users/../Library/Preferences/com.github-com-ic005k-qtiasl.V1.plist"
-    //Win:"\\HKEY_CURRENT_USER\\Software\\QtiASL\\V1"
-    QCoreApplication::setOrganizationName("QtiASL");
-    QCoreApplication::setOrganizationDomain("github.com/ic005k/QtiASL");
-    QCoreApplication::setApplicationName("V1");
-
-    m_recentFiles = new RecentFiles(this);
-    if(!zh_cn)
-       m_recentFiles->attachToMenuAfterItem(ui->menu_File, "SaveAS...", SLOT(recentOpen(QString)));//在此处插入菜单
-    else
-       m_recentFiles->attachToMenuAfterItem(ui->menu_File, "另存...", SLOT(recentOpen(QString)));//在此处插入菜单
-
-    m_recentFiles->setNumOfRecentFiles(15);//最多显示最近的15个文件
+    init_recentFiles();
 
     init_statusBar();
-
-    init_filesystem();
 
     textEdit->setFocus();
 
@@ -209,7 +208,7 @@ QString MainWindow::openFile(QString fileName)
     if(fi.suffix().toLower() == "dsl")
     {
         ui->actionWrapWord->setChecked(false);//取消自动换行，影响dsl文件开启速度
-        textEdit->setWrapMode(QsciScintilla::WrapNone);
+        textEditList.at(textNumber)->setWrapMode(QsciScintilla::WrapNone);
 
     }
 
@@ -221,6 +220,8 @@ void MainWindow::loadFile(const QString &fileName)
 {
 
     loading = true;
+
+    newFile(true);
 
     QFile file(fileName);
     if (!file.open(QFile::ReadOnly | QFile::Text))
@@ -247,11 +248,13 @@ void MainWindow::loadFile(const QString &fileName)
         text = QString::fromUtf8(file.readAll());*/
 
     text = QString::fromUtf8(file.readAll());
-    textEdit->setText(text);
+    textEditList.at(textNumber)->setText(text);
 
 #ifndef QT_NO_CURSOR
     QGuiApplication::restoreOverrideCursor();
 #endif
+
+    openFileList.push_back(fileName);
 
     setCurrentFile(fileName);
     statusBar()->showMessage(tr("File loaded"), 2000);
@@ -286,12 +289,12 @@ void MainWindow::loadFile(const QString &fileName)
 void MainWindow::setCurrentFile(const QString &fileName)
 {
     curFile = fileName;
-    textEdit->setModified(false);
+    textEditList.at(textNumber)->setModified(false);
     setWindowModified(false);
 
     shownName = curFile;
     if (curFile.isEmpty())
-        shownName = "untitled.dsl";
+        shownName = tr("untitled") + ".dsl";
 
 
     setWindowFilePath(shownName);
@@ -305,17 +308,14 @@ void MainWindow::setCurrentFile(const QString &fileName)
     QFileInfo f(shownName);
     ui->treeView->setRootIndex(model->index(f.path()));
     fsm_Index = model->index(f.path());
-
     set_return_text(f.path());
-
     ui->treeView->setCurrentIndex(model->index(shownName));//并设置当前条目为打开的文件
     ui->treeView->setFocus();
 
-    QFileInfo fi(shownName);
-    if(fi.suffix().toLower() == "dsl")
+    if(f.suffix().toLower() == "dsl")
     {
         ui->actionWrapWord->setChecked(false);//取消自动换行，影响dsl文件开启速度
-        textEdit->setWrapMode(QsciScintilla::WrapNone);
+        textEditList.at(textNumber)->setWrapMode(QsciScintilla::WrapNone);
 
         //设置编译功能使能
         ui->actionCompiling->setEnabled(true);
@@ -334,6 +334,9 @@ void MainWindow::setCurrentFile(const QString &fileName)
 
         ui->tabWidget->setVisible(false);
     }
+
+    ui->tabWidget_textEdit->setTabText(textNumber, f.fileName());
+
 
 }
 
@@ -363,7 +366,7 @@ void MainWindow::btnOpen_clicked()
 
 bool MainWindow::maybeSave()
 {
-    if (!textEdit->isModified())
+    if (!textEditList.at(textNumber)->isModified())
         return true;
 
     //QMessageBox::StandardButton ret;
@@ -373,13 +376,13 @@ bool MainWindow::maybeSave()
 
             ret = QMessageBox::warning(this, tr("Application"),
                                    tr("The document has been modified.\n"
-                                      "Do you want to save your changes?"),
+                                      "Do you want to save your changes?\n\n") + openFileList.at(textNumber),
                                    QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
 
     }
     else
     {
-            QMessageBox box(QMessageBox::Warning, "QtiASL","文件内容已修改，是否保存？");
+            QMessageBox box(QMessageBox::Warning, "QtiASL","文件内容已修改，是否保存？\n\n" + openFileList.at(textNumber));
             box.setStandardButtons (QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
             box.setButtonText (QMessageBox::Save,QString("保 存"));
             box.setButtonText (QMessageBox::Cancel,QString("取 消"));
@@ -430,7 +433,7 @@ bool MainWindow::saveFile(const QString &fileName)
     if (file.open(QFile::WriteOnly | QFile::Text)) {
 
         QTextStream out(&file);
-        out << textEdit->text();
+        out << textEditList.at(textNumber)->text();
         if (!file.commit()) {
             errorMessage = tr("Cannot write file %1:\n%2.")
                            .arg(QDir::toNativeSeparators(fileName), file.errorString());
@@ -446,11 +449,16 @@ bool MainWindow::saveFile(const QString &fileName)
         return false;
     }
 
+    openFileList.remove(textNumber);
+    openFileList.insert(textNumber, fileName);
+    //ui->tabWidget_textEdit->tabBar()->setTabTextColor(textNumber, QColor(0, 0, 0));
+    QIcon icon(":/icon/d.png");
+    ui->tabWidget_textEdit->tabBar()->setTabIcon(textNumber, icon);
+
     setCurrentFile(fileName);
-    if(!zh_cn)
-        statusBar()->showMessage(tr("File saved"), 2000);
-    else
-        statusBar()->showMessage("文件已保存", 2000);
+
+    statusBar()->showMessage(tr("File saved"), 2000);
+
 
     return true;
 }
@@ -634,7 +642,7 @@ void MainWindow::readResult(int exitCode)
     ui->editErrors->setTextCursor(QTextCursor(block));
 
     //清除所有标记
-    textEdit->SendScintilla(QsciScintilla::SCI_MARKERDELETEALL);
+    textEditList.at(textNumber)->SendScintilla(QsciScintilla::SCI_MARKERDELETEALL);
 
     float a = qTime.elapsed()/1000.00;
     lblMsg->setText(tr("Compiled") + "(" + QTime::currentTime().toString() + "    " + QString::number(a, 'f', 2) + " s)");
@@ -677,14 +685,19 @@ void MainWindow::readResult(int exitCode)
 
 void MainWindow::textEdit_cursorPositionChanged()
 {
+    set_currsor_position(textEditList.at(textNumber));
+
+}
+
+void MainWindow::set_currsor_position(QsciScintilla *textEdit)
+{
     int ColNum , RowNum;
     textEdit->getCursorPosition(&RowNum , &ColNum);
 
     ui->statusbar->showMessage(tr("Row") + " : " + QString::number(RowNum + 1) + "    " + tr("Column") + " : " + QString::number(ColNum));
 
     //联动treeWidget
-    mem_linkage(ui->treeWidget);
-
+    mem_linkage(ui->treeWidget, RowNum);
 }
 
 /*换行之后，1s后再刷新成员树*/
@@ -702,11 +715,12 @@ void MainWindow::timer_linkage()
 }
 
 /*单击文本任意位置，当前代码块与成员树进行联动*/
-void MainWindow::mem_linkage(QTreeWidget * tw)
+void MainWindow::mem_linkage(QTreeWidget * tw, int RowNum)
 {
 
-    int RowNum, ColNum;
-    textEdit->getCursorPosition(&RowNum , &ColNum);
+    //int RowNum, ColNum;
+    //textEdit->getCursorPosition(&RowNum , &ColNum);
+
     /*进行联动的条件：装载文件没有进行&成员树不为空&不是始终在同一行里面*/
     if(!loading && tw->topLevelItemCount() > 0 && preRow != RowNum)
     {
@@ -846,7 +860,7 @@ void CodeEditor::highlightCurrentLine()
 void MainWindow::on_btnReplace_clicked()
 {
 
-    textEdit->replace(ui->editReplace->text());
+    textEditList.at(textNumber)->replace(ui->editReplace->text());
 
 }
 
@@ -854,7 +868,7 @@ void MainWindow::on_btnFindNext_clicked()
 {
     QString str = ui->editFind->text().trimmed();
     //正则、大小写、匹配整个词、循环查找、向下或向上：目前已开启向下的循环查找ß
-    if(textEdit->findFirst(str , true , CaseSensitive , false , true, true))
+    if(textEditList.at(textNumber)->findFirst(str , true , CaseSensitive , false , true, true))
     {
 
         if(red < 55)
@@ -918,8 +932,8 @@ void MainWindow::on_btnFindPrevious_clicked()
     else
         flags = QsciScintilla::SCFIND_REGEXP;
 
-    textEdit->SendScintilla(QsciScintilla::SCI_SEARCHANCHOR);
-    if(textEdit->SendScintilla(QsciScintilla::SCI_SEARCHPREV, flags, ch) == -1)
+    textEditList.at(textNumber)->SendScintilla(QsciScintilla::SCI_SEARCHANCHOR);
+    if(textEditList.at(textNumber)->SendScintilla(QsciScintilla::SCI_SEARCHPREV, flags, ch) == -1)
     {
 
     }
@@ -940,29 +954,30 @@ void MainWindow::on_btnFindPrevious_clicked()
 
 
     QScrollBar *vscrollbar = new QScrollBar;
-    vscrollbar = textEdit->verticalScrollBar();
+    vscrollbar = textEditList.at(textNumber)->verticalScrollBar();
 
     QScrollBar *hscrollbar = new QScrollBar;
-    hscrollbar = textEdit->horizontalScrollBar();
+    hscrollbar = textEditList.at(textNumber)->horizontalScrollBar();
 
     int row, col, vs_pos, hs_pos;
     vs_pos = vscrollbar->sliderPosition();
-    textEdit->getCursorPosition(&row, &col);
+    textEditList.at(textNumber)->getCursorPosition(&row, &col);
     if(row < vs_pos)
         vscrollbar->setSliderPosition(row - 5);
 
     hs_pos = hscrollbar->sliderPosition();
     QPainter p(this);
     QFontMetrics fm = p.fontMetrics();
-    QString t = textEdit->text(row).mid(0, col);
+    QString t = textEditList.at(textNumber)->text(row).mid(0, col);
     int char_w = fm.horizontalAdvance(t);//一个字符的宽度
     qDebug() << col;
-    if(char_w < textEdit->viewport()->width())
+    if(char_w < textEditList.at(textNumber)->viewport()->width())
         hscrollbar->setSliderPosition(0);
     else
         hscrollbar->setSliderPosition(char_w);// + fm.horizontalAdvance(name));
 
-    qDebug() << col << textEdit->horizontalScrollBar()->sliderPosition();
+    //qDebug() << col << textEditList.at(textNumber)->horizontalScrollBar()->sliderPosition();
+
     find_down = false;
     find_up = true;
 
@@ -974,8 +989,8 @@ void MainWindow::on_treeWidget_itemClicked(QTreeWidgetItem *item, int column)
     if(column == 0 && !loading)
     {
         int lines = item->text(1).toInt();
-        textEdit->setCursorPosition(lines , 0);
-        textEdit->setFocus();
+        textEditList.at(textNumber)->setCursorPosition(lines , 0);
+        textEditList.at(textNumber)->setFocus();
 
     }
 
@@ -987,8 +1002,8 @@ void MainWindow::treeWidgetBack_itemClicked(QTreeWidgetItem *item, int column)
     if(column == 0)
     {
         int lines = item->text(1).toInt();
-        textEdit->setCursorPosition(lines , 0);
-        textEdit->setFocus();
+        textEditList.at(textNumber)->setCursorPosition(lines , 0);
+        textEditList.at(textNumber)->setFocus();
 
     }
 
@@ -1167,9 +1182,9 @@ void MainWindow::gotoLine(QTextEdit *edit)
 
                 //定位到错误行
                 line = str3.toInt();
-                textEdit->setCursorPosition(line - 1 , 0);
+                textEditList.at(textNumber)->setCursorPosition(line - 1 , 0);
 
-                textEdit->setFocus();
+                textEditList.at(textNumber)->setFocus();
 
                 break;
             }
@@ -1203,19 +1218,19 @@ void MainWindow::getErrorLine(int i)
                 str3 = str2.mid(k , str2.count() - k);
 
                 //定位到错误行
-                textEdit->setCursorPosition(str3.toInt() - 1 , 0);
+                textEditList.at(textNumber)->setCursorPosition(str3.toInt() - 1 , 0);
                 int linenr = str3.toInt();
                 //SCI_MARKERGET 参数用来设置标记，默认为圆形标记
-                textEdit->SendScintilla(QsciScintilla::SCI_MARKERGET, linenr - 1);
+                textEditList.at(textNumber)->SendScintilla(QsciScintilla::SCI_MARKERGET, linenr - 1);
                 //SCI_MARKERSETFORE，SCI_MARKERSETBACK设置标记前景和背景标记
-                textEdit->SendScintilla(QsciScintilla::SCI_MARKERSETFORE, 0, QColor(Qt::red));
-                textEdit->SendScintilla(QsciScintilla::SCI_MARKERSETBACK, 0, QColor(Qt::red));
-                textEdit->SendScintilla(QsciScintilla::SCI_MARKERADD, linenr - 1);
+                textEditList.at(textNumber)->SendScintilla(QsciScintilla::SCI_MARKERSETFORE, 0, QColor(Qt::red));
+                textEditList.at(textNumber)->SendScintilla(QsciScintilla::SCI_MARKERSETBACK, 0, QColor(Qt::red));
+                textEditList.at(textNumber)->SendScintilla(QsciScintilla::SCI_MARKERADD, linenr - 1);
                 //下划线
                 //textEdit->SendScintilla(QsciScintilla::SCI_STYLESETUNDERLINE,linenr,true);
                 //textEdit->SendScintilla(QsciScintilla::SCI_MARKERDEFINE,0,QsciScintilla::SC_MARK_UNDERLINE);
 
-                textEdit->setFocus();
+                textEditList.at(textNumber)->setFocus();
 
                 break;
             }
@@ -1230,9 +1245,9 @@ void MainWindow::on_editShowMsg_selectionChanged()
     if(row_num > 0)
     {
 
-        textEdit->setCursorPosition(row_num - 1 , 0);
+        textEditList.at(textNumber)->setCursorPosition(row_num - 1 , 0);
 
-        textEdit->setFocus();
+        textEditList.at(textNumber)->setFocus();
 
     }
 }
@@ -1499,10 +1514,8 @@ void MainWindow::update_ui_tw()
 
 }
 
-void MainWindow::on_btnRefreshTree_clicked()
+void MainWindow::refresh_tree(QsciScintilla *textEdit)
 {
-
-
     if(!thread_end)
     {
         break_run = true;
@@ -1531,6 +1544,11 @@ void MainWindow::on_btnRefreshTree_clicked()
     mythread->start();
 
 
+}
+
+void MainWindow::on_btnRefreshTree_clicked()
+{
+    refresh_tree(textEditList.at(textNumber));
 }
 
 QString getMemberName(QString str_member, QsciScintilla *textEdit, int RowNum)
@@ -1563,11 +1581,11 @@ QString getMemberName(QString str_member, QsciScintilla *textEdit, int RowNum)
 void MainWindow::set_mark(int linenr)
 {
     //SCI_MARKERGET 参数用来设置标记，默认为圆形标记
-    textEdit->SendScintilla(QsciScintilla::SCI_MARKERGET, linenr);
+    textEditList.at(textNumber)->SendScintilla(QsciScintilla::SCI_MARKERGET, linenr);
     //SCI_MARKERSETFORE，SCI_MARKERSETBACK设置标记前景和背景标记
-    textEdit->SendScintilla(QsciScintilla::SCI_MARKERSETFORE, 0, QColor(Qt::red));
-    textEdit->SendScintilla(QsciScintilla::SCI_MARKERSETBACK, 0, QColor(Qt::red));
-    textEdit->SendScintilla(QsciScintilla::SCI_MARKERADD, linenr);
+    textEditList.at(textNumber)->SendScintilla(QsciScintilla::SCI_MARKERSETFORE, 0, QColor(Qt::red));
+    textEditList.at(textNumber)->SendScintilla(QsciScintilla::SCI_MARKERSETBACK, 0, QColor(Qt::red));
+    textEditList.at(textNumber)->SendScintilla(QsciScintilla::SCI_MARKERADD, linenr);
 
 }
 
@@ -3103,6 +3121,24 @@ void MainWindow::init_info_edit()
 
 }
 
+void MainWindow::init_recentFiles()
+{
+    //最近打开的文件
+    //Mac:"/Users/../Library/Preferences/com.github-com-ic005k-qtiasl.V1.plist"
+    //Win:"\\HKEY_CURRENT_USER\\Software\\QtiASL\\V1"
+    QCoreApplication::setOrganizationName("QtiASL");
+    QCoreApplication::setOrganizationDomain("github.com/ic005k/QtiASL");
+    QCoreApplication::setApplicationName("V1");
+
+    m_recentFiles = new RecentFiles(this);
+    if(!zh_cn)
+       m_recentFiles->attachToMenuAfterItem(ui->menu_File, "SaveAS...", SLOT(recentOpen(QString)));//在此处插入菜单
+    else
+       m_recentFiles->attachToMenuAfterItem(ui->menu_File, "另存...", SLOT(recentOpen(QString)));//在此处插入菜单
+
+    m_recentFiles->setNumOfRecentFiles(25);//最多显示最近的文件个数
+}
+
 void MainWindow::init_menu()
 {
 
@@ -3142,6 +3178,11 @@ void MainWindow::init_menu()
 
     connect(ui->actionKextstat, &QAction::triggered, this, &MainWindow::kextstat);
 
+    ui->chkName->setVisible(false);
+    ui->chkScope->setVisible(false);
+    ui->chkDevice->setVisible(false);
+    ui->chkMethod->setVisible(false);
+
     QIcon icon;
     icon.addFile(":/icon/1.png");
     ui->btnPreviousError->setIcon(icon);
@@ -3163,12 +3204,31 @@ void MainWindow::init_menu()
     ui->actionCompiling->setEnabled(false);
     ui->btnCompile->setEnabled(false);
 
+    //读取之前的目录
+    QString qfile = QDir::homePath() + "/QtiASL.ini";
+    //QFile file(qfile);
+    QFileInfo fi(qfile);
+
+    if(fi.exists())
+    {
+        //QSettings Reg(qfile, QSettings::NativeFormat);
+        QSettings Reg(qfile, QSettings::IniFormat);//全平台都采用ini格式
+
+        QString dir = Reg.value("dir").toString().trimmed();
+        QString btn = Reg.value("btn").toString().trimmed();
+        ui->treeView->setRootIndex(model->index(dir));
+        fsm_Index = model->index(dir);
+        ui->btnReturn->setText(btn);
+        //set_return_text(dir);
+
+
+   }
+
 
 }
 
-void MainWindow::setLexer(QsciLexer *textLexer)
+void MainWindow::setLexer(QsciLexer *textLexer, QsciScintilla *textEdit)
 {
-
 
     //获取背景色
     QPalette pal = this->palette();
@@ -3340,10 +3400,10 @@ void MainWindow::setLexer(QsciLexer *textLexer)
 
 }
 
-void MainWindow::init_edit()
+void MainWindow::init_edit(QsciScintilla *textEdit)
 {
 
-    textEdit = new QsciScintilla(this);
+    //textEdit = new QsciScintilla(this);
     textEditBack = new QsciScintilla();
 
     textEdit->setWrapMode(QsciScintilla::WrapNone);//不自动换行
@@ -3386,12 +3446,13 @@ void MainWindow::init_edit()
             ui->cboxCompilationOptions->setCurrentText(op);
 
     }
+
     textLexer->setFont(font);
 
-    setLexer(textLexer);
+    setLexer(textLexer, textEdit);
 
     //接受文件拖放打开
-    this->textEdit->setAcceptDrops(false);
+    textEdit->setAcceptDrops(false);
     this->setAcceptDrops(true);
 
     ui->editFind->setClearButtonEnabled(true);
@@ -3811,9 +3872,18 @@ void MainWindow::closeEvent(QCloseEvent *event)
     QSettings Reg(qfile, QSettings::IniFormat);//全平台都采用ini格式
     Reg.setValue("options" , ui->cboxCompilationOptions->currentText().trimmed());
 
+    //存储当前的目录结构
+    QFileInfo f(openFileList.at(ui->tabWidget_textEdit->currentIndex()));
+    Reg.setValue("dir" , f.path());
+    Reg.setValue("btn" , ui->btnReturn->text());
 
-    if(textEdit->isModified())
+    for(int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i ++)
     {
+    if(textEditList.at(i)->isModified())
+    {
+
+        textNumber = i;
+        curFile = openFileList.at(i);
 
         int choice;
         if(!zh_cn)
@@ -3821,13 +3891,13 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
             choice = QMessageBox::warning(this, tr("Application"),
                                    tr("The document has been modified.\n"
-                                      "Do you want to save your changes?"),
+                                      "Do you want to save your changes?\n\n") + ui->tabWidget_textEdit->tabBar()->tabText(i),
                                    QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
 
         }
         else
         {
-            QMessageBox message(QMessageBox::Warning,"QtiASL","文件内容已修改，是否保存？");
+            QMessageBox message(QMessageBox::Warning,"QtiASL","文件内容已修改，是否保存？\n\n" + ui->tabWidget_textEdit->tabBar()->tabText(i));
             message.setStandardButtons (QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
             message.setButtonText (QMessageBox::Save,QString("保 存"));
             message.setButtonText (QMessageBox::Cancel,QString("取 消"));
@@ -3853,8 +3923,13 @@ void MainWindow::closeEvent(QCloseEvent *event)
     }
     else
     {
-    event->accept();
+        event->accept();
     }
+
+    }
+
+
+
     //多窗口中，关闭窗体，删除自己
     for(int i = 0; i < wdlist.count(); i++)
     {
@@ -3879,7 +3954,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 void MainWindow::recentOpen(QString filename)
 {
 
-    if (maybeSave())
+    //if (maybeSave())
         loadFile(openFile(filename));
 }
 
@@ -3903,7 +3978,7 @@ void MainWindow::dropEvent (QDropEvent *e)
         return;
     }
 
-    if (maybeSave())
+    //if (maybeSave())
         loadFile(openFile(fileName));
 
 }
@@ -3930,7 +4005,7 @@ void MainWindow::init_statusBar()
 
 }
 
-void MainWindow::newFile()
+void MainWindow::newFile(bool open)
 {
 
     if(!thread_end)
@@ -3943,8 +4018,8 @@ void MainWindow::newFile()
 
     loading = true;
 
-    if(maybeSave())
-    {
+    //if(maybeSave())
+    //{
 
         ui->treeWidget->clear();
         s_count = 0;
@@ -3952,21 +4027,38 @@ void MainWindow::newFile()
         m_count = 0;
         ui->treeWidget->setHeaderLabel("Scope(" + QString::number(s_count) + ")  " + "Device(" + QString::number(d_count) + ")  " + "Method(" + QString::number(m_count) + ")");
 
-        textEdit->clear();
-        textEditBack->clear();
-
         ui->editShowMsg->clear();
         ui->editErrors->clear();
         ui->editWarnings->clear();
         ui->editRemarks->clear();
-        setCurrentFile("");//通过新建的untitled.dsl文件来刷新treeWidget，无需对tw进行任何操作
+
+        QsciScintilla *textEdit = new QsciScintilla(this);
+        textEditList.push_back(textEdit);
+        textNumber = ui->tabWidget_textEdit->tabBar()->count();
+        init_edit(textEditList.at(textNumber));
+        ui->tabWidget_textEdit->addTab(textEditList.at(textNumber), tr("untitled") + ".dsl");
+        ui->tabWidget_textEdit->setCurrentIndex(textNumber);
+        ui->tabWidget_textEdit->setTabsClosable(true);
+
+        QIcon icon(":/icon/d.png");
+        ui->tabWidget_textEdit->tabBar()->setTabIcon(textNumber, icon);
+
+        curFile = "";
+        shownName = "";
+        setWindowTitle(ver);
+
+        textEditList.at(textNumber)->clear();
+        textEditBack->clear();
 
         lblLayer->setText("");
         lblMsg->setText("");
 
         ui->treeWidget->setHidden(false);
 
-    }
+        if(!open)
+            openFileList.push_back(shownName);
+
+    //}
 
     loading = false;
 }
@@ -4024,9 +4116,9 @@ void MainWindow::set_font()
 void MainWindow::set_wrap()
 {
     if(ui->actionWrapWord->isChecked())
-        textEdit->setWrapMode(QsciScintilla::WrapWord);
+        textEditList.at(textNumber)->setWrapMode(QsciScintilla::WrapWord);
     else
-        textEdit->setWrapMode(QsciScintilla::WrapNone);
+        textEditList.at(textNumber)->setWrapMode(QsciScintilla::WrapNone);
 
 
 }
@@ -4058,7 +4150,10 @@ void MainWindow::on_editFind_textChanged(const QString &arg1)
 
 
         }
+
+
     }
+
 }
 
 /*重载窗体重绘事件，用来刷新软件使用中，系统切换亮、暗模式*/
@@ -4179,8 +4274,8 @@ void MainWindow::kextstat()
 void MainWindow::readKextstat()
 {
     QString result = QString::fromUtf8(pk->readAll());
-    newFile();
-    textEdit->append(result);
+    newFile(false);
+    textEditList.at(textNumber)->append(result);
     ui->treeWidget->setHidden(true);
     ui->tabWidget->setHidden(true);
 }
@@ -4228,12 +4323,9 @@ void MainWindow::on_treeView_doubleClicked(const QModelIndex &index)
 
     if(!model->isDir(index))
     {
-        if(maybeSave())
+        //if(maybeSave())
             loadFile(openFile(fsm_Filepath));
     }
-
-    //ui->btnReturn->setText(fsm_Filepath);
-
 
 
 }
@@ -4296,4 +4388,69 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 
      return QWidget::eventFilter(watched,event);
 
+}
+
+void MainWindow::on_tabWidget_textEdit_tabBarClicked(int index)
+{
+    textNumber = index;
+    on_btnRefreshTree_clicked();
+    curFile = openFileList.at(index);
+    setWindowTitle(ver + curFile);
+
+    QFileInfo f(curFile);
+    if(f.suffix().toLower() == "dsl")
+    {
+        ui->actionCompiling->setEnabled(true);
+        ui->btnCompile->setEnabled(true);
+
+    }
+    else
+    {
+        ui->actionCompiling->setEnabled(false);
+        ui->btnCompile->setEnabled(false);
+    }
+
+    //初始化fsm
+    ui->treeView->setRootIndex(model->index(f.path()));
+    fsm_Index = model->index(f.path());
+    set_return_text(f.path());
+    ui->treeView->setCurrentIndex(model->index(curFile));//并设置当前条目为打开的文件
+
+    textEditList.at(index)->setFocus();
+
+
+}
+
+void MainWindow::closeTab(int index)
+{
+
+    if(ui->tabWidget_textEdit->tabBar()->count() > 1)
+    {
+        textNumber = index;
+        if(maybeSave())
+        {
+            ui->tabWidget_textEdit->removeTab(index);
+            openFileList.remove(index);
+            textEditList.remove(index);
+
+            on_tabWidget_textEdit_tabBarClicked(ui->tabWidget_textEdit->currentIndex());
+
+        }
+    }
+    else
+        ui->tabWidget_textEdit->setTabsClosable(false);
+
+}
+
+void MainWindow::on_tabWidget_textEdit_currentChanged(int index)
+{
+    QIcon icon(":/icon/s.png");
+
+    if(index > 0){}
+
+    for(int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i++)
+    {
+        if(textEditList.at(i)->isModified())
+            ui->tabWidget_textEdit->tabBar()->setTabIcon(i, icon);
+    }
 }
