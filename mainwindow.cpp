@@ -69,6 +69,8 @@ MainWindow::MainWindow(QWidget *parent)
     mythread = new thread_one();
     connect(mythread,&thread_one::over,this,&MainWindow::dealover);
 
+    init_menu();
+
 #ifdef Q_OS_WIN32
 // win
     //QFont font("SauceCodePro Nerd Font", 9, QFont::Normal);
@@ -107,10 +109,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->tabWidget_misc->setMaximumWidth(w/3 - 20);
 
-    init_filesystem();
-
-    init_menu();
-
     QsciScintilla *textEdit;
     textEdit = new QsciScintilla(this);
     textEditList.push_back(textEdit);
@@ -144,6 +142,8 @@ MainWindow::MainWindow(QWidget *parent)
     init_recentFiles();
 
     init_statusBar();
+
+    init_filesystem();
 
     textEdit->setFocus();
 
@@ -3211,29 +3211,23 @@ void MainWindow::init_menu()
     ui->cboxCompilationOptions->addItem("-tp");
     ui->cboxCompilationOptions->setEditable(true);
 
-    //设置编译功能屏蔽
-    ui->actionCompiling->setEnabled(false);
-    ui->btnCompile->setEnabled(false);
-
-    //读取之前的目录
+    //读取编译参数
     QString qfile = QDir::homePath() + "/QtiASL.ini";
-    //QFile file(qfile);
     QFileInfo fi(qfile);
 
     if(fi.exists())
     {
         //QSettings Reg(qfile, QSettings::NativeFormat);
         QSettings Reg(qfile, QSettings::IniFormat);//全平台都采用ini格式
+        QString op = Reg.value("options").toString().trimmed();
+        if(op.count() > 0)
+            ui->cboxCompilationOptions->setCurrentText(op);
 
-        QString dir = Reg.value("dir").toString().trimmed();
-        QString btn = Reg.value("btn").toString().trimmed();
-        ui->treeView->setRootIndex(model->index(dir));
-        fsm_Index = model->index(dir);
-        ui->btnReturn->setText(btn);
-        //set_return_text(dir);
+    }
 
-
-   }
+    //设置编译功能屏蔽
+    ui->actionCompiling->setEnabled(false);
+    ui->btnCompile->setEnabled(false);
 
 
 }
@@ -3245,6 +3239,42 @@ void MainWindow::setLexer(QsciLexer *textLexer, QsciScintilla *textEdit)
     QPalette pal = this->palette();
     QBrush brush = pal.window();
     red = brush.color().red();
+
+    //设置行号栏宽度、颜色、字体
+    QFont m_font;
+
+#ifdef Q_OS_WIN32
+  textEdit->setMarginWidth(0, 80);
+   m_font.setPointSize(9);
+#endif
+
+#ifdef Q_OS_LINUX
+  textEdit->setMarginWidth(0, 60);
+   m_font.setPointSize(12);
+#endif
+
+#ifdef Q_OS_MAC
+   textEdit->setMarginWidth(0, 60);
+    m_font.setPointSize(13);
+#endif
+
+    textEdit->setMarginType(0, QsciScintilla::NumberMargin);
+    textEdit->setMarginLineNumbers(0, true);
+
+    m_font.setFamily(font.family());
+    textEdit->setMarginsFont(m_font);
+    if(red < 55) //暗模式，mac下为50
+    {
+        textEdit->setMarginsBackgroundColor(QColor(50, 50 ,50));
+        textEdit->setMarginsForegroundColor(Qt::white);
+
+    }
+    else
+    {
+        textEdit->setMarginsBackgroundColor(brush.color());
+        textEdit->setMarginsForegroundColor(Qt::black);
+    }
+
 
     if(red < 55) //暗模式，mac下为50
     {
@@ -3293,33 +3323,6 @@ void MainWindow::setLexer(QsciLexer *textLexer, QsciScintilla *textEdit)
     //font1.setBold(true);
     //textLexer->setFont(font1, QsciLexerCPP::KeywordSet2);
 
-    //设置行号栏宽度、颜色
-#ifdef Q_OS_WIN32
-  textEdit->setMarginWidth(0, 70);
-#endif
-
-#ifdef Q_OS_LINUX
-  textEdit->setMarginWidth(0, 60);
-#endif
-
-#ifdef Q_OS_MAC
-   textEdit->setMarginWidth(0, 60);
-#endif
-
-    textEdit->setMarginType(0, QsciScintilla::NumberMargin);
-
-    textEdit->setMarginLineNumbers(0, true);
-    if(red < 55) //暗模式，mac下为50
-    {
-        textEdit->setMarginsBackgroundColor(QColor(50, 50 ,50));
-        textEdit->setMarginsForegroundColor(Qt::white);
-
-    }
-    else
-    {
-        textEdit->setMarginsBackgroundColor(brush.color());
-        textEdit->setMarginsForegroundColor(Qt::black);
-    }
 
     //匹配大小括弧
     textEdit->setBraceMatching(QsciScintilla::SloppyBraceMatch);
@@ -3437,9 +3440,9 @@ void MainWindow::init_edit(QsciScintilla *textEdit)
     textLexer = new QscilexerCppAttach;
     textEdit->setLexer(textLexer);
 
-    //读取字体和编译参数
+
+    //读取字体
     QString qfile = QDir::homePath() + "/QtiASL.ini";
-    QFile file(qfile);
     QFileInfo fi(qfile);
 
     if(fi.exists())
@@ -3452,9 +3455,6 @@ void MainWindow::init_edit(QsciScintilla *textEdit)
         font.setItalic(Reg.value("FontItalic").toBool());
         font.setUnderline(Reg.value("FontUnderline").toBool());
 
-        QString op = Reg.value("options").toString().trimmed();
-        if(op.count() > 0)
-            ui->cboxCompilationOptions->setCurrentText(op);
 
     }
 
@@ -3534,6 +3534,26 @@ void MainWindow::init_filesystem()
     ui->treeView->setColumnWidth(0, ui->treeView->width() / 3);
 
     ui->tabWidget_misc->setCurrentIndex(0);
+
+    //读取之前的目录
+    QString qfile = QDir::homePath() + "/QtiASL.ini";
+    //QFile file(qfile);
+    QFileInfo fi(qfile);
+
+    if(fi.exists())
+    {
+        //QSettings Reg(qfile, QSettings::NativeFormat);
+        QSettings Reg(qfile, QSettings::IniFormat);//全平台都采用ini格式
+
+        QString dir = Reg.value("dir").toString().trimmed();
+        QString btn = Reg.value("btn").toString().trimmed();
+        ui->treeView->setRootIndex(model->index(dir));
+        fsm_Index = model->index(dir);
+        ui->btnReturn->setText(btn);
+        //set_return_text(dir);
+
+
+    }
 
 
 }
@@ -4108,6 +4128,10 @@ void MainWindow::set_font()
 
         textLexer->setFont(font);
 
+        QFont m_font;
+        m_font.setFamily(font.family());
+        textEditList.at(textNumber)->setMarginsFont(m_font);
+
         //存储字体信息
         QString qfile = QDir::homePath() + "/QtiASL.ini";
         QFile file(qfile);
@@ -4432,6 +4456,8 @@ void MainWindow::on_tabWidget_textEdit_tabBarClicked(int index)
     {
         ui->actionCompiling->setEnabled(false);
         ui->btnCompile->setEnabled(false);
+        //ui->btnPreviousError->setEnabled(false);
+        //ui->btnNextError->setEnabled(false);
     }
 
     //初始化fsm
