@@ -13,5 +13,6 @@
         <file>icon/1.png</file>
         <file>icon/2.png</file>
         <file>icon/3.png</file>
+        <file>icon/return.png</file>
     </qresource>
 </RCC>
