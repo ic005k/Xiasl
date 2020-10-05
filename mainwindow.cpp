@@ -376,13 +376,13 @@ bool MainWindow::maybeSave()
 
             ret = QMessageBox::warning(this, tr("Application"),
                                    tr("The document has been modified.\n"
-                                      "Do you want to save your changes?\n\n") + openFileList.at(textNumber),
+                                      "Do you want to save your changes?\n\n") + ui->tabWidget_textEdit->tabBar()->tabText(textNumber),
                                    QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
 
     }
     else
     {
-            QMessageBox box(QMessageBox::Warning, "QtiASL","文件内容已修改，是否保存？\n\n" + openFileList.at(textNumber));
+            QMessageBox box(QMessageBox::Warning, "QtiASL","文件内容已修改，是否保存？\n\n" + ui->tabWidget_textEdit->tabBar()->tabText(textNumber));
             box.setStandardButtons (QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
             box.setButtonText (QMessageBox::Save,QString("保 存"));
             box.setButtonText (QMessageBox::Cancel,QString("取 消"));
@@ -4045,7 +4045,7 @@ void MainWindow::newFile(bool open)
 
         curFile = "";
         shownName = "";
-        setWindowTitle(ver);
+        setWindowTitle(ver + tr("untitled") + ".dsl");
 
         textEditList.at(textNumber)->clear();
         textEditBack->clear();
@@ -4395,7 +4395,10 @@ void MainWindow::on_tabWidget_textEdit_tabBarClicked(int index)
     textNumber = index;
     on_btnRefreshTree_clicked();
     curFile = openFileList.at(index);
-    setWindowTitle(ver + curFile);
+    if(curFile == "")
+        setWindowTitle(ver + tr("untitled") + ".dsl");
+    else
+        setWindowTitle(ver + curFile);
 
     QFileInfo f(curFile);
     if(f.suffix().toLower() == "dsl")
@@ -4416,6 +4419,13 @@ void MainWindow::on_tabWidget_textEdit_tabBarClicked(int index)
     set_return_text(f.path());
     ui->treeView->setCurrentIndex(model->index(curFile));//并设置当前条目为打开的文件
 
+    QIcon icon(":/icon/s.png");
+    for(int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i++)
+    {
+        if(textEditList.at(i)->isModified())
+            ui->tabWidget_textEdit->tabBar()->setTabIcon(i, icon);
+    }
+
     textEditList.at(index)->setFocus();
 
 
@@ -4424,9 +4434,12 @@ void MainWindow::on_tabWidget_textEdit_tabBarClicked(int index)
 void MainWindow::closeTab(int index)
 {
 
+    textNumber = index;
+    curFile = openFileList.at(index);
+
     if(ui->tabWidget_textEdit->tabBar()->count() > 1)
     {
-        textNumber = index;
+
         if(maybeSave())
         {
             ui->tabWidget_textEdit->removeTab(index);
@@ -4444,13 +4457,8 @@ void MainWindow::closeTab(int index)
 
 void MainWindow::on_tabWidget_textEdit_currentChanged(int index)
 {
-    QIcon icon(":/icon/s.png");
 
     if(index > 0){}
 
-    for(int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i++)
-    {
-        if(textEditList.at(i)->isModified())
-            ui->tabWidget_textEdit->tabBar()->setTabIcon(i, icon);
-    }
+
 }
