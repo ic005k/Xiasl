@@ -1,6 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-
+#include "filesystemwatcher.h"
 
 bool loading = false;
 bool thread_end = true;
@@ -16,6 +16,9 @@ int n_count = 0;
 QsciScintilla *textEditBack;
 
 QVector<QsciScintilla*> textEditList;
+
+bool SelfSaved = false;
+bool ReLoad =false;
 
 QList<QTreeWidgetItem *> twitems;
 QList<QTreeWidgetItem *> tw_scope;
@@ -61,7 +64,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     loadLocal();
 
-    ver = "QtiASL V1.0.16    ";
+    ver = "QtiASL V1.0.17    ";
     setWindowTitle(ver);
 
     QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
@@ -228,11 +231,20 @@ void MainWindow::loadFile(const QString &fileName)
         if(fileName == openFileList.at(i))
         {
             ui->tabWidget_textEdit->setCurrentIndex(i);
-            return;
+
+            if(!ReLoad)
+            {
+                on_tabWidget_textEdit_tabBarClicked(i);
+                return;
+            }
+            else
+                textNumber = i;
+
         }
     }
 
-    newFile(true);
+    if(!ReLoad)
+        newFile(true);
 
     QFile file(fileName);
     if (!file.open(QFile::ReadOnly | QFile::Text))
@@ -258,14 +270,30 @@ void MainWindow::loadFile(const QString &fileName)
     else
         text = QString::fromUtf8(file.readAll());*/
 
+    int ColNum , RowNum;
+    if(ReLoad)//记录重装前的行号
+    {
+
+        textEditList.at(textNumber)->getCursorPosition(&RowNum , &ColNum);
+    }
+
     text = QString::fromUtf8(file.readAll());
     textEditList.at(textNumber)->setText(text);
+
+    if(ReLoad)//文本重装之后再回到之前的位置
+        textEditList.at(textNumber)->setCursorPosition(RowNum , ColNum);
 
 #ifndef QT_NO_CURSOR
     QGuiApplication::restoreOverrideCursor();
 #endif
 
-    openFileList.push_back(fileName);
+    if(!ReLoad)
+    {
+        openFileList.push_back(fileName);//将文件压入列表，供标签页使用
+
+        FileSystemWatcher::addWatchPath(fileName);//监控这个文件的变化
+    }
+
 
     setCurrentFile(fileName);
     statusBar()->showMessage(tr("File loaded"), 2000);
@@ -291,7 +319,10 @@ void MainWindow::loadFile(const QString &fileName)
                 QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
 
     }
+
     on_btnRefreshTree_clicked();
+
+    ReLoad = false;
 
     loading = false;
 
@@ -460,6 +491,20 @@ bool MainWindow::saveFile(const QString &fileName)
         return false;
     }
 
+    //添加文件的监控
+    bool add = true;
+    for(int i = 0; i < openFileList.count(); i++)
+    {
+        if(fileName == openFileList.at(i))
+        {
+            add = false;
+        }
+    }
+    if(add)
+    {
+        FileSystemWatcher::addWatchPath(fileName);
+    }
+
     openFileList.remove(textNumber);
     openFileList.insert(textNumber, fileName);
     //ui->tabWidget_textEdit->tabBar()->setTabTextColor(textNumber, QColor(0, 0, 0));
@@ -470,6 +515,7 @@ bool MainWindow::saveFile(const QString &fileName)
 
     statusBar()->showMessage(tr("File saved"), 2000);
 
+    SelfSaved = true;//文件监控提示
 
     return true;
 }

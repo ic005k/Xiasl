@@ -92,7 +92,10 @@ public:
     void setMark();
     void about();
     void getErrorLine(int i);
+
     void loadFile(const QString &fileName);
+
+    int textNumber = 0;
 
     void setCurrentFile(const QString &fileName);
 
@@ -114,8 +117,6 @@ public:
 
     QSplitter *splitterMain;
 
-    //QsciScintilla *textEdit;
-    int textNumber = 0;
 
 protected:
     void closeEvent(QCloseEvent *event);
