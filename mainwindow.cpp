@@ -186,6 +186,8 @@ QString MainWindow::openFile(QString fileName)
 
     if(fInfo.suffix() == "aml" || fInfo.suffix() == "dat")
     {
+        SelfSaved = true;//此时不进行文件监测提示
+
         QFileInfo appInfo(qApp->applicationDirPath());
         #ifdef Q_OS_WIN32
         // win
@@ -224,6 +226,7 @@ void MainWindow::loadFile(const QString &fileName)
 {
 
     loading = true;
+
 
     /*如果之前文件已打开，则返回已打开的文件*/
     for(int i = 0; i < openFileList.count(); i++)
