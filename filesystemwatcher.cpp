@@ -114,7 +114,7 @@ void FileSystemWatcher::fileUpdated(const QString &path)
 
     if(!SelfSaved)
     {
-        QMessageBox message(QMessageBox::Warning,"QtiASL",tr("The content of the file has been updated. Reload it?") + "\n\n" + QString("%1").arg(strName));
+        QMessageBox message(QMessageBox::Warning,"QtiASL",tr("The file has been modified by another program. Do you want to reload?") + "\n\n" + QString("%1").arg(strName));
         message.setStandardButtons (QMessageBox::Yes | QMessageBox::No);
         message.setButtonText (QMessageBox::Yes,QString(tr("Yes")));
         message.setButtonText (QMessageBox::No,QString(tr("No")));
