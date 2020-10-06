@@ -5,8 +5,9 @@
     <name>FileSystemWatcher</name>
     <message>
         <location filename="filesystemwatcher.cpp" line="117"/>
-        <source>The content of the file has been updated. Reload it?</source>
-        <translation>文件内容已更新，是否重新装入？</translation>
+        <source>The file has been modified by another program. Do you want to reload?</source>
+        <oldsource>The content of the file has been updated. Reload it?</oldsource>
+        <translation>文件已被其他程序修改，是否重新装入该文件？</translation>
     </message>
     <message>
         <location filename="filesystemwatcher.cpp" line="119"/>
