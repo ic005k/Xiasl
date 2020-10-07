@@ -180,13 +180,22 @@ QString MainWindow::openFile(QString fileName)
 
     QSettings settings;
     QFileInfo fInfo(fileName);
+
     settings.setValue("currentDirectory", fInfo.absolutePath());
     //qDebug() << settings.fileName(); //最近打开的文件所保存的位置
     m_recentFiles->setMostRecentFile(fileName);
 
     if(fInfo.suffix() == "aml" || fInfo.suffix() == "dat")
     {
-        SelfSaved = true;//此时不进行文件监测提示
+        //如果之前这个文件被打开过，则返回
+        QString str = fInfo.path() + "/" + fInfo.baseName() + ".dsl";
+        for(int i = 0; i < openFileList.count(); i++)
+        {
+            if(str == openFileList.at(i))
+            {
+                return str;
+            }
+        }
 
         QFileInfo appInfo(qApp->applicationDirPath());
         #ifdef Q_OS_WIN32
