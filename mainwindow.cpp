@@ -474,6 +474,15 @@ bool MainWindow::btnSaveAs_clicked()
     if(fn.isEmpty())
         return false;
 
+    for(int i = 0; i < openFileList.count(); i++)
+    {
+        if(fn == openFileList.at(i))//同名覆盖，并关闭之前的文件
+        {
+            textEditList.at(i)->setModified(false);
+            closeTab(i);
+        }
+    }
+
     return  saveFile(fn);
 
 }
@@ -510,6 +519,7 @@ bool MainWindow::saveFile(const QString &fileName)
         if(fileName == openFileList.at(i))
         {
             add = false;
+
         }
     }
     if(add)
