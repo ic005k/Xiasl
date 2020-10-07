@@ -318,19 +318,19 @@ void MainWindow::loadFile(const QString &fileName)
     lblMsg->setText("");
 
 
-    /*装入新文件，如果目前有线程在运行，则打断它*/
-    if(!thread_end)
+    //装入新文件，如果目前有线程在运行，则打断它
+    /*if(!thread_end)
     {
         break_run = true; //通知打断线程
 
         mythread->quit();
         mythread->wait();
-        /*延时1000ms，等待线程结束,以便刷新新文件的成员树*/
+        //延时1000ms，等待线程结束,以便刷新新文件的成员树
         QTime dieTime = QTime::currentTime().addMSecs(1000);
             while( QTime::currentTime() < dieTime )
                 QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
 
-    }
+    }*/
 
     on_btnRefreshTree_clicked();
 
