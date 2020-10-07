@@ -4506,6 +4506,10 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 
 void MainWindow::on_tabWidget_textEdit_tabBarClicked(int index)
 {
+
+    if(index == -1)//点击标签页之外的区域
+        return;
+
     textNumber = index;
     on_btnRefreshTree_clicked();
     curFile = openFileList.at(index);
@@ -4543,6 +4547,8 @@ void MainWindow::on_tabWidget_textEdit_tabBarClicked(int index)
     }
 
     textEditList.at(index)->setFocus();
+
+    //qDebug() << index;
 
 
 }
