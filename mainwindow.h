@@ -104,7 +104,7 @@ public:
     void loadLocal();
 
     QString curFile;
-    QVector<QString> openFileList;
+
     QProcess *co;
     QProcess *pk;
     QFont font;

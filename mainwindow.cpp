@@ -16,6 +16,7 @@ int n_count = 0;
 QsciScintilla *textEditBack;
 
 QVector<QsciScintilla*> textEditList;
+QVector<QString> openFileList;
 
 bool SelfSaved = false;
 bool ReLoad =false;

@@ -8,6 +8,7 @@
 extern bool SelfSaved;
 extern bool ReLoad;
 extern MainWindow * mw_one;
+extern QVector<QString> openFileList;
 
 FileSystemWatcher* FileSystemWatcher::m_pInstance = NULL;
 
@@ -134,6 +135,11 @@ void FileSystemWatcher::fileUpdated(const QString &path)
     }
 
     SelfSaved = false;
+
+    for(int i = 0; i < openFileList.count(); i ++)
+    {
+        addWatchPath(openFileList.at(i));
+    }
 
 
 }
