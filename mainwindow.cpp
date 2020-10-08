@@ -3518,11 +3518,15 @@ void MainWindow::init_edit(QsciScintilla *textEdit)
     {
         //QSettings Reg(qfile, QSettings::NativeFormat);
         QSettings Reg(qfile, QSettings::IniFormat);//全平台都采用ini格式
-        font.setFamily(Reg.value("FontName").toString());
-        font.setPointSize(Reg.value("FontSize").toInt());
-        font.setBold(Reg.value("FontBold").toBool());
-        font.setItalic(Reg.value("FontItalic").toBool());
-        font.setUnderline(Reg.value("FontUnderline").toBool());
+        if(Reg.value("FontName").toString() != "")
+        {
+            font.setFamily(Reg.value("FontName").toString());
+            font.setPointSize(Reg.value("FontSize").toInt());
+            font.setBold(Reg.value("FontBold").toBool());
+            font.setItalic(Reg.value("FontItalic").toBool());
+            font.setUnderline(Reg.value("FontUnderline").toBool());
+
+        }
 
 
     }
