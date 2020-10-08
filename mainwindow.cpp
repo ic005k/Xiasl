@@ -65,7 +65,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     loadLocal();
 
-    ver = "QtiASL V1.0.17    ";
+    ver = "QtiASL V1.0.17a    ";
     setWindowTitle(ver);
 
     QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
