@@ -95,7 +95,7 @@ public:
 
     void loadFile(const QString &fileName);
 
-    int textNumber = 0;
+    QsciScintilla *textEdit;
 
     void setCurrentFile(const QString &fileName);
 
@@ -153,7 +153,7 @@ private slots:
 
     void recentOpen(QString filename);
 
-    void newFile(bool open);
+    void newFile();
 
     bool btnSave_clicked();
 
@@ -245,7 +245,7 @@ private:
 
     int treeCount(QTreeWidget *tree);
 
-    bool maybeSave();
+    bool maybeSave(QString info);
 
     bool find_up;
 

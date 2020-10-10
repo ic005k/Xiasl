@@ -12,6 +12,7 @@ class FileSystemWatcher : public QObject
 
 public:
     static void addWatchPath(QString path);
+    static void removeWatchPath(QString path);
 
 public slots:
     void directoryUpdated(const QString &path);  // 目录更新时调用，path是监控的路径

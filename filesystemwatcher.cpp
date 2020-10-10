@@ -45,6 +45,11 @@ void FileSystemWatcher::addWatchPath(QString path)
     }
 }
 
+void FileSystemWatcher::removeWatchPath(QString path)
+{
+    m_pInstance->m_pSystemWatcher->removePath(path);
+}
+
 // 只要任何监控的目录更新（添加、删除、重命名），就会调用。
 void FileSystemWatcher::directoryUpdated(const QString &path)
 {
