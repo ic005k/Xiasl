@@ -4325,9 +4325,16 @@ void MainWindow::paintEvent(QPaintEvent *event)
     int c_red = brush.color().red();
     if(c_red != red)
     {
-        /*目前暂时停用。需要解决：1.代码折叠线的颜色 2.双引号输入时的背景色*/
-        //setLexer(textLexer);
-        //textEdit->repaint();
+        /*注意：1.代码折叠线的颜色 2.双引号输入时的背景色*/
+        for(int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i ++)
+        {
+            QWidget *pWidget= ui->tabWidget_textEdit->widget(i);
+            QsciScintilla *edit = new QsciScintilla;
+            edit = (QsciScintilla*)pWidget->children().at(1);
+            init_edit(edit);
+
+        }
+
 
     }
 
