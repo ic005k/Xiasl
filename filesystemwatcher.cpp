@@ -129,7 +129,7 @@ void FileSystemWatcher::fileUpdated(const QString &path)
         switch (choice) {
             case QMessageBox::Yes:
                 ReLoad = true;
-                mw_one->loadFile(path); //重新装入文件
+                mw_one->loadFile(path, -1, -1); //重新装入文件
             break;
         case QMessageBox::No:
 

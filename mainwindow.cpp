@@ -65,7 +65,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     loadLocal();
 
-    ver = "QtiASL V1.0.19    ";
+    ver = "QtiASL V1.0.20    ";
     setWindowTitle(ver);
 
     QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
@@ -117,14 +117,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->tabWidget_textEdit->tabBar()->installEventFilter(this);//安装事件过滤器以禁用鼠标滚轮切换标签页
 
-    /*QWidget *page = new QWidget(this);
-    QVBoxLayout *vboxLayout = new QVBoxLayout(page);
-    vboxLayout->addWidget(textEdit);
-    QLabel *lbl = new QLabel(tr("untitled") + ".dsl");
-    vboxLayout->addWidget(lbl);
-    lbl->setHidden(true);
-    ui->tabWidget_textEdit->addTab(page, tr("untitled") + ".dsl");*/
-
     connect(ui->tabWidget_textEdit, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
 
     QIcon icon(":/icon/d.png");
@@ -153,7 +145,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     init_filesystem();
 
-    newFile();
+    loadTabFiles();
 
     textEdit->setFocus();
 
@@ -165,6 +157,66 @@ MainWindow::~MainWindow()
 
     mythread->quit();
     mythread->wait();
+
+}
+
+void MainWindow::loadTabFiles()
+{
+    //读取标签页
+    QString qfile = QDir::homePath() + "/QtiASL.ini";
+    QFileInfo fi(qfile);
+
+    if(fi.exists())
+    {
+
+        QSettings Reg(qfile, QSettings::IniFormat);
+        int count = Reg.value("count").toInt();
+
+        if(count == 0)
+            newFile();
+
+        bool file_exists = false;
+
+        for(int i = 0; i < count; i ++)
+        {
+            QString file = Reg.value(QString::number(i) + "/file").toString();
+            QFileInfo fi(file);
+            if(fi.exists())
+            {
+
+                int row, col;
+                row = Reg.value(QString::number(i) + "/row").toInt();
+                col = Reg.value(QString::number(i) + "/col").toInt();
+
+                loadFile(file, row, col);
+
+                QWidget *pWidget= ui->tabWidget_textEdit->widget(i);
+                QsciScintilla *edit = new QsciScintilla;
+                edit = (QsciScintilla*)pWidget->children().at(1);
+
+                int vs, hs;
+                vs = Reg.value(QString::number(i) + "/vs").toInt();
+                hs = Reg.value(QString::number(i) + "/hs").toInt();
+
+                edit->verticalScrollBar()->setSliderPosition(vs);
+                edit->horizontalScrollBar()->setSliderPosition(hs);
+
+                file_exists = true;
+
+
+            }
+        }
+
+        if(!file_exists)
+            newFile();
+
+        int ci = Reg.value("ci").toInt();
+        ui->tabWidget_textEdit->setCurrentIndex(ci);
+        on_tabWidget_textEdit_tabBarClicked(ci);
+
+     }
+    else
+         newFile();
 
 }
 void MainWindow::about()
@@ -246,7 +298,7 @@ QString MainWindow::openFile(QString fileName)
     return  fileName;
 }
 
-void MainWindow::loadFile(const QString &fileName)
+void MainWindow::loadFile(const QString &fileName, int row, int col)
 {
 
     loading = true;
@@ -314,6 +366,13 @@ void MainWindow::loadFile(const QString &fileName)
 
     text = QString::fromUtf8(file.readAll());
     textEdit->setText(text);
+    if(row != -1 && col != -1)
+    {
+       textEdit->setCursorPosition(row, col);
+
+    }
+
+
 
     if(ReLoad)//文本重装之后再回到之前的位置
         textEdit->setCursorPosition(RowNum , ColNum);
@@ -424,7 +483,7 @@ void MainWindow::Open()
         if (!fileName.isEmpty())
         {
 
-            loadFile(openFile(fileName));
+            loadFile(openFile(fileName), -1, -1);
         }
 
 
@@ -608,7 +667,7 @@ void MainWindow::btnGenerate_clicked()
 
 #endif
 
-    loadFile(appInfo.filePath() + "/dsdt.dsl");
+    loadFile(appInfo.filePath() + "/dsdt.dsl", -1, -1);
 
 }
 
@@ -3539,9 +3598,9 @@ void MainWindow::init_edit(QsciScintilla *textEdit)
 
     textEdit->setTabWidth(4);
 
-    //水平滚动条
-    textEdit->SendScintilla(QsciScintilla::SCI_SETSCROLLWIDTH, textEdit->viewport()->width());
-    textEdit->SendScintilla(QsciScintilla::SCI_SETSCROLLWIDTHTRACKING, true);
+    //水平滚动条:暂时关闭下面两行代码，否则没法设置水平滚动条的数据
+    //textEdit->SendScintilla(QsciScintilla::SCI_SETSCROLLWIDTH, textEdit->viewport()->width());
+    //textEdit->SendScintilla(QsciScintilla::SCI_SETSCROLLWIDTHTRACKING, true);
 
     connect(textEdit, &QsciScintilla::cursorPositionChanged, this, &MainWindow::textEdit_cursorPositionChanged);
     connect(textEdit, &QsciScintilla::textChanged, this, &MainWindow::textEdit_textChanged);
@@ -4028,6 +4087,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     QFileInfo f(lbl->text());
     Reg.setValue("dir" , f.path());
     Reg.setValue("btn" , ui->btnReturn->text());
+    Reg.setValue("ci", ui->tabWidget_textEdit->currentIndex()); //存储当前活动的标签页
 
     for(int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i ++)
     {
@@ -4094,6 +4154,34 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
     }
 
+    //记录标签页
+    Reg.setValue("count", ui->tabWidget_textEdit->tabBar()->count());
+
+    for(int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i ++)
+    {
+
+        QWidget *pWidget= ui->tabWidget_textEdit->widget(i);
+        QsciScintilla *edit = new QsciScintilla;
+        edit = (QsciScintilla*)pWidget->children().at(1);
+
+        QLabel * lbl = new QLabel;
+        lbl = (QLabel*)pWidget->children().at(2);//2为QLabel,1为textEdit,0为VBoxLayout
+
+        int row, col, vs, hs;
+        edit->getCursorPosition(&row, &col);
+        vs = edit->verticalScrollBar()->sliderPosition();
+        hs = edit->horizontalScrollBar()->sliderPosition();
+
+        Reg.setValue(QString::number(i) + "/" + "file", lbl->text());
+        Reg.setValue(QString::number(i) + "/" + "row", row);
+        Reg.setValue(QString::number(i) + "/" + "col", col);
+        Reg.setValue(QString::number(i) + "/" + "vs", vs);
+        Reg.setValue(QString::number(i) + "/" + "hs", hs);
+
+
+    }
+
+
 
 
     //多窗口中，关闭窗体，删除自己
@@ -4120,7 +4208,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 void MainWindow::recentOpen(QString filename)
 {
 
-     loadFile(openFile(filename));
+     loadFile(openFile(filename), -1, -1);
 }
 
 void MainWindow::dragEnterEvent (QDragEnterEvent *e)
@@ -4144,7 +4232,7 @@ void MainWindow::dropEvent (QDropEvent *e)
     }
 
 
-    loadFile(openFile(fileName));
+    loadFile(openFile(fileName), -1, -1);
 
 }
 
@@ -4503,7 +4591,7 @@ void MainWindow::on_treeView_doubleClicked(const QModelIndex &index)
 
     if(!model->isDir(index))
     {
-        loadFile(openFile(fsm_Filepath));
+        loadFile(openFile(fsm_Filepath), -1, -1);
     }
 
 

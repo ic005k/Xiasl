@@ -93,7 +93,7 @@ public:
     void about();
     void getErrorLine(int i);
 
-    void loadFile(const QString &fileName);
+    void loadFile(const QString &fileName, int row, int col);
 
     QsciScintilla *textEdit;
 
@@ -236,6 +236,8 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+
+    void loadTabFiles();
 
     QString shownName;
 
