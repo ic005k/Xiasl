@@ -4643,6 +4643,7 @@ void MainWindow::on_tabWidget_textEdit_tabBarClicked(int index)
         lbl = (QLabel*)pWidget->children().at(2);//2为QLabel,1为textEdit,0为VBoxLayout
 
         openFileList.push_back(lbl->text());
+        FileSystemWatcher::addWatchPath(lbl->text());
 
         //标记被修改的文件
         QsciScintilla *edit_mod = new QsciScintilla;
@@ -4708,12 +4709,9 @@ void MainWindow::on_tabWidget_textEdit_currentChanged(int index)
         {
 
 
-
         }
 
-
     }
-
 
 }
 
