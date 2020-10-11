@@ -19,7 +19,7 @@ QsciScintilla *textEditBack;
 QVector<QString> openFileList;
 
 bool SelfSaved = false;
-bool ReLoad =false;
+bool ReLoad = false;
 
 QList<QTreeWidgetItem *> twitems;
 QList<QTreeWidgetItem *> tw_scope;
@@ -113,16 +113,11 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->tabWidget_misc->setMaximumWidth(w/3 - 20);
 
-    textEdit = new QsciScintilla;
-
     ui->tabWidget_textEdit->tabBar()->installEventFilter(this);//安装事件过滤器以禁用鼠标滚轮切换标签页
-
     connect(ui->tabWidget_textEdit, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
-
-    QIcon icon(":/icon/d.png");
     ui->tabWidget_textEdit->setIconSize(QSize(8, 8));
-    ui->tabWidget_textEdit->tabBar()->setTabIcon(0, icon);
 
+    textEdit = new QsciScintilla;
     init_edit(textEdit);
 
     init_info_edit();
@@ -147,7 +142,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     loadTabFiles();
 
-    textEdit->setFocus();
 
 }
 
@@ -162,6 +156,9 @@ MainWindow::~MainWindow()
 
 void MainWindow::loadTabFiles()
 {
+
+    loading = true;
+
     //读取标签页
     QString qfile = QDir::homePath() + "/QtiASL.ini";
     QFileInfo fi(qfile);
@@ -176,10 +173,13 @@ void MainWindow::loadTabFiles()
             newFile();
 
         bool file_exists = false;
-
         for(int i = 0; i < count; i ++)
         {
             QString file = Reg.value(QString::number(i) + "/file").toString();
+
+            if(file == tr("untitled") + ".dsl")
+                newFile();
+
             QFileInfo fi(file);
             if(fi.exists())
             {
@@ -201,10 +201,12 @@ void MainWindow::loadTabFiles()
                 edit->verticalScrollBar()->setSliderPosition(vs);
                 edit->horizontalScrollBar()->setSliderPosition(hs);
 
+                edit->setFocus();
+
                 file_exists = true;
 
-
             }
+
         }
 
         if(!file_exists)
@@ -212,13 +214,16 @@ void MainWindow::loadTabFiles()
 
         int ci = Reg.value("ci").toInt();
         ui->tabWidget_textEdit->setCurrentIndex(ci);
+
         on_tabWidget_textEdit_tabBarClicked(ci);
 
-     }
+    }
     else
-         newFile();
+        newFile();
 
+    loading = false;
 }
+
 void MainWindow::about()
 {
     QFileInfo appInfo(qApp->applicationFilePath());
@@ -373,7 +378,6 @@ void MainWindow::loadFile(const QString &fileName, int row, int col)
     }
 
 
-
     if(ReLoad)//文本重装之后再回到之前的位置
         textEdit->setCursorPosition(RowNum , ColNum);
 
@@ -402,9 +406,6 @@ void MainWindow::loadFile(const QString &fileName, int row, int col)
     ui->treeWidget->repaint();
     lblLayer->setText("");
     lblMsg->setText("");
-
-
-    on_btnRefreshTree_clicked();
 
     ReLoad = false;
 
@@ -4313,8 +4314,6 @@ void MainWindow::newFile()
         lblMsg->setText("");
 
         ui->treeWidget->setHidden(false);
-
-
 
 
     loading = false;
