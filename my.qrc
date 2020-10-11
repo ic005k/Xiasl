@@ -14,5 +14,8 @@
         <file>icon/2.png</file>
         <file>icon/3.png</file>
         <file>icon/return.png</file>
+        <file>icon/new.png</file>
+        <file>icon/open.png</file>
+        <file>icon/save.png</file>
     </qresource>
 </RCC>

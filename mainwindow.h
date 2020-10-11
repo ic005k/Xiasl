@@ -125,7 +125,7 @@ protected:
     void paintEvent(QPaintEvent *event);
 
 public slots:
-    void btnOpen_clicked();
+    void Open();
     QString openFile(QString fileName);
     void dealover();//处理线程返回的结束信号
 
@@ -155,9 +155,9 @@ private slots:
 
     void newFile();
 
-    bool btnSave_clicked();
+    bool Save();
 
-    bool btnSaveAs_clicked();
+    bool SaveAs();
 
     void btnGenerate_clicked();
 
@@ -227,6 +227,12 @@ private slots:
     void on_tabWidget_textEdit_tabBarClicked(int index);
 
     void on_tabWidget_textEdit_currentChanged(int index);
+
+    void on_btnNew_clicked();
+
+    void on_btnOpen_clicked();
+
+    void on_btnSave_clicked();
 
 private:
     Ui::MainWindow *ui;

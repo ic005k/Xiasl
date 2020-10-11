@@ -416,7 +416,7 @@ void MainWindow::set_return_text(QString text)
 }
 
 
-void MainWindow::btnOpen_clicked()
+void MainWindow::Open()
 {
 
         fileName = QFileDialog::getOpenFileName(this,"DSDT","","DSDT(*.aml *.dsl *.dat);;All(*.*)");
@@ -460,7 +460,7 @@ bool MainWindow::maybeSave(QString info)
     switch (ret)
     {
     case QMessageBox::Save:
-        return btnSave_clicked();
+        return Save();
     case QMessageBox::Cancel:
         return false;
     default:
@@ -470,16 +470,16 @@ bool MainWindow::maybeSave(QString info)
     return true;
 }
 
-bool MainWindow::btnSave_clicked()
+bool MainWindow::Save()
 {
     if (curFile.isEmpty()) {
-        return btnSaveAs_clicked();
+        return SaveAs();
     } else {
         return saveFile(curFile);
     }
 }
 
-bool MainWindow::btnSaveAs_clicked()
+bool MainWindow::SaveAs()
 {
 
     QFileDialog dialog;
@@ -622,7 +622,7 @@ void MainWindow::btnCompile_clicked()
     co = new QProcess;
 
     if(!curFile.isEmpty())
-        btnSave_clicked();
+        Save();
 
     lblMsg->setText(tr("Compiling..."));
 
@@ -3270,13 +3270,13 @@ void MainWindow::init_menu()
     connect(ui->actionNew, &QAction::triggered, this, &MainWindow::newFile);
 
     ui->actionOpen->setShortcut(tr("ctrl+o"));
-    connect(ui->actionOpen, &QAction::triggered, this, &MainWindow::btnOpen_clicked);
+    connect(ui->actionOpen, &QAction::triggered, this, &MainWindow::Open);
 
     ui->actionSave->setShortcut(tr("ctrl+s"));
-    connect(ui->actionSave, &QAction::triggered, this, &MainWindow::btnSave_clicked);
+    connect(ui->actionSave, &QAction::triggered, this, &MainWindow::Save);
 
     ui->actionSaveAs->setShortcut(tr("ctrl+shift+s"));
-    connect(ui->actionSaveAs, &QAction::triggered, this, &MainWindow::btnSaveAs_clicked);
+    connect(ui->actionSaveAs, &QAction::triggered, this, &MainWindow::SaveAs);
 
     connect(ui->actionAbout, &QAction::triggered, this, &MainWindow::about);
 
@@ -3308,6 +3308,15 @@ void MainWindow::init_menu()
 
     icon.addFile(":/icon/3.png");
     ui->btnNextError->setIcon(icon);
+
+    icon.addFile(":/icon/new.png");
+    ui->btnNew->setIcon(icon);
+
+    icon.addFile(":/icon/open.png");
+    ui->btnOpen->setIcon(icon);
+
+    icon.addFile(":/icon/save.png");
+    ui->btnSave->setIcon(icon);
 
     icon.addFile(":/icon/return.png");
     ui->btnReturn->setIcon(icon);
@@ -4067,7 +4076,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
             switch (choice) {
                 case QMessageBox::Save:
-                btnSave_clicked();
+                Save();
                 event->accept();
                 break;
             case QMessageBox::Discard:
@@ -4706,4 +4715,19 @@ void MainWindow::on_tabWidget_textEdit_currentChanged(int index)
     }
 
 
+}
+
+void MainWindow::on_btnNew_clicked()
+{
+    newFile();
+}
+
+void MainWindow::on_btnOpen_clicked()
+{
+    Open();
+}
+
+void MainWindow::on_btnSave_clicked()
+{
+    Save();
 }
