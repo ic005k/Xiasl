@@ -65,7 +65,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     loadLocal();
 
-    ver = "QtiASL V1.0.18    ";
+    ver = "QtiASL V1.0.19    ";
     setWindowTitle(ver);
 
     QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
@@ -117,13 +117,13 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->tabWidget_textEdit->tabBar()->installEventFilter(this);//安装事件过滤器以禁用鼠标滚轮切换标签页
 
-    QWidget *page = new QWidget(this);
+    /*QWidget *page = new QWidget(this);
     QVBoxLayout *vboxLayout = new QVBoxLayout(page);
     vboxLayout->addWidget(textEdit);
     QLabel *lbl = new QLabel(tr("untitled") + ".dsl");
     vboxLayout->addWidget(lbl);
     lbl->setHidden(true);
-    ui->tabWidget_textEdit->addTab(page, tr("untitled") + ".dsl");
+    ui->tabWidget_textEdit->addTab(page, tr("untitled") + ".dsl");*/
 
     connect(ui->tabWidget_textEdit, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
 
@@ -152,6 +152,8 @@ MainWindow::MainWindow(QWidget *parent)
     init_statusBar();
 
     init_filesystem();
+
+    newFile();
 
     textEdit->setFocus();
 
@@ -266,6 +268,12 @@ void MainWindow::loadFile(const QString &fileName)
                 on_tabWidget_textEdit_tabBarClicked(i);
                 return;
             }
+            else
+            {
+                QsciScintilla *edit = new QsciScintilla;
+                edit = (QsciScintilla*)pWidget->children().at(1);
+                textEdit = edit;
+            }
 
         }
     }
@@ -336,20 +344,6 @@ void MainWindow::loadFile(const QString &fileName)
     lblLayer->setText("");
     lblMsg->setText("");
 
-
-    //装入新文件，如果目前有线程在运行，则打断它
-    /*if(!thread_end)
-    {
-        break_run = true; //通知打断线程
-
-        mythread->quit();
-        mythread->wait();
-        //延时1000ms，等待线程结束,以便刷新新文件的成员树
-        QTime dieTime = QTime::currentTime().addMSecs(1000);
-            while( QTime::currentTime() < dieTime )
-                QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
-
-    }*/
 
     on_btnRefreshTree_clicked();
 
@@ -487,11 +481,22 @@ bool MainWindow::btnSave_clicked()
 
 bool MainWindow::btnSaveAs_clicked()
 {
+
     QFileDialog dialog;
     QString fn = dialog.getSaveFileName(this,"DSDT","","DSDT(*.dsl);;All(*.*)");
     if(fn.isEmpty())
         return false;
 
+    //另存时，先移除当前的文件监控
+    if(curFile != "")
+    {
+        QWidget *pWidget= ui->tabWidget_textEdit->widget(ui->tabWidget_textEdit->currentIndex());
+        QLabel * lbl = new QLabel;
+        lbl = (QLabel*)pWidget->children().at(2);//2为QLabel,1为textEdit,0为VBoxLayout
+        FileSystemWatcher::removeWatchPath(lbl->text());
+    }
+
+    //去重
     for(int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i++)
     {
 
@@ -499,22 +504,14 @@ bool MainWindow::btnSaveAs_clicked()
         QLabel * lbl = new QLabel;
         lbl = (QLabel*)pWidget->children().at(2);//2为QLabel,1为textEdit,0为VBoxLayout
 
-        QsciScintilla *edit = new QsciScintilla;
-        edit = (QsciScintilla*)pWidget->children().at(1);
-
-        if(fn == lbl->text())//覆盖已打开的文件后，关闭之前的文件
+        if(fn == lbl->text())
         {
-            edit->setModified(false);
-            closeTab(i);
 
+            ui->tabWidget_textEdit->removeTab(i);
 
         }
     }
 
-    QWidget *pWidget= ui->tabWidget_textEdit->widget(ui->tabWidget_textEdit->currentIndex());
-    QLabel * lbl = new QLabel;
-    lbl = (QLabel*)pWidget->children().at(2);//2为QLabel,1为textEdit,0为VBoxLayout
-    lbl->setText(fn);
 
     return  saveFile(fn);
 
@@ -566,6 +563,12 @@ bool MainWindow::saveFile(const QString &fileName)
     //ui->tabWidget_textEdit->tabBar()->setTabTextColor(textNumber, QColor(0, 0, 0));
     QIcon icon(":/icon/d.png");
     ui->tabWidget_textEdit->tabBar()->setTabIcon(ui->tabWidget_textEdit->currentIndex(), icon);
+
+    //刷新文件路径
+    QWidget *pWidget= ui->tabWidget_textEdit->widget(ui->tabWidget_textEdit->currentIndex());
+    QLabel * lbl = new QLabel;
+    lbl = (QLabel*)pWidget->children().at(2);//2为QLabel,1为textEdit,0为VBoxLayout
+    lbl->setText(fileName);
 
     setCurrentFile(fileName);
 
@@ -4019,6 +4022,9 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
     for(int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i ++)
     {
+
+        ui->tabWidget_textEdit->setCurrentIndex(i);//先转到当前页
+
         QWidget *pWidget= ui->tabWidget_textEdit->widget(i);
         QsciScintilla *edit = new QsciScintilla;
         edit = (QsciScintilla*)pWidget->children().at(1);
@@ -4648,6 +4654,8 @@ void MainWindow::closeTab(int index)
 
     if(ui->tabWidget_textEdit->tabBar()->count() > 1)
     {
+
+        ui->tabWidget_textEdit->setCurrentIndex(index);
 
         QWidget *pWidget= ui->tabWidget_textEdit->widget(index);
         QsciScintilla *edit = new QsciScintilla;
