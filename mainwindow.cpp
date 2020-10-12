@@ -75,10 +75,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     init_menu();
 
-#ifdef Q_OS_WIN32
-// win
-    //QFont font("SauceCodePro Nerd Font", 9, QFont::Normal);
     font.setFamily("SauceCodePro Nerd Font");
+#ifdef Q_OS_WIN32
+
     font.setPointSize(9);
 
     regACPI_win();
@@ -88,19 +87,13 @@ MainWindow::MainWindow(QWidget *parent)
 #endif
 
 #ifdef Q_OS_LINUX
-// linux
-    font.setFamily("SauceCodePro Nerd Font");
-    font.setPointSize(12);
-
+    font.setPointSize(11);
     ui->actionKextstat->setEnabled(false);
     ui->actionGenerate->setEnabled(false);
 #endif
 
 #ifdef Q_OS_MAC
-// mac
-    font.setFamily("SauceCodePro Nerd Font");
     font.setPointSize(13);
-
     ui->actionGenerate->setEnabled(false);
 
 #endif
@@ -169,16 +162,24 @@ void MainWindow::loadTabFiles()
         QSettings Reg(qfile, QSettings::IniFormat);
         int count = Reg.value("count").toInt();
 
-        if(count == 0)
-            newFile();
-
         bool file_exists = false;
+
+        if(count == 0)
+        {
+            newFile();
+            file_exists = true;
+        }
+
+
         for(int i = 0; i < count; i ++)
         {
             QString file = Reg.value(QString::number(i) + "/file").toString();
 
             if(file == tr("untitled") + ".dsl")
+            {
                 newFile();
+                file_exists = true;
+            }
 
             QFileInfo fi(file);
             if(fi.exists())
