@@ -406,7 +406,8 @@ void MainWindow::loadFile(const QString &fileName, int row, int col)
     QLabel * lbl = new QLabel;
     lbl = (QLabel*)pWidget->children().at(2);//2为QLabel,1为textEdit,0为VBoxLayout
     lbl->setText(fileName);
-
+    QFileInfo ft(fileName);
+    ui->tabWidget_textEdit->tabBar()->setTabToolTip(ui->tabWidget_textEdit->currentIndex(), ft.fileName());
 
     setCurrentFile(fileName);
     statusBar()->showMessage(tr("File loaded"), 2000);
@@ -640,6 +641,9 @@ bool MainWindow::saveFile(const QString &fileName)
     QLabel * lbl = new QLabel;
     lbl = (QLabel*)pWidget->children().at(2);//2为QLabel,1为textEdit,0为VBoxLayout
     lbl->setText(fileName);
+    QFileInfo ft(fileName);
+    ui->tabWidget_textEdit->tabBar()->setTabToolTip(ui->tabWidget_textEdit->currentIndex(), ft.fileName());
+
 
     setCurrentFile(fileName);
 
