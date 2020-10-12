@@ -214,9 +214,19 @@ void MainWindow::loadTabFiles()
             newFile();
 
         int ci = Reg.value("ci").toInt();
-        ui->tabWidget_textEdit->setCurrentIndex(ci);
+        int tab_total = ui->tabWidget_textEdit->tabBar()->count();//以实际存在的为准
+        if(ci < tab_total)
+        {
+            ui->tabWidget_textEdit->setCurrentIndex(ci);
+            on_tabWidget_textEdit_tabBarClicked(ci);
+        }
+        else
+        {
+            ui->tabWidget_textEdit->setCurrentIndex(tab_total - 1);
+            on_tabWidget_textEdit_tabBarClicked(tab_total - 1);
+        }
 
-        on_tabWidget_textEdit_tabBarClicked(ci);
+
 
     }
     else
