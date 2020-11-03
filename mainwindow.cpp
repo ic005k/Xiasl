@@ -65,7 +65,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     loadLocal();
 
-    ver = "QtiASL V1.0.20    ";
+    ver = "QtiASL V1.0.21    ";
     setWindowTitle(ver);
 
     QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
@@ -99,12 +99,12 @@ MainWindow::MainWindow(QWidget *parent)
 #endif
 
     int w = screen()->size().width();
-    init_treeWidget(ui->treeWidget, w);
-    treeWidgetBak = new QTreeWidget;
-
-    init_treeWidget(treeWidgetBak, w);
 
     ui->tabWidget_misc->setMaximumWidth(w/3 - 20);
+
+    init_treeWidget(ui->treeWidget, ui->tabWidget_misc->width());
+    treeWidgetBak = new QTreeWidget;
+    init_treeWidget(treeWidgetBak, ui->tabWidget_misc->width());
 
     ui->tabWidget_textEdit->tabBar()->installEventFilter(this);//安装事件过滤器以禁用鼠标滚轮切换标签页
     connect(ui->tabWidget_textEdit, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
@@ -1789,30 +1789,36 @@ int getBraceScope(int start, int count, QsciScintilla *textEdit)
     for(int s = start - 1; s < count; s++)
     {
 
-        QString str = textEdit->text(s);
+        QString str = textEdit->text(s).trimmed();
 
         for(int t = 0; t < str.count(); t++)
         {
-            if(str.mid(t, 1) == "{")
-            {
-                dkh1 ++;
 
-            }
-            if(str.mid(t, 1) == "}")
+            if(str.mid(0, 2) != "/*" && str.mid(0, 2) != "//")
             {
-                dkh1 --;
 
-                if(dkh1 == 0)
+                if(str.mid(t, 1) == "{")
                 {
-                    //范围结束
-                    int row, col;
-                    textEdit->getCursorPosition(&row, &col);
-                    scope_end = s + 1;
-                    end = true;
-                    //qDebug() << "范围结束" << scope_end;
-                    break;
+                    dkh1 ++;
 
                 }
+                if(str.mid(t, 1) == "}")
+                {
+                    dkh1 --;
+
+                    if(dkh1 == 0)
+                    {
+                        //范围结束
+                        int row, col;
+                        textEdit->getCursorPosition(&row, &col);
+                        scope_end = s + 1;
+                        end = true;
+                        //qDebug() << "范围结束" << scope_end;
+                        break;
+
+                    }
+                }
+
             }
 
         }
@@ -2732,6 +2738,8 @@ void getMemberTree(QsciScintilla *textEdit)
            int start_d = j + 1;
            int end_d = getBraceScope(start_d, count, textEdit);
 
+           //qDebug() << start_d << end_d;
+
            for(int d = start_d; d < end_d; d++)
            {
                if(break_run)
@@ -3120,9 +3128,10 @@ void getMemberTree(QsciScintilla *textEdit)
 
                }
 
+
            }
 
-           j = end_d -1;
+           j = end_d - 1;
 
 
         }
@@ -3672,13 +3681,13 @@ void MainWindow::init_treeWidget(QTreeWidget *treeWidgetBack, int w)
     treeWidgetBack->setColumnHidden(1 , true);
     treeWidgetBack->setColumnCount(2);
 
-    treeWidgetBack->setColumnWidth(0 , w/3);
+    treeWidgetBack->setColumnWidth(0 , w);
     treeWidgetBack->setColumnWidth(1 , 100);
     treeWidgetBack->setHeaderItem(new QTreeWidgetItem(QStringList() << tr("Members") << "Lines"));
 
     //设置水平滚动条
     treeWidgetBack->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
-    treeWidgetBack->header()->setStretchLastSection(false);
+    treeWidgetBack->header()->setStretchLastSection(true);
 
     treeWidgetBack->setFont(font);
 
