@@ -203,6 +203,12 @@
         <property name="midLineWidth">
          <number>0</number>
         </property>
+        <property name="horizontalScrollBarPolicy">
+         <enum>Qt::ScrollBarAsNeeded</enum>
+        </property>
+        <property name="sizeAdjustPolicy">
+         <enum>QAbstractScrollArea::AdjustIgnored</enum>
+        </property>
         <property name="columnCount">
          <number>2</number>
         </property>
@@ -512,7 +518,7 @@
   </action>
   <action name="actionSaveAs">
    <property name="text">
-    <string>SaveAS...</string>
+    <string>Save as...</string>
    </property>
   </action>
   <action name="actionGenerate">

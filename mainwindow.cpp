@@ -65,7 +65,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     loadLocal();
 
-    ver = "QtiASL V1.0.21    ";
+    ver = "QtiASL V1.0.22    ";
     setWindowTitle(ver);
 
     QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
@@ -98,13 +98,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 #endif
 
-    int w = screen()->size().width();
-
-    ui->tabWidget_misc->setMaximumWidth(w/3 - 20);
-
-    init_treeWidget(ui->treeWidget, ui->tabWidget_misc->width());
-    treeWidgetBak = new QTreeWidget;
-    init_treeWidget(treeWidgetBak, ui->tabWidget_misc->width());
+    init_treeWidget();
 
     ui->tabWidget_textEdit->tabBar()->installEventFilter(this);//安装事件过滤器以禁用鼠标滚轮切换标签页
     connect(ui->tabWidget_textEdit, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
@@ -252,7 +246,6 @@ void MainWindow::about()
 QString MainWindow::openFile(QString fileName)
 {
 
-
     QSettings settings;
     QFileInfo fInfo(fileName);
 
@@ -279,26 +272,45 @@ QString MainWindow::openFile(QString fileName)
         SelfSaved = true;//aml转换成dsl的时候，不进行文件内容更改监测提醒
 
         QFileInfo appInfo(qApp->applicationDirPath());
-        #ifdef Q_OS_WIN32
-        // win
-            QProcess::execute(appInfo.filePath() + "/iasl.exe" , QStringList() << "-d" << fileName);
-        #endif
 
-        #ifdef Q_OS_LINUX
-        // linux
-            QProcess::execute(appInfo.filePath() + "/iasl" , QStringList() << "-d" << fileName);
-
-        #endif
-
-        #ifdef Q_OS_MAC
-        // mac
-            QProcess::execute(appInfo.filePath() + "/iasl" , QStringList() << "-d" << fileName);
-        #endif
+        Decompile = new QProcess;
 
 
-        fileName = fInfo.path() + "/" + fInfo.baseName() + ".dsl";
+#ifdef Q_OS_WIN32
 
+            Decompile->start(appInfo.filePath() + "/iasl.exe" , QStringList() << "-d" << fileName);
+#endif
 
+#ifdef Q_OS_LINUX
+
+            Decompile->start(appInfo.filePath() + "/iasl" , QStringList() << "-d" << fileName);
+
+#endif
+
+#ifdef Q_OS_MAC
+
+            Decompile->start(appInfo.filePath() + "/iasl" , QStringList() << "-d" << fileName);
+#endif
+
+            connect(Decompile , SIGNAL(finished(int)) , this , SLOT(readDecompileResult(int)));
+
+#ifdef Q_OS_WIN32
+
+            Decompile->execute(appInfo.filePath() + "/iasl.exe" , QStringList() << "-d" << fileName);
+#endif
+
+#ifdef Q_OS_LINUX
+
+            Decompile->execute(appInfo.filePath() + "/iasl" , QStringList() << "-d" << fileName);
+
+#endif
+
+#ifdef Q_OS_MAC
+
+            Decompile->execute(appInfo.filePath() + "/iasl" , QStringList() << "-d" << fileName);
+#endif
+
+            fileName = fInfo.path() + "/" + fInfo.baseName() + ".dsl";
 
     }
 
@@ -774,6 +786,50 @@ void MainWindow::setMark()
            cursor.endEditBlock();
 
         }
+}
+
+void MainWindow::readDecompileResult(int exitCode)
+{
+    loading = true;
+
+    QString result, result1;
+    result = QString::fromUtf8(Decompile->readAllStandardOutput());
+    result1 = QString::fromUtf8(Decompile->readAllStandardError());
+
+    ui->editShowMsg->clear();
+    ui->editShowMsg->append(result);
+    ui->editShowMsg->append(result1);
+
+    if(exitCode == 0)
+    {
+        //成功
+
+        //标记tab头
+        int info_count = 0;
+
+        ui->tabWidget->setTabText(1, tr("Errors") + " (" + QString::number(info_count) +")");
+
+        ui->tabWidget->setTabText(2, tr("Warnings") + " (" + QString::number(info_count) +")");
+
+        ui->tabWidget->setTabText(3, tr("Remarks") + " (" + QString::number(info_count) +")");
+
+        ui->tabWidget->setTabText(4, "Optimizations (" + QString::number(info_count) +")");
+
+        ui->tabWidget->setCurrentIndex(0);
+
+
+        ui->tabWidget->setHidden(false);
+
+    }
+    else
+    {
+
+
+    }
+
+
+    loading = false;
+
 }
 
 /*读取编译结果信息*/
@@ -3674,22 +3730,34 @@ void MainWindow::init_edit(QsciScintilla *textEdit)
 
 }
 
-void MainWindow::init_treeWidget(QTreeWidget *treeWidgetBack, int w)
+void MainWindow::init_treeWidget()
 {
 
-    //connect(treeWidgetBack, &QTreeWidget::itemClicked, this, &MainWindow::treeWidgetBack_itemClicked);
-    treeWidgetBack->setColumnHidden(1 , true);
-    treeWidgetBack->setColumnCount(2);
+    int w = screen()->size().width();
 
-    treeWidgetBack->setColumnWidth(0 , w);
-    treeWidgetBack->setColumnWidth(1 , 100);
-    treeWidgetBack->setHeaderItem(new QTreeWidgetItem(QStringList() << tr("Members") << "Lines"));
+    ui->tabWidget_misc->setMaximumWidth(w/3 - 20);
+    //ui->tabWidget_misc->setMinimumWidth(0);
+    //ui->tabWidget_misc->setFixedWidth(w/3 - 20);
 
+    treeWidgetBak = new QTreeWidget;
+
+    //ui->treeWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
     //设置水平滚动条
-    treeWidgetBack->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
-    treeWidgetBack->header()->setStretchLastSection(true);
+    ui->treeWidget->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    ui->treeWidget->header()->setStretchLastSection(true);
 
-    treeWidgetBack->setFont(font);
+    ui->treeWidget->setFont(font);
+    QFont hFont;
+    hFont.setPointSize(12);
+    ui->treeWidget->header()->setFont(hFont);
+    ui->treeWidget->header()->setMaximumHeight(20);
+
+    ui->treeWidget->setColumnCount(2);
+    ui->treeWidget->setColumnHidden(1 , true);
+
+    ui->treeWidget->setColumnWidth(0 , ui->tabWidget_misc->width() + 60);
+    ui->treeWidget->setColumnWidth(1 , 100);
+    ui->treeWidget->setHeaderItem(new QTreeWidgetItem(QStringList() << tr("Members") << "Lines"));
 
     ui->treeWidget->setStyle(QStyleFactory::create("windows")); //连接的虚线
     ui->treeWidget->setIconSize(QSize(12, 12));
@@ -3697,6 +3765,9 @@ void MainWindow::init_treeWidget(QTreeWidget *treeWidgetBack, int w)
     ui->treeWidget->installEventFilter(this);
     ui->treeWidget->setAlternatingRowColors(true);//底色交替显示
     ui->treeWidget->setStyleSheet( "QTreeWidget::item:hover{background-color:rgba(0,0,255,15)}" "QTreeWidget::item:selected{background-color:rgba(0, 0, 255, 200); color:rgba(255,255,255,255)}" );
+
+    //connect(ui->treeWidget, &QTreeWidget::itemClicked, this, &MainWindow::treeWidgetBack_itemClicked);
+
 
 }
 

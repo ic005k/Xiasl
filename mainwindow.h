@@ -106,7 +106,11 @@ public:
     QString curFile;
 
     QProcess *co;
+
+    QProcess *Decompile;
+
     QProcess *pk;
+
     QFont font;
 
     RecentFiles *m_recentFiles;
@@ -148,6 +152,7 @@ private slots:
     void timer_linkage();
 
     void readResult(int exitCode);
+    void readDecompileResult(int exitCode);
 
     void readKextstat();
 
@@ -297,7 +302,7 @@ private:
 
     void init_edit(QsciScintilla *textEdit);
 
-    void init_treeWidget(QTreeWidget *treeWidgetBack, int w);
+    void init_treeWidget();
 
     void init_statusBar();
 
