@@ -401,8 +401,11 @@ void MainWindow::loadFile(const QString &fileName, int row, int col)
     }
 
 
-    if(ReLoad)//文本重装之后再回到之前的位置
+    if(ReLoad)//文本重装之后刷新树并回到之前的位置
+    {
+        refresh_tree(textEdit);
         textEdit->setCursorPosition(RowNum , ColNum);
+    }
 
 #ifndef QT_NO_CURSOR
     QGuiApplication::restoreOverrideCursor();
