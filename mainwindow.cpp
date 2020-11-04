@@ -3736,8 +3736,6 @@ void MainWindow::init_treeWidget()
     int w = screen()->size().width();
 
     ui->tabWidget_misc->setMaximumWidth(w/3 - 20);
-    //ui->tabWidget_misc->setMinimumWidth(0);
-    //ui->tabWidget_misc->setFixedWidth(w/3 - 20);
 
     treeWidgetBak = new QTreeWidget;
 
@@ -3748,9 +3746,9 @@ void MainWindow::init_treeWidget()
 
     ui->treeWidget->setFont(font);
     QFont hFont;
-    hFont.setPointSize(12);
+    hFont.setPointSize(font.pointSize() - 1);
     ui->treeWidget->header()->setFont(hFont);
-    ui->treeWidget->header()->setMaximumHeight(20);
+    //ui->treeWidget->header()->setMaximumHeight(28);
 
     ui->treeWidget->setColumnCount(2);
     ui->treeWidget->setColumnHidden(1 , true);
