@@ -17,5 +17,11 @@
         <file>icon/new.png</file>
         <file>icon/open.png</file>
         <file>icon/save.png</file>
+        <file>icon/saveas.png</file>
+        <file>icon/r.png</file>
+        <file>icon/fn.png</file>
+        <file>icon/fp.png</file>
+        <file>icon/re.png</file>
+        <file>icon/rf.png</file>
     </qresource>
 </RCC>
