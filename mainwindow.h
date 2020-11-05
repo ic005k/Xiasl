@@ -138,6 +138,10 @@ public slots:
 private slots:
     void treeWidgetBack_itemClicked(QTreeWidgetItem *item, int column);
 
+    void view_info();
+
+    void view_mem_list();
+
     void closeTab(int index);
 
     void kextstat();
@@ -232,12 +236,6 @@ private slots:
     void on_tabWidget_textEdit_tabBarClicked(int index);
 
     void on_tabWidget_textEdit_currentChanged(int index);
-
-    void on_btnNew_clicked();
-
-    void on_btnOpen_clicked();
-
-    void on_btnSave_clicked();
 
 private:
     Ui::MainWindow *ui;

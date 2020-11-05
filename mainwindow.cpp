@@ -65,7 +65,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     loadLocal();
 
-    ver = "QtiASL V1.0.22    ";
+    ver = "QtiASL V1.0.23    ";
     setWindowTitle(ver);
 
     QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
@@ -81,8 +81,9 @@ MainWindow::MainWindow(QWidget *parent)
     font.setPointSize(9);
 
     regACPI_win();
-
     ui->actionKextstat->setEnabled(false);
+
+    ui->toolBar->setIconSize(QSize(30, 30));
 
 #endif
 
@@ -90,16 +91,19 @@ MainWindow::MainWindow(QWidget *parent)
     font.setPointSize(11);
     ui->actionKextstat->setEnabled(false);
     ui->actionGenerate->setEnabled(false);
+    ui->toolBar->setIconSize(QSize(20, 20));
 #endif
 
 #ifdef Q_OS_MAC
     font.setPointSize(13);
     ui->actionGenerate->setEnabled(false);
+    ui->toolBar->setIconSize(QSize(22, 22));
 
 #endif
 
     init_treeWidget();
 
+    ui->tabWidget_textEdit->setDocumentMode(true);
     ui->tabWidget_textEdit->tabBar()->installEventFilter(this);//安装事件过滤器以禁用鼠标滚轮切换标签页
     connect(ui->tabWidget_textEdit, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
     ui->tabWidget_textEdit->setIconSize(QSize(8, 8));
@@ -110,13 +114,64 @@ MainWindow::MainWindow(QWidget *parent)
     init_info_edit();
 
     splitterMain = new QSplitter(Qt::Horizontal,this);
+
     splitterMain->addWidget(ui->tabWidget_misc);
     QSplitter *splitterRight = new QSplitter(Qt::Vertical,splitterMain);
     splitterRight->setOpaqueResize(true);
     splitterRight->addWidget(ui->tabWidget_textEdit);
     splitterRight->addWidget(ui->tabWidget);
-    ui->gridLayout->addWidget(splitterMain);
+
+    ui->gridLayout_9->addWidget(splitterMain);
+
     ui->tabWidget->setHidden(true);
+
+    ui->actionNew->setIcon(QIcon(":/icon/new.png"));
+    ui->toolBar->addAction(ui->actionNew);
+
+    ui->actionOpen->setIcon(QIcon(":/icon/open.png"));
+    ui->toolBar->addAction(ui->actionOpen);
+
+    ui->actionSave->setIcon(QIcon(":/icon/save.png"));
+    ui->toolBar->addAction(ui->actionSave);
+
+    ui->actionSaveAs->setIcon(QIcon(":/icon/saveas.png"));
+    ui->toolBar->addAction(ui->actionSaveAs);
+
+    ui->toolBar->addSeparator();
+    ui->toolBar->addWidget(ui->chkCaseSensitive);
+    ui->toolBar->addWidget(ui->editFind);
+
+    ui->actionFindPrevious->setIcon(QIcon(":/icon/fp.png"));
+    ui->toolBar->addAction(ui->actionFindPrevious);
+
+    ui->actionFindNext->setIcon(QIcon(":/icon/fn.png"));
+    ui->toolBar->addAction(ui->actionFindNext);
+
+    ui->toolBar->addSeparator();
+    ui->toolBar->addWidget(ui->editReplace);
+
+    ui->actionReplace->setIcon(QIcon(":/icon/re.png"));
+    ui->toolBar->addAction(ui->actionReplace);
+
+    ui->actionReplace_Find->setIcon(QIcon(":/icon/rf.png"));
+    ui->toolBar->addAction(ui->actionReplace_Find);
+
+
+    ui->toolBar->addSeparator();
+    ui->toolBar->addWidget(ui->cboxCompilationOptions);
+    ui->actionGo_to_previous_error->setIcon(QIcon(":/icon/1.png"));
+    ui->toolBar->addAction(ui->actionGo_to_previous_error);
+
+    ui->actionCompiling->setIcon(QIcon(":/icon/2.png"));
+    ui->toolBar->addAction(ui->actionCompiling);
+
+    ui->actionGo_to_the_next_error->setIcon(QIcon(":/icon/3.png"));
+    ui->toolBar->addAction(ui->actionGo_to_the_next_error);
+
+    ui->toolBar->addSeparator();
+    ui->actionRefreshTree->setIcon(QIcon(":/icon/r.png"));
+    ui->toolBar->addAction(ui->actionRefreshTree);
+
 
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(timer_linkage()));
@@ -455,8 +510,8 @@ void MainWindow::setCurrentFile(const QString &fileName)
 
     setWindowTitle(ver + shownName);
 
-    ui->btnPreviousError->setEnabled(false);
-    ui->btnNextError->setEnabled(false);
+    ui->actionGo_to_previous_error->setEnabled(false);
+    ui->actionGo_to_the_next_error->setEnabled(false);
 
     //初始化fsm
     QFileInfo f(shownName);
@@ -473,7 +528,6 @@ void MainWindow::setCurrentFile(const QString &fileName)
 
         //设置编译功能使能
         ui->actionCompiling->setEnabled(true);
-        ui->btnCompile->setEnabled(true);
 
         //ui->tabWidget_misc->setCurrentIndex(0);
 
@@ -484,7 +538,6 @@ void MainWindow::setCurrentFile(const QString &fileName)
 
         //设置编译功能屏蔽
         ui->actionCompiling->setEnabled(false);
-        ui->btnCompile->setEnabled(false);
 
         ui->tabWidget->setVisible(false);
     }
@@ -901,8 +954,8 @@ void MainWindow::readResult(int exitCode)
     if(exitCode == 0)
     {
 
-        ui->btnPreviousError->setEnabled(false);
-        ui->btnNextError->setEnabled(false);
+        ui->actionGo_to_previous_error->setEnabled(false);
+        ui->actionGo_to_the_next_error->setEnabled(false);
         ui->tabWidget->setCurrentIndex(0);
 
         if(!zh_cn)
@@ -918,8 +971,8 @@ void MainWindow::readResult(int exitCode)
     }
     else
     {
-        ui->btnPreviousError->setEnabled(true);
-        ui->btnNextError->setEnabled(true);
+        ui->actionGo_to_previous_error->setEnabled(true);
+        ui->actionGo_to_the_next_error->setEnabled(true);
         ui->tabWidget->setCurrentIndex(1);
 
         on_btnNextError_clicked();
@@ -1720,7 +1773,9 @@ void MainWindow::update_ui_tree()
     ui->treeWidget->expandAll();
 
 
-    ui->treeWidget->setHeaderLabel("Scope(" + QString::number(s_count) + ")  " + "Device(" + QString::number(d_count) + ")  " + "Method(" + QString::number(m_count) + ")");//  + "N(" + QString::number(n_count) + ")");
+    QString lbl = "Scope(" + QString::number(s_count) + ")  " + "Device(" + QString::number(d_count) + ")  " + "Method(" + QString::number(m_count) + ")"; //  + "N(" + QString::number(n_count) + ")"
+    ui->treeWidget->setHeaderLabel(lbl);
+    ui->lblMembers->setText(lbl);
     ui->treeWidget->update();
 
     float a = qTime.elapsed()/1000.00;
@@ -3429,7 +3484,30 @@ void MainWindow::init_menu()
     ui->actionCompiling->setShortcut(tr("ctrl+m"));
     connect(ui->actionCompiling, &QAction::triggered, this, &MainWindow::btnCompile_clicked);
 
-    ui->actionFont_2->setShortcut(tr("ctrl+f"));
+    ui->actionRefreshTree->setShortcut(tr("ctrl+r"));
+    connect(ui->actionRefreshTree, &QAction::triggered, this, &MainWindow::on_btnRefreshTree_clicked);
+
+    ui->actionFindPrevious->setShortcut(tr("ctrl+p"));
+    connect(ui->actionFindPrevious, &QAction::triggered, this, &MainWindow::on_btnFindPrevious_clicked);
+
+    ui->actionFindNext->setShortcut(tr("ctrl+f"));
+    connect(ui->actionFindNext, &QAction::triggered, this, &MainWindow::on_btnFindNext_clicked);
+
+    ui->actionReplace->setShortcut(tr("ctrl+k"));
+    connect(ui->actionReplace, &QAction::triggered, this, &MainWindow::on_btnReplace_clicked);
+
+    ui->actionReplace_Find->setShortcut(tr("ctrl+j"));
+    connect(ui->actionReplace_Find, &QAction::triggered, this, &MainWindow::on_btnReplaceFind_clicked);
+
+
+
+    //ui->actionGo_to_previous_error->setShortcut(tr("ctrl+e"));
+    connect(ui->actionGo_to_previous_error, &QAction::triggered, this, &MainWindow::on_btnPreviousError_clicked);
+
+    //ui->actionGo_to_the_next_error->setShortcut(tr("ctrl+i"));
+    connect(ui->actionGo_to_the_next_error, &QAction::triggered, this, &MainWindow::on_btnNextError_clicked);
+
+    //ui->actionFont_2->setShortcut(tr("ctrl+f"));
     connect(ui->actionFont_2, &QAction::triggered, this, &MainWindow::set_font);
 
     ui->actionWrapWord->setShortcut(tr("ctrl+w"));
@@ -3437,29 +3515,15 @@ void MainWindow::init_menu()
 
     connect(ui->actionKextstat, &QAction::triggered, this, &MainWindow::kextstat);
 
+    connect(ui->actionInfo_win, &QAction::triggered, this, &MainWindow::view_info);
+    connect(ui->actionMembers_win, &QAction::triggered, this, &MainWindow::view_mem_list);
+
     ui->chkName->setVisible(false);
     ui->chkScope->setVisible(false);
     ui->chkDevice->setVisible(false);
     ui->chkMethod->setVisible(false);
 
     QIcon icon;
-    icon.addFile(":/icon/1.png");
-    ui->btnPreviousError->setIcon(icon);
-
-    icon.addFile(":/icon/2.png");
-    ui->btnCompile->setIcon(icon);
-
-    icon.addFile(":/icon/3.png");
-    ui->btnNextError->setIcon(icon);
-
-    icon.addFile(":/icon/new.png");
-    ui->btnNew->setIcon(icon);
-
-    icon.addFile(":/icon/open.png");
-    ui->btnOpen->setIcon(icon);
-
-    icon.addFile(":/icon/save.png");
-    ui->btnSave->setIcon(icon);
 
     icon.addFile(":/icon/return.png");
     ui->btnReturn->setIcon(icon);
@@ -3484,8 +3548,6 @@ void MainWindow::init_menu()
 
     //设置编译功能屏蔽
     ui->actionCompiling->setEnabled(false);
-    ui->btnCompile->setEnabled(false);
-
 
 }
 
@@ -3751,12 +3813,14 @@ void MainWindow::init_treeWidget()
     QFont hFont;
     hFont.setPointSize(font.pointSize() - 1);
     ui->treeWidget->header()->setFont(hFont);
-    //ui->treeWidget->header()->setMaximumHeight(28);
+
+    ui->treeWidget->setHeaderHidden(true);
 
     ui->treeWidget->setColumnCount(2);
     ui->treeWidget->setColumnHidden(1 , true);
 
-    ui->treeWidget->setColumnWidth(0 , ui->tabWidget_misc->width() + 60);
+    ui->treeWidget->setColumnWidth(0 , ui->tab_misc1->width() - 230);
+
     ui->treeWidget->setColumnWidth(1 , 100);
     ui->treeWidget->setHeaderItem(new QTreeWidgetItem(QStringList() << tr("Members") << "Lines"));
 
@@ -4374,7 +4438,9 @@ void MainWindow::newFile()
         s_count = 0;
         d_count = 0;
         m_count = 0;
-        ui->treeWidget->setHeaderLabel("Scope(" + QString::number(s_count) + ")  " + "Device(" + QString::number(d_count) + ")  " + "Method(" + QString::number(m_count) + ")");
+        QString lblMembers = "Scope(" + QString::number(s_count) + ")  " + "Device(" + QString::number(d_count) + ")  " + "Method(" + QString::number(m_count) + ")";
+        ui->treeWidget->setHeaderLabel(lblMembers);
+        ui->lblMembers->setText(lblMembers);
 
         ui->editShowMsg->clear();
         ui->editErrors->clear();
@@ -4798,13 +4864,11 @@ void MainWindow::on_tabWidget_textEdit_tabBarClicked(int index)
     if(f.suffix().toLower() == "dsl")
     {
         ui->actionCompiling->setEnabled(true);
-        ui->btnCompile->setEnabled(true);
 
     }
     else
     {
         ui->actionCompiling->setEnabled(false);
-        ui->btnCompile->setEnabled(false);
 
     }
 
@@ -4898,17 +4962,35 @@ void MainWindow::on_tabWidget_textEdit_currentChanged(int index)
 
 }
 
-void MainWindow::on_btnNew_clicked()
+void MainWindow::view_info()
 {
-    newFile();
+    if(ui->tabWidget->isHidden())
+    {
+        ui->tabWidget->setHidden(false);
+        ui->actionInfo_win->setChecked(true);
+    }else if(!ui->tabWidget->isHidden())
+    {
+        ui->tabWidget->setHidden(true);
+        ui->actionInfo_win->setChecked(false);
+    }
+
+
 }
 
-void MainWindow::on_btnOpen_clicked()
+void MainWindow::view_mem_list()
 {
-    Open();
+    if(ui->tabWidget_misc->isHidden())
+    {
+        ui->tabWidget_misc->setHidden(false);
+        ui->actionMembers_win->setChecked(true);
+    }else if(!ui->tabWidget_misc->isHidden())
+    {
+        ui->tabWidget_misc->setHidden(true);
+        ui->actionMembers_win->setChecked(false);
+    }
+
+
 }
 
-void MainWindow::on_btnSave_clicked()
-{
-    Save();
-}
+
+
