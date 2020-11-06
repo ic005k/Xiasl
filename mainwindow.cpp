@@ -220,7 +220,7 @@ void MainWindow::loadTabFiles()
             file_exists = true;
         }
 
-
+        int j = 0;
         for(int i = 0; i < count; i ++)
         {
             QString file = Reg.value(QString::number(i) + "/file").toString();
@@ -241,7 +241,9 @@ void MainWindow::loadTabFiles()
 
                 loadFile(file, row, col);
 
-                QWidget *pWidget= ui->tabWidget_textEdit->widget(i);
+                QWidget *pWidget= ui->tabWidget_textEdit->widget(j);
+                j ++;
+
                 QsciScintilla *edit = new QsciScintilla;
                 edit = (QsciScintilla*)pWidget->children().at(1);
 
