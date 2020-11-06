@@ -269,6 +269,9 @@
     </item>
     <item row="6" column="5">
      <widget class="QTabWidget" name="tabWidget_textEdit">
+      <property name="styleSheet">
+       <string notr="true"/>
+      </property>
       <property name="currentIndex">
        <number>-1</number>
       </property>

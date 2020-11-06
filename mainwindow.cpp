@@ -65,7 +65,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     loadLocal();
 
-    ver = "QtiASL V1.0.23    ";
+    ver = "QtiASL V1.0.25    ";
     setWindowTitle(ver);
 
     QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
@@ -104,6 +104,7 @@ MainWindow::MainWindow(QWidget *parent)
     init_treeWidget();
 
     ui->tabWidget_textEdit->setDocumentMode(true);
+
     ui->tabWidget_textEdit->tabBar()->installEventFilter(this);//安装事件过滤器以禁用鼠标滚轮切换标签页
     connect(ui->tabWidget_textEdit, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
     ui->tabWidget_textEdit->setIconSize(QSize(8, 8));
@@ -330,6 +331,10 @@ QString MainWindow::openFile(QString fileName)
 
         Decompile = new QProcess;
 
+        ui->tabWidget->setHidden(false);
+        ui->actionInfo_win->setChecked(true);
+
+        try{
 
 #ifdef Q_OS_WIN32
 
@@ -364,8 +369,17 @@ QString MainWindow::openFile(QString fileName)
 
             Decompile->execute(appInfo.filePath() + "/iasl" , QStringList() << "-d" << fileName);
 #endif
+        }
+        catch(...)
+        {
+            qDebug() << "error";
+            Decompile->terminate();
 
-            fileName = fInfo.path() + "/" + fInfo.baseName() + ".dsl";
+        }
+
+        Decompile->terminate();
+
+        fileName = fInfo.path() + "/" + fInfo.baseName() + ".dsl";
 
     }
 
@@ -874,8 +888,6 @@ void MainWindow::readDecompileResult(int exitCode)
         ui->tabWidget->setCurrentIndex(0);
 
 
-        ui->tabWidget->setHidden(false);
-
     }
     else
     {
@@ -979,6 +991,7 @@ void MainWindow::readResult(int exitCode)
     }
 
     ui->tabWidget->setHidden(false);
+    ui->actionInfo_win->setChecked(true);
 
     loading = false;
 
@@ -1773,7 +1786,7 @@ void MainWindow::update_ui_tree()
     ui->treeWidget->expandAll();
 
 
-    QString lbl = "Scope(" + QString::number(s_count) + ")  " + "Device(" + QString::number(d_count) + ")  " + "Method(" + QString::number(m_count) + ")"; //  + "N(" + QString::number(n_count) + ")"
+    QString lbl =  tr("Members") + ":  Scope(" + QString::number(s_count) + ")  " + "Device(" + QString::number(d_count) + ")  " + "Method(" + QString::number(m_count) + ")"; //  + "N(" + QString::number(n_count) + ")"
     ui->treeWidget->setHeaderLabel(lbl);
     ui->lblMembers->setText(lbl);
     ui->treeWidget->update();
@@ -4438,7 +4451,7 @@ void MainWindow::newFile()
         s_count = 0;
         d_count = 0;
         m_count = 0;
-        QString lblMembers = "Scope(" + QString::number(s_count) + ")  " + "Device(" + QString::number(d_count) + ")  " + "Method(" + QString::number(m_count) + ")";
+        QString lblMembers = tr("Members") + ":  Scope(" + QString::number(s_count) + ")  " + "Device(" + QString::number(d_count) + ")  " + "Method(" + QString::number(m_count) + ")";
         ui->treeWidget->setHeaderLabel(lblMembers);
         ui->lblMembers->setText(lblMembers);
 
@@ -4707,6 +4720,7 @@ void MainWindow::readKextstat()
     textEdit->append(result);
 
     ui->tabWidget->setHidden(true);
+    ui->actionInfo_win->setChecked(false);
 }
 
 void MainWindow::loadLocal()
