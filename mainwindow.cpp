@@ -65,13 +65,15 @@ MainWindow::MainWindow(QWidget *parent)
 
     loadLocal();
 
-    ver = "QtiASL V1.0.25    ";
+    ver = "QtiASL V1.0.26    ";
     setWindowTitle(ver);
 
     QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
 
     mythread = new thread_one();
     connect(mythread,&thread_one::over,this,&MainWindow::dealover);
+
+    dlg = new dlgDecompile(this);
 
     init_menu();
 
@@ -137,6 +139,13 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->actionSaveAs->setIcon(QIcon(":/icon/saveas.png"));
     ui->toolBar->addAction(ui->actionSaveAs);
+
+    ui->toolBar->addSeparator();
+
+    ui->toolBar->addWidget(ui->chkAll);
+    ui->actionDSDecompile->setIcon(QIcon(":/icon/bat.png"));
+    ui->toolBar->addAction(ui->actionDSDecompile);
+
 
     ui->toolBar->addSeparator();
     ui->toolBar->addWidget(ui->chkCaseSensitive);
@@ -220,7 +229,7 @@ void MainWindow::loadTabFiles()
             file_exists = true;
         }
 
-        int j = 0;
+
         for(int i = 0; i < count; i ++)
         {
             QString file = Reg.value(QString::number(i) + "/file").toString();
@@ -241,15 +250,14 @@ void MainWindow::loadTabFiles()
 
                 loadFile(file, row, col);
 
-                QWidget *pWidget= ui->tabWidget_textEdit->widget(j);
-                j ++;
-
-                QsciScintilla *edit = new QsciScintilla;
-                edit = (QsciScintilla*)pWidget->children().at(1);
-
                 int vs, hs;
                 vs = Reg.value(QString::number(i) + "/vs").toInt();
                 hs = Reg.value(QString::number(i) + "/hs").toInt();
+
+                QWidget *pWidget= ui->tabWidget_textEdit->currentWidget();
+
+                QsciScintilla *edit = new QsciScintilla;
+                edit = (QsciScintilla*)pWidget->children().at(1);
 
                 edit->verticalScrollBar()->setSliderPosition(vs);
                 edit->horizontalScrollBar()->setSliderPosition(hs);
@@ -262,11 +270,13 @@ void MainWindow::loadTabFiles()
 
         }
 
+        int tab_total = ui->tabWidget_textEdit->tabBar()->count();//以实际存在的为准
+
         if(!file_exists)
             newFile();
 
         int ci = Reg.value("ci").toInt();
-        int tab_total = ui->tabWidget_textEdit->tabBar()->count();//以实际存在的为准
+
         if(ci < tab_total)
         {
             ui->tabWidget_textEdit->setCurrentIndex(ci);
@@ -336,40 +346,80 @@ QString MainWindow::openFile(QString fileName)
         ui->tabWidget->setHidden(false);
         ui->actionInfo_win->setChecked(true);
 
+        QString name;
+        //设置文件过滤器
+        QStringList nameFilters;
+
+        if(fInfo.suffix() == "aml")
+        {
+            name = "/*.aml";
+            //设置文件过滤格式
+            nameFilters << "*.aml";
+        }
+        if(fInfo.suffix() == "dat")
+        {
+            name = "/*.dat";
+            //设置文件过滤格式
+            nameFilters << "*.dat";
+        }
+
+        QDir dir(fInfo.path());
+
+        //将过滤后的文件名称存入到files列表中
+        QStringList files = dir.entryList(nameFilters, QDir::Files|QDir::Readable, QDir::Name);
+
+        int count = files.count();
+
+        if(!ui->chkAll->isChecked())
+        {
+            count = 1;
+            files.clear();
+            files.append(fInfo.fileName());
+
+        }
+
+
+        for(int i = 0; i < count; i ++)
+        {
+
+            QString dfile = fInfo.path() + "/" + files.at(i);
+
         try{
 
 #ifdef Q_OS_WIN32
 
-            Decompile->start(appInfo.filePath() + "/iasl.exe" , QStringList() << "-d" << fileName);
+            Decompile->start(appInfo.filePath() + "/iasl.exe" , QStringList() << "-d" << dfile);
 #endif
 
 #ifdef Q_OS_LINUX
 
-            Decompile->start(appInfo.filePath() + "/iasl" , QStringList() << "-d" << fileName);
+            Decompile->start(appInfo.filePath() + "/iasl" , QStringList() << "-d" << dfile);
 
 #endif
 
 #ifdef Q_OS_MAC
 
-            Decompile->start(appInfo.filePath() + "/iasl" , QStringList() << "-d" << fileName);
+            Decompile->start(appInfo.filePath() + "/iasl" , QStringList() << "-d" << dfile);
 #endif
 
             connect(Decompile , SIGNAL(finished(int)) , this , SLOT(readDecompileResult(int)));
 
+
+
 #ifdef Q_OS_WIN32
 
-            Decompile->execute(appInfo.filePath() + "/iasl.exe" , QStringList() << "-d" << fileName);
+            Decompile->execute(appInfo.filePath() + "/iasl.exe" , QStringList() << "-d" << dfile);
 #endif
 
 #ifdef Q_OS_LINUX
 
-            Decompile->execute(appInfo.filePath() + "/iasl" , QStringList() << "-d" << fileName);
+            Decompile->execute(appInfo.filePath() + "/iasl" , QStringList() << "-d" << dfile);
 
 #endif
 
 #ifdef Q_OS_MAC
 
-            Decompile->execute(appInfo.filePath() + "/iasl" , QStringList() << "-d" << fileName);
+            Decompile->execute(appInfo.filePath() + "/iasl" , QStringList() << "-d" << dfile);
 #endif
         }
         catch(...)
@@ -378,6 +428,9 @@ QString MainWindow::openFile(QString fileName)
             Decompile->terminate();
 
         }
+            //qDebug() << files.at(i);
+
+        } //for
 
         Decompile->terminate();
 
@@ -989,7 +1042,7 @@ void MainWindow::readResult(int exitCode)
         ui->actionGo_to_the_next_error->setEnabled(true);
         ui->tabWidget->setCurrentIndex(1);
 
-        on_btnNextError_clicked();
+        on_btnNextError();
     }
 
     ui->tabWidget->setHidden(false);
@@ -1024,7 +1077,7 @@ void MainWindow::timer_linkage()
     if(!loading)
     {
 
-         on_btnRefreshTree_clicked();
+         on_btnRefreshTree();
 
          timer->stop();
 
@@ -1175,14 +1228,14 @@ void CodeEditor::highlightCurrentLine()
 }
 
 
-void MainWindow::on_btnReplace_clicked()
+void MainWindow::on_btnReplace()
 {
 
     textEdit->replace(ui->editReplace->text());
 
 }
 
-void MainWindow::on_btnFindNext_clicked()
+void MainWindow::on_btnFindNext()
 {
     QString str = ui->editFind->text().trimmed();
     //正则、大小写、匹配整个词、循环查找、向下或向上：目前已开启向下的循环查找ß
@@ -1237,7 +1290,7 @@ void MainWindow::on_btnFindNext_clicked()
 
 }
 
-void MainWindow::on_btnFindPrevious_clicked()
+void MainWindow::on_btnFindPrevious()
 {
 
     QString name = ui->editFind->text().trimmed();
@@ -1346,7 +1399,7 @@ void MainWindow::set_cursor_line_color(QTextEdit * edit)
     edit->setExtraSelections(extraSelection);
 }
 
-void MainWindow::on_btnNextError_clicked()
+void MainWindow::on_btnNextError()
 {
 
     const QTextCursor cursor = ui->editErrors->textCursor();
@@ -1392,11 +1445,11 @@ void MainWindow::on_btnNextError_clicked()
         }
 
         if(i == ui->editShowMsg->document()->lineCount() - 1)
-            on_btnPreviousError_clicked();
+            on_btnPreviousError();
     }
 }
 
-void MainWindow::on_btnPreviousError_clicked()
+void MainWindow::on_btnPreviousError()
 {
 
     const QTextCursor cursor = ui->editErrors->textCursor();
@@ -1442,7 +1495,7 @@ void MainWindow::on_btnPreviousError_clicked()
         }
 
         if(i == 0)
-            on_btnNextError_clicked();
+            on_btnNextError();
     }
 
 }
@@ -1581,7 +1634,7 @@ void MainWindow::textEdit_textChanged()
 void MainWindow::on_editFind_returnPressed()
 {
 
-    on_btnFindNext_clicked();
+    on_btnFindNext();
 }
 
 const char * QscilexerCppAttach::keywords(int set) const
@@ -1768,7 +1821,7 @@ void MainWindow::update_member(bool show, QString str_void, QList<QTreeWidgetIte
 
         //}
         //else
-        //    on_btnRefreshTree_clicked();
+        //    on_btnRefreshTree();
 
         qDebug() << tw_list.count();
 
@@ -1866,7 +1919,7 @@ void MainWindow::refresh_tree(QsciScintilla *textEdit)
 
 }
 
-void MainWindow::on_btnRefreshTree_clicked()
+void MainWindow::on_btnRefreshTree()
 {
     refresh_tree(textEdit);
 }
@@ -3496,31 +3549,34 @@ void MainWindow::init_menu()
     ui->actionGenerate->setShortcut(tr("ctrl+g"));
     connect(ui->actionGenerate, &QAction::triggered, this, &MainWindow::btnGenerate_clicked);
 
+    //ui->actionDSDecompile->setShortcut(tr("ctrl+l"));
+    connect(ui->actionDSDecompile, &QAction::triggered, this, &MainWindow::ds_Decompile);
+
     ui->actionCompiling->setShortcut(tr("ctrl+m"));
     connect(ui->actionCompiling, &QAction::triggered, this, &MainWindow::btnCompile_clicked);
 
     ui->actionRefreshTree->setShortcut(tr("ctrl+r"));
-    connect(ui->actionRefreshTree, &QAction::triggered, this, &MainWindow::on_btnRefreshTree_clicked);
+    connect(ui->actionRefreshTree, &QAction::triggered, this, &MainWindow::on_btnRefreshTree);
 
     ui->actionFindPrevious->setShortcut(tr("ctrl+p"));
-    connect(ui->actionFindPrevious, &QAction::triggered, this, &MainWindow::on_btnFindPrevious_clicked);
+    connect(ui->actionFindPrevious, &QAction::triggered, this, &MainWindow::on_btnFindPrevious);
 
     ui->actionFindNext->setShortcut(tr("ctrl+f"));
-    connect(ui->actionFindNext, &QAction::triggered, this, &MainWindow::on_btnFindNext_clicked);
+    connect(ui->actionFindNext, &QAction::triggered, this, &MainWindow::on_btnFindNext);
 
     ui->actionReplace->setShortcut(tr("ctrl+k"));
-    connect(ui->actionReplace, &QAction::triggered, this, &MainWindow::on_btnReplace_clicked);
+    connect(ui->actionReplace, &QAction::triggered, this, &MainWindow::on_btnReplace);
 
     ui->actionReplace_Find->setShortcut(tr("ctrl+j"));
-    connect(ui->actionReplace_Find, &QAction::triggered, this, &MainWindow::on_btnReplaceFind_clicked);
+    connect(ui->actionReplace_Find, &QAction::triggered, this, &MainWindow::on_btnReplaceFind);
 
 
 
     //ui->actionGo_to_previous_error->setShortcut(tr("ctrl+e"));
-    connect(ui->actionGo_to_previous_error, &QAction::triggered, this, &MainWindow::on_btnPreviousError_clicked);
+    connect(ui->actionGo_to_previous_error, &QAction::triggered, this, &MainWindow::on_btnPreviousError);
 
     //ui->actionGo_to_the_next_error->setShortcut(tr("ctrl+i"));
-    connect(ui->actionGo_to_the_next_error, &QAction::triggered, this, &MainWindow::on_btnNextError_clicked);
+    connect(ui->actionGo_to_the_next_error, &QAction::triggered, this, &MainWindow::on_btnNextError);
 
     //ui->actionFont_2->setShortcut(tr("ctrl+f"));
     connect(ui->actionFont_2, &QAction::triggered, this, &MainWindow::set_font);
@@ -3952,7 +4008,7 @@ void MainWindow::on_chkScope_clicked()
         }
 
         if(tw_scope.count() != s_count || s_count == 0)
-            on_btnRefreshTree_clicked();
+            on_btnRefreshTree();
 
 
 
@@ -4005,7 +4061,7 @@ void MainWindow::on_chkDevice_clicked()
 
         }
         if(tw_device.count() != d_count || d_count == 0)
-            on_btnRefreshTree_clicked();
+            on_btnRefreshTree();
 
     }
     ui->treeWidget->update();
@@ -4053,7 +4109,7 @@ void MainWindow::on_chkMethod_clicked()
 
         }
         if(tw_method.count() != m_count || m_count == 0)
-            on_btnRefreshTree_clicked();
+            on_btnRefreshTree();
 
     }
     ui->treeWidget->update();
@@ -4101,7 +4157,7 @@ void MainWindow::on_chkName_clicked()
 
         }
         if(tw_name.count() != n_count || n_count == 0)
-            on_btnRefreshTree_clicked();
+            on_btnRefreshTree();
 
     }
     ui->treeWidget->update();
@@ -4498,13 +4554,13 @@ void MainWindow::newFile()
 
 
 
-void MainWindow::on_btnReplaceFind_clicked()
+void MainWindow::on_btnReplaceFind()
 {
-    on_btnReplace_clicked();
+    on_btnReplace();
     if(find_down)
-        on_btnFindNext_clicked();
+        on_btnFindNext();
     if(find_up)
-        on_btnFindPrevious_clicked();
+        on_btnFindPrevious();
 }
 
 void MainWindow::on_chkCaseSensitive_clicked()
@@ -4515,7 +4571,7 @@ void MainWindow::on_chkCaseSensitive_clicked()
 void MainWindow::on_chkCaseSensitive_clicked(bool checked)
 {
     CaseSensitive = checked;
-    on_btnFindNext_clicked();
+    on_btnFindNext();
 }
 
 /*菜单：设置字体*/
@@ -4565,7 +4621,7 @@ void MainWindow::on_editFind_textChanged(const QString &arg1)
 
 
     if(arg1.count() > 0)
-        on_btnFindNext_clicked();
+        on_btnFindNext();
     else
     {
         if(red < 55)
@@ -4755,7 +4811,7 @@ void MainWindow::loadLocal()
 }
 
 
-void MainWindow::on_btnCompile_clicked()
+void MainWindow::on_btnCompile()
 {
     btnCompile_clicked();
 }
@@ -4871,7 +4927,7 @@ void MainWindow::on_tabWidget_textEdit_tabBarClicked(int index)
 
     textEdit = edit;
 
-    on_btnRefreshTree_clicked();
+    on_btnRefreshTree();
 
     setWindowTitle(ver + lbl->text());
 
@@ -5008,5 +5064,12 @@ void MainWindow::view_mem_list()
 
 }
 
+void MainWindow::ds_Decompile()
+{
+
+    dlg->setWindowTitle(tr("DSDT + SSDT Decompile"));
+    dlg->setModal(true);
+    dlg->show();
+}
 
 

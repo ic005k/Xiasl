@@ -23,5 +23,6 @@
         <file>icon/fp.png</file>
         <file>icon/re.png</file>
         <file>icon/rf.png</file>
+        <file>icon/bat.png</file>
     </qresource>
 </RCC>

@@ -21,7 +21,7 @@ FileSystemWatcher::FileSystemWatcher(QObject *parent)
 // 监控文件或目录
 void FileSystemWatcher::addWatchPath(QString path)
 {
-    qDebug() << QString("Add to watch: %1").arg(path);
+    //qDebug() << QString("Add to watch: %1").arg(path);
 
     if (m_pInstance == NULL)
     {

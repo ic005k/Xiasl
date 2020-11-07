@@ -14,7 +14,7 @@
    <string>MainWindow</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../QtIASL/my.qrc">
+   <iconset>
     <normaloff>:/icon/icon.png</normaloff>:/icon/icon.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -313,7 +313,18 @@
      </widget>
     </item>
     <item row="0" column="0" rowspan="8" colspan="12">
-     <layout class="QGridLayout" name="gridLayout_9"/>
+     <layout class="QGridLayout" name="gridLayout_9">
+      <item row="0" column="0">
+       <widget class="QCheckBox" name="chkAll">
+        <property name="toolTip">
+         <string>Decompile all AML files in the directory where the opened file is located</string>
+        </property>
+        <property name="text">
+         <string>Batch decompilation</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </item>
     <item row="7" column="9">
      <widget class="QCheckBox" name="chkName">
@@ -353,6 +364,7 @@
      <string>Tools</string>
     </property>
     <addaction name="actionGenerate"/>
+    <addaction name="actionDSDecompile"/>
     <addaction name="separator"/>
     <addaction name="actionCompiling"/>
     <addaction name="actionGo_to_previous_error"/>
@@ -517,9 +529,12 @@
     <string>Members list window</string>
    </property>
   </action>
+  <action name="actionDSDecompile">
+   <property name="text">
+    <string>DSDT + SSDT Decompile</string>
+   </property>
+  </action>
  </widget>
- <resources>
-  <include location="../QtIASL/my.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

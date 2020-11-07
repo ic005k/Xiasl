@@ -2,6 +2,8 @@
 #define MAINWINDOW_H
 
 #include "recentfiles.h"
+#include "dlgdecompile.h"
+
 #include <QMainWindow>
 #include <QFile>
 #include <QMessageBox>
@@ -138,6 +140,8 @@ public slots:
 private slots:
     void treeWidgetBack_itemClicked(QTreeWidgetItem *item, int column);
 
+    void ds_Decompile();
+
     void view_info();
 
     void view_mem_list();
@@ -150,7 +154,7 @@ private slots:
 
     void set_wrap();
 
-    void on_btnRefreshTree_clicked();
+    void on_btnRefreshTree();
     void refresh_tree(QsciScintilla *textEdit);
 
     void timer_linkage();
@@ -178,19 +182,19 @@ private slots:
 
     void textEdit_textChanged();
 
-    void on_btnReplace_clicked();
+    void on_btnReplace();
 
-    void on_btnFindNext_clicked();
+    void on_btnFindNext();
 
-    void on_btnFindPrevious_clicked();
+    void on_btnFindPrevious();
 
     void on_treeWidget_itemClicked(QTreeWidgetItem *item, int column);
 
     void on_editShowMsg_cursorPositionChanged();
 
-    void on_btnNextError_clicked();
+    void on_btnNextError();
 
-    void on_btnPreviousError_clicked();
+    void on_btnPreviousError();
 
     void on_editShowMsg_selectionChanged();
 
@@ -214,7 +218,7 @@ private slots:
 
     void on_editOptimizations_cursorPositionChanged();
 
-    void on_btnReplaceFind_clicked();
+    void on_btnReplaceFind();
 
     void on_chkCaseSensitive_clicked();
 
@@ -222,7 +226,7 @@ private slots:
 
     void on_editFind_textChanged(const QString &arg1);
 
-    void on_btnCompile_clicked();
+    void on_btnCompile();
 
     void on_treeView_doubleClicked(const QModelIndex &index);
 
@@ -239,6 +243,8 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+
+    dlgDecompile * dlg;
 
     void loadTabFiles();
 
