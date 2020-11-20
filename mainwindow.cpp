@@ -65,7 +65,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     loadLocal();
 
-    ver = "QtiASL V1.0.26    ";
+    ver = "QtiASL V1.0.27    ";
     setWindowTitle(ver);
 
     QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
@@ -85,7 +85,7 @@ MainWindow::MainWindow(QWidget *parent)
     regACPI_win();
     ui->actionKextstat->setEnabled(false);
 
-    ui->toolBar->setIconSize(QSize(30, 30));
+    ui->toolBar->setIconSize(QSize(25, 25));
 
 #endif
 
@@ -93,7 +93,7 @@ MainWindow::MainWindow(QWidget *parent)
     font.setPointSize(11);
     ui->actionKextstat->setEnabled(false);
     ui->actionGenerate->setEnabled(false);
-    ui->toolBar->setIconSize(QSize(20, 20));
+    ui->toolBar->setIconSize(QSize(22, 22));
 #endif
 
 #ifdef Q_OS_MAC
@@ -194,7 +194,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     loadTabFiles();
 
-
+    One = false;
 }
 
 MainWindow::~MainWindow()
@@ -560,6 +560,10 @@ void MainWindow::loadFile(const QString &fileName, int row, int col)
 
     ReLoad = false;
 
+    QIcon icon(":/icon/d.png");
+    ui->tabWidget_textEdit->tabBar()->setTabIcon(ui->tabWidget_textEdit->currentIndex(), icon);
+    One = false;
+
     loading = false;
 
 }
@@ -772,6 +776,7 @@ bool MainWindow::saveFile(const QString &fileName)
     //ui->tabWidget_textEdit->tabBar()->setTabTextColor(textNumber, QColor(0, 0, 0));
     QIcon icon(":/icon/d.png");
     ui->tabWidget_textEdit->tabBar()->setTabIcon(ui->tabWidget_textEdit->currentIndex(), icon);
+    One = false;
 
     //刷新文件路径
     QWidget *pWidget= ui->tabWidget_textEdit->widget(ui->tabWidget_textEdit->currentIndex());
@@ -1627,6 +1632,13 @@ void MainWindow::textEdit_textChanged()
 {
     if(!loading)
     {
+        if(textEdit->isModified() && !One)
+        {
+            QIcon icon(":/icon/s.png");
+            int i = ui->tabWidget_textEdit->currentIndex();
+            ui->tabWidget_textEdit->tabBar()->setTabIcon(i, icon);
+            One = true;
+        }
 
     }
 }
@@ -4535,6 +4547,7 @@ void MainWindow::newFile()
 
         QIcon icon(":/icon/d.png");
         ui->tabWidget_textEdit->tabBar()->setTabIcon(ui->tabWidget_textEdit->tabBar()->count() - 1, icon);
+        One = false;
 
         curFile = "";
         shownName = "";
@@ -4964,22 +4977,13 @@ void MainWindow::on_tabWidget_textEdit_tabBarClicked(int index)
         openFileList.push_back(lbl->text());
         FileSystemWatcher::addWatchPath(lbl->text());
 
-        //标记被修改的文件
-        QsciScintilla *edit_mod = new QsciScintilla;
-        edit_mod = (QsciScintilla*)pWidget->children().at(1);
-        QIcon icon(":/icon/s.png");
-        if(edit_mod->isModified())
-            ui->tabWidget_textEdit->tabBar()->setTabIcon(i, icon);
-
     }
 
-
-
+    One = false;
 }
 
 void MainWindow::closeTab(int index)
 {
-
 
     if(ui->tabWidget_textEdit->tabBar()->count() > 1)
     {

@@ -241,12 +241,15 @@ private slots:
 
     void on_tabWidget_textEdit_currentChanged(int index);
 
+
 private:
     Ui::MainWindow *ui;
 
     dlgDecompile * dlg;
 
     void loadTabFiles();
+
+    bool One = false;
 
     QString shownName;
 
