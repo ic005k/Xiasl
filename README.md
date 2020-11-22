@@ -26,7 +26,7 @@
 
 ......
 
-github下载文件可以尝试采用：https://toolwa.com/github/
+国内github下载文件可以尝试采用：https://toolwa.com/github/
 
 
 QtiASL的诞生离不开以下第三方开源软件的支持，感谢！
