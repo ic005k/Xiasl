@@ -2,49 +2,36 @@
 #include "myapp.h"
 #include <QApplication>
 
-
 extern QVector<QString> filelist;
 extern QWidgetList wdlist;
 extern QString fileName;
-MainWindow * mw_one;
+MainWindow* mw_one;
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
 
     //QApplication a(argc, argv);
-    MyApplication *a = new MyApplication(argc, argv);
+    MyApplication* a = new MyApplication(argc, argv);
 
-    QTranslator translator0;//注意：在外面定义它
+    QTranslator translator0; //注意：在外面定义它
     QTranslator translator1;
     QTranslator translator2;
-    QTextCodec *codec = QTextCodec::codecForName("System");
+    QTextCodec* codec = QTextCodec::codecForName("System");
     QTextCodec::setCodecForLocale(codec);
     QLocale locale;
-    if( locale.language() == QLocale::Chinese )
-    {
+    if (locale.language() == QLocale::Chinese) {
 
-
-
-        if(translator0.load(":/tr/qt_zh_CN.qm"))
-        {
+        if (translator0.load(":/tr/qt_zh_CN.qm")) {
             qApp->installTranslator(&translator0);
-
-
         }
 
-        if(translator1.load(":/tr/widgets_zh_cn.qm"))
-        {
+        if (translator1.load(":/tr/widgets_zh_cn.qm")) {
             qApp->installTranslator(&translator1);
-
         }
 
-        if(translator2.load(":/tr/qscintilla_cn.qm"))
-        {
+        if (translator2.load(":/tr/qscintilla_cn.qm")) {
             qApp->installTranslator(&translator2);
-
         }
-
-
     }
 
     /*注册线程间信号槽传递自定义数据类型*/
@@ -56,7 +43,7 @@ int main(int argc, char *argv[])
 
 #ifdef Q_OS_WIN32
 
-   fileName = QString::fromLocal8Bit(argv[1]);//解决乱码
+    fileName = QString::fromLocal8Bit(argv[1]); //解决乱码
 
 #endif
 
@@ -68,22 +55,15 @@ int main(int argc, char *argv[])
 
 #endif
 
-    if(!fileName.isEmpty())
-    {
+    if (!fileName.isEmpty()) {
         a->new_win();
     }
 
-    else
-    {
+    else {
 
         mw_one = new MainWindow();
         mw_one->show();
-
     }
 
     return a->exec();
-
 }
-
-
-

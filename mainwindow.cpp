@@ -1,6 +1,6 @@
 #include "mainwindow.h"
-#include "ui_mainwindow.h"
 #include "filesystemwatcher.h"
+#include "ui_mainwindow.h"
 
 bool loading = false;
 bool thread_end = true;
@@ -13,7 +13,7 @@ int s_count = 0;
 int m_count = 0;
 int d_count = 0;
 int n_count = 0;
-QsciScintilla *textEditBack;
+QsciScintilla* textEditBack;
 
 //QVector<QsciScintilla*> textEditList;
 QVector<QString> openFileList;
@@ -21,30 +21,28 @@ QVector<QString> openFileList;
 bool SelfSaved = false;
 bool ReLoad = false;
 
-QList<QTreeWidgetItem *> twitems;
-QList<QTreeWidgetItem *> tw_scope;
-QList<QTreeWidgetItem *> tw_device;
-QList<QTreeWidgetItem *> tw_method;
-QList<QTreeWidgetItem *> tw_name;
-QList<QTreeWidgetItem *> tw_list;
-QTreeWidget *treeWidgetBak;
+QList<QTreeWidgetItem*> twitems;
+QList<QTreeWidgetItem*> tw_scope;
+QList<QTreeWidgetItem*> tw_device;
+QList<QTreeWidgetItem*> tw_method;
+QList<QTreeWidgetItem*> tw_name;
+QList<QTreeWidgetItem*> tw_list;
+QTreeWidget* treeWidgetBak;
 
 QString fileName;
 QVector<QString> filelist;
 QWidgetList wdlist;
-QscilexerCppAttach *textLexer;
+QscilexerCppAttach* textLexer;
 
 bool zh_cn = false;
 
-
-
-
-thread_one::thread_one(QObject *parent) : QThread(parent)
+thread_one::thread_one(QObject* parent)
+    : QThread(parent)
 {
-
 }
 
-CodeEditor::CodeEditor(QWidget *parent) : QPlainTextEdit(parent)
+CodeEditor::CodeEditor(QWidget* parent)
+    : QPlainTextEdit(parent)
 {
     lineNumberArea = new LineNumberArea(this);
 
@@ -56,8 +54,7 @@ CodeEditor::CodeEditor(QWidget *parent) : QPlainTextEdit(parent)
     highlightCurrentLine();
 }
 
-
-MainWindow::MainWindow(QWidget *parent)
+MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
@@ -65,13 +62,13 @@ MainWindow::MainWindow(QWidget *parent)
 
     loadLocal();
 
-    ver = "QtiASL V1.0.27    ";
+    ver = "QtiASL V1.0.28    ";
     setWindowTitle(ver);
 
     QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
 
     mythread = new thread_one();
-    connect(mythread,&thread_one::over,this,&MainWindow::dealover);
+    connect(mythread, &thread_one::over, this, &MainWindow::dealover);
 
     dlg = new dlgDecompile(this);
 
@@ -107,7 +104,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->tabWidget_textEdit->setDocumentMode(true);
 
-    ui->tabWidget_textEdit->tabBar()->installEventFilter(this);//安装事件过滤器以禁用鼠标滚轮切换标签页
+    ui->tabWidget_textEdit->tabBar()->installEventFilter(this); //安装事件过滤器以禁用鼠标滚轮切换标签页
     connect(ui->tabWidget_textEdit, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
     ui->tabWidget_textEdit->setIconSize(QSize(8, 8));
 
@@ -116,10 +113,10 @@ MainWindow::MainWindow(QWidget *parent)
 
     init_info_edit();
 
-    splitterMain = new QSplitter(Qt::Horizontal,this);
+    splitterMain = new QSplitter(Qt::Horizontal, this);
 
     splitterMain->addWidget(ui->tabWidget_misc);
-    QSplitter *splitterRight = new QSplitter(Qt::Vertical,splitterMain);
+    QSplitter* splitterRight = new QSplitter(Qt::Vertical, splitterMain);
     splitterRight->setOpaqueResize(true);
     splitterRight->addWidget(ui->tabWidget_textEdit);
     splitterRight->addWidget(ui->tabWidget);
@@ -146,7 +143,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->actionDSDecompile->setIcon(QIcon(":/icon/bat.png"));
     ui->toolBar->addAction(ui->actionDSDecompile);
 
-
     ui->toolBar->addSeparator();
     ui->toolBar->addWidget(ui->chkCaseSensitive);
     ui->toolBar->addWidget(ui->editFind);
@@ -166,7 +162,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->actionReplace_Find->setIcon(QIcon(":/icon/rf.png"));
     ui->toolBar->addAction(ui->actionReplace_Find);
 
-
     ui->toolBar->addSeparator();
     ui->toolBar->addWidget(ui->cboxCompilationOptions);
     ui->actionGo_to_previous_error->setIcon(QIcon(":/icon/1.png"));
@@ -181,7 +176,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->toolBar->addSeparator();
     ui->actionRefreshTree->setIcon(QIcon(":/icon/r.png"));
     ui->toolBar->addAction(ui->actionRefreshTree);
-
 
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(timer_linkage()));
@@ -203,7 +197,6 @@ MainWindow::~MainWindow()
 
     mythread->quit();
     mythread->wait();
-
 }
 
 void MainWindow::loadTabFiles()
@@ -215,34 +208,28 @@ void MainWindow::loadTabFiles()
     QString qfile = QDir::homePath() + "/QtiASL.ini";
     QFileInfo fi(qfile);
 
-    if(fi.exists())
-    {
+    if (fi.exists()) {
 
         QSettings Reg(qfile, QSettings::IniFormat);
         int count = Reg.value("count").toInt();
 
         bool file_exists = false;
 
-        if(count == 0)
-        {
+        if (count == 0) {
             newFile();
             file_exists = true;
         }
 
-
-        for(int i = 0; i < count; i ++)
-        {
+        for (int i = 0; i < count; i++) {
             QString file = Reg.value(QString::number(i) + "/file").toString();
 
-            if(file == tr("untitled") + ".dsl")
-            {
+            if (file == tr("untitled") + ".dsl") {
                 newFile();
                 file_exists = true;
             }
 
             QFileInfo fi(file);
-            if(fi.exists())
-            {
+            if (fi.exists()) {
 
                 int row, col;
                 row = Reg.value(QString::number(i) + "/row").toInt();
@@ -254,9 +241,9 @@ void MainWindow::loadTabFiles()
                 vs = Reg.value(QString::number(i) + "/vs").toInt();
                 hs = Reg.value(QString::number(i) + "/hs").toInt();
 
-                QWidget *pWidget= ui->tabWidget_textEdit->currentWidget();
+                QWidget* pWidget = ui->tabWidget_textEdit->currentWidget();
 
-                QsciScintilla *edit = new QsciScintilla;
+                QsciScintilla* edit = new QsciScintilla;
                 edit = (QsciScintilla*)pWidget->children().at(1);
 
                 edit->verticalScrollBar()->setSliderPosition(vs);
@@ -265,33 +252,25 @@ void MainWindow::loadTabFiles()
                 edit->setFocus();
 
                 file_exists = true;
-
             }
-
         }
 
-        int tab_total = ui->tabWidget_textEdit->tabBar()->count();//以实际存在的为准
+        int tab_total = ui->tabWidget_textEdit->tabBar()->count(); //以实际存在的为准
 
-        if(!file_exists)
+        if (!file_exists)
             newFile();
 
         int ci = Reg.value("ci").toInt();
 
-        if(ci < tab_total)
-        {
+        if (ci < tab_total) {
             ui->tabWidget_textEdit->setCurrentIndex(ci);
             on_tabWidget_textEdit_tabBarClicked(ci);
-        }
-        else
-        {
+        } else {
             ui->tabWidget_textEdit->setCurrentIndex(tab_total - 1);
             on_tabWidget_textEdit_tabBarClicked(tab_total - 1);
         }
 
-
-
-    }
-    else
+    } else
         newFile();
 
     loading = false;
@@ -307,8 +286,7 @@ void MainWindow::about()
     QString last = str + appInfo.lastModified().toString("yyyy-MM-dd hh:mm:ss");
     QString str1 = "<a style='color:blue;' href = https://github.com/ic005k/QtiASL>QtiASL Editor</a><br><br>";
 
-    QMessageBox::about(this , "About", str1 + last);
-
+    QMessageBox::about(this, "About", str1 + last);
 }
 
 QString MainWindow::openFile(QString fileName)
@@ -321,23 +299,20 @@ QString MainWindow::openFile(QString fileName)
     //qDebug() << settings.fileName(); //最近打开的文件所保存的位置
     m_recentFiles->setMostRecentFile(fileName);
 
-    if(fInfo.suffix() == "aml" || fInfo.suffix() == "dat")
-    {
+    if (fInfo.suffix() == "aml" || fInfo.suffix() == "dat") {
         //如果之前这个文件被打开过，则返回
         QString str = fInfo.path() + "/" + fInfo.baseName() + ".dsl";
-        for(int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i++)
-        {
-            QWidget *pWidget= ui->tabWidget_textEdit->widget(i);
-            QLabel * lbl = new QLabel;
-            lbl = (QLabel*)pWidget->children().at(2);//2为QLabel,1为textEdit,0为VBoxLayout
+        for (int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i++) {
+            QWidget* pWidget = ui->tabWidget_textEdit->widget(i);
+            QLabel* lbl = new QLabel;
+            lbl = (QLabel*)pWidget->children().at(2); //2为QLabel,1为textEdit,0为VBoxLayout
 
-            if(str == lbl->text())
-            {
+            if (str == lbl->text()) {
                 return str;
             }
         }
 
-        SelfSaved = true;//aml转换成dsl的时候，不进行文件内容更改监测提醒
+        SelfSaved = true; //aml转换成dsl的时候，不进行文件内容更改监测提醒
 
         QFileInfo appInfo(qApp->applicationDirPath());
 
@@ -350,14 +325,12 @@ QString MainWindow::openFile(QString fileName)
         //设置文件过滤器
         QStringList nameFilters;
 
-        if(fInfo.suffix() == "aml")
-        {
+        if (fInfo.suffix() == "aml") {
             name = "/*.aml";
             //设置文件过滤格式
             nameFilters << "*.aml";
         }
-        if(fInfo.suffix() == "dat")
-        {
+        if (fInfo.suffix() == "dat") {
             name = "/*.dat";
             //设置文件过滤格式
             nameFilters << "*.dat";
@@ -366,68 +339,59 @@ QString MainWindow::openFile(QString fileName)
         QDir dir(fInfo.path());
 
         //将过滤后的文件名称存入到files列表中
-        QStringList files = dir.entryList(nameFilters, QDir::Files|QDir::Readable, QDir::Name);
+        QStringList files = dir.entryList(nameFilters, QDir::Files | QDir::Readable, QDir::Name);
 
         int count = files.count();
 
-        if(!ui->chkAll->isChecked())
-        {
+        if (!ui->chkAll->isChecked()) {
             count = 1;
             files.clear();
             files.append(fInfo.fileName());
-
         }
 
-
-        for(int i = 0; i < count; i ++)
-        {
+        for (int i = 0; i < count; i++) {
 
             QString dfile = fInfo.path() + "/" + files.at(i);
 
-        try{
+            try {
 
 #ifdef Q_OS_WIN32
 
-            Decompile->start(appInfo.filePath() + "/iasl.exe" , QStringList() << "-d" << dfile);
+                Decompile->start(appInfo.filePath() + "/iasl.exe", QStringList() << "-d" << dfile);
 #endif
 
 #ifdef Q_OS_LINUX
 
-            Decompile->start(appInfo.filePath() + "/iasl" , QStringList() << "-d" << dfile);
+                Decompile->start(appInfo.filePath() + "/iasl", QStringList() << "-d" << dfile);
 
 #endif
 
 #ifdef Q_OS_MAC
 
-            Decompile->start(appInfo.filePath() + "/iasl" , QStringList() << "-d" << dfile);
+                Decompile->start(appInfo.filePath() + "/iasl", QStringList() << "-d" << dfile);
 #endif
 
-            connect(Decompile , SIGNAL(finished(int)) , this , SLOT(readDecompileResult(int)));
-
-
+                connect(Decompile, SIGNAL(finished(int)), this, SLOT(readDecompileResult(int)));
 
 #ifdef Q_OS_WIN32
 
-            Decompile->execute(appInfo.filePath() + "/iasl.exe" , QStringList() << "-d" << dfile);
+                Decompile->execute(appInfo.filePath() + "/iasl.exe", QStringList() << "-d" << dfile);
 #endif
 
 #ifdef Q_OS_LINUX
 
-            Decompile->execute(appInfo.filePath() + "/iasl" , QStringList() << "-d" << dfile);
+                Decompile->execute(appInfo.filePath() + "/iasl", QStringList() << "-d" << dfile);
 
 #endif
 
 #ifdef Q_OS_MAC
 
-            Decompile->execute(appInfo.filePath() + "/iasl" , QStringList() << "-d" << dfile);
+                Decompile->execute(appInfo.filePath() + "/iasl", QStringList() << "-d" << dfile);
 #endif
-        }
-        catch(...)
-        {
-            qDebug() << "error";
-            Decompile->terminate();
-
-        }
+            } catch (...) {
+                qDebug() << "error";
+                Decompile->terminate();
+            }
             //qDebug() << files.at(i);
 
         } //for
@@ -435,62 +399,50 @@ QString MainWindow::openFile(QString fileName)
         Decompile->terminate();
 
         fileName = fInfo.path() + "/" + fInfo.baseName() + ".dsl";
-
     }
 
     QFileInfo fi(fileName);
-    if(fi.suffix().toLower() == "dsl")
-    {
-        ui->actionWrapWord->setChecked(false);//取消自动换行，影响dsl文件开启速度
+    if (fi.suffix().toLower() == "dsl") {
+        ui->actionWrapWord->setChecked(false); //取消自动换行，影响dsl文件开启速度
         textEdit->setWrapMode(QsciScintilla::WrapNone);
-
     }
 
-
-    return  fileName;
+    return fileName;
 }
 
-void MainWindow::loadFile(const QString &fileName, int row, int col)
+void MainWindow::loadFile(const QString& fileName, int row, int col)
 {
 
     loading = true;
 
-
     /*如果之前文件已打开，则返回已打开的文件*/
-    for(int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i++)
-    {
-        QWidget *pWidget= ui->tabWidget_textEdit->widget(i);
-        QLabel * lbl = new QLabel;
-        lbl = (QLabel*)pWidget->children().at(2);//2为QLabel,1为textEdit,0为VBoxLayout
+    for (int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i++) {
+        QWidget* pWidget = ui->tabWidget_textEdit->widget(i);
+        QLabel* lbl = new QLabel;
+        lbl = (QLabel*)pWidget->children().at(2); //2为QLabel,1为textEdit,0为VBoxLayout
 
-        if(fileName == lbl->text())
-        {
+        if (fileName == lbl->text()) {
             ui->tabWidget_textEdit->setCurrentIndex(i);
 
-            if(!ReLoad)
-            {
+            if (!ReLoad) {
                 on_tabWidget_textEdit_tabBarClicked(i);
                 return;
-            }
-            else
-            {
-                QsciScintilla *edit = new QsciScintilla;
+            } else {
+                QsciScintilla* edit = new QsciScintilla;
                 edit = (QsciScintilla*)pWidget->children().at(1);
                 textEdit = edit;
             }
-
         }
     }
 
-    if(!ReLoad)
+    if (!ReLoad)
         newFile();
 
     QFile file(fileName);
-    if (!file.open(QFile::ReadOnly | QFile::Text))
-    {
+    if (!file.open(QFile::ReadOnly | QFile::Text)) {
         QMessageBox::warning(this, tr("Application"),
-                             tr("Cannot read file %1:\n%2.")
-                             .arg(QDir::toNativeSeparators(fileName), file.errorString()));
+            tr("Cannot read file %1:\n%2.")
+                .arg(QDir::toNativeSeparators(fileName), file.errorString()));
         return;
     }
 
@@ -509,41 +461,37 @@ void MainWindow::loadFile(const QString &fileName, int row, int col)
     else
         text = QString::fromUtf8(file.readAll());*/
 
-    int ColNum , RowNum;
-    if(ReLoad)//记录重装前的行号
+    int ColNum, RowNum;
+    if (ReLoad) //记录重装前的行号
     {
 
-        textEdit->getCursorPosition(&RowNum , &ColNum);
+        textEdit->getCursorPosition(&RowNum, &ColNum);
     }
 
     text = QString::fromUtf8(file.readAll());
     textEdit->setText(text);
-    if(row != -1 && col != -1)
-    {
-       textEdit->setCursorPosition(row, col);
-
+    if (row != -1 && col != -1) {
+        textEdit->setCursorPosition(row, col);
     }
 
-
-    if(ReLoad)//文本重装之后刷新树并回到之前的位置
+    if (ReLoad) //文本重装之后刷新树并回到之前的位置
     {
         refresh_tree(textEdit);
-        textEdit->setCursorPosition(RowNum , ColNum);
+        textEdit->setCursorPosition(RowNum, ColNum);
     }
 
 #ifndef QT_NO_CURSOR
     QGuiApplication::restoreOverrideCursor();
 #endif
 
-    if(!ReLoad)
-    {
-        FileSystemWatcher::addWatchPath(fileName);//监控这个文件的变化
+    if (!ReLoad) {
+        FileSystemWatcher::addWatchPath(fileName); //监控这个文件的变化
     }
 
     //给当前tab里面的lbl赋值
-    QWidget *pWidget= ui->tabWidget_textEdit->currentWidget();
-    QLabel * lbl = new QLabel;
-    lbl = (QLabel*)pWidget->children().at(2);//2为QLabel,1为textEdit,0为VBoxLayout
+    QWidget* pWidget = ui->tabWidget_textEdit->currentWidget();
+    QLabel* lbl = new QLabel;
+    lbl = (QLabel*)pWidget->children().at(2); //2为QLabel,1为textEdit,0为VBoxLayout
     lbl->setText(fileName);
     QFileInfo ft(fileName);
     ui->tabWidget_textEdit->tabBar()->setTabToolTip(ui->tabWidget_textEdit->currentIndex(), ft.fileName());
@@ -565,10 +513,9 @@ void MainWindow::loadFile(const QString &fileName, int row, int col)
     One = false;
 
     loading = false;
-
 }
 
-void MainWindow::setCurrentFile(const QString &fileName)
+void MainWindow::setCurrentFile(const QString& fileName)
 {
     curFile = fileName;
     textEdit->setModified(false);
@@ -577,7 +524,6 @@ void MainWindow::setCurrentFile(const QString &fileName)
     shownName = curFile;
     if (curFile.isEmpty())
         shownName = tr("untitled") + ".dsl";
-
 
     setWindowFilePath(shownName);
 
@@ -591,12 +537,11 @@ void MainWindow::setCurrentFile(const QString &fileName)
     ui->treeView->setRootIndex(model->index(f.path()));
     fsm_Index = model->index(f.path());
     set_return_text(f.path());
-    ui->treeView->setCurrentIndex(model->index(shownName));//并设置当前条目为打开的文件
+    ui->treeView->setCurrentIndex(model->index(shownName)); //并设置当前条目为打开的文件
     ui->treeView->setFocus();
 
-    if(f.suffix().toLower() == "dsl")
-    {
-        ui->actionWrapWord->setChecked(false);//取消自动换行，影响dsl文件开启速度
+    if (f.suffix().toLower() == "dsl") {
+        ui->actionWrapWord->setChecked(false); //取消自动换行，影响dsl文件开启速度
         textEdit->setWrapMode(QsciScintilla::WrapNone);
 
         //设置编译功能使能
@@ -604,9 +549,7 @@ void MainWindow::setCurrentFile(const QString &fileName)
 
         //ui->tabWidget_misc->setCurrentIndex(0);
 
-    }
-    else
-    {
+    } else {
         //ui->tabWidget_misc->setCurrentIndex(1);
 
         //设置编译功能屏蔽
@@ -616,8 +559,6 @@ void MainWindow::setCurrentFile(const QString &fileName)
     }
 
     ui->tabWidget_textEdit->setTabText(ui->tabWidget_textEdit->currentIndex(), f.fileName());
-
-
 }
 
 void MainWindow::set_return_text(QString text)
@@ -625,22 +566,17 @@ void MainWindow::set_return_text(QString text)
 
     QFontMetrics elideFont(ui->btnReturn->font());
     ui->btnReturn->setText(elideFont.elidedText(text, Qt::ElideLeft, ui->tabWidget_misc->width() - 100)); //省略号显示在左边
-
 }
-
 
 void MainWindow::Open()
 {
 
-        fileName = QFileDialog::getOpenFileName(this,"DSDT","","DSDT(*.aml *.dsl *.dat);;All(*.*)");
+    fileName = QFileDialog::getOpenFileName(this, "DSDT", "", "DSDT(*.aml *.dsl *.dat);;All(*.*)");
 
-        if (!fileName.isEmpty())
-        {
+    if (!fileName.isEmpty()) {
 
-            loadFile(openFile(fileName), -1, -1);
-        }
-
-
+        loadFile(openFile(fileName), -1, -1);
+    }
 }
 
 bool MainWindow::maybeSave(QString info)
@@ -650,35 +586,30 @@ bool MainWindow::maybeSave(QString info)
 
     //QMessageBox::StandardButton ret;
     int ret;
-    if(!zh_cn)
-    {
+    if (!zh_cn) {
 
-            ret = QMessageBox::warning(this, tr("Application"),
-                                   tr("The document has been modified.\n"
-                                      "Do you want to save your changes?\n\n") + info,
-                                   QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+        ret = QMessageBox::warning(this, tr("Application"),
+            tr("The document has been modified.\n"
+               "Do you want to save your changes?\n\n")
+                + info,
+            QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
 
-    }
-    else
-    {
-            QMessageBox box(QMessageBox::Warning, "QtiASL","文件内容已修改，是否保存？\n\n" + info);
-            box.setStandardButtons (QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
-            box.setButtonText (QMessageBox::Save,QString("保 存"));
-            box.setButtonText (QMessageBox::Cancel,QString("取 消"));
-            box.setButtonText (QMessageBox::Discard,QString("放 弃"));
-            ret = box.exec ();
-
+    } else {
+        QMessageBox box(QMessageBox::Warning, "QtiASL", "文件内容已修改，是否保存？\n\n" + info);
+        box.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+        box.setButtonText(QMessageBox::Save, QString("保 存"));
+        box.setButtonText(QMessageBox::Cancel, QString("取 消"));
+        box.setButtonText(QMessageBox::Discard, QString("放 弃"));
+        ret = box.exec();
     }
 
-    switch (ret)
-    {
+    switch (ret) {
     case QMessageBox::Save:
         return Save();
     case QMessageBox::Cancel:
         return false;
     default:
         break;
-
     }
     return true;
 }
@@ -696,41 +627,35 @@ bool MainWindow::SaveAs()
 {
 
     QFileDialog dialog;
-    QString fn = dialog.getSaveFileName(this,"DSDT","","DSDT(*.dsl);;All(*.*)");
-    if(fn.isEmpty())
+    QString fn = dialog.getSaveFileName(this, "DSDT", "", "DSDT(*.dsl);;All(*.*)");
+    if (fn.isEmpty())
         return false;
 
     //另存时，先移除当前的文件监控
-    if(curFile != "")
-    {
-        QWidget *pWidget= ui->tabWidget_textEdit->widget(ui->tabWidget_textEdit->currentIndex());
-        QLabel * lbl = new QLabel;
-        lbl = (QLabel*)pWidget->children().at(2);//2为QLabel,1为textEdit,0为VBoxLayout
+    if (curFile != "") {
+        QWidget* pWidget = ui->tabWidget_textEdit->widget(ui->tabWidget_textEdit->currentIndex());
+        QLabel* lbl = new QLabel;
+        lbl = (QLabel*)pWidget->children().at(2); //2为QLabel,1为textEdit,0为VBoxLayout
         FileSystemWatcher::removeWatchPath(lbl->text());
     }
 
     //去重
-    for(int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i++)
-    {
+    for (int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i++) {
 
-        QWidget *pWidget= ui->tabWidget_textEdit->widget(i);
-        QLabel * lbl = new QLabel;
-        lbl = (QLabel*)pWidget->children().at(2);//2为QLabel,1为textEdit,0为VBoxLayout
+        QWidget* pWidget = ui->tabWidget_textEdit->widget(i);
+        QLabel* lbl = new QLabel;
+        lbl = (QLabel*)pWidget->children().at(2); //2为QLabel,1为textEdit,0为VBoxLayout
 
-        if(fn == lbl->text())
-        {
+        if (fn == lbl->text()) {
 
             ui->tabWidget_textEdit->removeTab(i);
-
         }
     }
 
-
-    return  saveFile(fn);
-
+    return saveFile(fn);
 }
 
-bool MainWindow::saveFile(const QString &fileName)
+bool MainWindow::saveFile(const QString& fileName)
 {
     QString errorMessage;
 
@@ -742,11 +667,11 @@ bool MainWindow::saveFile(const QString &fileName)
         out << textEdit->text();
         if (!file.commit()) {
             errorMessage = tr("Cannot write file %1:\n%2.")
-                           .arg(QDir::toNativeSeparators(fileName), file.errorString());
+                               .arg(QDir::toNativeSeparators(fileName), file.errorString());
         }
     } else {
         errorMessage = tr("Cannot open file %1 for writing:\n%2.")
-                       .arg(QDir::toNativeSeparators(fileName), file.errorString());
+                           .arg(QDir::toNativeSeparators(fileName), file.errorString());
     }
     QGuiApplication::restoreOverrideCursor();
 
@@ -757,19 +682,15 @@ bool MainWindow::saveFile(const QString &fileName)
 
     //添加文件的监控
     bool add = true;
-    for(int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i++)
-    {
-        QWidget *pWidget= ui->tabWidget_textEdit->widget(i);
-        QLabel * lbl = new QLabel;
-        lbl = (QLabel*)pWidget->children().at(2);//2为QLabel,1为textEdit,0为VBoxLayout
-        if(fileName == lbl->text())
-        {
+    for (int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i++) {
+        QWidget* pWidget = ui->tabWidget_textEdit->widget(i);
+        QLabel* lbl = new QLabel;
+        lbl = (QLabel*)pWidget->children().at(2); //2为QLabel,1为textEdit,0为VBoxLayout
+        if (fileName == lbl->text()) {
             add = false;
-
         }
     }
-    if(add)
-    {
+    if (add) {
         FileSystemWatcher::addWatchPath(fileName);
     }
 
@@ -779,19 +700,18 @@ bool MainWindow::saveFile(const QString &fileName)
     One = false;
 
     //刷新文件路径
-    QWidget *pWidget= ui->tabWidget_textEdit->widget(ui->tabWidget_textEdit->currentIndex());
-    QLabel * lbl = new QLabel;
-    lbl = (QLabel*)pWidget->children().at(2);//2为QLabel,1为textEdit,0为VBoxLayout
+    QWidget* pWidget = ui->tabWidget_textEdit->widget(ui->tabWidget_textEdit->currentIndex());
+    QLabel* lbl = new QLabel;
+    lbl = (QLabel*)pWidget->children().at(2); //2为QLabel,1为textEdit,0为VBoxLayout
     lbl->setText(fileName);
     QFileInfo ft(fileName);
     ui->tabWidget_textEdit->tabBar()->setTabToolTip(ui->tabWidget_textEdit->currentIndex(), ft.fileName());
-
 
     setCurrentFile(fileName);
 
     statusBar()->showMessage(tr("File saved"), 2000);
 
-    SelfSaved = true;//文件监控提示
+    SelfSaved = true; //文件监控提示
 
     return true;
 }
@@ -804,41 +724,42 @@ void MainWindow::btnGenerate_clicked()
     QProcess dump;
     QProcess iasl;
 
-
 #ifdef Q_OS_WIN32
-// win
-    dump.execute(appInfo.filePath() + "/acpidump.exe" , QStringList() << "-b");//阻塞
-    iasl.execute(appInfo.filePath() + "/iasl.exe" , QStringList() << "-d" << "dsdt.dat");
+    // win
+    dump.execute(appInfo.filePath() + "/acpidump.exe", QStringList() << "-b"); //阻塞
+    iasl.execute(appInfo.filePath() + "/iasl.exe", QStringList() << "-d"
+                                                                 << "dsdt.dat");
 #endif
 
 #ifdef Q_OS_LINUX
-// linux
-    dump.execute(appInfo.filePath() + "/acpidump" , QStringList() << "-b");
-    iasl.execute(appInfo.filePath() + "/iasl" , QStringList() << "-d" << "dsdt.dat");
+    // linux
+    dump.execute(appInfo.filePath() + "/acpidump", QStringList() << "-b");
+    iasl.execute(appInfo.filePath() + "/iasl", QStringList() << "-d"
+                                                             << "dsdt.dat");
 
 #endif
 
 #ifdef Q_OS_MAC
-// mac
-    dump.execute(appInfo.filePath() + "/acpidump" , QStringList() << "-b");
-    iasl.execute(appInfo.filePath() + "/iasl" , QStringList() << "-d" << "dsdt.dat");
+    // mac
+    dump.execute(appInfo.filePath() + "/acpidump", QStringList() << "-b");
+    iasl.execute(appInfo.filePath() + "/iasl", QStringList() << "-d"
+                                                             << "dsdt.dat");
 
 #endif
 
     loadFile(appInfo.filePath() + "/dsdt.dsl", -1, -1);
-
 }
 
 void MainWindow::btnCompile_clicked()
 {
     QFileInfo cf_info(curFile);
-    if(cf_info.suffix().toLower() != "dsl")
+    if (cf_info.suffix().toLower() != "dsl")
         return;
 
     QFileInfo appInfo(qApp->applicationDirPath());
     co = new QProcess;
 
-    if(!curFile.isEmpty())
+    if (!curFile.isEmpty())
         Save();
 
     lblMsg->setText(tr("Compiling..."));
@@ -847,31 +768,29 @@ void MainWindow::btnCompile_clicked()
 
     QString op = ui->cboxCompilationOptions->currentText().trimmed();
 
-
 #ifdef Q_OS_WIN32
-// win
-   co->start(appInfo.filePath() + "/iasl.exe" , QStringList() << op << curFile);
+    // win
+    co->start(appInfo.filePath() + "/iasl.exe", QStringList() << op << curFile);
 #endif
 
 #ifdef Q_OS_LINUX
-// linux
-   co->start(appInfo.filePath() + "/iasl" , QStringList() << op << curFile);
+    // linux
+    co->start(appInfo.filePath() + "/iasl", QStringList() << op << curFile);
 
 #endif
 
 #ifdef Q_OS_MAC
-// mac
-    co->start(appInfo.filePath() + "/iasl" , QStringList() << op << curFile);
+    // mac
+    co->start(appInfo.filePath() + "/iasl", QStringList() << op << curFile);
 
 #endif
 
-    connect(co , SIGNAL(finished(int)) , this , SLOT(readResult(int)));
+    connect(co, SIGNAL(finished(int)), this, SLOT(readResult(int)));
 
     /*仅供测试*/
     //connect(co , SIGNAL(readyReadStandardOutput()) , this , SLOT(readResult(int)));
     //QByteArray res = co.readAllStandardOutput(); //获取标准输出
     //qDebug() << "Out" << QString::fromLocal8Bit(res);
-
 }
 
 void MainWindow::setMark()
@@ -882,40 +801,32 @@ void MainWindow::setMark()
 
     //将"error"高亮
     QString search_text = "Error";
-        if (search_text.trimmed().isEmpty())
-        {
-            QMessageBox::information(this, tr("Empty search field"), tr("The search field is empty."));
-        }
-        else
-        {
-            QTextDocument *document = ui->editShowMsg->document();
-            bool found = false;
-            QTextCursor highlight_cursor(document);
-            QTextCursor cursor(document);
+    if (search_text.trimmed().isEmpty()) {
+        QMessageBox::information(this, tr("Empty search field"), tr("The search field is empty."));
+    } else {
+        QTextDocument* document = ui->editShowMsg->document();
+        bool found = false;
+        QTextCursor highlight_cursor(document);
+        QTextCursor cursor(document);
 
-            cursor.beginEditBlock();
-            QTextCharFormat color_format(highlight_cursor.charFormat());
-            color_format.setForeground(Qt::red);
-            color_format.setBackground(Qt::yellow);
+        cursor.beginEditBlock();
+        QTextCharFormat color_format(highlight_cursor.charFormat());
+        color_format.setForeground(Qt::red);
+        color_format.setBackground(Qt::yellow);
 
+        while (!highlight_cursor.isNull() && !highlight_cursor.atEnd()) {
+            //查找指定的文本，匹配整个单词
+            highlight_cursor = document->find(search_text, highlight_cursor, QTextDocument::FindCaseSensitively);
+            if (!highlight_cursor.isNull()) {
+                if (!found)
+                    found = true;
 
-            while (!highlight_cursor.isNull() && !highlight_cursor.atEnd())
-            {
-                //查找指定的文本，匹配整个单词
-                highlight_cursor = document->find(search_text, highlight_cursor, QTextDocument::FindCaseSensitively);
-                if (!highlight_cursor.isNull())
-                {
-                    if(!found)
-                        found = true;
-
-                    highlight_cursor.mergeCharFormat(color_format);
-
-                }
+                highlight_cursor.mergeCharFormat(color_format);
             }
-
-           cursor.endEditBlock();
-
         }
+
+        cursor.endEditBlock();
+    }
 }
 
 void MainWindow::readDecompileResult(int exitCode)
@@ -930,34 +841,26 @@ void MainWindow::readDecompileResult(int exitCode)
     ui->editShowMsg->append(result);
     ui->editShowMsg->append(result1);
 
-    if(exitCode == 0)
-    {
+    if (exitCode == 0) {
         //成功
 
         //标记tab头
         int info_count = 0;
 
-        ui->tabWidget->setTabText(1, tr("Errors") + " (" + QString::number(info_count) +")");
+        ui->tabWidget->setTabText(1, tr("Errors") + " (" + QString::number(info_count) + ")");
 
-        ui->tabWidget->setTabText(2, tr("Warnings") + " (" + QString::number(info_count) +")");
+        ui->tabWidget->setTabText(2, tr("Warnings") + " (" + QString::number(info_count) + ")");
 
-        ui->tabWidget->setTabText(3, tr("Remarks") + " (" + QString::number(info_count) +")");
+        ui->tabWidget->setTabText(3, tr("Remarks") + " (" + QString::number(info_count) + ")");
 
-        ui->tabWidget->setTabText(4, "Optimizations (" + QString::number(info_count) +")");
+        ui->tabWidget->setTabText(4, "Optimizations (" + QString::number(info_count) + ")");
 
         ui->tabWidget->setCurrentIndex(0);
 
-
+    } else {
     }
-    else
-    {
-
-
-    }
-
 
     loading = false;
-
 }
 
 /*读取编译结果信息*/
@@ -991,15 +894,13 @@ void MainWindow::readResult(int exitCode)
     //分离基本信息
     ui->editShowMsg->clear();
     QVector<QString> list;
-    for(int i = 0; i < textEditTemp->document()->lineCount(); i++)
-    {
+    for (int i = 0; i < textEditTemp->document()->lineCount(); i++) {
         QString str = textEditTemp->document()->findBlockByNumber(i).text();
 
         list.push_back(str);
         QString str_sub = str.trimmed();
-        if(str_sub.mid(0, 5) == "Error" || str_sub.mid(0, 7) == "Warning" || str_sub.mid(0, 6) == "Remark")
-        {
-             for(int j = 0; j < i - 2; j++)
+        if (str_sub.mid(0, 5) == "Error" || str_sub.mid(0, 7) == "Warning" || str_sub.mid(0, 6) == "Remark") {
+            for (int j = 0; j < i - 2; j++)
                 ui->editShowMsg->append(list.at(j));
 
             break;
@@ -1019,30 +920,25 @@ void MainWindow::readResult(int exitCode)
     //清除所有标记
     textEdit->SendScintilla(QsciScintilla::SCI_MARKERDELETEALL);
 
-    float a = qTime.elapsed()/1000.00;
+    float a = qTime.elapsed() / 1000.00;
     lblMsg->setText(tr("Compiled") + "(" + QTime::currentTime().toString() + "    " + QString::number(a, 'f', 2) + " s)");
 
-
-    if(exitCode == 0)
-    {
+    if (exitCode == 0) {
 
         ui->actionGo_to_previous_error->setEnabled(false);
         ui->actionGo_to_the_next_error->setEnabled(false);
         ui->tabWidget->setCurrentIndex(0);
 
-        if(!zh_cn)
-            QMessageBox::information(this , "QtiASL" , "Compilation successful.");
-        else
-        {
+        if (!zh_cn)
+            QMessageBox::information(this, "QtiASL", "Compilation successful.");
+        else {
             QMessageBox message(QMessageBox::Information, "QtiASL", tr("Compilation successful."));
-            message.setStandardButtons (QMessageBox::Ok);
-            message.setButtonText (QMessageBox::Ok, QString(tr("Ok")));
+            message.setStandardButtons(QMessageBox::Ok);
+            message.setButtonText(QMessageBox::Ok, QString(tr("Ok")));
             message.exec();
         }
 
-    }
-    else
-    {
+    } else {
         ui->actionGo_to_previous_error->setEnabled(true);
         ui->actionGo_to_the_next_error->setEnabled(true);
         ui->tabWidget->setCurrentIndex(1);
@@ -1054,21 +950,32 @@ void MainWindow::readResult(int exitCode)
     ui->actionInfo_win->setChecked(true);
 
     loading = false;
-
-
-
 }
 
 void MainWindow::textEdit_cursorPositionChanged()
 {
     set_currsor_position(textEdit);
 
+    if (!loading) {
+
+        int i = ui->tabWidget_textEdit->currentIndex();
+
+        if (!textEdit->isModified()) {
+            QIcon icon(":/icon/d.png");
+            ui->tabWidget_textEdit->tabBar()->setTabIcon(i, icon);
+        }
+
+        if (textEdit->isModified()) {
+            QIcon icon(":/icon/s.png");
+            ui->tabWidget_textEdit->tabBar()->setTabIcon(i, icon);
+        }
+    }
 }
 
-void MainWindow::set_currsor_position(QsciScintilla *textEdit)
+void MainWindow::set_currsor_position(QsciScintilla* textEdit)
 {
-    int ColNum , RowNum;
-    textEdit->getCursorPosition(&RowNum , &ColNum);
+    int ColNum, RowNum;
+    textEdit->getCursorPosition(&RowNum, &ColNum);
 
     ui->statusbar->showMessage(tr("Row") + " : " + QString::number(RowNum + 1) + "    " + tr("Column") + " : " + QString::number(ColNum));
 
@@ -1079,52 +986,44 @@ void MainWindow::set_currsor_position(QsciScintilla *textEdit)
 /*换行之后，1s后再刷新成员树*/
 void MainWindow::timer_linkage()
 {
-    if(!loading)
-    {
+    if (!loading) {
 
-         on_btnRefreshTree();
+        on_btnRefreshTree();
 
-         timer->stop();
-
+        timer->stop();
     }
-
 }
 
 /*单击文本任意位置，当前代码块与成员树进行联动*/
-void MainWindow::mem_linkage(QTreeWidget * tw, int RowNum)
+void MainWindow::mem_linkage(QTreeWidget* tw, int RowNum)
 {
 
     //int RowNum, ColNum;
     //textEdit->getCursorPosition(&RowNum , &ColNum);
 
     /*进行联动的条件：装载文件没有进行&成员树不为空&不是始终在同一行里面*/
-    if(!loading && tw->topLevelItemCount() > 0 && preRow != RowNum)
-    {
+    if (!loading && tw->topLevelItemCount() > 0 && preRow != RowNum) {
         int treeSn = 0;
         QTreeWidgetItemIterator it(tw);
         textEditBack->setCursorPosition(RowNum, 0); //后台进行
 
         preRow = RowNum;
 
-        for(int j = RowNum; j > -1; j--)//从当前行往上寻找Scope、Device、Method
+        for (int j = RowNum; j > -1; j--) //从当前行往上寻找Scope、Device、Method
         {
             QString str = textEditBack->text(j).trimmed();
-            if(str.mid(0, 5) == "Scope" || str.mid(0, 5) == "Devic" || str.mid(0, 5) == "Metho")
-            {
+            if (str.mid(0, 5) == "Scope" || str.mid(0, 5) == "Devic" || str.mid(0, 5) == "Metho") {
 
-                while (*it)
-                {
+                while (*it) {
                     treeSn = (*it)->text(1).toInt();
 
-                    if(treeSn == j)
-                    {
-                      tw->setCurrentItem((*it));
-                      //状态栏上显示层次结构
-                      lblLayer->setText(getLayerName((*it)));
-                      //editLayer->setText(getLayerName((*it)));
+                    if (treeSn == j) {
+                        tw->setCurrentItem((*it));
+                        //状态栏上显示层次结构
+                        lblLayer->setText(getLayerName((*it)));
+                        //editLayer->setText(getLayerName((*it)));
 
-                      break;
-
+                        break;
                     }
 
                     ++it;
@@ -1132,14 +1031,10 @@ void MainWindow::mem_linkage(QTreeWidget * tw, int RowNum)
 
                 break;
             }
-
-
         }
 
         //qDebug() << ColNum << RowNum;
-
     }
-
 }
 
 /*行号区域的宽度：目前在主编辑框内已弃用，为编译输出信息显示预留*/
@@ -1162,7 +1057,7 @@ void CodeEditor::updateLineNumberAreaWidth(int /* newBlockCount */)
     setViewportMargins(lineNumberAreaWidth(), 0, 0, 0);
 }
 
-void CodeEditor::updateLineNumberArea(const QRect &rect, int dy)
+void CodeEditor::updateLineNumberArea(const QRect& rect, int dy)
 {
     if (dy)
         lineNumberArea->scroll(0, dy);
@@ -1173,7 +1068,7 @@ void CodeEditor::updateLineNumberArea(const QRect &rect, int dy)
         updateLineNumberAreaWidth(0);
 }
 
-void CodeEditor::resizeEvent(QResizeEvent *e)
+void CodeEditor::resizeEvent(QResizeEvent* e)
 {
     QPlainTextEdit::resizeEvent(e);
 
@@ -1181,28 +1076,27 @@ void CodeEditor::resizeEvent(QResizeEvent *e)
     lineNumberArea->setGeometry(QRect(cr.left(), cr.top(), lineNumberAreaWidth(), cr.height()));
 }
 
-
-void CodeEditor::lineNumberAreaPaintEvent(QPaintEvent *event)
+void CodeEditor::lineNumberAreaPaintEvent(QPaintEvent* event)
 {
     QPainter painter(lineNumberArea);
     painter.fillRect(event->rect(), Qt::lightGray);
 
-//![extraAreaPaintEvent_0]
+    //![extraAreaPaintEvent_0]
 
-//![extraAreaPaintEvent_1]
+    //![extraAreaPaintEvent_1]
     QTextBlock block = firstVisibleBlock();
     int blockNumber = block.blockNumber();
     int top = qRound(blockBoundingGeometry(block).translated(contentOffset()).top());
     int bottom = top + qRound(blockBoundingRect(block).height());
-//![extraAreaPaintEvent_1]
+    //![extraAreaPaintEvent_1]
 
-//![extraAreaPaintEvent_2]
+    //![extraAreaPaintEvent_2]
     while (block.isValid() && top <= event->rect().bottom()) {
         if (block.isVisible() && bottom >= event->rect().top()) {
             QString number = QString::number(blockNumber + 1);
             painter.setPen(Qt::black);
             painter.drawText(0, top, lineNumberArea->width(), fontMetrics().height(),
-                             Qt::AlignRight, number);
+                Qt::AlignRight, number);
         }
 
         block = block.next();
@@ -1229,70 +1123,57 @@ void CodeEditor::highlightCurrentLine()
     }
 
     setExtraSelections(extraSelections);
-
 }
-
 
 void MainWindow::on_btnReplace()
 {
 
     textEdit->replace(ui->editReplace->text());
-
 }
 
 void MainWindow::on_btnFindNext()
 {
     QString str = ui->editFind->text().trimmed();
     //正则、大小写、匹配整个词、循环查找、向下或向上：目前已开启向下的循环查找ß
-    if(textEdit->findFirst(str , true , CaseSensitive , false , true, true))
-    {
+    if (textEdit->findFirst(str, true, CaseSensitive, false, true, true)) {
 
-        if(red < 55)
-        {
+        if (red < 55) {
 
             QPalette palette;
-            palette.setColor(QPalette::Text,Qt::white);
+            palette.setColor(QPalette::Text, Qt::white);
             ui->editFind->setPalette(palette);
 
             palette = ui->editFind->palette();
-            palette.setColor(QPalette::Base, QColor(50,50,50,255));
+            palette.setColor(QPalette::Base, QColor(50, 50, 50, 255));
             ui->editFind->setPalette(palette);
 
-        }
-        else
-        {
+        } else {
 
             QPalette palette;
-            palette.setColor(QPalette::Text,Qt::black);
+            palette.setColor(QPalette::Text, Qt::black);
             ui->editFind->setPalette(palette);
 
             palette = ui->editFind->palette();
             palette.setColor(QPalette::Base, Qt::white);
             ui->editFind->setPalette(palette);
-
         }
 
-    }
-    else
-    {
-        if(str.count() > 0)
-        {
+    } else {
+        if (str.count() > 0) {
 
             //字色
             QPalette palette;
-            palette.setColor(QPalette::Text,Qt::white);
+            palette.setColor(QPalette::Text, Qt::white);
             ui->editFind->setPalette(palette);
 
             palette = ui->editFind->palette();
-            palette.setColor(QPalette::Base, QColor(255,70,70));
+            palette.setColor(QPalette::Base, QColor(255, 70, 70));
             ui->editFind->setPalette(palette);
         }
     }
 
     find_down = true;
     find_up = false;
-
-
 }
 
 void MainWindow::on_btnFindPrevious()
@@ -1303,101 +1184,82 @@ void MainWindow::on_btnFindPrevious()
     const char* ch = str.c_str();
 
     int flags;
-    if(CaseSensitive)
+    if (CaseSensitive)
         flags = QsciScintilla::SCFIND_MATCHCASE | QsciScintilla::SCFIND_REGEXP;
     else
         flags = QsciScintilla::SCFIND_REGEXP;
 
     textEdit->SendScintilla(QsciScintilla::SCI_SEARCHANCHOR);
-    if(textEdit->SendScintilla(QsciScintilla::SCI_SEARCHPREV, flags, ch) == -1)
-    {
+    if (textEdit->SendScintilla(QsciScintilla::SCI_SEARCHPREV, flags, ch) == -1) {
 
-    }
-    else
-    {
-        if(red < 55)
-        {
+    } else {
+        if (red < 55) {
 
-
+        } else {
         }
-        else
-        {
-
-
-        }
-
     }
 
-
-    QScrollBar *vscrollbar = new QScrollBar;
+    QScrollBar* vscrollbar = new QScrollBar;
     vscrollbar = textEdit->verticalScrollBar();
 
-    QScrollBar *hscrollbar = new QScrollBar;
+    QScrollBar* hscrollbar = new QScrollBar;
     hscrollbar = textEdit->horizontalScrollBar();
 
     int row, col, vs_pos, hs_pos;
     vs_pos = vscrollbar->sliderPosition();
     textEdit->getCursorPosition(&row, &col);
-    if(row < vs_pos)
+    if (row < vs_pos)
         vscrollbar->setSliderPosition(row - 5);
 
     hs_pos = hscrollbar->sliderPosition();
     QPainter p(this);
     QFontMetrics fm = p.fontMetrics();
     QString t = textEdit->text(row).mid(0, col);
-    int char_w = fm.horizontalAdvance(t);//一个字符的宽度
+    int char_w = fm.horizontalAdvance(t); //一个字符的宽度
     qDebug() << col;
-    if(char_w < textEdit->viewport()->width())
+    if (char_w < textEdit->viewport()->width())
         hscrollbar->setSliderPosition(0);
     else
-        hscrollbar->setSliderPosition(char_w);// + fm.horizontalAdvance(name));
+        hscrollbar->setSliderPosition(char_w); // + fm.horizontalAdvance(name));
 
     //qDebug() << col << textEditList.at(textNumber)->horizontalScrollBar()->sliderPosition();
 
     find_down = false;
     find_up = true;
-
 }
 
-void MainWindow::on_treeWidget_itemClicked(QTreeWidgetItem *item, int column)
+void MainWindow::on_treeWidget_itemClicked(QTreeWidgetItem* item, int column)
 {
 
-    if(column == 0 && !loading)
-    {
+    if (column == 0 && !loading) {
         int lines = item->text(1).toInt();
-        textEdit->setCursorPosition(lines , 0);
+        textEdit->setCursorPosition(lines, 0);
         textEdit->setFocus();
-
     }
-
 }
 
-void MainWindow::treeWidgetBack_itemClicked(QTreeWidgetItem *item, int column)
+void MainWindow::treeWidgetBack_itemClicked(QTreeWidgetItem* item, int column)
 {
 
-    if(column == 0)
-    {
+    if (column == 0) {
         int lines = item->text(1).toInt();
-        textEdit->setCursorPosition(lines , 0);
+        textEdit->setCursorPosition(lines, 0);
         textEdit->setFocus();
-
     }
-
 }
-
 
 void MainWindow::on_editShowMsg_cursorPositionChanged()
 {
     set_cursor_line_color(ui->editShowMsg);
 }
 
-void MainWindow::set_cursor_line_color(QTextEdit * edit)
+void MainWindow::set_cursor_line_color(QTextEdit* edit)
 {
     QList<QTextEdit::ExtraSelection> extraSelection;
     QTextEdit::ExtraSelection selection;
-    QColor lineColor = QColor(255,255,0, 50);
+    QColor lineColor = QColor(255, 255, 0, 50);
     selection.format.setBackground(lineColor);
-    selection.format.setProperty(QTextFormat::FullWidthSelection,true);
+    selection.format.setProperty(QTextFormat::FullWidthSelection, true);
     selection.cursor = edit->textCursor();
     //selection.cursor.clearSelection();
     extraSelection.append(selection);
@@ -1413,19 +1275,14 @@ void MainWindow::on_btnNextError()
     QTextBlock block = ui->editErrors->document()->findBlockByNumber(RowNum);
     ui->editErrors->setTextCursor(QTextCursor(block));
 
-
-    for(int i = RowNum + 1; i < ui->editErrors->document()->lineCount(); i++)
-    {
+    for (int i = RowNum + 1; i < ui->editErrors->document()->lineCount(); i++) {
         QTextBlock block = ui->editErrors->document()->findBlockByNumber(i);
         ui->editErrors->setTextCursor(QTextCursor(block));
-
 
         QString str = ui->editErrors->document()->findBlockByLineNumber(i).text();
         QString sub = str.trimmed();
 
-
-        if(sub.mid(0 , 5) == "Error")
-        {
+        if (sub.mid(0, 5) == "Error") {
             QTextBlock block = ui->editErrors->document()->findBlockByNumber(i);
             ui->editErrors->setTextCursor(QTextCursor(block));
 
@@ -1434,7 +1291,7 @@ void MainWindow::on_btnNextError()
             QColor lineColor = QColor(Qt::red);
             selection.format.setForeground(Qt::white);
             selection.format.setBackground(lineColor);
-            selection.format.setProperty(QTextFormat::FullWidthSelection,true);
+            selection.format.setProperty(QTextFormat::FullWidthSelection, true);
             selection.cursor = ui->editErrors->textCursor();
             selection.cursor.clearSelection();
             extraSelection.append(selection);
@@ -1446,10 +1303,9 @@ void MainWindow::on_btnNextError()
             ui->tabWidget->setCurrentIndex(1);
 
             break;
-
         }
 
-        if(i == ui->editShowMsg->document()->lineCount() - 1)
+        if (i == ui->editShowMsg->document()->lineCount() - 1)
             on_btnPreviousError();
     }
 }
@@ -1463,18 +1319,14 @@ void MainWindow::on_btnPreviousError()
     QTextBlock block = ui->editErrors->document()->findBlockByNumber(RowNum);
     ui->editErrors->setTextCursor(QTextCursor(block));
 
-
-    for(int i = RowNum - 1; i > -1; i--)
-    {
+    for (int i = RowNum - 1; i > -1; i--) {
         QTextBlock block = ui->editErrors->document()->findBlockByNumber(i);
         ui->editErrors->setTextCursor(QTextCursor(block));
-
 
         QString str = ui->editErrors->document()->findBlockByLineNumber(i).text();
         QString sub = str.trimmed();
 
-        if(sub.mid(0 , 5) == "Error")
-        {
+        if (sub.mid(0, 5) == "Error") {
             QTextBlock block = ui->editErrors->document()->findBlockByNumber(i);
             ui->editErrors->setTextCursor(QTextCursor(block));
 
@@ -1484,7 +1336,7 @@ void MainWindow::on_btnPreviousError()
             QColor lineColor = QColor(Qt::red);
             selection.format.setForeground(Qt::white);
             selection.format.setBackground(lineColor);
-            selection.format.setProperty(QTextFormat::FullWidthSelection,true);
+            selection.format.setProperty(QTextFormat::FullWidthSelection, true);
             selection.cursor = ui->editErrors->textCursor();
             selection.cursor.clearSelection();
             extraSelection.append(selection);
@@ -1496,16 +1348,14 @@ void MainWindow::on_btnPreviousError()
             ui->tabWidget->setCurrentIndex(1);
 
             break;
-
         }
 
-        if(i == 0)
+        if (i == 0)
             on_btnNextError();
     }
-
 }
 
-void MainWindow::gotoLine(QTextEdit *edit)
+void MainWindow::gotoLine(QTextEdit* edit)
 {
     QString text, str2, str3;
     int line = 0;
@@ -1515,50 +1365,38 @@ void MainWindow::gotoLine(QTextEdit *edit)
 
     text = edit->document()->findBlockByNumber(RowNum).text().trimmed();
 
-    if(text != "")
-    {
-        for(int j = 3; j < text.count(); j++)
-        {
+    if (text != "") {
+        for (int j = 3; j < text.count(); j++) {
 
-            if(text.mid(j , 1) == ":")
-            {
-                str2 = text.mid(0 , j);
+            if (text.mid(j, 1) == ":") {
+                str2 = text.mid(0, j);
                 skip = false;
                 break;
             }
-
         }
 
-        if(skip)
-        {
+        if (skip) {
             //再看看上一行
             text = edit->document()->findBlockByNumber(RowNum - 1).text().trimmed();
-            if(text != "")
-            {
-                for(int j = 3; j < text.count(); j++)
-                {
+            if (text != "") {
+                for (int j = 3; j < text.count(); j++) {
 
-                    if(text.mid(j , 1) == ":")
-                    {
-                        str2 = text.mid(0 , j);
+                    if (text.mid(j, 1) == ":") {
+                        str2 = text.mid(0, j);
 
                         break;
                     }
                 }
-
             }
         }
 
-
-        for(int k = str2.count(); k > 0; k--)
-        {
-            if(str2.mid(k - 1 , 1) == " ")
-            {
-                str3 = str2.mid(k , str2.count() - k);
+        for (int k = str2.count(); k > 0; k--) {
+            if (str2.mid(k - 1, 1) == " ") {
+                str3 = str2.mid(k, str2.count() - k);
 
                 //定位到错误行
                 line = str3.toInt();
-                textEdit->setCursorPosition(line - 1 , 0);
+                textEdit->setCursorPosition(line - 1, 0);
 
                 textEdit->setFocus();
 
@@ -1566,35 +1404,29 @@ void MainWindow::gotoLine(QTextEdit *edit)
             }
         }
     }
-
 }
 
 void MainWindow::getErrorLine(int i)
 {
     //定位到错误行
     QString str1 = ui->editErrors->document()->findBlockByLineNumber(i - 1).text().trimmed();
-    QString str2 , str3;
-    if(str1 != "")
-    {
-        for(int j = 3; j < str1.count(); j++)
-        {
+    QString str2, str3;
+    if (str1 != "") {
+        for (int j = 3; j < str1.count(); j++) {
 
-            if(str1.mid(j , 1) == ":")
-            {
-                str2 = str1.mid(0 , j);
+            if (str1.mid(j, 1) == ":") {
+                str2 = str1.mid(0, j);
 
                 break;
             }
         }
 
-        for(int k = str2.count(); k > 0; k--)
-        {
-            if(str2.mid(k - 1 , 1) == " ")
-            {
-                str3 = str2.mid(k , str2.count() - k);
+        for (int k = str2.count(); k > 0; k--) {
+            if (str2.mid(k - 1, 1) == " ") {
+                str3 = str2.mid(k, str2.count() - k);
 
                 //定位到错误行
-                textEdit->setCursorPosition(str3.toInt() - 1 , 0);
+                textEdit->setCursorPosition(str3.toInt() - 1, 0);
                 int linenr = str3.toInt();
                 //SCI_MARKERGET 参数用来设置标记，默认为圆形标记
                 textEdit->SendScintilla(QsciScintilla::SCI_MARKERGET, linenr - 1);
@@ -1618,28 +1450,18 @@ void MainWindow::on_editShowMsg_selectionChanged()
 {
     QString row = ui->editShowMsg->textCursor().selectedText();
     int row_num = row.toUInt();
-    if(row_num > 0)
-    {
+    if (row_num > 0) {
 
-        textEdit->setCursorPosition(row_num - 1 , 0);
+        textEdit->setCursorPosition(row_num - 1, 0);
 
         textEdit->setFocus();
-
     }
 }
 
 void MainWindow::textEdit_textChanged()
 {
-    if(!loading)
-    {
-        if(textEdit->isModified() && !One)
-        {
-            QIcon icon(":/icon/s.png");
-            int i = ui->tabWidget_textEdit->currentIndex();
-            ui->tabWidget_textEdit->tabBar()->setTabIcon(i, icon);
-            One = true;
-        }
 
+    if (!loading) {
     }
 }
 
@@ -1649,115 +1471,99 @@ void MainWindow::on_editFind_returnPressed()
     on_btnFindNext();
 }
 
-const char * QscilexerCppAttach::keywords(int set) const
+const char* QscilexerCppAttach::keywords(int set) const
 {
     //if(set == 1 || set == 3)
     //    return QsciLexerCPP::keywords(set);
 
     if (set == 1)
-            return
-                "and and_eq asm auto bitand bitor bool break case "
-                "catch char class compl const const_cast continue "
-                "default delete do double dynamic_cast else enum "
-                "explicit export extern false float for friend goto if "
-                "inline int long mutable namespace new not not_eq "
-                "operator or or_eq private protected public register "
-                "reinterpret_cast return short signed sizeof static "
-                "static_cast struct switch template this throw true "
-                "try typedef typeid typename union unsigned using "
-                "virtual void volatile wchar_t while xor xor_eq "
+        return "and and_eq asm auto bitand bitor bool break case "
+               "catch char class compl const const_cast continue "
+               "default delete do double dynamic_cast else enum "
+               "explicit export extern false float for friend goto if "
+               "inline int long mutable namespace new not not_eq "
+               "operator or or_eq private protected public register "
+               "reinterpret_cast return short signed sizeof static "
+               "static_cast struct switch template this throw true "
+               "try typedef typeid typename union unsigned using "
+               "virtual void volatile wchar_t while xor xor_eq "
 
-                "External Scope Device Method Name If While Break Return ElseIf Switch Case Else "
-                "Default Field OperationRegion Package DefinitionBlock Offset CreateDWordField CreateByteField "
-                "CreateBitField CreateWordField CreateQWordField Buffer ToInteger ToString ToUUID ToUuid ToHexString ToDecimalString ToBuffer ToBcd"
-                "CondRefOf FindSetLeftBit FindSetRightBit FromBcd Function CreateField "
+               "External Scope Device Method Name If While Break Return ElseIf Switch Case Else "
+               "Default Field OperationRegion Package DefinitionBlock Offset CreateDWordField CreateByteField "
+               "CreateBitField CreateWordField CreateQWordField Buffer ToInteger ToString ToUUID ToUuid ToHexString ToDecimalString ToBuffer ToBcd"
+               "CondRefOf FindSetLeftBit FindSetRightBit FromBcd Function CreateField "
 
-                "Acquire Add Alias And "
-                "BankField AccessAs CondRefOf ExtendedMemory ExtendedSpace "
-                "BreakPoint Concatenate ConcatenateResTemplate Connection Continue CopyObject DataTableRegion Debug Decrement DerefOf "
-                "Divide Dma Arg0 Arg1 Arg2 Arg3 Arg4 Arg5 Arg6 "
-                "DWordIo DWordIO EisaId EndDependentFn Event ExtendedIo Fatal FixedDma FixedIo GpioInt GpioIo "
-                "Increment Index IndexField Interrupt Io IO Irq IRQ IrqNoFlags "
-                "LAnd LEqual LGreater LGreaterEqual LLess LLessEqual LNot LNotEqual Load LOr Match Mid Mod Multiply "
-                "Mutex NAnd NoOp NOr Not Notify ObjectType Or PowerResource Revision "
-                "Memory32Fixed "
-                "DWordMemory Local0 Local1 Local2 Local3 Local4 Local5 Local6 Local7 "
-                "DWordSpace One Ones Processor QWordIo QWordIO Memory24 Memory32 VendorLong VendorShort Wait WordBusNumber WordIo WordSpace "
-                "I2cSerialBusV2 Include LoadTable QWordMemory QWordSpace RawDataBuffer RefOf Register Release Reset ResourceTemplate ShiftLeft ShiftRight Signal SizeOf Sleep "
-                "SpiSerialBusV2 Stall StartDependentFn StartDependentFnNoPri Store Subtract ThermalZone Timer ToBcd UartSerialBusV2 Unicode Unload "
-                "Xor Zero ";
-
+               "Acquire Add Alias And "
+               "BankField AccessAs CondRefOf ExtendedMemory ExtendedSpace "
+               "BreakPoint Concatenate ConcatenateResTemplate Connection Continue CopyObject DataTableRegion Debug Decrement DerefOf "
+               "Divide Dma Arg0 Arg1 Arg2 Arg3 Arg4 Arg5 Arg6 "
+               "DWordIo DWordIO EisaId EndDependentFn Event ExtendedIo Fatal FixedDma FixedIo GpioInt GpioIo "
+               "Increment Index IndexField Interrupt Io IO Irq IRQ IrqNoFlags "
+               "LAnd LEqual LGreater LGreaterEqual LLess LLessEqual LNot LNotEqual Load LOr Match Mid Mod Multiply "
+               "Mutex NAnd NoOp NOr Not Notify ObjectType Or PowerResource Revision "
+               "Memory32Fixed "
+               "DWordMemory Local0 Local1 Local2 Local3 Local4 Local5 Local6 Local7 "
+               "DWordSpace One Ones Processor QWordIo QWordIO Memory24 Memory32 VendorLong VendorShort Wait WordBusNumber WordIo WordSpace "
+               "I2cSerialBusV2 Include LoadTable QWordMemory QWordSpace RawDataBuffer RefOf Register Release Reset ResourceTemplate ShiftLeft ShiftRight Signal SizeOf Sleep "
+               "SpiSerialBusV2 Stall StartDependentFn StartDependentFnNoPri Store Subtract ThermalZone Timer ToBcd UartSerialBusV2 Unicode Unload "
+               "Xor Zero ";
 
     if (set == 2)
-            return
-                 "SubDecode PosDecode AttribBytes SubDecode PosDecode ReadWrite ReadOnly Width8bit Width16bit Width32bit Width64bit Width128bit Width256bit "
-                 "UserDefRegionSpace SystemIO SystemMemory TypeTranslation TypeStatic AttribRawBytes AttribRawProcessBytes Serialized NotSerialized "
-                 "key dict array TypeA TypeB TypeF AnyAcc ByteAcc Cacheable WriteCombining Prefetchable NonCacheable PullDefault PullUp PullDown PullNone "
-                 "MethodObj UnknownObj IntObj DeviceObj MutexObj PkgObj FieldUnitObj StrObj Edge Level ActiveHigh ActiveLow ActiveBoth "
-                 "BuffObj EventObj OpRegionObj PowerResObj ProcessorObj ThermalZoneObj BuffFieldObj DDBHandleObj None ReturnArg PolarityHigh PolarityLow ThreeWireMode FourWireMode "
-                 "MinFixed MinNotFixed MaxFixed MaxNotFixed ResourceConsumer ResourceProducer MinFixed MinNotFixed MaxFixed MaxNotFixed ClockPolarityLow ClockPolarityHigh "
-                 "ResourceConsumer ResourceProducer SubDecode PosDecode MaxFixed MaxNotFixed GeneralPurposeIo GenericSerialBus FFixedHW ClockPhaseFirst ClockPhaseSecond "
-                 "MTR MEQ MLE MLT MGE MGT WordAcc DWordAcc QWordAcc BufferAcc Lock NoLock AddressRangeMemory AddressRangeReserved AddressRangeNVS AddressRangeACPI FlowControlHardware "
-                 "AttribQuick AttribSendReceive AttribByte AttribWord AttribBlock AttribProcessCall AttribBlockProcessCall IoRestrictionNone IoRestrictionInputOnly IoRestrictionOutputOnly IoRestrictionNoneAndPreserve "
-                 "Preserve WriteAsOnes WriteAsZeros Compatibility BusMaster NotBusMaster Transfer8 Transfer16 Transfer8_16 DataBitsFive DataBitsSix DataBitsSeven ParityTypeOdd ParityTypeEven FlowControlNone FlowControlXon "
-                 "ResourceConsumer ResourceProducer SubDecode PosDecode MinFixed MinNotFixed PCI_Config EmbeddedControl SMBus SystemCMOS PciBarTarget IPMI BigEndian LittleEndian ParityTypeNone ParityTypeSpace ParityTypeMark "
-                 "ISAOnlyRanges NonISAOnlyRanges EntireRange TypeTranslation TypeStatic SparseTranslation DenseTranslation DataBitsEight DataBitsNine StopBitsZero StopBitsOne StopBitsOnePlusHalf StopBitsTwo "
-                 "Exclusive SharedAndWake ExclusiveAndWake Shared ControllerInitiated DeviceInitiated AddressingMode7Bit AddressingMode10Bit Decode16 Decode10 ";
-
+        return "SubDecode PosDecode AttribBytes SubDecode PosDecode ReadWrite ReadOnly Width8bit Width16bit Width32bit Width64bit Width128bit Width256bit "
+               "UserDefRegionSpace SystemIO SystemMemory TypeTranslation TypeStatic AttribRawBytes AttribRawProcessBytes Serialized NotSerialized "
+               "key dict array TypeA TypeB TypeF AnyAcc ByteAcc Cacheable WriteCombining Prefetchable NonCacheable PullDefault PullUp PullDown PullNone "
+               "MethodObj UnknownObj IntObj DeviceObj MutexObj PkgObj FieldUnitObj StrObj Edge Level ActiveHigh ActiveLow ActiveBoth "
+               "BuffObj EventObj OpRegionObj PowerResObj ProcessorObj ThermalZoneObj BuffFieldObj DDBHandleObj None ReturnArg PolarityHigh PolarityLow ThreeWireMode FourWireMode "
+               "MinFixed MinNotFixed MaxFixed MaxNotFixed ResourceConsumer ResourceProducer MinFixed MinNotFixed MaxFixed MaxNotFixed ClockPolarityLow ClockPolarityHigh "
+               "ResourceConsumer ResourceProducer SubDecode PosDecode MaxFixed MaxNotFixed GeneralPurposeIo GenericSerialBus FFixedHW ClockPhaseFirst ClockPhaseSecond "
+               "MTR MEQ MLE MLT MGE MGT WordAcc DWordAcc QWordAcc BufferAcc Lock NoLock AddressRangeMemory AddressRangeReserved AddressRangeNVS AddressRangeACPI FlowControlHardware "
+               "AttribQuick AttribSendReceive AttribByte AttribWord AttribBlock AttribProcessCall AttribBlockProcessCall IoRestrictionNone IoRestrictionInputOnly IoRestrictionOutputOnly IoRestrictionNoneAndPreserve "
+               "Preserve WriteAsOnes WriteAsZeros Compatibility BusMaster NotBusMaster Transfer8 Transfer16 Transfer8_16 DataBitsFive DataBitsSix DataBitsSeven ParityTypeOdd ParityTypeEven FlowControlNone FlowControlXon "
+               "ResourceConsumer ResourceProducer SubDecode PosDecode MinFixed MinNotFixed PCI_Config EmbeddedControl SMBus SystemCMOS PciBarTarget IPMI BigEndian LittleEndian ParityTypeNone ParityTypeSpace ParityTypeMark "
+               "ISAOnlyRanges NonISAOnlyRanges EntireRange TypeTranslation TypeStatic SparseTranslation DenseTranslation DataBitsEight DataBitsNine StopBitsZero StopBitsOne StopBitsOnePlusHalf StopBitsTwo "
+               "Exclusive SharedAndWake ExclusiveAndWake Shared ControllerInitiated DeviceInitiated AddressingMode7Bit AddressingMode10Bit Decode16 Decode10 ";
 
     if (set == 3)
-            return
-                "a addindex addtogroup anchor arg attention author b "
-                "brief bug c class code date def defgroup deprecated "
-                "dontinclude e em endcode endhtmlonly endif "
-                "endlatexonly endlink endverbatim enum example "
-                "exception f$ f[ f] file fn hideinitializer "
-                "htmlinclude htmlonly if image include ingroup "
-                "internal invariant interface latexonly li line link "
-                "mainpage name namespace nosubgrouping note overload "
-                "p page par param post pre ref relates remarks return "
-                "retval sa section see showinitializer since skip "
-                "skipline struct subsection test throw todo typedef "
-                "union until var verbatim verbinclude version warning "
-                "weakgroup $ @ \\ & < > # { }";
-
-
-
+        return "a addindex addtogroup anchor arg attention author b "
+               "brief bug c class code date def defgroup deprecated "
+               "dontinclude e em endcode endhtmlonly endif "
+               "endlatexonly endlink endverbatim enum example "
+               "exception f$ f[ f] file fn hideinitializer "
+               "htmlinclude htmlonly if image include ingroup "
+               "internal invariant interface latexonly li line link "
+               "mainpage name namespace nosubgrouping note overload "
+               "p page par param post pre ref relates remarks return "
+               "retval sa section see showinitializer since skip "
+               "skipline struct subsection test throw todo typedef "
+               "union until var verbatim verbinclude version warning "
+               "weakgroup $ @ \\ & < > # { }";
 
     return 0;
-
 }
-
 
 QString findKey(QString str, QString str_sub, int f_null)
 {
-    int total , tab_count;
-    QString strs , space;
+    int total, tab_count;
+    QString strs, space;
     tab_count = 0;
-    for(int i = 0; i < str.count(); i++)
-    {
-        if(str.mid(i, 1) == str_sub)
-        {
+    for (int i = 0; i < str.count(); i++) {
+        if (str.mid(i, 1) == str_sub) {
             strs = str.mid(0, i);
 
-            for(int j = 0; j < strs.count(); j++)
-            {
-                if(strs.mid(j, 1) == "\t")
-                {
+            for (int j = 0; j < strs.count(); j++) {
+                if (strs.mid(j, 1) == "\t") {
                     tab_count = tab_count + 1;
-
                 }
                 //qDebug() <<"\t个数：" << strs.mid(j, 1) << tab_count;
             }
 
-            int str_space =  strs.count() - tab_count;
+            int str_space = strs.count() - tab_count;
             total = str_space + tab_count * 4 - f_null;
 
-            for(int k = 0; k < total; k++)
+            for (int k = 0; k < total; k++)
                 space = space + " ";
 
             break;
-
         }
     }
 
@@ -1766,18 +1572,15 @@ QString findKey(QString str, QString str_sub, int f_null)
 
 void MainWindow::textEdit_linesChanged()
 {
-    if(!loading)
+    if (!loading)
 
         timer->start(1000);
-
 }
 
 void thread_one::run()
 {
 
-
-    if(break_run)
-    {
+    if (break_run) {
 
         return;
     }
@@ -1790,8 +1593,6 @@ void thread_one::run()
     //emit over();
 
     QMetaObject::invokeMethod(this, "over");
-
-
 }
 
 /*线程结束后对成员树进行数据刷新*/
@@ -1803,72 +1604,60 @@ void MainWindow::dealover()
 
     thread_end = true;
     break_run = false;
-
-
 }
 
-void MainWindow::update_member(bool show, QString str_void, QList<QTreeWidgetItem *> tw_list)
+void MainWindow::update_member(bool show, QString str_void, QList<QTreeWidgetItem*> tw_list)
 {
-    if(!show)
-    {
+    if (!show) {
 
         tw_list.clear();
-        for(int i = 0; i < ui->treeWidget->topLevelItemCount(); i++)
-        {
+        for (int i = 0; i < ui->treeWidget->topLevelItemCount(); i++) {
             QString str = ui->treeWidget->topLevelItem(i)->text(0).trimmed();
-            if(str.mid(0 , str_void.count()) == str_void)
-            {
+            if (str.mid(0, str_void.count()) == str_void) {
                 tw_list.append(ui->treeWidget->takeTopLevelItem(i));
                 i = -1;
-
             }
         }
-    }
-    else
-    {
+    } else {
         //if(tw_list.count() > 0)
         //{
-            ui->treeWidget->addTopLevelItems(tw_list);
-            ui->treeWidget->sortItems(1 , Qt::AscendingOrder);
+        ui->treeWidget->addTopLevelItems(tw_list);
+        ui->treeWidget->sortItems(1, Qt::AscendingOrder);
 
         //}
         //else
         //    on_btnRefreshTree();
 
         qDebug() << tw_list.count();
-
     }
-
-
 }
 
 void MainWindow::update_ui_tree()
 {
 
-    if(break_run){return;}
+    if (break_run) {
+        return;
+    }
 
     ui->treeWidget->clear();
     ui->treeWidget->update();
     ui->treeWidget->addTopLevelItems(tw_list);
     ui->treeWidget->expandAll();
 
-
-    QString lbl =  tr("Members") + ":  Scope(" + QString::number(s_count) + ")  " + "Device(" + QString::number(d_count) + ")  " + "Method(" + QString::number(m_count) + ")"; //  + "N(" + QString::number(n_count) + ")"
+    QString lbl = tr("Members") + ":  Scope(" + QString::number(s_count) + ")  " + "Device(" + QString::number(d_count) + ")  " + "Method(" + QString::number(m_count) + ")"; //  + "N(" + QString::number(n_count) + ")"
     ui->treeWidget->setHeaderLabel(lbl);
     ui->lblMembers->setText(lbl);
     ui->treeWidget->update();
 
-    float a = qTime.elapsed()/1000.00;
+    float a = qTime.elapsed() / 1000.00;
     lblMsg->setText(tr("Refresh completed") + "(" + QTime::currentTime().toString() + "    " + QString::number(a, 'f', 2) + " s)");
 
     textEdit_cursorPositionChanged();
 
     QFileInfo fi(curFile);
-    if(fi.suffix().toLower() == "dsl")
-    {
+    if (fi.suffix().toLower() == "dsl") {
         ui->treeWidget->setHidden(false);
     }
-
 }
 
 void MainWindow::update_ui_tw()
@@ -1879,45 +1668,37 @@ void MainWindow::update_ui_tw()
 
     ui->treeWidget->addTopLevelItems(twitems);
 
-    ui->treeWidget->sortItems(1 , Qt::AscendingOrder);//排序
+    ui->treeWidget->sortItems(1, Qt::AscendingOrder); //排序
 
     ui->treeWidget->setIconSize(QSize(12, 12));
 
-    ui->treeWidget->setHeaderLabel("S(" + QString::number(s_count) + ")  " + "D(" + QString::number(d_count) + ")  " + "M(" + QString::number(m_count) + ")  "  + "N(" + QString::number(n_count) + ")");
+    ui->treeWidget->setHeaderLabel("S(" + QString::number(s_count) + ")  " + "D(" + QString::number(d_count) + ")  " + "M(" + QString::number(m_count) + ")  " + "N(" + QString::number(n_count) + ")");
     ui->treeWidget->update();
 
-    float a = qTime.elapsed()/1000.00;
+    float a = qTime.elapsed() / 1000.00;
     lblMsg->setText("Refresh completed(" + QTime::currentTime().toString() + "    " + QString::number(a, 'f', 2) + " s)");
 
     textEdit_cursorPositionChanged();
 
     QFileInfo fi(curFile);
-    if(fi.suffix().toLower() == "dsl")
-    {
+    if (fi.suffix().toLower() == "dsl") {
         ui->treeWidget->setHidden(false);
     }
-
 }
 
-void MainWindow::refresh_tree(QsciScintilla *textEdit)
+void MainWindow::refresh_tree(QsciScintilla* textEdit)
 {
-    if(!thread_end)
-    {
+    if (!thread_end) {
         break_run = true;
         //lblMsg->setText("Refresh interrupted");
         mythread->quit();
         mythread->wait();
 
         /*等待线程结束,以使最后一次刷新可以完成*/
-        while(!thread_end)
-        {
-           QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
-
+        while (!thread_end) {
+            QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
         }
-
-
-     }
-
+    }
 
     //将textEdit的内容读到后台
     textEditBack->clear();
@@ -1927,8 +1708,6 @@ void MainWindow::refresh_tree(QsciScintilla *textEdit)
 
     qTime.start();
     mythread->start();
-
-
 }
 
 void MainWindow::on_btnRefreshTree()
@@ -1936,7 +1715,7 @@ void MainWindow::on_btnRefreshTree()
     refresh_tree(textEdit);
 }
 
-QString getMemberName(QString str_member, QsciScintilla *textEdit, int RowNum)
+QString getMemberName(QString str_member, QsciScintilla* textEdit, int RowNum)
 {
     //int RowNum, ColNum;
     QString sub;
@@ -1945,22 +1724,17 @@ QString getMemberName(QString str_member, QsciScintilla *textEdit, int RowNum)
     sub = textEdit->text(RowNum).trimmed();
 
     QString str_end;
-    if(sub.mid(0 , str_member.count()) == str_member)
-    {
+    if (sub.mid(0, str_member.count()) == str_member) {
 
-        for(int i = 0; i < sub.count(); i++)
-        {
-            if(sub.mid(i , 1) == ")")
-            {
-                str_end = sub.mid(0 , i + 1);
+        for (int i = 0; i < sub.count(); i++) {
+            if (sub.mid(i, 1) == ")") {
+                str_end = sub.mid(0, i + 1);
                 break;
-
             }
         }
     }
 
     return str_end;
-
 }
 
 void MainWindow::set_mark(int linenr)
@@ -1971,37 +1745,29 @@ void MainWindow::set_mark(int linenr)
     textEdit->SendScintilla(QsciScintilla::SCI_MARKERSETFORE, 0, QColor(Qt::red));
     textEdit->SendScintilla(QsciScintilla::SCI_MARKERSETBACK, 0, QColor(Qt::red));
     textEdit->SendScintilla(QsciScintilla::SCI_MARKERADD, linenr);
-
 }
 
-int getBraceScope(int start, int count, QsciScintilla *textEdit)
+int getBraceScope(int start, int count, QsciScintilla* textEdit)
 {
     int dkh1 = 0;
     int scope_end = 0;
     bool end = false;
     /*start-1,从当前行就开始解析，囊括Scope(){等这种紧跟{的写法*/
-    for(int s = start - 1; s < count; s++)
-    {
+    for (int s = start - 1; s < count; s++) {
 
         QString str = textEdit->text(s).trimmed();
 
-        for(int t = 0; t < str.count(); t++)
-        {
+        for (int t = 0; t < str.count(); t++) {
 
-            if(str.mid(0, 2) != "/*" && str.mid(0, 2) != "//")
-            {
+            if (str.mid(0, 2) != "/*" && str.mid(0, 2) != "//") {
 
-                if(str.mid(t, 1) == "{")
-                {
-                    dkh1 ++;
-
+                if (str.mid(t, 1) == "{") {
+                    dkh1++;
                 }
-                if(str.mid(t, 1) == "}")
-                {
-                    dkh1 --;
+                if (str.mid(t, 1) == "}") {
+                    dkh1--;
 
-                    if(dkh1 == 0)
-                    {
+                    if (dkh1 == 0) {
                         //范围结束
                         int row, col;
                         textEdit->getCursorPosition(&row, &col);
@@ -2009,24 +1775,19 @@ int getBraceScope(int start, int count, QsciScintilla *textEdit)
                         end = true;
                         //qDebug() << "范围结束" << scope_end;
                         break;
-
                     }
                 }
-
             }
-
         }
 
-        if(end)
-        {
+        if (end) {
 
             break;
         }
-
     }
 
     /*如果没有找到匹配的}，则返回开始位置的下一行，否则会进行无限循环*/
-    if(!end)
+    if (!end)
         return start + 1;
 
     return scope_end;
@@ -2035,88 +1796,72 @@ int getBraceScope(int start, int count, QsciScintilla *textEdit)
 bool chkMemberName(QString str, QString name)
 {
 
-
-   if(str.trimmed().mid(0, name.count()) == name)
-       return true;
-
+    if (str.trimmed().mid(0, name.count()) == name)
+        return true;
 
     return false;
-
 }
 
-void addSubItem(int start, int end, QsciScintilla *textEdit, QString Name, QTreeWidgetItem *iTop)
+void addSubItem(int start, int end, QsciScintilla* textEdit, QString Name, QTreeWidgetItem* iTop)
 {
 
     textEdit->setCursorPosition(start, 0);
 
-    for(int sdds1 = start; sdds1 < end; sdds1++)
-    {
-       if(break_run)
-           break;
+    for (int sdds1 = start; sdds1 < end; sdds1++) {
+        if (break_run)
+            break;
 
-       QString str = textEdit->text(sdds1).trimmed();
+        QString str = textEdit->text(sdds1).trimmed();
 
-       if(chkMemberName(str, Name))
-        {
+        if (chkMemberName(str, Name)) {
 
-              QTreeWidgetItem *iSub = new QTreeWidgetItem(QStringList() << getMemberName(Name, textEdit, sdds1) << QString("%1").arg(sdds1, 7, 10, QChar('0')));
+            QTreeWidgetItem* iSub = new QTreeWidgetItem(QStringList() << getMemberName(Name, textEdit, sdds1) << QString("%1").arg(sdds1, 7, 10, QChar('0')));
 
-              if(Name == "Device")
-              {
+            if (Name == "Device") {
                 iSub->setIcon(0, QIcon(":/icon/d.png"));
                 d_count++;
-              }
-              if(Name == "Scope")
-              {
+            }
+            if (Name == "Scope") {
                 iSub->setIcon(0, QIcon(":/icon/s.png"));
                 s_count++;
-              }
-              if(Name == "Method")
-              {
+            }
+            if (Name == "Method") {
                 iSub->setIcon(0, QIcon(":/icon/m.png"));
                 m_count++;
-              }
+            }
 
-
-              iTop->addChild(iSub);
-
-
+            iTop->addChild(iSub);
         }
-
-   }
-
+    }
 }
 
-QTreeWidgetItem *addChildItem(int row, QsciScintilla *textEdit, QString Name, QTreeWidgetItem *iTop)
+QTreeWidgetItem* addChildItem(int row, QsciScintilla* textEdit, QString Name, QTreeWidgetItem* iTop)
 {
-    QTreeWidgetItem *iSub = new QTreeWidgetItem(QStringList() << getMemberName(Name, textEdit, row) << QString("%1").arg(row, 7, 10, QChar('0')));
-    if(Name == "Device")
-    {
-      iSub->setIcon(0, QIcon(":/icon/d.png"));
-      d_count++;
+    QTreeWidgetItem* iSub = new QTreeWidgetItem(QStringList() << getMemberName(Name, textEdit, row) << QString("%1").arg(row, 7, 10, QChar('0')));
+    if (Name == "Device") {
+        iSub->setIcon(0, QIcon(":/icon/d.png"));
+        d_count++;
     }
-    if(Name == "Scope")
-    {
-      iSub->setIcon(0, QIcon(":/icon/s.png"));
-      s_count++;
+    if (Name == "Scope") {
+        iSub->setIcon(0, QIcon(":/icon/s.png"));
+        s_count++;
     }
-    if(Name == "Method")
-    {
-      iSub->setIcon(0, QIcon(":/icon/m.png"));
-      m_count++;
+    if (Name == "Method") {
+        iSub->setIcon(0, QIcon(":/icon/m.png"));
+        m_count++;
     }
 
     iTop->addChild(iSub);
 
     return iSub;
-
-
 }
 
-void getMemberTree(QsciScintilla *textEdit)
+void getMemberTree(QsciScintilla* textEdit)
 {
 
-    if(break_run){return;}
+    if (break_run) {
+        return;
+    }
 
     loading = true;
 
@@ -2129,1213 +1874,1185 @@ void getMemberTree(QsciScintilla *textEdit)
 
     QString str_member;
 
-    int count;  //总行数
+    int count; //总行数
 
-    QTreeWidgetItem *twItem0;
+    QTreeWidgetItem* twItem0;
     count = textEdit->lines();
 
-    for(int j = 0; j < count; j++)
-    {
-        if(break_run)
+    for (int j = 0; j < count; j++) {
+        if (break_run)
             break;
 
         str_member = textEdit->text(j).trimmed();
 
         //根"Scope"
-        if(chkMemberName(str_member, "Scope"))
-        {
+        if (chkMemberName(str_member, "Scope")) {
 
+            twItem0 = new QTreeWidgetItem(QStringList() << getMemberName(str_member, textEdit, j) << QString("%1").arg(j, 7, 10, QChar('0')));
+            twItem0->setIcon(0, QIcon(":/icon/s.png"));
+            //tw->addTopLevelItem(twItem0);
+            tw_list.append(twItem0);
 
-           twItem0 = new QTreeWidgetItem(QStringList() << getMemberName(str_member, textEdit, j) << QString("%1").arg(j, 7, 10, QChar('0')));
-           twItem0->setIcon(0, QIcon(":/icon/s.png"));
-           //tw->addTopLevelItem(twItem0);
-           tw_list.append(twItem0);
+            s_count++;
 
-           s_count++;
+            int c_fw_start = j + 1;
+            int c_fw_end = getBraceScope(c_fw_start, count, textEdit);
 
+            //再往下找内部成员
 
-           int c_fw_start = j + 1;
-           int c_fw_end = getBraceScope(c_fw_start, count, textEdit);
+            for (int d = c_fw_start; d < c_fw_end; d++) {
 
-           //再往下找内部成员
+                if (break_run)
+                    break;
 
-           for(int d = c_fw_start; d < c_fw_end; d++)
-           {
+                QString str = textEdit->text(d).trimmed();
 
-               if(break_run)
-                   break;
+                //Scope-->Device
+                if (chkMemberName(str, "Device")) {
 
-               QString str = textEdit->text(d).trimmed();
+                    QTreeWidgetItem* twItem1 = addChildItem(d, textEdit, "Device", twItem0);
 
-               //Scope-->Device
-               if(chkMemberName(str, "Device"))
-                {
+                    int d2_start = d + 1;
+                    int d2_end = getBraceScope(d2_start, count, textEdit);
 
-                       QTreeWidgetItem *twItem1 = addChildItem(d, textEdit, "Device", twItem0);
+                    for (int m2 = d2_start; m2 < d2_end; m2++) {
+                        if (break_run)
+                            break;
 
-                       int d2_start = d + 1;
-                       int d2_end = getBraceScope(d2_start, count, textEdit);
+                        QString str = textEdit->text(m2).trimmed();
+                        //Scope-->Device-->Method
+                        if (chkMemberName(str, "Method")) {
 
-                       for(int m2 = d2_start; m2 < d2_end; m2++)
-                       {
-                           if(break_run)
-                               break;
+                            QTreeWidgetItem* twItem2 = addChildItem(m2, textEdit, "Method", twItem1);
+                            if (twItem2) { }
+                        }
 
-                           QString str = textEdit->text(m2).trimmed();
-                            //Scope-->Device-->Method
-                            if(chkMemberName(str, "Method"))
-                             {
+                        //Scope-->Device-->Device
+                        if (chkMemberName(str, "Device")) {
 
-                                QTreeWidgetItem *twItem2 = addChildItem(m2, textEdit, "Method", twItem1);
-                                if(twItem2){}
+                            QTreeWidgetItem* twItem2 = addChildItem(m2, textEdit, "Device", twItem1);
 
-                             }
+                            int start = m2 + 1;
+                            int end = getBraceScope(start, count, textEdit);
 
-                             //Scope-->Device-->Device
-                            if(chkMemberName(str, "Device"))
-                             {
+                            for (int sddm1 = start; sddm1 < end; sddm1++) {
+                                if (break_run)
+                                    break;
 
+                                QString str = textEdit->text(sddm1).trimmed();
 
-                                QTreeWidgetItem *twItem2 = addChildItem(m2, textEdit, "Device", twItem1);
+                                //Scope-->Device-->Device-->Method
+                                if (chkMemberName(str, "Method")) {
 
-                                int start = m2 + 1;
-                                int end = getBraceScope(start, count, textEdit);
+                                    QTreeWidgetItem* twItem3 = addChildItem(sddm1, textEdit, "Method", twItem2);
+                                    if (twItem3) { }
+                                }
 
-                                for(int sddm1 = start; sddm1 < end; sddm1++)
-                                 {
-                                    if(break_run)
-                                        break;
+                                //Scope-->Device-->Device-->Scope
+                                if (chkMemberName(str, "Scope")) {
 
-                                    QString str = textEdit->text(sddm1).trimmed();
+                                    QTreeWidgetItem* twItem3 = addChildItem(sddm1, textEdit, "Scope", twItem2);
 
-                                    //Scope-->Device-->Device-->Method
-                                    if(chkMemberName(str, "Method"))
-                                     {
+                                    int start_sdds = sddm1 + 1;
+                                    int end_sdds = getBraceScope(start_sdds, count, textEdit);
 
-                                           QTreeWidgetItem *twItem3 = addChildItem(sddm1, textEdit, "Method", twItem2);
-                                           if(twItem3){}
+                                    for (int sdds = start_sdds; sdds < end_sdds; sdds++) {
+                                        if (break_run) {
+                                            break;
+                                        }
 
-                                     }
+                                        QString str = textEdit->text(sdds).trimmed();
 
-                                    //Scope-->Device-->Device-->Scope
-                                    if(chkMemberName(str, "Scope"))
-                                     {
+                                        //S--D--D--S--S
+                                        if (chkMemberName(str, "Scope")) {
 
-                                           QTreeWidgetItem *twItem3 = addChildItem(sddm1, textEdit, "Scope", twItem2);
+                                            QTreeWidgetItem* twItem4 = addChildItem(sdds, textEdit, "Scope", twItem3);
+                                            if (twItem4) { }
 
-                                           int start_sdds = sddm1 + 1;
-                                           int end_sdds = getBraceScope(start_sdds, count, textEdit);
+                                            int start_sddss = sdds + 1;
+                                            int end_sddss = getBraceScope(start_sddss, count, textEdit);
+                                            for (int sddss = start_sddss; sddss < end_sddss; sddss++) {
+                                                if (break_run) {
+                                                    break;
+                                                }
+                                                QString str = textEdit->text(sddss);
 
-                                           for(int sdds = start_sdds; sdds < end_sdds; sdds++)
-                                            {
-                                               if(break_run){break;}
-
-                                               QString str = textEdit->text(sdds).trimmed();
-
-                                               //S--D--D--S--S
-                                               if(chkMemberName(str, "Scope"))
-                                                {
-
-                                                   QTreeWidgetItem *twItem4 = addChildItem(sdds, textEdit, "Scope", twItem3);
-                                                   if(twItem4){}
-
-                                                   int start_sddss = sdds + 1;
-                                                   int end_sddss = getBraceScope(start_sddss, count, textEdit);
-                                                   for(int sddss = start_sddss; sddss < end_sddss; sddss ++){
-                                                       if(break_run){break;}
-                                                        QString str = textEdit->text(sddss);
-
-                                                        //S--D--D--S--S--S
-                                                        if(chkMemberName(str, "Scope")){
-                                                            QTreeWidgetItem *twItem5 = addChildItem(sddss, textEdit, "Scope", twItem4);
-                                                            if(twItem5){}
-                                                        }
-
-                                                        //S--D--D--S--S--D
-                                                        if(chkMemberName(str, "Device")){
-                                                            QTreeWidgetItem *twItem5 = addChildItem(sddss, textEdit, "Device", twItem4);
-                                                            if(twItem5){}
-                                                        }
-
-                                                        //S--D--D--S--S--M
-                                                        if(chkMemberName(str, "Method")){
-                                                            QTreeWidgetItem *twItem5 = addChildItem(sddss, textEdit, "Method", twItem4);
-                                                            if(twItem5){}
-                                                        }
-                                                   }
-
-                                                   sdds = end_sddss - 1;
-
+                                                //S--D--D--S--S--S
+                                                if (chkMemberName(str, "Scope")) {
+                                                    QTreeWidgetItem* twItem5 = addChildItem(sddss, textEdit, "Scope", twItem4);
+                                                    if (twItem5) { }
                                                 }
 
-                                               //S--D--D--S--M
-                                               if(chkMemberName(str, "Method"))
-                                                {
-
-                                                   QTreeWidgetItem *twItem4 = addChildItem(sdds, textEdit, "Method", twItem3);
-                                                   if(twItem4){}
-
+                                                //S--D--D--S--S--D
+                                                if (chkMemberName(str, "Device")) {
+                                                    QTreeWidgetItem* twItem5 = addChildItem(sddss, textEdit, "Device", twItem4);
+                                                    if (twItem5) { }
                                                 }
 
-                                               //Scope-->Device-->Device-->Scope-->Device
-                                               if(chkMemberName(str, "Device"))
-                                                {
+                                                //S--D--D--S--S--M
+                                                if (chkMemberName(str, "Method")) {
+                                                    QTreeWidgetItem* twItem5 = addChildItem(sddss, textEdit, "Method", twItem4);
+                                                    if (twItem5) { }
+                                                }
+                                            }
 
-                                                   QTreeWidgetItem *twItem4 = addChildItem(sdds, textEdit, "Device", twItem3);
-                                                   if(twItem4){}
+                                            sdds = end_sddss - 1;
+                                        }
 
-                                                   int start_sddsd = sdds + 1;
-                                                   int end_sddsd = getBraceScope(start_sddsd, count, textEdit);
-                                                   for(int sddsd = start_sddsd; sddsd < end_sddsd; sddsd ++){
-                                                       if(break_run){break;}
-                                                        QString str = textEdit->text(sddsd);
+                                        //S--D--D--S--M
+                                        if (chkMemberName(str, "Method")) {
 
-                                                        //S--D--D--S--D--S
-                                                        if(chkMemberName(str, "Scope")){
-                                                            QTreeWidgetItem *twItem5 = addChildItem(sddsd, textEdit, "Scope", twItem4);
-                                                            if(twItem5){}
-                                                        }
+                                            QTreeWidgetItem* twItem4 = addChildItem(sdds, textEdit, "Method", twItem3);
+                                            if (twItem4) { }
+                                        }
 
-                                                        //S--D--D--S--D--D
-                                                        if(chkMemberName(str, "Device")){
-                                                            QTreeWidgetItem *twItem5 = addChildItem(sddsd, textEdit, "Device", twItem4);
-                                                            if(twItem5){}
-                                                        }
+                                        //Scope-->Device-->Device-->Scope-->Device
+                                        if (chkMemberName(str, "Device")) {
 
-                                                        //S--D--D--S--D--M
-                                                        if(chkMemberName(str, "Method")){
-                                                            QTreeWidgetItem *twItem5 = addChildItem(sddsd, textEdit, "Method", twItem4);
-                                                            if(twItem5){}
-                                                        }
-                                                   }
+                                            QTreeWidgetItem* twItem4 = addChildItem(sdds, textEdit, "Device", twItem3);
+                                            if (twItem4) { }
 
-                                                   sdds = end_sddsd - 1;
+                                            int start_sddsd = sdds + 1;
+                                            int end_sddsd = getBraceScope(start_sddsd, count, textEdit);
+                                            for (int sddsd = start_sddsd; sddsd < end_sddsd; sddsd++) {
+                                                if (break_run) {
+                                                    break;
+                                                }
+                                                QString str = textEdit->text(sddsd);
 
+                                                //S--D--D--S--D--S
+                                                if (chkMemberName(str, "Scope")) {
+                                                    QTreeWidgetItem* twItem5 = addChildItem(sddsd, textEdit, "Scope", twItem4);
+                                                    if (twItem5) { }
                                                 }
 
-                                           }
-
-                                        sddm1 = end_sdds - 1;
-
-                                     }
-
-
-
-                                    //Scope-->Device-->Device-->Device
-                                    if(chkMemberName(str, "Device"))
-                                     {
-
-                                           QTreeWidgetItem *twItem3 = addChildItem(sddm1, textEdit, "Device", twItem2);
-
-                                           int start3 = sddm1 + 1;
-                                           int end3 = getBraceScope(start3, count, textEdit);
-
-                                           for(int sddd = start3; sddd < end3; sddd ++)
-                                           {
-                                               QString str = textEdit->text(sddd).trimmed();
-
-                                               //Scope-->Device-->Device-->Device-->Method
-                                               if(chkMemberName(str, "Method"))
-                                                {
-
-                                                   QTreeWidgetItem *twItem4 = addChildItem(sddd, textEdit, "Method", twItem3);
-                                                   if(twItem4){}
-
+                                                //S--D--D--S--D--D
+                                                if (chkMemberName(str, "Device")) {
+                                                    QTreeWidgetItem* twItem5 = addChildItem(sddsd, textEdit, "Device", twItem4);
+                                                    if (twItem5) { }
                                                 }
 
-                                               //Scope-->Device-->Device-->Device-->Scope
-                                               if(chkMemberName(str, "Scope"))
-                                                {
+                                                //S--D--D--S--D--M
+                                                if (chkMemberName(str, "Method")) {
+                                                    QTreeWidgetItem* twItem5 = addChildItem(sddsd, textEdit, "Method", twItem4);
+                                                    if (twItem5) { }
+                                                }
+                                            }
 
-                                                   QTreeWidgetItem *twItem4 = addChildItem(sddd, textEdit, "Scope", twItem3);
-                                                   if(twItem4){}
+                                            sdds = end_sddsd - 1;
+                                        }
+                                    }
 
-                                                   int start_sddds = sddd + 1;
-                                                   int end_sddds = getBraceScope(start_sddds, count, textEdit);
-                                                   for(int sddds = start_sddds; sddds < end_sddds; sddds ++){
-                                                       if(break_run){break;}
-                                                        QString str = textEdit->text(sddds);
+                                    sddm1 = end_sdds - 1;
+                                }
 
-                                                        //S--D--D--D--S--S
-                                                        if(chkMemberName(str, "Scope")){
-                                                            QTreeWidgetItem *twItem5 = addChildItem(sddds, textEdit, "Scope", twItem4);
-                                                            if(twItem5){}
-                                                        }
+                                //Scope-->Device-->Device-->Device
+                                if (chkMemberName(str, "Device")) {
 
-                                                        //S--D--D--D--S--D
-                                                        if(chkMemberName(str, "Device")){
-                                                            QTreeWidgetItem *twItem5 = addChildItem(sddds, textEdit, "Device", twItem4);
-                                                            if(twItem5){}
-                                                        }
+                                    QTreeWidgetItem* twItem3 = addChildItem(sddm1, textEdit, "Device", twItem2);
 
-                                                        //S--D--D--D--S--M
-                                                        if(chkMemberName(str, "Method")){
-                                                            QTreeWidgetItem *twItem5 = addChildItem(sddds, textEdit, "Method", twItem4);
-                                                            if(twItem5){}
-                                                        }
-                                                   }
+                                    int start3 = sddm1 + 1;
+                                    int end3 = getBraceScope(start3, count, textEdit);
 
-                                                   sddd = end_sddds - 1;
+                                    for (int sddd = start3; sddd < end3; sddd++) {
+                                        QString str = textEdit->text(sddd).trimmed();
 
+                                        //Scope-->Device-->Device-->Device-->Method
+                                        if (chkMemberName(str, "Method")) {
+
+                                            QTreeWidgetItem* twItem4 = addChildItem(sddd, textEdit, "Method", twItem3);
+                                            if (twItem4) { }
+                                        }
+
+                                        //Scope-->Device-->Device-->Device-->Scope
+                                        if (chkMemberName(str, "Scope")) {
+
+                                            QTreeWidgetItem* twItem4 = addChildItem(sddd, textEdit, "Scope", twItem3);
+                                            if (twItem4) { }
+
+                                            int start_sddds = sddd + 1;
+                                            int end_sddds = getBraceScope(start_sddds, count, textEdit);
+                                            for (int sddds = start_sddds; sddds < end_sddds; sddds++) {
+                                                if (break_run) {
+                                                    break;
+                                                }
+                                                QString str = textEdit->text(sddds);
+
+                                                //S--D--D--D--S--S
+                                                if (chkMemberName(str, "Scope")) {
+                                                    QTreeWidgetItem* twItem5 = addChildItem(sddds, textEdit, "Scope", twItem4);
+                                                    if (twItem5) { }
                                                 }
 
-                                               //Scope-->Device-->Device-->Device-->Device
-                                               if(chkMemberName(str, "Device"))
-                                                {
-                                                   QTreeWidgetItem *twItem4 = addChildItem(sddd, textEdit, "Device", twItem3);
-                                                   if(twItem4){}
-
-                                                   int start_sdddd = sddd + 1;
-                                                   int end_sdddd = getBraceScope(start_sdddd, count, textEdit);
-                                                   for(int sdddd = start_sdddd; sdddd < end_sdddd; sdddd ++){
-                                                       if(break_run){break;}
-                                                        QString str = textEdit->text(sdddd);
-
-                                                        //S--D--D--D--D--S
-                                                        if(chkMemberName(str, "Scope")){
-                                                            QTreeWidgetItem *twItem5 = addChildItem(sdddd, textEdit, "Scope", twItem4);
-                                                            if(twItem5){}
-                                                        }
-
-                                                        //S--D--D--D--D--D
-                                                        if(chkMemberName(str, "Device")){
-                                                            QTreeWidgetItem *twItem5 = addChildItem(sdddd, textEdit, "Device", twItem4);
-                                                            if(twItem5){}
-                                                        }
-
-                                                        //S--D--D--D--D--M
-                                                        if(chkMemberName(str, "Method")){
-                                                            QTreeWidgetItem *twItem5 = addChildItem(sdddd, textEdit, "Method", twItem4);
-                                                            if(twItem5){}
-                                                        }
-                                                   }
-
-                                                   sddd = end_sdddd - 1;
-
+                                                //S--D--D--D--S--D
+                                                if (chkMemberName(str, "Device")) {
+                                                    QTreeWidgetItem* twItem5 = addChildItem(sddds, textEdit, "Device", twItem4);
+                                                    if (twItem5) { }
                                                 }
 
+                                                //S--D--D--D--S--M
+                                                if (chkMemberName(str, "Method")) {
+                                                    QTreeWidgetItem* twItem5 = addChildItem(sddds, textEdit, "Method", twItem4);
+                                                    if (twItem5) { }
+                                                }
+                                            }
 
+                                            sddd = end_sddds - 1;
+                                        }
 
-                                           }
+                                        //Scope-->Device-->Device-->Device-->Device
+                                        if (chkMemberName(str, "Device")) {
+                                            QTreeWidgetItem* twItem4 = addChildItem(sddd, textEdit, "Device", twItem3);
+                                            if (twItem4) { }
 
-                                           sddm1 = end3 - 1;
+                                            int start_sdddd = sddd + 1;
+                                            int end_sdddd = getBraceScope(start_sdddd, count, textEdit);
+                                            for (int sdddd = start_sdddd; sdddd < end_sdddd; sdddd++) {
+                                                if (break_run) {
+                                                    break;
+                                                }
+                                                QString str = textEdit->text(sdddd);
 
-                                     }
-
-
-                                   }
-
-                                m2 = end - 1;
-                              }
-
-                            //Scope-->Device-->Scope
-                            if(chkMemberName(str, "Scope"))
-                             {
-                                QTreeWidgetItem *twItem2 = addChildItem(m2, textEdit, "Scope", twItem1);
-                                if(twItem2){}
-
-
-                                int start_sds = m2 + 1;
-                                int end_sds = getBraceScope(start_sds, count, textEdit);
-
-                                for(int sds = start_sds; sds < end_sds; sds++)
-                                {
-                                       if(break_run)
-                                           break;
-
-                                       QString str = textEdit->text(sds).trimmed();
-
-                                       //Scope-->Device-->Scope-->Scope
-                                       if(chkMemberName(str, "Scope"))
-                                       {
-
-                                           QTreeWidgetItem *twItem3 = addChildItem(sds, textEdit, "Scope", twItem2);
-                                           if(twItem3){}
-
-                                           int start_sdss = sds + 1;
-                                           int end_sdss = getBraceScope(start_sdss, count, textEdit);
-                                           for(int sdss = start_sdss; sdss < end_sdss; sdss ++){
-                                               if(break_run){break;}
-                                               QString str = textEdit->text(sdss);
-
-                                               //S--D--S--S--S
-                                               if(chkMemberName(str, "Scope")){
-                                                    QTreeWidgetItem *twItem4 = addChildItem(sdss, textEdit, "Scope", twItem3);
-                                                    if(twItem4){}
-
-                                                    int start_sdsss = sdss + 1;
-                                                    int end_sdsss = getBraceScope(start_sdsss, count, textEdit);
-                                                    for(int sdsss = start_sdsss; sdsss < end_sdsss; sdsss ++){
-                                                        if(break_run){break;}
-                                                        QString str = textEdit->text(sdsss);
-
-                                                        //S--D--S--S--S--S
-                                                        if(chkMemberName(str, "Scope")){
-                                                             QTreeWidgetItem *twItem5 = addChildItem(sdsss, textEdit, "Scope", twItem4);
-                                                             if(twItem5){}
-
-                                                             int start_sdssss = sdsss + 1;
-                                                             int end_sdssss = getBraceScope(start_sdssss, count, textEdit);
-                                                             for(int sdssss = start_sdssss; sdssss < end_sdssss; sdssss ++){
-                                                                 if(break_run){break;}
-                                                                 QString str = textEdit->text(sdssss);
-
-                                                                 //S--D--S--S--S--S--S
-                                                                 if(chkMemberName(str, "Scope")){
-                                                                      QTreeWidgetItem *twItem6 = addChildItem(sdssss, textEdit, "Scope", twItem5);
-                                                                      if(twItem6){}
-                                                                  }
-                                                                 //S--D--S--S--S--S--D
-                                                                 if(chkMemberName(str, "Device")){
-                                                                      QTreeWidgetItem *twItem6 = addChildItem(sdssss, textEdit, "Device", twItem5);
-                                                                      if(twItem6){}
-                                                                  }
-                                                                 //S--D--S--S--S--S--M
-                                                                 if(chkMemberName(str, "Method")){
-                                                                      QTreeWidgetItem *twItem6 = addChildItem(sdssss, textEdit, "Method", twItem5);
-                                                                      if(twItem6){}
-                                                                  }
-                                                             }
-
-                                                          sdsss = end_sdssss - 1;
-                                                         }
-                                                        //S--D--S--S--S--D
-                                                        if(chkMemberName(str, "Device")){
-                                                             QTreeWidgetItem *twItem5 = addChildItem(sdsss, textEdit, "Device", twItem4);
-                                                             if(twItem5){}
-
-                                                             int start_sdsssd = sdsss + 1;
-                                                             int end_sdsssd = getBraceScope(start_sdsssd, count, textEdit);
-                                                             for(int sdsssd = start_sdsssd; sdsssd < end_sdsssd; sdsssd ++){
-                                                                 if(break_run){break;}
-                                                                 QString str = textEdit->text(sdsssd);
-
-                                                                 //S--D--S--S--S--D--S
-                                                                 if(chkMemberName(str, "Scope")){
-                                                                      QTreeWidgetItem *twItem6 = addChildItem(sdsssd, textEdit, "Scope", twItem5);
-                                                                      if(twItem6){}
-                                                                  }
-                                                                 //S--D--S--S--S--D--D
-                                                                 if(chkMemberName(str, "Device")){
-                                                                      QTreeWidgetItem *twItem6 = addChildItem(sdsssd, textEdit, "Device", twItem5);
-                                                                      if(twItem6){}
-                                                                  }
-                                                                 //S--D--S--S--S--D--M
-                                                                 if(chkMemberName(str, "Method")){
-                                                                      QTreeWidgetItem *twItem6 = addChildItem(sdsssd, textEdit, "Method", twItem5);
-                                                                      if(twItem6){}
-                                                                  }
-                                                             }
-
-                                                          sdsss = end_sdsssd - 1;
-                                                         }
-                                                        //S--D--S--S--S--M
-                                                        if(chkMemberName(str, "Method")){
-                                                             QTreeWidgetItem *twItem5 = addChildItem(sdsss, textEdit, "Method", twItem4);
-                                                             if(twItem5){}
-                                                         }
-
-                                                    }
-                                                    sdss = end_sdsss - 1;
+                                                //S--D--D--D--D--S
+                                                if (chkMemberName(str, "Scope")) {
+                                                    QTreeWidgetItem* twItem5 = addChildItem(sdddd, textEdit, "Scope", twItem4);
+                                                    if (twItem5) { }
                                                 }
 
-                                               //S--D--S--S--D
-                                               if(chkMemberName(str, "Device")){
-                                                    QTreeWidgetItem *twItem4 = addChildItem(sdss, textEdit, "Device", twItem3);
-                                                    if(twItem4){}
+                                                //S--D--D--D--D--D
+                                                if (chkMemberName(str, "Device")) {
+                                                    QTreeWidgetItem* twItem5 = addChildItem(sdddd, textEdit, "Device", twItem4);
+                                                    if (twItem5) { }
+                                                }
 
-                                                    int start_sdssd = sdss + 1;
-                                                    int end_sdssd = getBraceScope(start_sdssd, count, textEdit);
-                                                    for(int sdssd = start_sdssd; sdssd < end_sdssd; sdssd ++){
-                                                        if(break_run){break;}
-                                                        QString str = textEdit->text(sdssd);
+                                                //S--D--D--D--D--M
+                                                if (chkMemberName(str, "Method")) {
+                                                    QTreeWidgetItem* twItem5 = addChildItem(sdddd, textEdit, "Method", twItem4);
+                                                    if (twItem5) { }
+                                                }
+                                            }
 
-                                                        //S--D--S--S--D--S
-                                                        if(chkMemberName(str, "Scope")){
-                                                             QTreeWidgetItem *twItem5 = addChildItem(sdssd, textEdit, "Scope", twItem4);
-                                                             if(twItem5){}
+                                            sddd = end_sdddd - 1;
+                                        }
+                                    }
 
-                                                             int start_sdssds = sdssd + 1;
-                                                             int end_sdssds = getBraceScope(start_sdssds, count, textEdit);
-                                                             for(int sdssds = start_sdssds; sdssds < end_sdssds; sdssds ++){
-                                                                 if(break_run){break;}
-                                                                 QString str = textEdit->text(sdssds);
+                                    sddm1 = end3 - 1;
+                                }
+                            }
 
-                                                                 //S--D--S--S--D--S--S
-                                                                 if(chkMemberName(str, "Scope")){
-                                                                      QTreeWidgetItem *twItem6 = addChildItem(sdssds, textEdit, "Scope", twItem5);
-                                                                      if(twItem6){}
-                                                                  }
-                                                                 //S--D--S--S--D--S--D
-                                                                 if(chkMemberName(str, "Device")){
-                                                                      QTreeWidgetItem *twItem6 = addChildItem(sdssds, textEdit, "Device", twItem5);
-                                                                      if(twItem6){}
-                                                                  }
-                                                                 //S--D--S--S--D--S--M
-                                                                 if(chkMemberName(str, "Method")){
-                                                                      QTreeWidgetItem *twItem6 = addChildItem(sdssds, textEdit, "Method", twItem5);
-                                                                      if(twItem6){}
-                                                                  }
-                                                             }
+                            m2 = end - 1;
+                        }
 
-                                                          sdssd = end_sdssds - 1;
-                                                         }
-                                                        //S--D--S--S--D--D
-                                                        if(chkMemberName(str, "Device")){
-                                                             QTreeWidgetItem *twItem5 = addChildItem(sdssd, textEdit, "Device", twItem4);
-                                                             if(twItem5){}
+                        //Scope-->Device-->Scope
+                        if (chkMemberName(str, "Scope")) {
+                            QTreeWidgetItem* twItem2 = addChildItem(m2, textEdit, "Scope", twItem1);
+                            if (twItem2) { }
 
-                                                             int start_sdssdd = sdssd + 1;
-                                                             int end_sdssdd = getBraceScope(start_sdssdd, count, textEdit);
-                                                             for(int sdssdd = start_sdssdd; sdssdd < end_sdssdd; sdssdd ++){
-                                                                 if(break_run){break;}
-                                                                 QString str = textEdit->text(sdssdd);
+                            int start_sds = m2 + 1;
+                            int end_sds = getBraceScope(start_sds, count, textEdit);
 
-                                                                 //S--D--S--S--D--D--S
-                                                                 if(chkMemberName(str, "Scope")){
-                                                                      QTreeWidgetItem *twItem6 = addChildItem(sdssdd, textEdit, "Scope", twItem5);
-                                                                      if(twItem6){}
-                                                                  }
-                                                                 //S--D--S--S--D--D--D
-                                                                 if(chkMemberName(str, "Device")){
-                                                                      QTreeWidgetItem *twItem6 = addChildItem(sdssdd, textEdit, "Device", twItem5);
-                                                                      if(twItem6){}
-                                                                  }
-                                                                 //S--D--S--S--D--D--M
-                                                                 if(chkMemberName(str, "Method")){
-                                                                      QTreeWidgetItem *twItem6 = addChildItem(sdssdd, textEdit, "Method", twItem5);
-                                                                      if(twItem6){}
-                                                                  }
-                                                             }
+                            for (int sds = start_sds; sds < end_sds; sds++) {
+                                if (break_run)
+                                    break;
 
-                                                          sdssd = end_sdssdd - 1;
-                                                         }
-                                                        //S--D--S--S--D--M
-                                                        if(chkMemberName(str, "Method")){
-                                                             QTreeWidgetItem *twItem5 = addChildItem(sdssd, textEdit, "Method", twItem4);
-                                                             if(twItem5){}
-                                                         }
+                                QString str = textEdit->text(sds).trimmed();
 
+                                //Scope-->Device-->Scope-->Scope
+                                if (chkMemberName(str, "Scope")) {
+
+                                    QTreeWidgetItem* twItem3 = addChildItem(sds, textEdit, "Scope", twItem2);
+                                    if (twItem3) { }
+
+                                    int start_sdss = sds + 1;
+                                    int end_sdss = getBraceScope(start_sdss, count, textEdit);
+                                    for (int sdss = start_sdss; sdss < end_sdss; sdss++) {
+                                        if (break_run) {
+                                            break;
+                                        }
+                                        QString str = textEdit->text(sdss);
+
+                                        //S--D--S--S--S
+                                        if (chkMemberName(str, "Scope")) {
+                                            QTreeWidgetItem* twItem4 = addChildItem(sdss, textEdit, "Scope", twItem3);
+                                            if (twItem4) { }
+
+                                            int start_sdsss = sdss + 1;
+                                            int end_sdsss = getBraceScope(start_sdsss, count, textEdit);
+                                            for (int sdsss = start_sdsss; sdsss < end_sdsss; sdsss++) {
+                                                if (break_run) {
+                                                    break;
+                                                }
+                                                QString str = textEdit->text(sdsss);
+
+                                                //S--D--S--S--S--S
+                                                if (chkMemberName(str, "Scope")) {
+                                                    QTreeWidgetItem* twItem5 = addChildItem(sdsss, textEdit, "Scope", twItem4);
+                                                    if (twItem5) { }
+
+                                                    int start_sdssss = sdsss + 1;
+                                                    int end_sdssss = getBraceScope(start_sdssss, count, textEdit);
+                                                    for (int sdssss = start_sdssss; sdssss < end_sdssss; sdssss++) {
+                                                        if (break_run) {
+                                                            break;
+                                                        }
+                                                        QString str = textEdit->text(sdssss);
+
+                                                        //S--D--S--S--S--S--S
+                                                        if (chkMemberName(str, "Scope")) {
+                                                            QTreeWidgetItem* twItem6 = addChildItem(sdssss, textEdit, "Scope", twItem5);
+                                                            if (twItem6) { }
+                                                        }
+                                                        //S--D--S--S--S--S--D
+                                                        if (chkMemberName(str, "Device")) {
+                                                            QTreeWidgetItem* twItem6 = addChildItem(sdssss, textEdit, "Device", twItem5);
+                                                            if (twItem6) { }
+                                                        }
+                                                        //S--D--S--S--S--S--M
+                                                        if (chkMemberName(str, "Method")) {
+                                                            QTreeWidgetItem* twItem6 = addChildItem(sdssss, textEdit, "Method", twItem5);
+                                                            if (twItem6) { }
+                                                        }
                                                     }
 
-                                                    sdss = end_sdssd - 1;
-
+                                                    sdsss = end_sdssss - 1;
                                                 }
+                                                //S--D--S--S--S--D
+                                                if (chkMemberName(str, "Device")) {
+                                                    QTreeWidgetItem* twItem5 = addChildItem(sdsss, textEdit, "Device", twItem4);
+                                                    if (twItem5) { }
 
-                                               //S--D--S--S--M
-                                               if(chkMemberName(str, "Method")){
-                                                    QTreeWidgetItem *twItem4 = addChildItem(sdss, textEdit, "Method", twItem3);
-                                                    if(twItem4){}
+                                                    int start_sdsssd = sdsss + 1;
+                                                    int end_sdsssd = getBraceScope(start_sdsssd, count, textEdit);
+                                                    for (int sdsssd = start_sdsssd; sdsssd < end_sdsssd; sdsssd++) {
+                                                        if (break_run) {
+                                                            break;
+                                                        }
+                                                        QString str = textEdit->text(sdsssd);
+
+                                                        //S--D--S--S--S--D--S
+                                                        if (chkMemberName(str, "Scope")) {
+                                                            QTreeWidgetItem* twItem6 = addChildItem(sdsssd, textEdit, "Scope", twItem5);
+                                                            if (twItem6) { }
+                                                        }
+                                                        //S--D--S--S--S--D--D
+                                                        if (chkMemberName(str, "Device")) {
+                                                            QTreeWidgetItem* twItem6 = addChildItem(sdsssd, textEdit, "Device", twItem5);
+                                                            if (twItem6) { }
+                                                        }
+                                                        //S--D--S--S--S--D--M
+                                                        if (chkMemberName(str, "Method")) {
+                                                            QTreeWidgetItem* twItem6 = addChildItem(sdsssd, textEdit, "Method", twItem5);
+                                                            if (twItem6) { }
+                                                        }
+                                                    }
+
+                                                    sdsss = end_sdsssd - 1;
                                                 }
-                                           }
-
-                                           sds = end_sdss - 1;
-
-                                       }
-
-
-                                       //Scope-->Device-->Scope-->Device
-                                       if(chkMemberName(str, "Device"))
-                                        {
-                                           QTreeWidgetItem *twItem3 = addChildItem(sds, textEdit, "Device", twItem2);
-                                           if(twItem3){}
-
-                                           int start4 = sds + 1;
-                                           int end4 = getBraceScope(start4, count, textEdit);
-
-                                           for(int m4 = start4; m4 < end4; m4++)
-                                            {
-
-                                               if(break_run)
-                                                   break;
-
-                                               QString str = textEdit->text(m4).trimmed();
-
-                                               //Scope-->Device-->Scope-->Device-->Method
-                                               if(chkMemberName(str, "Method"))
-                                                {
-                                                   QTreeWidgetItem *twItem4 = addChildItem(m4, textEdit, "Method", twItem3);
-                                                   if(twItem4){}
-
-
+                                                //S--D--S--S--S--M
+                                                if (chkMemberName(str, "Method")) {
+                                                    QTreeWidgetItem* twItem5 = addChildItem(sdsss, textEdit, "Method", twItem4);
+                                                    if (twItem5) { }
                                                 }
+                                            }
+                                            sdss = end_sdsss - 1;
+                                        }
 
-                                               //Scope-->Device-->Scope-->Device-->Device
-                                               if(chkMemberName(str, "Device"))
-                                                {
-                                                   QTreeWidgetItem *twItem4 = addChildItem(m4, textEdit, "Device", twItem3);
-                                                   if(twItem4){}
+                                        //S--D--S--S--D
+                                        if (chkMemberName(str, "Device")) {
+                                            QTreeWidgetItem* twItem4 = addChildItem(sdss, textEdit, "Device", twItem3);
+                                            if (twItem4) { }
 
-                                                   int start_sdsdd = m4 + 1;
-                                                   int end_sdsdd = getBraceScope(start_sdsdd, count, textEdit);
-                                                   for(int sdsdd = start_sdsdd; sdsdd < end_sdsdd; sdsdd ++){
-                                                       if(break_run){break;}
-                                                       QString str = textEdit->text(sdsdd);
-
-                                                       //S--D--S--D--D--S
-                                                       if(chkMemberName(str, "Scope")){
-                                                            QTreeWidgetItem *twItem5 = addChildItem(sdsdd, textEdit, "Scope", twItem4);
-                                                            if(twItem5){}
-                                                        }
-                                                       //S--D--S--D--D--D
-                                                       if(chkMemberName(str, "Device")){
-                                                            QTreeWidgetItem *twItem5 = addChildItem(sdsdd, textEdit, "Device", twItem4);
-                                                            if(twItem5){}
-                                                        }
-                                                       //S--D--S--D--D--M
-                                                       if(chkMemberName(str, "Method")){
-                                                            QTreeWidgetItem *twItem5 = addChildItem(sdsdd, textEdit, "Method", twItem4);
-                                                            if(twItem5){}
-                                                        }
-                                                   }
-
-                                                m4 = end_sdsdd - 1;
-
+                                            int start_sdssd = sdss + 1;
+                                            int end_sdssd = getBraceScope(start_sdssd, count, textEdit);
+                                            for (int sdssd = start_sdssd; sdssd < end_sdssd; sdssd++) {
+                                                if (break_run) {
+                                                    break;
                                                 }
+                                                QString str = textEdit->text(sdssd);
 
-                                               //Scope-->Device-->Scope-->Device-->Scope
-                                               if(chkMemberName(str, "Scope"))
-                                                {
-                                                   QTreeWidgetItem *twItem4 = addChildItem(m4, textEdit, "Scope", twItem3);
-                                                   if(twItem4){}
+                                                //S--D--S--S--D--S
+                                                if (chkMemberName(str, "Scope")) {
+                                                    QTreeWidgetItem* twItem5 = addChildItem(sdssd, textEdit, "Scope", twItem4);
+                                                    if (twItem5) { }
 
-                                                   int start_sdsds = m4 + 1;
-                                                   int end_sdsds = getBraceScope(start_sdsds, count, textEdit);
-                                                   for(int sdsds = start_sdsds; sdsds < end_sdsds; sdsds ++){
-                                                       if(break_run){break;}
-                                                       QString str = textEdit->text(sdsds);
-
-                                                       //S--D--S--D--S--S
-                                                       if(chkMemberName(str, "Scope")){
-                                                            QTreeWidgetItem *twItem5 = addChildItem(sdsds, textEdit, "Scope", twItem4);
-                                                            if(twItem5){}
-
-                                                            int start_sdsdss = sdsds + 1;
-                                                            int end_sdsdss = getBraceScope(start_sdsdss, count, textEdit);
-                                                            for(int sdsdss = start_sdsdss; sdsdss < end_sdsdss; sdsdss ++){
-                                                                if(break_run){break;}
-                                                                QString str = textEdit->text(sdsdss);
-
-                                                                //S--D--S--D--S--S--S
-                                                                if(chkMemberName(str, "Scope")){
-                                                                     QTreeWidgetItem *twItem6 = addChildItem(sdsdss, textEdit, "Scope", twItem5);
-                                                                     if(twItem6){}
-                                                                 }
-                                                                //S--D--S--D--S--S--D
-                                                                if(chkMemberName(str, "Device")){
-                                                                     QTreeWidgetItem *twItem6 = addChildItem(sdsdss, textEdit, "Device", twItem5);
-                                                                     if(twItem6){}
-                                                                 }
-                                                                //S--D--S--D--S--S--M
-                                                                if(chkMemberName(str, "Method")){
-                                                                     QTreeWidgetItem *twItem6 = addChildItem(sdsdss, textEdit, "Method", twItem5);
-                                                                     if(twItem6){}
-                                                                 }
-                                                            }
-
-                                                         sdsds = end_sdsdss - 1;
+                                                    int start_sdssds = sdssd + 1;
+                                                    int end_sdssds = getBraceScope(start_sdssds, count, textEdit);
+                                                    for (int sdssds = start_sdssds; sdssds < end_sdssds; sdssds++) {
+                                                        if (break_run) {
+                                                            break;
                                                         }
-                                                       //S--D--S--D--S--D
-                                                       if(chkMemberName(str, "Device")){
-                                                            QTreeWidgetItem *twItem5 = addChildItem(sdsds, textEdit, "Device", twItem4);
-                                                            if(twItem5){}
+                                                        QString str = textEdit->text(sdssds);
 
-                                                            int start_sdsdsd = sdsds + 1;
-                                                            int end_sdsdsd = getBraceScope(start_sdsdsd, count, textEdit);
-                                                            for(int sdsdsd = start_sdsdsd; sdsdsd < end_sdsdsd; sdsdsd ++){
-                                                                if(break_run){break;}
-                                                                QString str = textEdit->text(sdsdsd);
-
-                                                                //S--D--S--D--S--D--S
-                                                                if(chkMemberName(str, "Scope")){
-                                                                     QTreeWidgetItem *twItem6 = addChildItem(sdsdsd, textEdit, "Scope", twItem5);
-                                                                     if(twItem6){}
-                                                                 }
-                                                                //S--D--S--D--S--D--D
-                                                                if(chkMemberName(str, "Device")){
-                                                                     QTreeWidgetItem *twItem6 = addChildItem(sdsdsd, textEdit, "Device", twItem5);
-                                                                     if(twItem6){}
-                                                                 }
-                                                                //S--D--S--D--S--D--M
-                                                                if(chkMemberName(str, "Method")){
-                                                                     QTreeWidgetItem *twItem6 = addChildItem(sdsdsd, textEdit, "Method", twItem5);
-                                                                     if(twItem6){}
-                                                                 }
-                                                            }
-
-                                                         sdsds = end_sdsdsd - 1;
+                                                        //S--D--S--S--D--S--S
+                                                        if (chkMemberName(str, "Scope")) {
+                                                            QTreeWidgetItem* twItem6 = addChildItem(sdssds, textEdit, "Scope", twItem5);
+                                                            if (twItem6) { }
                                                         }
-                                                       //S--D--S--D--S--M
-                                                       if(chkMemberName(str, "Method")){
-                                                            QTreeWidgetItem *twItem5 = addChildItem(sdsds, textEdit, "Method", twItem4);
-                                                            if(twItem5){}
+                                                        //S--D--S--S--D--S--D
+                                                        if (chkMemberName(str, "Device")) {
+                                                            QTreeWidgetItem* twItem6 = addChildItem(sdssds, textEdit, "Device", twItem5);
+                                                            if (twItem6) { }
                                                         }
-                                                   }
+                                                        //S--D--S--S--D--S--M
+                                                        if (chkMemberName(str, "Method")) {
+                                                            QTreeWidgetItem* twItem6 = addChildItem(sdssds, textEdit, "Method", twItem5);
+                                                            if (twItem6) { }
+                                                        }
+                                                    }
 
-                                                m4 = end_sdsds - 1;
-
+                                                    sdssd = end_sdssds - 1;
                                                 }
+                                                //S--D--S--S--D--D
+                                                if (chkMemberName(str, "Device")) {
+                                                    QTreeWidgetItem* twItem5 = addChildItem(sdssd, textEdit, "Device", twItem4);
+                                                    if (twItem5) { }
 
+                                                    int start_sdssdd = sdssd + 1;
+                                                    int end_sdssdd = getBraceScope(start_sdssdd, count, textEdit);
+                                                    for (int sdssdd = start_sdssdd; sdssdd < end_sdssdd; sdssdd++) {
+                                                        if (break_run) {
+                                                            break;
+                                                        }
+                                                        QString str = textEdit->text(sdssdd);
 
+                                                        //S--D--S--S--D--D--S
+                                                        if (chkMemberName(str, "Scope")) {
+                                                            QTreeWidgetItem* twItem6 = addChildItem(sdssdd, textEdit, "Scope", twItem5);
+                                                            if (twItem6) { }
+                                                        }
+                                                        //S--D--S--S--D--D--D
+                                                        if (chkMemberName(str, "Device")) {
+                                                            QTreeWidgetItem* twItem6 = addChildItem(sdssdd, textEdit, "Device", twItem5);
+                                                            if (twItem6) { }
+                                                        }
+                                                        //S--D--S--S--D--D--M
+                                                        if (chkMemberName(str, "Method")) {
+                                                            QTreeWidgetItem* twItem6 = addChildItem(sdssdd, textEdit, "Method", twItem5);
+                                                            if (twItem6) { }
+                                                        }
+                                                    }
 
-                                             }
+                                                    sdssd = end_sdssdd - 1;
+                                                }
+                                                //S--D--S--S--D--M
+                                                if (chkMemberName(str, "Method")) {
+                                                    QTreeWidgetItem* twItem5 = addChildItem(sdssd, textEdit, "Method", twItem4);
+                                                    if (twItem5) { }
+                                                }
+                                            }
 
-                                              sds = end4 - 1;
-                                         }
+                                            sdss = end_sdssd - 1;
+                                        }
 
-                                        //Scope-->Device-->Scope-->Method
-                                        if(chkMemberName(str, "Method"))
-                                        {
+                                        //S--D--S--S--M
+                                        if (chkMemberName(str, "Method")) {
+                                            QTreeWidgetItem* twItem4 = addChildItem(sdss, textEdit, "Method", twItem3);
+                                            if (twItem4) { }
+                                        }
+                                    }
 
-                                            QTreeWidgetItem *twItem3 = addChildItem(sds, textEdit, "Method", twItem2);
-                                            if(twItem3){}
-
-                                         }
-
-
-
+                                    sds = end_sdss - 1;
                                 }
 
-                                m2 = end_sds - 1;
+                                //Scope-->Device-->Scope-->Device
+                                if (chkMemberName(str, "Device")) {
+                                    QTreeWidgetItem* twItem3 = addChildItem(sds, textEdit, "Device", twItem2);
+                                    if (twItem3) { }
 
-                              }
+                                    int start4 = sds + 1;
+                                    int end4 = getBraceScope(start4, count, textEdit);
 
+                                    for (int m4 = start4; m4 < end4; m4++) {
 
-                       }
+                                        if (break_run)
+                                            break;
 
-                       d = d2_end - 1;
+                                        QString str = textEdit->text(m4).trimmed();
 
-                   }
+                                        //Scope-->Device-->Scope-->Device-->Method
+                                        if (chkMemberName(str, "Method")) {
+                                            QTreeWidgetItem* twItem4 = addChildItem(m4, textEdit, "Method", twItem3);
+                                            if (twItem4) { }
+                                        }
 
-                   //S--S
-                   if(chkMemberName(str, "Scope"))
-                   {
-                       QTreeWidgetItem *twItem1 = addChildItem(d, textEdit, "Scope", twItem0);
-                       if(twItem1){}
+                                        //Scope-->Device-->Scope-->Device-->Device
+                                        if (chkMemberName(str, "Device")) {
+                                            QTreeWidgetItem* twItem4 = addChildItem(m4, textEdit, "Device", twItem3);
+                                            if (twItem4) { }
 
-                       int start_ss = d + 1;
-                       int end_ss = getBraceScope(start_ss, count, textEdit);
-                       for(int ss = start_ss; ss < end_ss; ss ++){
-                           if(break_run){break;}
-                           QString str = textEdit->text(ss);
+                                            int start_sdsdd = m4 + 1;
+                                            int end_sdsdd = getBraceScope(start_sdsdd, count, textEdit);
+                                            for (int sdsdd = start_sdsdd; sdsdd < end_sdsdd; sdsdd++) {
+                                                if (break_run) {
+                                                    break;
+                                                }
+                                                QString str = textEdit->text(sdsdd);
 
-                           //S--S--S
-                           if(chkMemberName(str, "Scope")){
-                                QTreeWidgetItem *twItem2 = addChildItem(ss, textEdit, "Scope", twItem1);
-                                if(twItem2){}
+                                                //S--D--S--D--D--S
+                                                if (chkMemberName(str, "Scope")) {
+                                                    QTreeWidgetItem* twItem5 = addChildItem(sdsdd, textEdit, "Scope", twItem4);
+                                                    if (twItem5) { }
+                                                }
+                                                //S--D--S--D--D--D
+                                                if (chkMemberName(str, "Device")) {
+                                                    QTreeWidgetItem* twItem5 = addChildItem(sdsdd, textEdit, "Device", twItem4);
+                                                    if (twItem5) { }
+                                                }
+                                                //S--D--S--D--D--M
+                                                if (chkMemberName(str, "Method")) {
+                                                    QTreeWidgetItem* twItem5 = addChildItem(sdsdd, textEdit, "Method", twItem4);
+                                                    if (twItem5) { }
+                                                }
+                                            }
 
-                                int start_sss = ss + 1;
-                                int end_sss = getBraceScope(start_sss, count, textEdit);
-                                for(int sss = start_sss; sss < end_sss; sss ++){
-                                    if(break_run){break;}
-                                    QString str = textEdit->text(sss);
+                                            m4 = end_sdsdd - 1;
+                                        }
 
-                                    //S--S--S--S
-                                    if(chkMemberName(str, "Scope")){
-                                         QTreeWidgetItem *twItem3 = addChildItem(sss, textEdit, "Scope", twItem2);
-                                         if(twItem3){}
-                                     }
-                                    //S--S--S--D
-                                    if(chkMemberName(str, "Device")){
-                                         QTreeWidgetItem *twItem3 = addChildItem(sss, textEdit, "Device", twItem2);
-                                         if(twItem3){}
-                                     }
-                                    //S--S--S--M
-                                    if(chkMemberName(str, "Method")){
-                                         QTreeWidgetItem *twItem3 = addChildItem(sss, textEdit, "Method", twItem2);
-                                         if(twItem3){}
-                                     }
+                                        //Scope-->Device-->Scope-->Device-->Scope
+                                        if (chkMemberName(str, "Scope")) {
+                                            QTreeWidgetItem* twItem4 = addChildItem(m4, textEdit, "Scope", twItem3);
+                                            if (twItem4) { }
+
+                                            int start_sdsds = m4 + 1;
+                                            int end_sdsds = getBraceScope(start_sdsds, count, textEdit);
+                                            for (int sdsds = start_sdsds; sdsds < end_sdsds; sdsds++) {
+                                                if (break_run) {
+                                                    break;
+                                                }
+                                                QString str = textEdit->text(sdsds);
+
+                                                //S--D--S--D--S--S
+                                                if (chkMemberName(str, "Scope")) {
+                                                    QTreeWidgetItem* twItem5 = addChildItem(sdsds, textEdit, "Scope", twItem4);
+                                                    if (twItem5) { }
+
+                                                    int start_sdsdss = sdsds + 1;
+                                                    int end_sdsdss = getBraceScope(start_sdsdss, count, textEdit);
+                                                    for (int sdsdss = start_sdsdss; sdsdss < end_sdsdss; sdsdss++) {
+                                                        if (break_run) {
+                                                            break;
+                                                        }
+                                                        QString str = textEdit->text(sdsdss);
+
+                                                        //S--D--S--D--S--S--S
+                                                        if (chkMemberName(str, "Scope")) {
+                                                            QTreeWidgetItem* twItem6 = addChildItem(sdsdss, textEdit, "Scope", twItem5);
+                                                            if (twItem6) { }
+                                                        }
+                                                        //S--D--S--D--S--S--D
+                                                        if (chkMemberName(str, "Device")) {
+                                                            QTreeWidgetItem* twItem6 = addChildItem(sdsdss, textEdit, "Device", twItem5);
+                                                            if (twItem6) { }
+                                                        }
+                                                        //S--D--S--D--S--S--M
+                                                        if (chkMemberName(str, "Method")) {
+                                                            QTreeWidgetItem* twItem6 = addChildItem(sdsdss, textEdit, "Method", twItem5);
+                                                            if (twItem6) { }
+                                                        }
+                                                    }
+
+                                                    sdsds = end_sdsdss - 1;
+                                                }
+                                                //S--D--S--D--S--D
+                                                if (chkMemberName(str, "Device")) {
+                                                    QTreeWidgetItem* twItem5 = addChildItem(sdsds, textEdit, "Device", twItem4);
+                                                    if (twItem5) { }
+
+                                                    int start_sdsdsd = sdsds + 1;
+                                                    int end_sdsdsd = getBraceScope(start_sdsdsd, count, textEdit);
+                                                    for (int sdsdsd = start_sdsdsd; sdsdsd < end_sdsdsd; sdsdsd++) {
+                                                        if (break_run) {
+                                                            break;
+                                                        }
+                                                        QString str = textEdit->text(sdsdsd);
+
+                                                        //S--D--S--D--S--D--S
+                                                        if (chkMemberName(str, "Scope")) {
+                                                            QTreeWidgetItem* twItem6 = addChildItem(sdsdsd, textEdit, "Scope", twItem5);
+                                                            if (twItem6) { }
+                                                        }
+                                                        //S--D--S--D--S--D--D
+                                                        if (chkMemberName(str, "Device")) {
+                                                            QTreeWidgetItem* twItem6 = addChildItem(sdsdsd, textEdit, "Device", twItem5);
+                                                            if (twItem6) { }
+                                                        }
+                                                        //S--D--S--D--S--D--M
+                                                        if (chkMemberName(str, "Method")) {
+                                                            QTreeWidgetItem* twItem6 = addChildItem(sdsdsd, textEdit, "Method", twItem5);
+                                                            if (twItem6) { }
+                                                        }
+                                                    }
+
+                                                    sdsds = end_sdsdsd - 1;
+                                                }
+                                                //S--D--S--D--S--M
+                                                if (chkMemberName(str, "Method")) {
+                                                    QTreeWidgetItem* twItem5 = addChildItem(sdsds, textEdit, "Method", twItem4);
+                                                    if (twItem5) { }
+                                                }
+                                            }
+
+                                            m4 = end_sdsds - 1;
+                                        }
+                                    }
+
+                                    sds = end4 - 1;
                                 }
 
-                             ss = end_sss - 1;
-                            }
-                           //S--S--D
-                           if(chkMemberName(str, "Device")){
-                                QTreeWidgetItem *twItem2 = addChildItem(ss, textEdit, "Device", twItem1);
-                                if(twItem2){}
+                                //Scope-->Device-->Scope-->Method
+                                if (chkMemberName(str, "Method")) {
 
-                                int start_ssd = ss + 1;
-                                int end_ssd = getBraceScope(start_ssd, count, textEdit);
-                                for(int ssd = start_ssd; ssd < end_ssd; ssd ++){
-                                    if(break_run){break;}
-                                    QString str = textEdit->text(ssd);
-
-                                    //S--S--D--S
-                                    if(chkMemberName(str, "Scope")){
-                                         QTreeWidgetItem *twItem3 = addChildItem(ssd, textEdit, "Scope", twItem2);
-                                         if(twItem3){}
-                                     }
-                                    //S--S--D--D
-                                    if(chkMemberName(str, "Device")){
-                                         QTreeWidgetItem *twItem3 = addChildItem(ssd, textEdit, "Device", twItem2);
-                                         if(twItem3){}
-                                     }
-                                    //S--S--D--M
-                                    if(chkMemberName(str, "Method")){
-                                         QTreeWidgetItem *twItem3 = addChildItem(ssd, textEdit, "Method", twItem2);
-                                         if(twItem3){}
-                                     }
+                                    QTreeWidgetItem* twItem3 = addChildItem(sds, textEdit, "Method", twItem2);
+                                    if (twItem3) { }
                                 }
+                            }
 
-                             ss = end_ssd - 1;
+                            m2 = end_sds - 1;
+                        }
+                    }
+
+                    d = d2_end - 1;
+                }
+
+                //S--S
+                if (chkMemberName(str, "Scope")) {
+                    QTreeWidgetItem* twItem1 = addChildItem(d, textEdit, "Scope", twItem0);
+                    if (twItem1) { }
+
+                    int start_ss = d + 1;
+                    int end_ss = getBraceScope(start_ss, count, textEdit);
+                    for (int ss = start_ss; ss < end_ss; ss++) {
+                        if (break_run) {
+                            break;
+                        }
+                        QString str = textEdit->text(ss);
+
+                        //S--S--S
+                        if (chkMemberName(str, "Scope")) {
+                            QTreeWidgetItem* twItem2 = addChildItem(ss, textEdit, "Scope", twItem1);
+                            if (twItem2) { }
+
+                            int start_sss = ss + 1;
+                            int end_sss = getBraceScope(start_sss, count, textEdit);
+                            for (int sss = start_sss; sss < end_sss; sss++) {
+                                if (break_run) {
+                                    break;
+                                }
+                                QString str = textEdit->text(sss);
+
+                                //S--S--S--S
+                                if (chkMemberName(str, "Scope")) {
+                                    QTreeWidgetItem* twItem3 = addChildItem(sss, textEdit, "Scope", twItem2);
+                                    if (twItem3) { }
+                                }
+                                //S--S--S--D
+                                if (chkMemberName(str, "Device")) {
+                                    QTreeWidgetItem* twItem3 = addChildItem(sss, textEdit, "Device", twItem2);
+                                    if (twItem3) { }
+                                }
+                                //S--S--S--M
+                                if (chkMemberName(str, "Method")) {
+                                    QTreeWidgetItem* twItem3 = addChildItem(sss, textEdit, "Method", twItem2);
+                                    if (twItem3) { }
+                                }
                             }
-                           //S--S--M
-                           if(chkMemberName(str, "Method")){
-                                QTreeWidgetItem *twItem2 = addChildItem(ss, textEdit, "Method", twItem1);
-                                if(twItem2){}
+
+                            ss = end_sss - 1;
+                        }
+                        //S--S--D
+                        if (chkMemberName(str, "Device")) {
+                            QTreeWidgetItem* twItem2 = addChildItem(ss, textEdit, "Device", twItem1);
+                            if (twItem2) { }
+
+                            int start_ssd = ss + 1;
+                            int end_ssd = getBraceScope(start_ssd, count, textEdit);
+                            for (int ssd = start_ssd; ssd < end_ssd; ssd++) {
+                                if (break_run) {
+                                    break;
+                                }
+                                QString str = textEdit->text(ssd);
+
+                                //S--S--D--S
+                                if (chkMemberName(str, "Scope")) {
+                                    QTreeWidgetItem* twItem3 = addChildItem(ssd, textEdit, "Scope", twItem2);
+                                    if (twItem3) { }
+                                }
+                                //S--S--D--D
+                                if (chkMemberName(str, "Device")) {
+                                    QTreeWidgetItem* twItem3 = addChildItem(ssd, textEdit, "Device", twItem2);
+                                    if (twItem3) { }
+                                }
+                                //S--S--D--M
+                                if (chkMemberName(str, "Method")) {
+                                    QTreeWidgetItem* twItem3 = addChildItem(ssd, textEdit, "Method", twItem2);
+                                    if (twItem3) { }
+                                }
                             }
-                       }
+
+                            ss = end_ssd - 1;
+                        }
+                        //S--S--M
+                        if (chkMemberName(str, "Method")) {
+                            QTreeWidgetItem* twItem2 = addChildItem(ss, textEdit, "Method", twItem1);
+                            if (twItem2) { }
+                        }
+                    }
 
                     d = end_ss - 1;
-                   }
+                }
 
-                   //S--M
-                   if(chkMemberName(str, "Method"))
-                   {
+                //S--M
+                if (chkMemberName(str, "Method")) {
 
-                       QTreeWidgetItem *twItem1 = addChildItem(d, textEdit, "Method", twItem0);
-                       if(twItem1){}
-
-                   }
+                    QTreeWidgetItem* twItem1 = addChildItem(d, textEdit, "Method", twItem0);
+                    if (twItem1) { }
+                }
             }
 
-           j = c_fw_end - 1;
-
-
-         }
+            j = c_fw_end - 1;
+        }
 
         //根下的"Method"
-        if(chkMemberName(str_member, "Method"))
-        {
+        if (chkMemberName(str_member, "Method")) {
 
-           QTreeWidgetItem *twItem0 = new QTreeWidgetItem(QStringList() << getMemberName(str_member, textEdit, j) << QString("%1").arg(j, 7, 10, QChar('0')));
-           twItem0->setIcon(0, QIcon(":/icon/m.png"));
-           //tw->addTopLevelItem(twItem0);
-           tw_list.append(twItem0);
+            QTreeWidgetItem* twItem0 = new QTreeWidgetItem(QStringList() << getMemberName(str_member, textEdit, j) << QString("%1").arg(j, 7, 10, QChar('0')));
+            twItem0->setIcon(0, QIcon(":/icon/m.png"));
+            //tw->addTopLevelItem(twItem0);
+            tw_list.append(twItem0);
 
-           m_count++;
-
-
+            m_count++;
         }
 
         //根下的"Device"
-        if(chkMemberName(str_member, "Device"))
-        {
+        if (chkMemberName(str_member, "Device")) {
 
-           QTreeWidgetItem *twItem0 = new QTreeWidgetItem(QStringList() << getMemberName(str_member, textEdit, j) << QString("%1").arg(j, 7, 10, QChar('0')));
-           twItem0->setIcon(0, QIcon(":/icon/d.png"));
-           //tw->addTopLevelItem(twItem0);
-           tw_list.append(twItem0);
+            QTreeWidgetItem* twItem0 = new QTreeWidgetItem(QStringList() << getMemberName(str_member, textEdit, j) << QString("%1").arg(j, 7, 10, QChar('0')));
+            twItem0->setIcon(0, QIcon(":/icon/d.png"));
+            //tw->addTopLevelItem(twItem0);
+            tw_list.append(twItem0);
 
-           d_count++;
+            d_count++;
 
-           int start_d = j + 1;
-           int end_d = getBraceScope(start_d, count, textEdit);
+            int start_d = j + 1;
+            int end_d = getBraceScope(start_d, count, textEdit);
 
-           //qDebug() << start_d << end_d;
+            //qDebug() << start_d << end_d;
 
-           for(int d = start_d; d < end_d; d++)
-           {
-               if(break_run)
-                   break;
+            for (int d = start_d; d < end_d; d++) {
+                if (break_run)
+                    break;
 
-               QString str = textEdit->text(d);
+                QString str = textEdit->text(d);
 
-               //D--S
-               if(chkMemberName(str, "Scope"))
-               {
-                   QTreeWidgetItem *twItem1 = addChildItem(d, textEdit, "Scope", twItem0);
-                   if(twItem1){}
+                //D--S
+                if (chkMemberName(str, "Scope")) {
+                    QTreeWidgetItem* twItem1 = addChildItem(d, textEdit, "Scope", twItem0);
+                    if (twItem1) { }
 
-                   int start_ds = d + 1;
-                   int end_ds = getBraceScope(start_ds, count, textEdit);
-                   for(int ds = start_ds; ds < end_ds; ds ++){
-                       if(break_run){break;}
-                       QString str = textEdit->text(ds);
+                    int start_ds = d + 1;
+                    int end_ds = getBraceScope(start_ds, count, textEdit);
+                    for (int ds = start_ds; ds < end_ds; ds++) {
+                        if (break_run) {
+                            break;
+                        }
+                        QString str = textEdit->text(ds);
 
-                       //D--S--S
-                       if(chkMemberName(str, "Scope")){
-                            QTreeWidgetItem *twItem2 = addChildItem(ds, textEdit, "Scope", twItem1);
-                            if(twItem2){}
+                        //D--S--S
+                        if (chkMemberName(str, "Scope")) {
+                            QTreeWidgetItem* twItem2 = addChildItem(ds, textEdit, "Scope", twItem1);
+                            if (twItem2) { }
 
                             int start_dss = ds + 1;
                             int end_dss = getBraceScope(start_dss, count, textEdit);
-                            for(int dss = start_dss; dss < end_dss; dss ++){
-                                if(break_run){break;}
+                            for (int dss = start_dss; dss < end_dss; dss++) {
+                                if (break_run) {
+                                    break;
+                                }
                                 QString str = textEdit->text(dss);
 
                                 //D--S--S--S
-                                if(chkMemberName(str, "Scope")){
-                                     QTreeWidgetItem *twItem3 = addChildItem(dss, textEdit, "Scope", twItem2);
-                                     if(twItem3){}
+                                if (chkMemberName(str, "Scope")) {
+                                    QTreeWidgetItem* twItem3 = addChildItem(dss, textEdit, "Scope", twItem2);
+                                    if (twItem3) { }
 
-                                     int start_dsss = dss + 1;
-                                     int end_dsss = getBraceScope(start_dsss, count, textEdit);
-                                     for(int dsss = start_dsss; dsss < end_dsss; dsss ++){
-                                         if(break_run){break;}
-                                         QString str = textEdit->text(dsss);
+                                    int start_dsss = dss + 1;
+                                    int end_dsss = getBraceScope(start_dsss, count, textEdit);
+                                    for (int dsss = start_dsss; dsss < end_dsss; dsss++) {
+                                        if (break_run) {
+                                            break;
+                                        }
+                                        QString str = textEdit->text(dsss);
 
-                                         //D--S--S--S--S
-                                         if(chkMemberName(str, "Scope")){
-                                              QTreeWidgetItem *twItem4 = addChildItem(dsss, textEdit, "Scope", twItem3);
-                                              if(twItem4){}
-                                          }
-                                         //D--S--S--S--D
-                                         if(chkMemberName(str, "Device")){
-                                              QTreeWidgetItem *twItem4 = addChildItem(dsss, textEdit, "Device", twItem3);
-                                              if(twItem4){}
-                                          }
-                                         //D--S--S--S--M
-                                         if(chkMemberName(str, "Method")){
-                                              QTreeWidgetItem *twItem4 = addChildItem(dsss, textEdit, "Method", twItem3);
-                                              if(twItem4){}
-                                          }
-                                     }
+                                        //D--S--S--S--S
+                                        if (chkMemberName(str, "Scope")) {
+                                            QTreeWidgetItem* twItem4 = addChildItem(dsss, textEdit, "Scope", twItem3);
+                                            if (twItem4) { }
+                                        }
+                                        //D--S--S--S--D
+                                        if (chkMemberName(str, "Device")) {
+                                            QTreeWidgetItem* twItem4 = addChildItem(dsss, textEdit, "Device", twItem3);
+                                            if (twItem4) { }
+                                        }
+                                        //D--S--S--S--M
+                                        if (chkMemberName(str, "Method")) {
+                                            QTreeWidgetItem* twItem4 = addChildItem(dsss, textEdit, "Method", twItem3);
+                                            if (twItem4) { }
+                                        }
+                                    }
 
-                                  dss = end_dsss - 1;
-                                 }
+                                    dss = end_dsss - 1;
+                                }
                                 //D--S--S--D
-                                if(chkMemberName(str, "Device")){
-                                     QTreeWidgetItem *twItem3 = addChildItem(dss, textEdit, "Device", twItem2);
-                                     if(twItem3){}
+                                if (chkMemberName(str, "Device")) {
+                                    QTreeWidgetItem* twItem3 = addChildItem(dss, textEdit, "Device", twItem2);
+                                    if (twItem3) { }
 
-                                     int start_dssd = dss + 1;
-                                     int end_dssd = getBraceScope(start_dssd, count, textEdit);
-                                     for(int dssd = start_dssd; dssd < end_dssd; dssd ++){
-                                         if(break_run){break;}
-                                         QString str = textEdit->text(dssd);
+                                    int start_dssd = dss + 1;
+                                    int end_dssd = getBraceScope(start_dssd, count, textEdit);
+                                    for (int dssd = start_dssd; dssd < end_dssd; dssd++) {
+                                        if (break_run) {
+                                            break;
+                                        }
+                                        QString str = textEdit->text(dssd);
 
-                                         //D--S--S--D--S
-                                         if(chkMemberName(str, "Scope")){
-                                              QTreeWidgetItem *twItem4 = addChildItem(dssd, textEdit, "Scope", twItem3);
-                                              if(twItem4){}
-                                          }
-                                         //D--S--S--D--D
-                                         if(chkMemberName(str, "Device")){
-                                              QTreeWidgetItem *twItem4 = addChildItem(dssd, textEdit, "Device", twItem3);
-                                              if(twItem4){}
-                                          }
-                                         //D--S--S--D--M
-                                         if(chkMemberName(str, "Method")){
-                                              QTreeWidgetItem *twItem4 = addChildItem(dssd, textEdit, "Method", twItem3);
-                                              if(twItem4){}
-                                          }
-                                     }
+                                        //D--S--S--D--S
+                                        if (chkMemberName(str, "Scope")) {
+                                            QTreeWidgetItem* twItem4 = addChildItem(dssd, textEdit, "Scope", twItem3);
+                                            if (twItem4) { }
+                                        }
+                                        //D--S--S--D--D
+                                        if (chkMemberName(str, "Device")) {
+                                            QTreeWidgetItem* twItem4 = addChildItem(dssd, textEdit, "Device", twItem3);
+                                            if (twItem4) { }
+                                        }
+                                        //D--S--S--D--M
+                                        if (chkMemberName(str, "Method")) {
+                                            QTreeWidgetItem* twItem4 = addChildItem(dssd, textEdit, "Method", twItem3);
+                                            if (twItem4) { }
+                                        }
+                                    }
 
-                                  dss = end_dssd - 1;
-                                 }
+                                    dss = end_dssd - 1;
+                                }
                                 //D--S--S--M
-                                if(chkMemberName(str, "Method")){
-                                     QTreeWidgetItem *twItem3 = addChildItem(dss, textEdit, "Method", twItem2);
-                                     if(twItem3){}
-                                 }
+                                if (chkMemberName(str, "Method")) {
+                                    QTreeWidgetItem* twItem3 = addChildItem(dss, textEdit, "Method", twItem2);
+                                    if (twItem3) { }
+                                }
                             }
 
-                         ds = end_dss - 1;
+                            ds = end_dss - 1;
                         }
-                       //D--S--D
-                       if(chkMemberName(str, "Device")){
-                            QTreeWidgetItem *twItem2 = addChildItem(ds, textEdit, "Device", twItem1);
-                            if(twItem2){}
+                        //D--S--D
+                        if (chkMemberName(str, "Device")) {
+                            QTreeWidgetItem* twItem2 = addChildItem(ds, textEdit, "Device", twItem1);
+                            if (twItem2) { }
 
                             int start_dsd = ds + 1;
                             int end_dsd = getBraceScope(start_dsd, count, textEdit);
-                            for(int dsd = start_dsd; dsd < end_dsd; dsd ++){
-                                if(break_run){break;}
+                            for (int dsd = start_dsd; dsd < end_dsd; dsd++) {
+                                if (break_run) {
+                                    break;
+                                }
                                 QString str = textEdit->text(dsd);
 
                                 //D--S--D--S
-                                if(chkMemberName(str, "Scope")){
-                                     QTreeWidgetItem *twItem3 = addChildItem(dsd, textEdit, "Scope", twItem2);
-                                     if(twItem3){}
+                                if (chkMemberName(str, "Scope")) {
+                                    QTreeWidgetItem* twItem3 = addChildItem(dsd, textEdit, "Scope", twItem2);
+                                    if (twItem3) { }
 
-                                     /*下一个子层*/
-                                     int start_dsds = dsd + 1;
-                                     int end_dsds = getBraceScope(start_dsds, count, textEdit);
-                                     for(int dsds = start_dsds; dsds < end_dsds; dsds ++){
-                                         if(break_run){break;}
-                                         QString str = textEdit->text(dsds);
+                                    /*下一个子层*/
+                                    int start_dsds = dsd + 1;
+                                    int end_dsds = getBraceScope(start_dsds, count, textEdit);
+                                    for (int dsds = start_dsds; dsds < end_dsds; dsds++) {
+                                        if (break_run) {
+                                            break;
+                                        }
+                                        QString str = textEdit->text(dsds);
 
-                                         //D--S--D--S--S
-                                         if(chkMemberName(str, "Scope")){
-                                              QTreeWidgetItem *twItem4 = addChildItem(dsds, textEdit, "Scope", twItem3);
-                                              if(twItem4){}
-                                          }
-                                         //D--S--D--S--D
-                                         if(chkMemberName(str, "Device")){
-                                              QTreeWidgetItem *twItem4 = addChildItem(dsds, textEdit, "Device", twItem3);
-                                              if(twItem4){}
-                                          }
-                                         //D--S--D--S--M
-                                         if(chkMemberName(str, "Method")){
-                                              QTreeWidgetItem *twItem4 = addChildItem(dsds, textEdit, "Method", twItem3);
-                                              if(twItem4){}
-                                          }
-                                     }
+                                        //D--S--D--S--S
+                                        if (chkMemberName(str, "Scope")) {
+                                            QTreeWidgetItem* twItem4 = addChildItem(dsds, textEdit, "Scope", twItem3);
+                                            if (twItem4) { }
+                                        }
+                                        //D--S--D--S--D
+                                        if (chkMemberName(str, "Device")) {
+                                            QTreeWidgetItem* twItem4 = addChildItem(dsds, textEdit, "Device", twItem3);
+                                            if (twItem4) { }
+                                        }
+                                        //D--S--D--S--M
+                                        if (chkMemberName(str, "Method")) {
+                                            QTreeWidgetItem* twItem4 = addChildItem(dsds, textEdit, "Method", twItem3);
+                                            if (twItem4) { }
+                                        }
+                                    }
 
-                                  dsd = end_dsds - 1;
-                                 }
+                                    dsd = end_dsds - 1;
+                                }
                                 //D--S--D--D
-                                if(chkMemberName(str, "Device")){
-                                     QTreeWidgetItem *twItem3 = addChildItem(dsd, textEdit, "Device", twItem2);
-                                     if(twItem3){}
+                                if (chkMemberName(str, "Device")) {
+                                    QTreeWidgetItem* twItem3 = addChildItem(dsd, textEdit, "Device", twItem2);
+                                    if (twItem3) { }
 
-                                     /*下一个子层*/
-                                     int start_dsdd = dsd + 1;
-                                     int end_dsdd = getBraceScope(start_dsdd, count, textEdit);
-                                     for(int dsdd = start_dsdd; dsdd < end_dsdd; dsdd ++){
-                                         if(break_run){break;}
-                                         QString str = textEdit->text(dsdd);
+                                    /*下一个子层*/
+                                    int start_dsdd = dsd + 1;
+                                    int end_dsdd = getBraceScope(start_dsdd, count, textEdit);
+                                    for (int dsdd = start_dsdd; dsdd < end_dsdd; dsdd++) {
+                                        if (break_run) {
+                                            break;
+                                        }
+                                        QString str = textEdit->text(dsdd);
 
-                                         //D--S--D--D--S
-                                         if(chkMemberName(str, "Scope")){
-                                              QTreeWidgetItem *twItem4 = addChildItem(dsdd, textEdit, "Scope", twItem3);
-                                              if(twItem4){}
-                                          }
-                                         //D--S--D--D--D
-                                         if(chkMemberName(str, "Device")){
-                                              QTreeWidgetItem *twItem4 = addChildItem(dsdd, textEdit, "Device", twItem3);
-                                              if(twItem4){}
-                                          }
-                                         //D--S--D--D--M
-                                         if(chkMemberName(str, "Method")){
-                                              QTreeWidgetItem *twItem4 = addChildItem(dsdd, textEdit, "Method", twItem3);
-                                              if(twItem4){}
-                                          }
-                                     }
+                                        //D--S--D--D--S
+                                        if (chkMemberName(str, "Scope")) {
+                                            QTreeWidgetItem* twItem4 = addChildItem(dsdd, textEdit, "Scope", twItem3);
+                                            if (twItem4) { }
+                                        }
+                                        //D--S--D--D--D
+                                        if (chkMemberName(str, "Device")) {
+                                            QTreeWidgetItem* twItem4 = addChildItem(dsdd, textEdit, "Device", twItem3);
+                                            if (twItem4) { }
+                                        }
+                                        //D--S--D--D--M
+                                        if (chkMemberName(str, "Method")) {
+                                            QTreeWidgetItem* twItem4 = addChildItem(dsdd, textEdit, "Method", twItem3);
+                                            if (twItem4) { }
+                                        }
+                                    }
 
-                                  dsd = end_dsdd - 1;
-                                 }
+                                    dsd = end_dsdd - 1;
+                                }
                                 //D--S--D--M
-                                if(chkMemberName(str, "Method")){
-                                     QTreeWidgetItem *twItem3 = addChildItem(dsd, textEdit, "Method", twItem2);
-                                     if(twItem3){}
-                                 }
+                                if (chkMemberName(str, "Method")) {
+                                    QTreeWidgetItem* twItem3 = addChildItem(dsd, textEdit, "Method", twItem2);
+                                    if (twItem3) { }
+                                }
                             }
 
-                         ds = end_dsd - 1;
+                            ds = end_dsd - 1;
                         }
-                       //D--S--M
-                       if(chkMemberName(str, "Method")){
-                            QTreeWidgetItem *twItem2 = addChildItem(ds, textEdit, "Method", twItem1);
-                            if(twItem2){}
+                        //D--S--M
+                        if (chkMemberName(str, "Method")) {
+                            QTreeWidgetItem* twItem2 = addChildItem(ds, textEdit, "Method", twItem1);
+                            if (twItem2) { }
                         }
-                   }
+                    }
 
-                d = end_ds - 1;
+                    d = end_ds - 1;
+                }
 
-               }
+                //D--D
+                if (chkMemberName(str, "Device")) {
+                    QTreeWidgetItem* twItem1 = addChildItem(d, textEdit, "Device", twItem0);
+                    if (twItem1) { }
 
-               //D--D
-               if(chkMemberName(str, "Device"))
-               {
-                   QTreeWidgetItem *twItem1 = addChildItem(d, textEdit, "Device", twItem0);
-                   if(twItem1){}
+                    int start_dd = d + 1;
+                    int end_dd = getBraceScope(start_dd, count, textEdit);
+                    for (int dd = start_dd; dd < end_dd; dd++) {
+                        if (break_run) {
+                            break;
+                        }
+                        QString str = textEdit->text(dd);
 
-                   int start_dd = d + 1;
-                   int end_dd = getBraceScope(start_dd, count, textEdit);
-                   for(int dd = start_dd; dd < end_dd; dd ++){
-                       if(break_run){break;}
-                       QString str = textEdit->text(dd);
-
-                       //D--D--S
-                       if(chkMemberName(str, "Scope")){
-                            QTreeWidgetItem *twItem2 = addChildItem(dd, textEdit, "Scope", twItem1);
-                            if(twItem2){}
+                        //D--D--S
+                        if (chkMemberName(str, "Scope")) {
+                            QTreeWidgetItem* twItem2 = addChildItem(dd, textEdit, "Scope", twItem1);
+                            if (twItem2) { }
 
                             /*下一个子层*/
                             int start_dds = dd + 1;
                             int end_dds = getBraceScope(start_dds, count, textEdit);
-                            for(int dds = start_dds; dds < end_dds; dds ++){
-                                if(break_run){break;}
+                            for (int dds = start_dds; dds < end_dds; dds++) {
+                                if (break_run) {
+                                    break;
+                                }
                                 QString str = textEdit->text(dds);
 
                                 //D--D--S--S
-                                if(chkMemberName(str, "Scope")){
-                                     QTreeWidgetItem *twItem3 = addChildItem(dds, textEdit, "Scope", twItem2);
-                                     if(twItem3){}
+                                if (chkMemberName(str, "Scope")) {
+                                    QTreeWidgetItem* twItem3 = addChildItem(dds, textEdit, "Scope", twItem2);
+                                    if (twItem3) { }
 
-                                     /*下一个子层*/
-                                     int start_ddss = dds + 1;
-                                     int end_ddss = getBraceScope(start_ddss, count, textEdit);
-                                     for(int ddss = start_ddss; ddss < end_ddss; ddss ++){
-                                         if(break_run){break;}
-                                         QString str = textEdit->text(ddss);
+                                    /*下一个子层*/
+                                    int start_ddss = dds + 1;
+                                    int end_ddss = getBraceScope(start_ddss, count, textEdit);
+                                    for (int ddss = start_ddss; ddss < end_ddss; ddss++) {
+                                        if (break_run) {
+                                            break;
+                                        }
+                                        QString str = textEdit->text(ddss);
 
-                                         //D--D--S--S--S
-                                         if(chkMemberName(str, "Scope")){
-                                              QTreeWidgetItem *twItem4 = addChildItem(ddss, textEdit, "Scope", twItem3);
-                                              if(twItem4){}
-                                          }
-                                         //D--D--S--S--D
-                                         if(chkMemberName(str, "Device")){
-                                              QTreeWidgetItem *twItem4 = addChildItem(ddss, textEdit, "Device", twItem3);
-                                              if(twItem4){}
-                                          }
-                                         //D--D--S--S--M
-                                         if(chkMemberName(str, "Method")){
-                                              QTreeWidgetItem *twItem4 = addChildItem(ddss, textEdit, "Method", twItem3);
-                                              if(twItem4){}
-                                          }
-                                     }
+                                        //D--D--S--S--S
+                                        if (chkMemberName(str, "Scope")) {
+                                            QTreeWidgetItem* twItem4 = addChildItem(ddss, textEdit, "Scope", twItem3);
+                                            if (twItem4) { }
+                                        }
+                                        //D--D--S--S--D
+                                        if (chkMemberName(str, "Device")) {
+                                            QTreeWidgetItem* twItem4 = addChildItem(ddss, textEdit, "Device", twItem3);
+                                            if (twItem4) { }
+                                        }
+                                        //D--D--S--S--M
+                                        if (chkMemberName(str, "Method")) {
+                                            QTreeWidgetItem* twItem4 = addChildItem(ddss, textEdit, "Method", twItem3);
+                                            if (twItem4) { }
+                                        }
+                                    }
 
-                                  dds = end_ddss - 1;
-                                 }
+                                    dds = end_ddss - 1;
+                                }
                                 //D--D--S--D
-                                if(chkMemberName(str, "Device")){
-                                     QTreeWidgetItem *twItem3 = addChildItem(dds, textEdit, "Device", twItem2);
-                                     if(twItem3){}
+                                if (chkMemberName(str, "Device")) {
+                                    QTreeWidgetItem* twItem3 = addChildItem(dds, textEdit, "Device", twItem2);
+                                    if (twItem3) { }
 
-                                     /*下一个子层*/
-                                     int start_ddsd = dds + 1;
-                                     int end_ddsd = getBraceScope(start_ddsd, count, textEdit);
-                                     for(int ddsd = start_ddsd; ddsd < end_ddsd; ddsd ++){
-                                         if(break_run){break;}
-                                         QString str = textEdit->text(ddsd);
+                                    /*下一个子层*/
+                                    int start_ddsd = dds + 1;
+                                    int end_ddsd = getBraceScope(start_ddsd, count, textEdit);
+                                    for (int ddsd = start_ddsd; ddsd < end_ddsd; ddsd++) {
+                                        if (break_run) {
+                                            break;
+                                        }
+                                        QString str = textEdit->text(ddsd);
 
-                                         //D--D--S--D--S
-                                         if(chkMemberName(str, "Scope")){
-                                              QTreeWidgetItem *twItem4 = addChildItem(ddsd, textEdit, "Scope", twItem3);
-                                              if(twItem4){}
-                                          }
-                                         //D--D--S--D--D
-                                         if(chkMemberName(str, "Device")){
-                                              QTreeWidgetItem *twItem4 = addChildItem(ddsd, textEdit, "Device", twItem3);
-                                              if(twItem4){}
-                                          }
-                                         //D--D--S--D--M
-                                         if(chkMemberName(str, "Method")){
-                                              QTreeWidgetItem *twItem4 = addChildItem(ddsd, textEdit, "Method", twItem3);
-                                              if(twItem4){}
-                                          }
-                                     }
+                                        //D--D--S--D--S
+                                        if (chkMemberName(str, "Scope")) {
+                                            QTreeWidgetItem* twItem4 = addChildItem(ddsd, textEdit, "Scope", twItem3);
+                                            if (twItem4) { }
+                                        }
+                                        //D--D--S--D--D
+                                        if (chkMemberName(str, "Device")) {
+                                            QTreeWidgetItem* twItem4 = addChildItem(ddsd, textEdit, "Device", twItem3);
+                                            if (twItem4) { }
+                                        }
+                                        //D--D--S--D--M
+                                        if (chkMemberName(str, "Method")) {
+                                            QTreeWidgetItem* twItem4 = addChildItem(ddsd, textEdit, "Method", twItem3);
+                                            if (twItem4) { }
+                                        }
+                                    }
 
-                                  dds = end_ddsd - 1;
-                                 }
+                                    dds = end_ddsd - 1;
+                                }
                                 //D--D--S--M
-                                if(chkMemberName(str, "Method")){
-                                     QTreeWidgetItem *twItem3 = addChildItem(dds, textEdit, "Method", twItem2);
-                                     if(twItem3){}
-                                 }
+                                if (chkMemberName(str, "Method")) {
+                                    QTreeWidgetItem* twItem3 = addChildItem(dds, textEdit, "Method", twItem2);
+                                    if (twItem3) { }
+                                }
                             }
 
-                         dd = end_dds - 1;
+                            dd = end_dds - 1;
                         }
 
-                       //D--D--D
-                       if(chkMemberName(str, "Device")){
-                            QTreeWidgetItem *twItem2 = addChildItem(dd, textEdit, "Device", twItem1);
-                            if(twItem2){}
+                        //D--D--D
+                        if (chkMemberName(str, "Device")) {
+                            QTreeWidgetItem* twItem2 = addChildItem(dd, textEdit, "Device", twItem1);
+                            if (twItem2) { }
 
                             int start_ddd = dd + 1;
                             int end_ddd = getBraceScope(start_ddd, count, textEdit);
-                            for(int ddd = start_ddd; ddd < end_ddd; ddd ++){
-                                if(break_run){break;}
+                            for (int ddd = start_ddd; ddd < end_ddd; ddd++) {
+                                if (break_run) {
+                                    break;
+                                }
                                 QString str = textEdit->text(ddd);
 
                                 //D--D--D--S
-                                if(chkMemberName(str, "Scope")){
-                                     QTreeWidgetItem *twItem3 = addChildItem(ddd, textEdit, "Scope", twItem2);
-                                     if(twItem3){}
+                                if (chkMemberName(str, "Scope")) {
+                                    QTreeWidgetItem* twItem3 = addChildItem(ddd, textEdit, "Scope", twItem2);
+                                    if (twItem3) { }
 
-                                     int start_ddds = ddd + 1;
-                                     int end_ddds = getBraceScope(start_ddds, count, textEdit);
-                                     for(int ddds = start_ddds; ddds < end_ddds; ddds ++){
-                                         if(break_run){break;}
-                                         QString str = textEdit->text(ddds);
+                                    int start_ddds = ddd + 1;
+                                    int end_ddds = getBraceScope(start_ddds, count, textEdit);
+                                    for (int ddds = start_ddds; ddds < end_ddds; ddds++) {
+                                        if (break_run) {
+                                            break;
+                                        }
+                                        QString str = textEdit->text(ddds);
 
-                                         //D--D--D--S--S
-                                         if(chkMemberName(str, "Scope")){
-                                              QTreeWidgetItem *twItem4 = addChildItem(ddds, textEdit, "Scope", twItem3);
-                                              if(twItem4){}
-                                          }
-                                         //D--D--D--S--D
-                                         if(chkMemberName(str, "Device")){
-                                              QTreeWidgetItem *twItem4 = addChildItem(ddds, textEdit, "Device", twItem3);
-                                              if(twItem4){}
-                                          }
-                                         //D--D--D--S--M
-                                         if(chkMemberName(str, "Method")){
-                                              QTreeWidgetItem *twItem4 = addChildItem(ddds, textEdit, "Method", twItem3);
-                                              if(twItem4){}
-                                          }
-                                     }
+                                        //D--D--D--S--S
+                                        if (chkMemberName(str, "Scope")) {
+                                            QTreeWidgetItem* twItem4 = addChildItem(ddds, textEdit, "Scope", twItem3);
+                                            if (twItem4) { }
+                                        }
+                                        //D--D--D--S--D
+                                        if (chkMemberName(str, "Device")) {
+                                            QTreeWidgetItem* twItem4 = addChildItem(ddds, textEdit, "Device", twItem3);
+                                            if (twItem4) { }
+                                        }
+                                        //D--D--D--S--M
+                                        if (chkMemberName(str, "Method")) {
+                                            QTreeWidgetItem* twItem4 = addChildItem(ddds, textEdit, "Method", twItem3);
+                                            if (twItem4) { }
+                                        }
+                                    }
 
-                                  ddd = end_ddds - 1;
-                                 }
+                                    ddd = end_ddds - 1;
+                                }
                                 //D--D--D--D
-                                if(chkMemberName(str, "Device")){
-                                     QTreeWidgetItem *twItem3 = addChildItem(ddd, textEdit, "Device", twItem2);
-                                     if(twItem3){}
+                                if (chkMemberName(str, "Device")) {
+                                    QTreeWidgetItem* twItem3 = addChildItem(ddd, textEdit, "Device", twItem2);
+                                    if (twItem3) { }
 
-                                     int start_dddd = ddd + 1;
-                                     int end_dddd = getBraceScope(start_dddd, count, textEdit);
-                                     for(int dddd = start_dddd; dddd < end_dddd; dddd ++){
-                                         if(break_run){break;}
-                                         QString str = textEdit->text(dddd);
+                                    int start_dddd = ddd + 1;
+                                    int end_dddd = getBraceScope(start_dddd, count, textEdit);
+                                    for (int dddd = start_dddd; dddd < end_dddd; dddd++) {
+                                        if (break_run) {
+                                            break;
+                                        }
+                                        QString str = textEdit->text(dddd);
 
-                                         //D--D--D--D--S
-                                         if(chkMemberName(str, "Scope")){
-                                              QTreeWidgetItem *twItem4 = addChildItem(dddd, textEdit, "Scope", twItem3);
-                                              if(twItem4){}
-                                          }
-                                         //D--D--D--D--D
-                                         if(chkMemberName(str, "Device")){
-                                              QTreeWidgetItem *twItem4 = addChildItem(dddd, textEdit, "Device", twItem3);
-                                              if(twItem4){}
-                                          }
-                                         //D--D--D--D--M
-                                         if(chkMemberName(str, "Method")){
-                                              QTreeWidgetItem *twItem4 = addChildItem(dddd, textEdit, "Method", twItem3);
-                                              if(twItem4){}
-                                          }
-                                     }
+                                        //D--D--D--D--S
+                                        if (chkMemberName(str, "Scope")) {
+                                            QTreeWidgetItem* twItem4 = addChildItem(dddd, textEdit, "Scope", twItem3);
+                                            if (twItem4) { }
+                                        }
+                                        //D--D--D--D--D
+                                        if (chkMemberName(str, "Device")) {
+                                            QTreeWidgetItem* twItem4 = addChildItem(dddd, textEdit, "Device", twItem3);
+                                            if (twItem4) { }
+                                        }
+                                        //D--D--D--D--M
+                                        if (chkMemberName(str, "Method")) {
+                                            QTreeWidgetItem* twItem4 = addChildItem(dddd, textEdit, "Method", twItem3);
+                                            if (twItem4) { }
+                                        }
+                                    }
 
-                                  ddd = end_dddd - 1;
-                                 }
+                                    ddd = end_dddd - 1;
+                                }
                                 //D--D--D--M
-                                if(chkMemberName(str, "Method")){
-                                     QTreeWidgetItem *twItem3 = addChildItem(ddd, textEdit, "Method", twItem2);
-                                     if(twItem3){}
-                                 }
+                                if (chkMemberName(str, "Method")) {
+                                    QTreeWidgetItem* twItem3 = addChildItem(ddd, textEdit, "Method", twItem2);
+                                    if (twItem3) { }
+                                }
                             }
 
-                         dd = end_ddd - 1;
+                            dd = end_ddd - 1;
                         }
 
-                       //D--D--M
-                       if(chkMemberName(str, "Method")){
-                            QTreeWidgetItem *twItem2 = addChildItem(dd, textEdit, "Method", twItem1);
-                            if(twItem2){}
+                        //D--D--M
+                        if (chkMemberName(str, "Method")) {
+                            QTreeWidgetItem* twItem2 = addChildItem(dd, textEdit, "Method", twItem1);
+                            if (twItem2) { }
                         }
-                   }
+                    }
 
-                d = end_dd - 1;
+                    d = end_dd - 1;
+                }
 
-               }
+                //D--M
+                if (chkMemberName(str, "Method")) {
+                    QTreeWidgetItem* twItem1 = addChildItem(d, textEdit, "Method", twItem0);
+                    if (twItem1) { }
+                }
+            }
 
-               //D--M
-               if(chkMemberName(str, "Method"))
-               {
-                   QTreeWidgetItem *twItem1 = addChildItem(d, textEdit, "Method", twItem0);
-                   if(twItem1){}
-
-               }
-
-
-           }
-
-           j = end_d - 1;
-
-
+            j = end_d - 1;
         }
-
-
     }
 
-
     loading = false;
-
 }
 
 void refreshTree()
@@ -3362,135 +3079,110 @@ void refreshTree()
     getMembers("Name", textEditBack);
 
     loading = false;
-
 }
 
-void getMembers(QString str_member, QsciScintilla *textEdit)
+void getMembers(QString str_member, QsciScintilla* textEdit)
 {
 
-    if(break_run)
+    if (break_run)
         return;
 
     QString str;
     int RowNum, ColNum;
-    int count;  //总行数
-    QTreeWidgetItem *twItem0;
+    int count; //总行数
+    QTreeWidgetItem* twItem0;
 
     count = textEdit->lines();
 
     //回到第一行
     textEdit->setCursorPosition(0, 0);
 
-    for(int j = 0; j < count; j++)
-    {
-        if(break_run)
-        {
+    for (int j = 0; j < count; j++) {
+        if (break_run) {
 
             break;
         }
 
         //正则、区分大小写、匹配整个单词、循环搜索
-        if(textEdit->findFirst(str_member , true , true , true , false))
-        {
+        if (textEdit->findFirst(str_member, true, true, true, false)) {
 
-           textEdit->getCursorPosition(&RowNum, &ColNum);
+            textEdit->getCursorPosition(&RowNum, &ColNum);
 
-           str = textEdit->text(RowNum);
+            str = textEdit->text(RowNum);
 
-           QString space = findKey(str, str_member.mid(0, 1), 0);
+            QString space = findKey(str, str_member.mid(0, 1), 0);
 
-           QString sub = str.trimmed();
+            QString sub = str.trimmed();
 
-           bool zs = false;//当前行是否存在注释
-           for(int k = ColNum; k > -1; k--)
-           {
-               if(str.mid(k - 2 , 2) == "//" || str.mid(k - 2 , 2) == "/*")
-               {
-                   zs = true;
+            bool zs = false; //当前行是否存在注释
+            for (int k = ColNum; k > -1; k--) {
+                if (str.mid(k - 2, 2) == "//" || str.mid(k - 2, 2) == "/*") {
+                    zs = true;
 
-                   break;
-               }
-           }
+                    break;
+                }
+            }
 
-           QString str_end;
-           if(sub.mid(0 , str_member.count()) == str_member && !zs)
-           {
+            QString str_end;
+            if (sub.mid(0, str_member.count()) == str_member && !zs) {
 
-               for(int i = 0; i < sub.count(); i++)
-               {
-                   if(sub.mid(i , 1) == ")")
-                   {
-                       str_end = sub.mid(0 , i + 1);
+                for (int i = 0; i < sub.count(); i++) {
+                    if (sub.mid(i, 1) == ")") {
+                        str_end = sub.mid(0, i + 1);
 
-                       twItem0 = new QTreeWidgetItem(QStringList() << space + str_end << QString("%1").arg(RowNum, 7, 10, QChar('0')));//QString::number(RowNum));
+                        twItem0 = new QTreeWidgetItem(QStringList() << space + str_end << QString("%1").arg(RowNum, 7, 10, QChar('0'))); //QString::number(RowNum));
 
-                       if(str_member == "Scope" && show_s)
-                       {
+                        if (str_member == "Scope" && show_s) {
 
-                           twItem0->setIcon(0, QIcon(":/icon/s.png"));
-                           QFont f;
-                           f.setBold(true);
-                           twItem0->setFont(0, f);
+                            twItem0->setIcon(0, QIcon(":/icon/s.png"));
+                            QFont f;
+                            f.setBold(true);
+                            twItem0->setFont(0, f);
 
-                           twitems.append(twItem0);
+                            twitems.append(twItem0);
 
-                           s_count++;
-                       }
-                       if(str_member == "Method" && show_m)
-                       {
+                            s_count++;
+                        }
+                        if (str_member == "Method" && show_m) {
 
-                           twItem0->setIcon(0, QIcon(":/icon/m.png"));
+                            twItem0->setIcon(0, QIcon(":/icon/m.png"));
 
-                           twitems.append(twItem0);
+                            twitems.append(twItem0);
 
-                           m_count++;
+                            m_count++;
+                        }
+                        if (str_member == "Name" && show_n) {
 
-                       }
-                       if(str_member == "Name" && show_n)
-                       {
+                            twItem0->setIcon(0, QIcon(":/icon/n.png"));
 
-                           twItem0->setIcon(0, QIcon(":/icon/n.png"));
+                            twitems.append(twItem0);
 
-                           twitems.append(twItem0);
+                            n_count++;
+                        }
+                        if (str_member == "Device" && show_d) {
 
-                           n_count++;
+                            twItem0->setIcon(0, QIcon(":/icon/d.png"));
 
-                       }
-                       if(str_member == "Device" && show_d)
-                       {
+                            twitems.append(twItem0);
 
-                           twItem0->setIcon(0, QIcon(":/icon/d.png"));
+                            d_count++;
+                        }
 
-                           twitems.append(twItem0);
-
-                           d_count++;
-
-                       }
-
-                       break;
-
-                   }
-               }
-
-
-           }
-         }
-        else
+                        break;
+                    }
+                }
+            }
+        } else
             break;
-
     }
-
 }
 
 void MainWindow::on_MainWindow_destroyed()
 {
-
-
 }
 
 void MainWindow::init_info_edit()
 {
-
 
     textEditTemp = new QTextEdit();
 
@@ -3510,9 +3202,7 @@ void MainWindow::init_info_edit()
 
     ui->editOptimizations->setLineWrapMode(ui->editOptimizations->NoWrap);
     ui->editOptimizations->setReadOnly(true);
-    ui->tabWidget->removeTab(4);//暂时不用"优化"这项
-
-
+    ui->tabWidget->removeTab(4); //暂时不用"优化"这项
 }
 
 void MainWindow::init_recentFiles()
@@ -3525,12 +3215,12 @@ void MainWindow::init_recentFiles()
     QCoreApplication::setApplicationName("V1");
 
     m_recentFiles = new RecentFiles(this);
-    if(!zh_cn)
-       m_recentFiles->attachToMenuAfterItem(ui->menu_File, "SaveAS...", SLOT(recentOpen(QString)));//在此处插入菜单
+    if (!zh_cn)
+        m_recentFiles->attachToMenuAfterItem(ui->menu_File, "SaveAS...", SLOT(recentOpen(QString))); //在此处插入菜单
     else
-       m_recentFiles->attachToMenuAfterItem(ui->menu_File, "另存...", SLOT(recentOpen(QString)));//在此处插入菜单
+        m_recentFiles->attachToMenuAfterItem(ui->menu_File, "另存...", SLOT(recentOpen(QString))); //在此处插入菜单
 
-    m_recentFiles->setNumOfRecentFiles(25);//最多显示最近的文件个数
+    m_recentFiles->setNumOfRecentFiles(25); //最多显示最近的文件个数
 }
 
 void MainWindow::init_menu()
@@ -3582,8 +3272,6 @@ void MainWindow::init_menu()
     ui->actionReplace_Find->setShortcut(tr("ctrl+j"));
     connect(ui->actionReplace_Find, &QAction::triggered, this, &MainWindow::on_btnReplaceFind);
 
-
-
     //ui->actionGo_to_previous_error->setShortcut(tr("ctrl+e"));
     connect(ui->actionGo_to_previous_error, &QAction::triggered, this, &MainWindow::on_btnPreviousError);
 
@@ -3619,22 +3307,19 @@ void MainWindow::init_menu()
     QString qfile = QDir::homePath() + "/QtiASL.ini";
     QFileInfo fi(qfile);
 
-    if(fi.exists())
-    {
+    if (fi.exists()) {
         //QSettings Reg(qfile, QSettings::NativeFormat);
-        QSettings Reg(qfile, QSettings::IniFormat);//全平台都采用ini格式
+        QSettings Reg(qfile, QSettings::IniFormat); //全平台都采用ini格式
         QString op = Reg.value("options").toString().trimmed();
-        if(op.count() > 0)
+        if (op.count() > 0)
             ui->cboxCompilationOptions->setCurrentText(op);
-
     }
 
     //设置编译功能屏蔽
     ui->actionCompiling->setEnabled(false);
-
 }
 
-void MainWindow::setLexer(QsciLexer *textLexer, QsciScintilla *textEdit)
+void MainWindow::setLexer(QsciLexer* textLexer, QsciScintilla* textEdit)
 {
 
     //获取背景色
@@ -3646,17 +3331,17 @@ void MainWindow::setLexer(QsciLexer *textLexer, QsciScintilla *textEdit)
     QFont m_font;
 
 #ifdef Q_OS_WIN32
-  textEdit->setMarginWidth(0, 80);
-   m_font.setPointSize(9);
+    textEdit->setMarginWidth(0, 80);
+    m_font.setPointSize(9);
 #endif
 
 #ifdef Q_OS_LINUX
-  textEdit->setMarginWidth(0, 60);
-   m_font.setPointSize(12);
+    textEdit->setMarginWidth(0, 60);
+    m_font.setPointSize(12);
 #endif
 
 #ifdef Q_OS_MAC
-   textEdit->setMarginWidth(0, 60);
+    textEdit->setMarginWidth(0, 60);
     m_font.setPointSize(13);
 #endif
 
@@ -3665,19 +3350,17 @@ void MainWindow::setLexer(QsciLexer *textLexer, QsciScintilla *textEdit)
 
     m_font.setFamily(font.family());
     textEdit->setMarginsFont(m_font);
-    if(red < 55) //暗模式，mac下为50
+    if (red < 55) //暗模式，mac下为50
     {
-        textEdit->setMarginsBackgroundColor(QColor(50, 50 ,50));
+        textEdit->setMarginsBackgroundColor(QColor(50, 50, 50));
         textEdit->setMarginsForegroundColor(Qt::white);
 
-    }
-    else
-    {
+    } else {
         textEdit->setMarginsBackgroundColor(brush.color());
         textEdit->setMarginsForegroundColor(Qt::black);
     }
 
-    if(red < 55) //暗模式，mac下为50
+    if (red < 55) //暗模式，mac下为50
     {
 
         //背景色
@@ -3688,18 +3371,16 @@ void MainWindow::setLexer(QsciLexer *textLexer, QsciScintilla *textEdit)
         textEdit->setCaretLineFrameWidth(1);
         textEdit->setCaretLineVisible(true);
 
-        textLexer->setColor(QColor(30, 190, 30), QsciLexerCPP::CommentLine);//"//"注释颜色
+        textLexer->setColor(QColor(30, 190, 30), QsciLexerCPP::CommentLine); //"//"注释颜色
         textLexer->setColor(QColor(30, 190, 30), QsciLexerCPP::Comment);
 
-        textLexer->setColor(QColor(210, 210, 210 ), QsciLexerCPP::Identifier);
+        textLexer->setColor(QColor(210, 210, 210), QsciLexerCPP::Identifier);
         textLexer->setColor(QColor(245, 150, 147), QsciLexerCPP::Number);
         textLexer->setColor(QColor(100, 100, 250), QsciLexerCPP::Keyword);
-        textLexer->setColor(QColor(210, 32, 240 ), QsciLexerCPP::KeywordSet2);
-        textLexer->setColor(QColor(245, 245, 245 ), QsciLexerCPP::Operator);
-        textLexer->setColor(QColor(84, 235, 159 ), QsciLexerCPP::DoubleQuotedString);//双引号
-     }
-    else
-    {
+        textLexer->setColor(QColor(210, 32, 240), QsciLexerCPP::KeywordSet2);
+        textLexer->setColor(QColor(245, 245, 245), QsciLexerCPP::Operator);
+        textLexer->setColor(QColor(84, 235, 159), QsciLexerCPP::DoubleQuotedString); //双引号
+    } else {
 
         //背景色
         //textLexer->setPaper(QColor(255, 255, 255));
@@ -3708,56 +3389,50 @@ void MainWindow::setLexer(QsciLexer *textLexer, QsciScintilla *textEdit)
         textEdit->setCaretLineFrameWidth(0);
         textEdit->setCaretLineVisible(true);
 
-        textLexer->setColor(QColor(30, 190, 30), QsciLexerCPP::CommentLine);//"//"注释颜色
+        textLexer->setColor(QColor(30, 190, 30), QsciLexerCPP::CommentLine); //"//"注释颜色
         textLexer->setColor(QColor(30, 190, 30), QsciLexerCPP::Comment);
 
         textLexer->setColor(QColor(255, 0, 0), QsciLexerCPP::Number);
         textLexer->setColor(QColor(0, 0, 255), QsciLexerCPP::Keyword);
-        textLexer->setColor(QColor(0, 0, 0 ), QsciLexerCPP::Identifier);
+        textLexer->setColor(QColor(0, 0, 0), QsciLexerCPP::Identifier);
         textLexer->setColor(QColor(210, 0, 210), QsciLexerCPP::KeywordSet2);
-        textLexer->setColor(QColor(20, 20, 20 ), QsciLexerCPP::Operator);
-        textLexer->setColor(QColor(205, 38, 38), QsciLexerCPP::DoubleQuotedString);//双引号
-
+        textLexer->setColor(QColor(20, 20, 20), QsciLexerCPP::Operator);
+        textLexer->setColor(QColor(205, 38, 38), QsciLexerCPP::DoubleQuotedString); //双引号
     }
 
     //QFont font1;
     //font1.setBold(true);
     //textLexer->setFont(font1, QsciLexerCPP::KeywordSet2);
 
-
     //匹配大小括弧
     textEdit->setBraceMatching(QsciScintilla::SloppyBraceMatch);
     //textEdit->setBraceMatching(QsciScintilla::StrictBraceMatch));//不推荐
-    if(red > 55) //亮模式，mac下阈值为50
+    if (red > 55) //亮模式，mac下阈值为50
     {
         textEdit->setMatchedBraceBackgroundColor(QColor(Qt::green));
         textEdit->setMatchedBraceForegroundColor(QColor(Qt::red));
     }
 
-
     //设置括号等自动补全
     textEdit->setAutoIndent(true);
-    textEdit->setTabIndents(true);//true如果行前空格数少于tabWidth，补齐空格数,false如果在文字前tab同true，如果在行首tab，则直接增加tabwidth个空格
+    textEdit->setTabIndents(true); //true如果行前空格数少于tabWidth，补齐空格数,false如果在文字前tab同true，如果在行首tab，则直接增加tabwidth个空格
 
     //代码提示
-    QsciAPIs *apis = new QsciAPIs(textLexer);
-    if(apis->load(":/data/apis.txt"))
-    {
+    QsciAPIs* apis = new QsciAPIs(textLexer);
+    if (apis->load(":/data/apis.txt")) {
 
-    }
-    else
+    } else
         apis->add(QString("Device"));
 
     apis->prepare();
-
 
     //设置自动补全
     textEdit->setCaretLineVisible(true);
     // Ascii|None|All|Document|APIs
     //禁用自动补全提示功能、所有可用的资源、当前文档中出现的名称都自动补全提示、使用QsciAPIs类加入的名称都自动补全提示
-    textEdit->setAutoCompletionSource(QsciScintilla::AcsAll);//自动补全,对于所有Ascii字符
-    textEdit->setAutoCompletionCaseSensitivity(false);//大小写敏感度
-    textEdit->setAutoCompletionThreshold(2);//从第几个字符开始出现自动补全的提示
+    textEdit->setAutoCompletionSource(QsciScintilla::AcsAll); //自动补全,对于所有Ascii字符
+    textEdit->setAutoCompletionCaseSensitivity(false); //大小写敏感度
+    textEdit->setAutoCompletionThreshold(2); //从第几个字符开始出现自动补全的提示
     //textEdit->setAutoCompletionReplaceWord(false);//是否用补全的字符串替代光标右边的字符串
 
     //设置缩进参考线
@@ -3766,7 +3441,7 @@ void MainWindow::setLexer(QsciLexer *textLexer, QsciScintilla *textEdit)
     //textEdit->setIndentationGuidesForegroundColor(QColor(Qt::red));
 
     //设置光标颜色
-    if(red < 55) //暗模式，mac下为50
+    if (red < 55) //暗模式，mac下为50
         textEdit->setCaretForegroundColor(QColor(Qt::white));
     else
         textEdit->setCaretForegroundColor(QColor(Qt::black));
@@ -3777,19 +3452,17 @@ void MainWindow::setLexer(QsciLexer *textLexer, QsciScintilla *textEdit)
     textEdit->setMarginLineNumbers(3, false);
     textEdit->setMarginWidth(3, 15);
     textEdit->setMarginSensitivity(3, true);
-    textEdit->setFolding(QsciScintilla::BoxedTreeFoldStyle);//折叠样式
-    if(red < 55) //暗模式，mac下为50
+    textEdit->setFolding(QsciScintilla::BoxedTreeFoldStyle); //折叠样式
+    if (red < 55) //暗模式，mac下为50
     {
         textEdit->setFoldMarginColors(Qt::gray, Qt::black);
         //textEdit->setMarginsForegroundColor(Qt::red);  //行号颜色
-        textEdit->SendScintilla(QsciScintilla::SCI_SETFOLDFLAGS, 16);//设置折叠标志
+        textEdit->SendScintilla(QsciScintilla::SCI_SETFOLDFLAGS, 16); //设置折叠标志
         //textEdit->SendScintilla(QsciScintilla::SCI_SETFOLDMARGINCOLOUR,Qt::red);
-    }
-    else
-    {
-        textEdit->setFoldMarginColors(Qt::gray, Qt::white);//折叠栏颜色
+    } else {
+        textEdit->setFoldMarginColors(Qt::gray, Qt::white); //折叠栏颜色
         //textEdit->setMarginsForegroundColor(Qt::blue); //行号颜色
-        textEdit->SendScintilla(QsciScintilla::SCI_SETFOLDFLAGS, 16);//设置折叠标志
+        textEdit->SendScintilla(QsciScintilla::SCI_SETFOLDFLAGS, 16); //设置折叠标志
     }
 
     /*断点设置区域,为后面可能会用到的功能预留*/
@@ -3811,19 +3484,17 @@ void MainWindow::setLexer(QsciLexer *textLexer, QsciScintilla *textEdit)
     textEdit->setMarginMarkerMask(2, 0x04);
     textEdit->markerDefine(QsciScintilla::RightArrow, 2);
     textEdit->setMarkerBackgroundColor(QColor("#eaf593"), 2);*/
-
-
 }
 
-void MainWindow::init_edit(QsciScintilla *textEdit)
+void MainWindow::init_edit(QsciScintilla* textEdit)
 {
 
     //textEdit = new QsciScintilla(this);
     textEditBack = new QsciScintilla();
 
-    textEdit->setWrapMode(QsciScintilla::WrapNone);//不自动换行
+    textEdit->setWrapMode(QsciScintilla::WrapNone); //不自动换行
     //设置编码为UTF-8
-    textEdit->SendScintilla(QsciScintilla::SCI_SETCODEPAGE,QsciScintilla::SC_CP_UTF8);
+    textEdit->SendScintilla(QsciScintilla::SCI_SETCODEPAGE, QsciScintilla::SC_CP_UTF8);
 
     textEdit->setTabWidth(4);
 
@@ -3841,26 +3512,20 @@ void MainWindow::init_edit(QsciScintilla *textEdit)
     textLexer = new QscilexerCppAttach;
     textEdit->setLexer(textLexer);
 
-
     //读取字体
     QString qfile = QDir::homePath() + "/QtiASL.ini";
     QFileInfo fi(qfile);
 
-    if(fi.exists())
-    {
+    if (fi.exists()) {
         //QSettings Reg(qfile, QSettings::NativeFormat);
-        QSettings Reg(qfile, QSettings::IniFormat);//全平台都采用ini格式
-        if(Reg.value("FontName").toString() != "")
-        {
+        QSettings Reg(qfile, QSettings::IniFormat); //全平台都采用ini格式
+        if (Reg.value("FontName").toString() != "") {
             font.setFamily(Reg.value("FontName").toString());
             font.setPointSize(Reg.value("FontSize").toInt());
             font.setBold(Reg.value("FontBold").toBool());
             font.setItalic(Reg.value("FontItalic").toBool());
             font.setUnderline(Reg.value("FontUnderline").toBool());
-
         }
-
-
     }
 
     textLexer->setFont(font);
@@ -3874,8 +3539,6 @@ void MainWindow::init_edit(QsciScintilla *textEdit)
     ui->editFind->setClearButtonEnabled(true);
 
     ui->editReplace->setClearButtonEnabled(true);
-
-
 }
 
 void MainWindow::init_treeWidget()
@@ -3883,7 +3546,7 @@ void MainWindow::init_treeWidget()
 
     int w = screen()->size().width();
 
-    ui->tabWidget_misc->setMaximumWidth(w/3 - 20);
+    ui->tabWidget_misc->setMaximumWidth(w / 3 - 20);
 
     treeWidgetBak = new QTreeWidget;
 
@@ -3900,30 +3563,29 @@ void MainWindow::init_treeWidget()
     ui->treeWidget->setHeaderHidden(true);
 
     ui->treeWidget->setColumnCount(2);
-    ui->treeWidget->setColumnHidden(1 , true);
+    ui->treeWidget->setColumnHidden(1, true);
 
-    ui->treeWidget->setColumnWidth(0 , ui->tab_misc1->width() - 230);
+    ui->treeWidget->setColumnWidth(0, ui->tab_misc1->width() - 230);
 
-    ui->treeWidget->setColumnWidth(1 , 100);
+    ui->treeWidget->setColumnWidth(1, 100);
     ui->treeWidget->setHeaderItem(new QTreeWidgetItem(QStringList() << tr("Members") << "Lines"));
 
     ui->treeWidget->setStyle(QStyleFactory::create("windows")); //连接的虚线
     ui->treeWidget->setIconSize(QSize(12, 12));
 
     ui->treeWidget->installEventFilter(this);
-    ui->treeWidget->setAlternatingRowColors(true);//底色交替显示
-    ui->treeWidget->setStyleSheet( "QTreeWidget::item:hover{background-color:rgba(0,0,255,15)}" "QTreeWidget::item:selected{background-color:rgba(0, 0, 255, 200); color:rgba(255,255,255,255)}" );
+    ui->treeWidget->setAlternatingRowColors(true); //底色交替显示
+    ui->treeWidget->setStyleSheet("QTreeWidget::item:hover{background-color:rgba(127,255,0,50)}"
+                                  "QTreeWidget::item:selected{background-color:rgba(0, 0, 255, 200); color:rgba(255,255,255,255)}");
 
     //connect(ui->treeWidget, &QTreeWidget::itemClicked, this, &MainWindow::treeWidgetBack_itemClicked);
-
-
 }
 
 void MainWindow::init_filesystem()
 {
 
-    ui->treeView->installEventFilter(this);//安装事件过滤器
-    ui->treeView->setAlternatingRowColors(true);//不同的底色交替显示
+    ui->treeView->installEventFilter(this); //安装事件过滤器
+    ui->treeView->setAlternatingRowColors(true); //不同的底色交替显示
 
     model = new QFileSystemModel;
 
@@ -3943,8 +3605,8 @@ void MainWindow::init_filesystem()
 #endif
 
     ui->treeView->setModel(model);
-    ui->treeView->setColumnWidth(3, 200);//注意顺序
-    ui->treeView->header()->setSectionResizeMode(QHeaderView::ResizeToContents);//表头列宽自适应
+    ui->treeView->setColumnWidth(3, 200); //注意顺序
+    ui->treeView->header()->setSectionResizeMode(QHeaderView::ResizeToContents); //表头列宽自适应
 
     ui->treeView->setAnimated(false);
     ui->treeView->setIndentation(20);
@@ -3960,10 +3622,9 @@ void MainWindow::init_filesystem()
     //QFile file(qfile);
     QFileInfo fi(qfile);
 
-    if(fi.exists())
-    {
+    if (fi.exists()) {
         //QSettings Reg(qfile, QSettings::NativeFormat);
-        QSettings Reg(qfile, QSettings::IniFormat);//全平台都采用ini格式
+        QSettings Reg(qfile, QSettings::IniFormat); //全平台都采用ini格式
 
         QString dir = Reg.value("dir").toString().trimmed();
         QString btn = Reg.value("btn").toString().trimmed();
@@ -3971,213 +3632,156 @@ void MainWindow::init_filesystem()
         fsm_Index = model->index(dir);
         ui->btnReturn->setText(btn);
         //set_return_text(dir);
-
-
     }
-
-
 }
-
 
 void MainWindow::on_chkScope_clicked()
 {
 
-    if(ui->chkScope->isChecked())
+    if (ui->chkScope->isChecked())
         show_s = true;
     else
         show_s = false;
 
-
-    if(!show_s)
-    {
+    if (!show_s) {
 
         int count = ui->treeWidget->topLevelItemCount();
         tw_scope.clear();
-        for(int i = 0; i < count; i++)
-        {
+        for (int i = 0; i < count; i++) {
             //重要，否则刷新非常慢
             ui->treeWidget->setCurrentItem(ui->treeWidget->topLevelItem(count - 1));
 
             QString str = ui->treeWidget->topLevelItem(i)->text(0).trimmed();
-            if(str.mid(0 , 4) == "Scop")
-            {
+            if (str.mid(0, 4) == "Scop") {
                 tw_scope.append(ui->treeWidget->takeTopLevelItem(i));
 
                 count--;
                 i = i - 1;
-
             }
-
         }
-    }
-    else
-    {
-        if(tw_scope.count() == s_count && s_count != 0)
-        {
+    } else {
+        if (tw_scope.count() == s_count && s_count != 0) {
             ui->treeWidget->addTopLevelItems(tw_scope);
-            ui->treeWidget->sortItems(1 , Qt::AscendingOrder);
-
+            ui->treeWidget->sortItems(1, Qt::AscendingOrder);
         }
 
-        if(tw_scope.count() != s_count || s_count == 0)
+        if (tw_scope.count() != s_count || s_count == 0)
             on_btnRefreshTree();
-
-
-
     }
     ui->treeWidget->update();
 
-
     textEdit_cursorPositionChanged();
-
-
 }
 
 void MainWindow::on_chkDevice_clicked()
 {
     ui->treeWidget->update();
 
-    if(ui->chkDevice->isChecked())
+    if (ui->chkDevice->isChecked())
         show_d = true;
     else
         show_d = false;
 
-    if(!show_d)
-    {
+    if (!show_d) {
 
         int count = ui->treeWidget->topLevelItemCount();
         tw_device.clear();
-        for(int i = 0; i < count; i++)
-        {
+        for (int i = 0; i < count; i++) {
             ui->treeWidget->setCurrentItem(ui->treeWidget->topLevelItem(count - 1));
 
             QString str = ui->treeWidget->topLevelItem(i)->text(0).trimmed();
-            if(str.mid(0 , 4) == "Devi")
-            {
+            if (str.mid(0, 4) == "Devi") {
                 tw_device.append(ui->treeWidget->takeTopLevelItem(i));
                 ui->treeWidget->update();
                 count--;
                 i = i - 1;
-
             }
-
-
         }
-    }
-    else
-    {
-        if(tw_device.count() == d_count && d_count > 0)
-        {
+    } else {
+        if (tw_device.count() == d_count && d_count > 0) {
             ui->treeWidget->addTopLevelItems(tw_device);
-            ui->treeWidget->sortItems(1 , Qt::AscendingOrder);
-
+            ui->treeWidget->sortItems(1, Qt::AscendingOrder);
         }
-        if(tw_device.count() != d_count || d_count == 0)
+        if (tw_device.count() != d_count || d_count == 0)
             on_btnRefreshTree();
-
     }
     ui->treeWidget->update();
     textEdit_cursorPositionChanged();
-
 }
 
 void MainWindow::on_chkMethod_clicked()
 {
     ui->treeWidget->update();
 
-    if(ui->chkMethod->isChecked())
+    if (ui->chkMethod->isChecked())
         show_m = true;
     else
         show_m = false;
 
-    if(!show_m)
-    {
+    if (!show_m) {
 
         int count = ui->treeWidget->topLevelItemCount();
         tw_method.clear();
-        for(int i = 0; i < count; i++)
-        {
+        for (int i = 0; i < count; i++) {
             ui->treeWidget->setCurrentItem(ui->treeWidget->topLevelItem(count - 1));
 
             QString str = ui->treeWidget->topLevelItem(i)->text(0).trimmed();
-            if(str.mid(0 , 4) == "Meth")
-            {
+            if (str.mid(0, 4) == "Meth") {
                 tw_method.append(ui->treeWidget->takeTopLevelItem(i));
 
                 count--;
                 i = i - 1;
-
             }
-
-
         }
-    }
-    else
-    {
-        if(tw_method.count() == m_count && m_count > 0)
-        {
+    } else {
+        if (tw_method.count() == m_count && m_count > 0) {
             ui->treeWidget->addTopLevelItems(tw_method);
-            ui->treeWidget->sortItems(1 , Qt::AscendingOrder);
-
+            ui->treeWidget->sortItems(1, Qt::AscendingOrder);
         }
-        if(tw_method.count() != m_count || m_count == 0)
+        if (tw_method.count() != m_count || m_count == 0)
             on_btnRefreshTree();
-
     }
     ui->treeWidget->update();
     textEdit_cursorPositionChanged();
-
 }
 
 void MainWindow::on_chkName_clicked()
 {
     ui->treeWidget->update();
 
-    if(ui->chkName->isChecked())
+    if (ui->chkName->isChecked())
         show_n = true;
     else
         show_n = false;
 
-    if(!show_n)
-    {
+    if (!show_n) {
 
         int count = ui->treeWidget->topLevelItemCount();
         tw_name.clear();
-        for(int i = 0; i < count; i++)
-        {
+        for (int i = 0; i < count; i++) {
             ui->treeWidget->setCurrentItem(ui->treeWidget->topLevelItem(count - 1));
 
             QString str = ui->treeWidget->topLevelItem(i)->text(0).trimmed();
-            if(str.mid(0 , 4) == "Name")
-            {
+            if (str.mid(0, 4) == "Name") {
                 tw_name.append(ui->treeWidget->takeTopLevelItem(i));
                 ui->treeWidget->update();
                 count--;
                 i = i - 1;
-
             }
-
-
         }
-    }
-    else
-    {
-        if(tw_name.count() == n_count && n_count > 0)
-        {
+    } else {
+        if (tw_name.count() == n_count && n_count > 0) {
             ui->treeWidget->addTopLevelItems(tw_name);
-            ui->treeWidget->sortItems(1 , Qt::AscendingOrder);
-
+            ui->treeWidget->sortItems(1, Qt::AscendingOrder);
         }
-        if(tw_name.count() != n_count || n_count == 0)
+        if (tw_name.count() != n_count || n_count == 0)
             on_btnRefreshTree();
-
     }
     ui->treeWidget->update();
     textEdit_cursorPositionChanged();
-
 }
 
-void MainWindow::separ_info(QString str_key, QTextEdit *editInfo)
+void MainWindow::separ_info(QString str_key, QTextEdit* editInfo)
 {
 
     editInfo->clear();
@@ -4186,17 +3790,14 @@ void MainWindow::separ_info(QString str_key, QTextEdit *editInfo)
     textEditTemp->setTextCursor(QTextCursor(block));
 
     int info_count = 0;
-    for(int i = 0; i < textEditTemp->document()->lineCount(); i++)
-    {
+    for (int i = 0; i < textEditTemp->document()->lineCount(); i++) {
         QTextBlock block = textEditTemp->document()->findBlockByNumber(i);
         textEditTemp->setTextCursor(QTextCursor(block));
 
         QString str = textEditTemp->document()->findBlockByLineNumber(i).text();
         QString sub = str.trimmed();
 
-
-        if(sub.mid(0 , str_key.count()) == str_key)
-        {
+        if (sub.mid(0, str_key.count()) == str_key) {
 
             QString str0 = textEditTemp->document()->findBlockByNumber(i - 1).text();
             editInfo->append(str0);
@@ -4205,53 +3806,42 @@ void MainWindow::separ_info(QString str_key, QTextEdit *editInfo)
             editInfo->append("");
 
             info_count++;
-
-
         }
-
     }
 
-
     //标记tab头
-    if(str_key == "Error")
-        ui->tabWidget->setTabText(1, tr("Errors") + " (" + QString::number(info_count) +")");
-    if(str_key == "Warning")
-        ui->tabWidget->setTabText(2, tr("Warnings") + " (" + QString::number(info_count) +")");
-    if(str_key == "Remark")
-        ui->tabWidget->setTabText(3, tr("Remarks") + " (" + QString::number(info_count) +")");
-    if(str_key == "Optimization")
-        ui->tabWidget->setTabText(4, "Optimizations (" + QString::number(info_count) +")");
-
-
+    if (str_key == "Error")
+        ui->tabWidget->setTabText(1, tr("Errors") + " (" + QString::number(info_count) + ")");
+    if (str_key == "Warning")
+        ui->tabWidget->setTabText(2, tr("Warnings") + " (" + QString::number(info_count) + ")");
+    if (str_key == "Remark")
+        ui->tabWidget->setTabText(3, tr("Remarks") + " (" + QString::number(info_count) + ")");
+    if (str_key == "Optimization")
+        ui->tabWidget->setTabText(4, "Optimizations (" + QString::number(info_count) + ")");
 }
 
 void MainWindow::on_editErrors_cursorPositionChanged()
 {
-   if(!loading)
-   {
-       set_cursor_line_color(ui->editErrors);
-       gotoLine(ui->editErrors);
-   }
+    if (!loading) {
+        set_cursor_line_color(ui->editErrors);
+        gotoLine(ui->editErrors);
+    }
 }
 
 void MainWindow::on_editWarnings_cursorPositionChanged()
 {
-    if(!loading)
-    {
+    if (!loading) {
         set_cursor_line_color(ui->editWarnings);
         gotoLine(ui->editWarnings);
     }
-
 }
 
 void MainWindow::on_editRemarks_cursorPositionChanged()
 {
-    if(!loading)
-    {
+    if (!loading) {
         set_cursor_line_color(ui->editRemarks);
         gotoLine(ui->editRemarks);
     }
-
 }
 
 void MainWindow::on_editOptimizations_cursorPositionChanged()
@@ -4262,124 +3852,118 @@ void MainWindow::on_editOptimizations_cursorPositionChanged()
 
 void MainWindow::regACPI_win()
 {
-        QString appPath = qApp->applicationFilePath();
+    QString appPath = qApp->applicationFilePath();
 
-        QString dir = qApp->applicationDirPath();
-        //注意路径的替换
-        appPath.replace("/", "\\");
-        QString type = "QtiASL";
-        QSettings *regType = new QSettings("HKEY_CLASSES_ROOT\\.dsl", QSettings::NativeFormat);
-        QSettings *regIcon = new QSettings("HKEY_CLASSES_ROOT\\.dsl\\DefaultIcon", QSettings::NativeFormat);
-        QSettings *regShell = new QSettings("HKEY_CLASSES_ROOT\\QtiASL\\shell\\open\\command", QSettings::NativeFormat);
+    QString dir = qApp->applicationDirPath();
+    //注意路径的替换
+    appPath.replace("/", "\\");
+    QString type = "QtiASL";
+    QSettings* regType = new QSettings("HKEY_CLASSES_ROOT\\.dsl", QSettings::NativeFormat);
+    QSettings* regIcon = new QSettings("HKEY_CLASSES_ROOT\\.dsl\\DefaultIcon", QSettings::NativeFormat);
+    QSettings* regShell = new QSettings("HKEY_CLASSES_ROOT\\QtiASL\\shell\\open\\command", QSettings::NativeFormat);
 
-        QSettings *regType1 = new QSettings("HKEY_CLASSES_ROOT\\.aml", QSettings::NativeFormat);
-        QSettings *regIcon1 = new QSettings("HKEY_CLASSES_ROOT\\.aml\\DefaultIcon", QSettings::NativeFormat);
-        QSettings *regShell1 = new QSettings("HKEY_CLASSES_ROOT\\QtiASL\\shell\\open\\command", QSettings::NativeFormat);
+    QSettings* regType1 = new QSettings("HKEY_CLASSES_ROOT\\.aml", QSettings::NativeFormat);
+    QSettings* regIcon1 = new QSettings("HKEY_CLASSES_ROOT\\.aml\\DefaultIcon", QSettings::NativeFormat);
+    QSettings* regShell1 = new QSettings("HKEY_CLASSES_ROOT\\QtiASL\\shell\\open\\command", QSettings::NativeFormat);
 
-        regType->remove("Default");
-        regType->setValue("Default", type);
+    regType->remove("Default");
+    regType->setValue("Default", type);
 
-        regType1->remove("Default");
-        regType1->setValue("Default", type);
+    regType1->remove("Default");
+    regType1->setValue("Default", type);
 
-        regIcon->remove("Default");
-        // 0 使用当前程序内置图标
-        regIcon->setValue("Default", appPath + ",1");
+    regIcon->remove("Default");
+    // 0 使用当前程序内置图标
+    regIcon->setValue("Default", appPath + ",1");
 
-        regIcon1->remove("Default");
-        // 0 使用当前程序内置图标
-        regIcon1->setValue("Default", appPath + ",0");
+    regIcon1->remove("Default");
+    // 0 使用当前程序内置图标
+    regIcon1->setValue("Default", appPath + ",0");
 
-         // 百分号问题
-        QString shell = "\"" + appPath + "\" ";
-        shell = shell + "\"%1\"";
+    // 百分号问题
+    QString shell = "\"" + appPath + "\" ";
+    shell = shell + "\"%1\"";
 
-        regShell->remove("Default");
-        regShell->setValue("Default", shell);
+    regShell->remove("Default");
+    regShell->setValue("Default", shell);
 
-        regShell1->remove("Default");
-        regShell1->setValue("Default", shell);
+    regShell1->remove("Default");
+    regShell1->setValue("Default", shell);
 
-        delete regIcon;
-        delete regShell;
-        delete regType;
+    delete regIcon;
+    delete regShell;
+    delete regType;
 
-        delete regIcon1;
-        delete regShell1;
-        delete regType1;
-        // 通知系统刷新
+    delete regIcon1;
+    delete regShell1;
+    delete regType1;
+    // 通知系统刷新
 #ifdef Q_OS_WIN32
-        //::SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST|SHCNF_FLUSH, 0, 0);
+    //::SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST|SHCNF_FLUSH, 0, 0);
 #endif
 }
 
-void MainWindow::closeEvent(QCloseEvent *event)
+void MainWindow::closeEvent(QCloseEvent* event)
 {
 
     //存储编译选项
     QString qfile = QDir::homePath() + "/QtiASL.ini";
     QFile file(qfile);
     //QSettings Reg(qfile, QSettings::NativeFormat);
-    QSettings Reg(qfile, QSettings::IniFormat);//全平台都采用ini格式
-    Reg.setValue("options" , ui->cboxCompilationOptions->currentText().trimmed());
+    QSettings Reg(qfile, QSettings::IniFormat); //全平台都采用ini格式
+    Reg.setValue("options", ui->cboxCompilationOptions->currentText().trimmed());
 
     //存储当前的目录结构
-    QWidget *pWidget= ui->tabWidget_textEdit->widget(ui->tabWidget_textEdit->currentIndex());
-    QLabel * lbl = new QLabel;
-    lbl = (QLabel*)pWidget->children().at(2);//2为QLabel,1为textEdit,0为VBoxLayout
+    QWidget* pWidget = ui->tabWidget_textEdit->widget(ui->tabWidget_textEdit->currentIndex());
+    QLabel* lbl = new QLabel;
+    lbl = (QLabel*)pWidget->children().at(2); //2为QLabel,1为textEdit,0为VBoxLayout
 
     QFileInfo f(lbl->text());
-    Reg.setValue("dir" , f.path());
-    Reg.setValue("btn" , ui->btnReturn->text());
+    Reg.setValue("dir", f.path());
+    Reg.setValue("btn", ui->btnReturn->text());
     Reg.setValue("ci", ui->tabWidget_textEdit->currentIndex()); //存储当前活动的标签页
 
-    for(int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i ++)
-    {
+    for (int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i++) {
 
-        ui->tabWidget_textEdit->setCurrentIndex(i);//先转到当前页
+        ui->tabWidget_textEdit->setCurrentIndex(i); //先转到当前页
 
-        QWidget *pWidget= ui->tabWidget_textEdit->widget(i);
-        QsciScintilla *edit = new QsciScintilla;
+        QWidget* pWidget = ui->tabWidget_textEdit->widget(i);
+        QsciScintilla* edit = new QsciScintilla;
         edit = (QsciScintilla*)pWidget->children().at(1);
 
         textEdit = edit;
 
-        QLabel * lbl = new QLabel;
-        lbl = (QLabel*)pWidget->children().at(2);//2为QLabel,1为textEdit,0为VBoxLayout
+        QLabel* lbl = new QLabel;
+        lbl = (QLabel*)pWidget->children().at(2); //2为QLabel,1为textEdit,0为VBoxLayout
 
-        if(lbl->text() == tr("untitled") + ".dsl")
+        if (lbl->text() == tr("untitled") + ".dsl")
             curFile = "";
         else
             curFile = lbl->text();
 
-        if(edit->isModified())
-        {
+        if (edit->isModified()) {
 
             int choice;
-            if(!zh_cn)
-            {
+            if (!zh_cn) {
 
                 choice = QMessageBox::warning(this, tr("Application"),
-                                       tr("The document has been modified.\n"
-                                          "Do you want to save your changes?\n\n") + ui->tabWidget_textEdit->tabBar()->tabText(i),
-                                       QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+                    tr("The document has been modified.\n"
+                       "Do you want to save your changes?\n\n")
+                        + ui->tabWidget_textEdit->tabBar()->tabText(i),
+                    QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
 
-            }
-            else
-            {
-                QMessageBox message(QMessageBox::Warning,"QtiASL","文件内容已修改，是否保存？\n\n" + ui->tabWidget_textEdit->tabBar()->tabText(i));
-                message.setStandardButtons (QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
-                message.setButtonText (QMessageBox::Save,QString("保 存"));
-                message.setButtonText (QMessageBox::Cancel,QString("取 消"));
-                message.setButtonText (QMessageBox::Discard,QString("放 弃"));
+            } else {
+                QMessageBox message(QMessageBox::Warning, "QtiASL", "文件内容已修改，是否保存？\n\n" + ui->tabWidget_textEdit->tabBar()->tabText(i));
+                message.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+                message.setButtonText(QMessageBox::Save, QString("保 存"));
+                message.setButtonText(QMessageBox::Cancel, QString("取 消"));
+                message.setButtonText(QMessageBox::Discard, QString("放 弃"));
                 message.setDefaultButton(QMessageBox::Save);
                 choice = message.exec();
-
             }
 
-
             switch (choice) {
-                case QMessageBox::Save:
+            case QMessageBox::Save:
                 Save();
                 event->accept();
                 break;
@@ -4390,26 +3974,22 @@ void MainWindow::closeEvent(QCloseEvent *event)
                 event->ignore();
                 break;
             }
-        }
-        else
-        {
+        } else {
             event->accept();
         }
-
     }
 
     //记录标签页
     Reg.setValue("count", ui->tabWidget_textEdit->tabBar()->count());
 
-    for(int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i ++)
-    {
+    for (int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i++) {
 
-        QWidget *pWidget= ui->tabWidget_textEdit->widget(i);
-        QsciScintilla *edit = new QsciScintilla;
+        QWidget* pWidget = ui->tabWidget_textEdit->widget(i);
+        QsciScintilla* edit = new QsciScintilla;
         edit = (QsciScintilla*)pWidget->children().at(1);
 
-        QLabel * lbl = new QLabel;
-        lbl = (QLabel*)pWidget->children().at(2);//2为QLabel,1为textEdit,0为VBoxLayout
+        QLabel* lbl = new QLabel;
+        lbl = (QLabel*)pWidget->children().at(2); //2为QLabel,1为textEdit,0为VBoxLayout
 
         int row, col, vs, hs;
         edit->getCursorPosition(&row, &col);
@@ -4421,41 +4001,31 @@ void MainWindow::closeEvent(QCloseEvent *event)
         Reg.setValue(QString::number(i) + "/" + "col", col);
         Reg.setValue(QString::number(i) + "/" + "vs", vs);
         Reg.setValue(QString::number(i) + "/" + "hs", hs);
-
-
     }
 
-
-
-
     //多窗口中，关闭窗体，删除自己
-    for(int i = 0; i < wdlist.count(); i++)
-    {
-        if(this == wdlist.at(i))
-        {
+    for (int i = 0; i < wdlist.count(); i++) {
+        if (this == wdlist.at(i)) {
             wdlist.removeAt(i);
             filelist.removeAt(i);
         }
     }
 
     //关闭线程
-    if(!thread_end)
-    {
+    if (!thread_end) {
         break_run = true;
         mythread->quit();
         mythread->wait();
     }
-
-
 }
 
 void MainWindow::recentOpen(QString filename)
 {
 
-     loadFile(openFile(filename), -1, -1);
+    loadFile(openFile(filename), -1, -1);
 }
 
-void MainWindow::dragEnterEvent (QDragEnterEvent *e)
+void MainWindow::dragEnterEvent(QDragEnterEvent* e)
 {
 
     if (e->mimeData()->hasFormat("text/uri-list")) {
@@ -4463,7 +4033,7 @@ void MainWindow::dragEnterEvent (QDragEnterEvent *e)
     }
 }
 
-void MainWindow::dropEvent (QDropEvent *e)
+void MainWindow::dropEvent(QDropEvent* e)
 {
     QList<QUrl> urls = e->mimeData()->urls();
     if (urls.isEmpty()) {
@@ -4475,9 +4045,7 @@ void MainWindow::dropEvent (QDropEvent *e)
         return;
     }
 
-
     loadFile(openFile(fileName), -1, -1);
-
 }
 
 void MainWindow::init_statusBar()
@@ -4486,7 +4054,7 @@ void MainWindow::init_statusBar()
     lblLayer = new QLabel(this);
     QPalette label_palette;
     label_palette.setColor(QPalette::Background, QColor(0, 0, 255, 200));
-    label_palette.setColor(QPalette::WindowText,Qt::white);
+    label_palette.setColor(QPalette::WindowText, Qt::white);
     lblLayer->setAutoFillBackground(true);
     lblLayer->setPalette(label_palette);
     lblLayer->setText(tr(" Layer "));
@@ -4498,87 +4066,77 @@ void MainWindow::init_statusBar()
 
     lblMsg = new QLabel(this);
     ui->statusbar->addPermanentWidget(lblMsg);
-
-
 }
 
 void MainWindow::newFile()
 {
 
-    if(!thread_end)
-    {
+    if (!thread_end) {
         break_run = true; //通知打断线程
         mythread->quit();
         mythread->wait();
-
     }
 
     loading = true;
 
+    ui->treeWidget->clear();
+    s_count = 0;
+    d_count = 0;
+    m_count = 0;
+    QString lblMembers = tr("Members") + ":  Scope(" + QString::number(s_count) + ")  " + "Device(" + QString::number(d_count) + ")  " + "Method(" + QString::number(m_count) + ")";
+    ui->treeWidget->setHeaderLabel(lblMembers);
+    ui->lblMembers->setText(lblMembers);
 
+    ui->editShowMsg->clear();
+    ui->editErrors->clear();
+    ui->editWarnings->clear();
+    ui->editRemarks->clear();
 
-        ui->treeWidget->clear();
-        s_count = 0;
-        d_count = 0;
-        m_count = 0;
-        QString lblMembers = tr("Members") + ":  Scope(" + QString::number(s_count) + ")  " + "Device(" + QString::number(d_count) + ")  " + "Method(" + QString::number(m_count) + ")";
-        ui->treeWidget->setHeaderLabel(lblMembers);
-        ui->lblMembers->setText(lblMembers);
+    textEdit = new QsciScintilla(this);
 
-        ui->editShowMsg->clear();
-        ui->editErrors->clear();
-        ui->editWarnings->clear();
-        ui->editRemarks->clear();
+    init_edit(textEdit);
 
-        textEdit = new QsciScintilla(this);
+    QWidget* page = new QWidget(this);
+    QVBoxLayout* vboxLayout = new QVBoxLayout(page);
+    vboxLayout->addWidget(textEdit);
+    QLabel* lbl = new QLabel(tr("untitled") + ".dsl");
+    vboxLayout->addWidget(lbl);
+    lbl->setHidden(true);
+    ui->tabWidget_textEdit->addTab(page, tr("untitled") + ".dsl");
 
-        init_edit(textEdit);
+    ui->tabWidget_textEdit->setCurrentIndex(ui->tabWidget_textEdit->tabBar()->count() - 1);
+    ui->tabWidget_textEdit->setTabsClosable(true);
 
-        QWidget *page = new QWidget(this);
-        QVBoxLayout *vboxLayout = new QVBoxLayout(page);
-        vboxLayout->addWidget(textEdit);
-        QLabel *lbl = new QLabel(tr("untitled") + ".dsl");
-        vboxLayout->addWidget(lbl);
-        lbl->setHidden(true);
-        ui->tabWidget_textEdit->addTab(page, tr("untitled") + ".dsl");
+    QIcon icon(":/icon/d.png");
+    ui->tabWidget_textEdit->tabBar()->setTabIcon(ui->tabWidget_textEdit->tabBar()->count() - 1, icon);
+    One = false;
 
-        ui->tabWidget_textEdit->setCurrentIndex(ui->tabWidget_textEdit->tabBar()->count() - 1);
-        ui->tabWidget_textEdit->setTabsClosable(true);
+    curFile = "";
+    shownName = "";
+    setWindowTitle(ver + tr("untitled") + ".dsl");
 
-        QIcon icon(":/icon/d.png");
-        ui->tabWidget_textEdit->tabBar()->setTabIcon(ui->tabWidget_textEdit->tabBar()->count() - 1, icon);
-        One = false;
+    textEdit->clear();
+    textEditBack->clear();
 
-        curFile = "";
-        shownName = "";
-        setWindowTitle(ver + tr("untitled") + ".dsl");
+    lblLayer->setText("");
+    lblMsg->setText("");
 
-        textEdit->clear();
-        textEditBack->clear();
-
-        lblLayer->setText("");
-        lblMsg->setText("");
-
-        ui->treeWidget->setHidden(false);
-
+    ui->treeWidget->setHidden(false);
 
     loading = false;
 }
 
-
-
 void MainWindow::on_btnReplaceFind()
 {
     on_btnReplace();
-    if(find_down)
+    if (find_down)
         on_btnFindNext();
-    if(find_up)
+    if (find_up)
         on_btnFindPrevious();
 }
 
 void MainWindow::on_chkCaseSensitive_clicked()
 {
-
 }
 
 void MainWindow::on_chkCaseSensitive_clicked(bool checked)
@@ -4592,10 +4150,9 @@ void MainWindow::set_font()
 {
 
     bool ok;
-    font = QFontDialog::getFont(&ok,this);
+    font = QFontDialog::getFont(&ok, this);
 
-    if(ok)
-    {
+    if (ok) {
 
         textLexer->setFont(font);
 
@@ -4607,63 +4164,49 @@ void MainWindow::set_font()
         QString qfile = QDir::homePath() + "/QtiASL.ini";
         QFile file(qfile);
         //QSettings Reg(qfile, QSettings::NativeFormat);
-        QSettings Reg(qfile, QSettings::IniFormat);//全平台都采用ini格式
-        Reg.setValue("FontName" , font.family());
-        Reg.setValue("FontSize" , font.pointSize());
-        Reg.setValue("FontBold" , font.bold());
-        Reg.setValue("FontItalic" , font.italic());
-        Reg.setValue("FontUnderline" , font.underline());
-
+        QSettings Reg(qfile, QSettings::IniFormat); //全平台都采用ini格式
+        Reg.setValue("FontName", font.family());
+        Reg.setValue("FontSize", font.pointSize());
+        Reg.setValue("FontBold", font.bold());
+        Reg.setValue("FontItalic", font.italic());
+        Reg.setValue("FontUnderline", font.underline());
     }
-
 }
 
 /*菜单：是否自动换行*/
 void MainWindow::set_wrap()
 {
-    if(ui->actionWrapWord->isChecked())
+    if (ui->actionWrapWord->isChecked())
         textEdit->setWrapMode(QsciScintilla::WrapWord);
     else
         textEdit->setWrapMode(QsciScintilla::WrapNone);
-
-
 }
 
-void MainWindow::on_editFind_textChanged(const QString &arg1)
+void MainWindow::on_editFind_textChanged(const QString& arg1)
 {
 
-
-    if(arg1.count() > 0)
+    if (arg1.count() > 0)
         on_btnFindNext();
-    else
-    {
-        if(red < 55)
-        {
+    else {
+        if (red < 55) {
 
             QPalette palette;
             palette = ui->editFind->palette();
-            palette.setColor(QPalette::Base, QColor(50,50,50));
+            palette.setColor(QPalette::Base, QColor(50, 50, 50));
             ui->editFind->setPalette(palette);
 
-        }
-        else
-        {
+        } else {
 
             QPalette palette;
             palette = ui->editFind->palette();
             palette.setColor(QPalette::Base, Qt::white);
             ui->editFind->setPalette(palette);
-
-
         }
-
-
     }
-
 }
 
 /*重载窗体重绘事件，用来刷新软件使用中，系统切换亮、暗模式*/
-void MainWindow::paintEvent(QPaintEvent *event)
+void MainWindow::paintEvent(QPaintEvent* event)
 {
     Q_UNUSED(event);
 
@@ -4671,25 +4214,18 @@ void MainWindow::paintEvent(QPaintEvent *event)
     QPalette pal = this->palette();
     QBrush brush = pal.window();
     int c_red = brush.color().red();
-    if(c_red != red)
-    {
+    if (c_red != red) {
         /*注意：1.代码折叠线的颜色 2.双引号输入时的背景色*/
-        for(int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i ++)
-        {
-            QWidget *pWidget= ui->tabWidget_textEdit->widget(i);
-            QsciScintilla *edit = new QsciScintilla;
+        for (int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i++) {
+            QWidget* pWidget = ui->tabWidget_textEdit->widget(i);
+            QsciScintilla* edit = new QsciScintilla;
             edit = (QsciScintilla*)pWidget->children().at(1);
             init_edit(edit);
-
         }
-
-
     }
-
-
 }
 
-int MainWindow::treeCount(QTreeWidget *tree, QTreeWidgetItem *parent)
+int MainWindow::treeCount(QTreeWidget* tree, QTreeWidgetItem* parent)
 {
     Q_ASSERT(tree != NULL);
 
@@ -4697,7 +4233,7 @@ int MainWindow::treeCount(QTreeWidget *tree, QTreeWidgetItem *parent)
     if (parent == 0) {
         int topCount = tree->topLevelItemCount();
         for (int i = 0; i < topCount; i++) {
-            QTreeWidgetItem *item = tree->topLevelItem(i);
+            QTreeWidgetItem* item = tree->topLevelItem(i);
             if (item->isExpanded()) {
                 count += treeCount(tree, item);
             }
@@ -4706,7 +4242,7 @@ int MainWindow::treeCount(QTreeWidget *tree, QTreeWidgetItem *parent)
     } else {
         int childCount = parent->childCount();
         for (int i = 0; i < childCount; i++) {
-            QTreeWidgetItem *item = parent->child(i);
+            QTreeWidgetItem* item = parent->child(i);
             if (item->isExpanded()) {
                 count += treeCount(tree, item);
             }
@@ -4716,72 +4252,65 @@ int MainWindow::treeCount(QTreeWidget *tree, QTreeWidgetItem *parent)
     return count;
 }
 
-int MainWindow::treeCount(QTreeWidget *tree)
+int MainWindow::treeCount(QTreeWidget* tree)
 {
     Q_ASSERT(tree != NULL);
 
     int count = 0;
 
-        int topCount = tree->topLevelItemCount();
-        for (int i = 0; i < topCount; i++) {
-            QTreeWidgetItem *item = tree->topLevelItem(i);
-            if (item->isExpanded()) {
-                count += treeCount(tree, item);
-            }
+    int topCount = tree->topLevelItemCount();
+    for (int i = 0; i < topCount; i++) {
+        QTreeWidgetItem* item = tree->topLevelItem(i);
+        if (item->isExpanded()) {
+            count += treeCount(tree, item);
         }
-        count += topCount;
+    }
+    count += topCount;
 
     return count;
 }
 
 /*获取当前条目的所有上级条目*/
-QString MainWindow::getLayerName(QTreeWidgetItem *hItem)
+QString MainWindow::getLayerName(QTreeWidgetItem* hItem)
 {
-       if(!hItem)
-          return "";
+    if (!hItem)
+        return "";
 
-        QString str0 = hItem->text(0); //记录初始值，即为当前被选中的条目值
-        QString str;
-        char sername[255];
-        memset(sername, 0, 255);
-        QVector<QString> list;
-        QTreeWidgetItem * phItem = hItem->parent();    //获取当前item的父item
-        if(!phItem)
-          {	    // 根节点
-                QString  qstr = hItem->text(0);
-                QByteArray ba = qstr.toLatin1();  //实现QString和 char *的转换
-                const char *cstr = ba.data();
-                strcpy(sername, cstr);
-          }
-            else{
-                while (phItem)
-                {
+    QString str0 = hItem->text(0); //记录初始值，即为当前被选中的条目值
+    QString str;
+    char sername[255];
+    memset(sername, 0, 255);
+    QVector<QString> list;
+    QTreeWidgetItem* phItem = hItem->parent(); //获取当前item的父item
+    if (!phItem) { // 根节点
+        QString qstr = hItem->text(0);
+        QByteArray ba = qstr.toLatin1(); //实现QString和 char *的转换
+        const char* cstr = ba.data();
+        strcpy(sername, cstr);
+    } else {
+        while (phItem) {
 
-                    QString  qstr = phItem->text(0);
-                    QByteArray ba = qstr.toLatin1();    //实现QString和char *的转换
-                    const char *cstr = ba.data();
-                    strcpy(sername, cstr);
-                    phItem = phItem->parent();
+            QString qstr = phItem->text(0);
+            QByteArray ba = qstr.toLatin1(); //实现QString和char *的转换
+            const char* cstr = ba.data();
+            strcpy(sername, cstr);
+            phItem = phItem->parent();
 
-                    list.push_back(sername);
-                }
-
-            }
-    for(int i = 0; i < list.count(); i ++)
-    {
+            list.push_back(sername);
+        }
+    }
+    for (int i = 0; i < list.count(); i++) {
         str = list.at(i) + " --> " + str;
     }
 
     return " " + str + str0 + " ";
-
-
 }
 
 void MainWindow::kextstat()
 {
     pk = new QProcess;
     pk->start("kextstat");
-    connect(pk , SIGNAL(finished(int)) , this , SLOT(readKextstat()));
+    connect(pk, SIGNAL(finished(int)), this, SLOT(readKextstat()));
 }
 
 void MainWindow::readKextstat()
@@ -4796,51 +4325,43 @@ void MainWindow::readKextstat()
 
 void MainWindow::loadLocal()
 {
-       QTextCodec *codec = QTextCodec::codecForName("System");
-       QTextCodec::setCodecForLocale(codec);
+    QTextCodec* codec = QTextCodec::codecForName("System");
+    QTextCodec::setCodecForLocale(codec);
 
-       static QTranslator translator;  //注意：使translator一直生效
-       QLocale locale;
-       if( locale.language() == QLocale::English )  //获取系统语言环境
-       {
+    static QTranslator translator; //注意：使translator一直生效
+    QLocale locale;
+    if (locale.language() == QLocale::English) //获取系统语言环境
+    {
 
-           zh_cn = false;
+        zh_cn = false;
 
-       }
-       else if( locale.language() == QLocale::Chinese )
-       {
+    } else if (locale.language() == QLocale::Chinese) {
 
-           bool tr = false;
-           tr = translator.load(":/tr/cn.qm");
-           if(tr)
-           {
-               qApp->installTranslator(&translator);
-               zh_cn = true;
-           }
+        bool tr = false;
+        tr = translator.load(":/tr/cn.qm");
+        if (tr) {
+            qApp->installTranslator(&translator);
+            zh_cn = true;
+        }
 
-           ui->retranslateUi(this);
-       }
-
+        ui->retranslateUi(this);
+    }
 }
-
 
 void MainWindow::on_btnCompile()
 {
     btnCompile_clicked();
 }
 
-void MainWindow::on_treeView_doubleClicked(const QModelIndex &index)
+void MainWindow::on_treeView_doubleClicked(const QModelIndex& index)
 {
 
     fsm_Filepath = model->filePath(index);
     fsm_Index = index;
 
-    if(!model->isDir(index))
-    {
+    if (!model->isDir(index)) {
         loadFile(openFile(fsm_Filepath), -1, -1);
     }
-
-
 }
 
 void MainWindow::on_btnReturn_clicked()
@@ -4853,89 +4374,73 @@ void MainWindow::on_btnReturn_clicked()
     ui->btnReturn->setText(str);
 
     fsm_Index = fsm_Index.parent();
-
-
 }
 
-void MainWindow::on_treeView_expanded(const QModelIndex &index)
+void MainWindow::on_treeView_expanded(const QModelIndex& index)
 {
     fsm_Index = index;
     QString str = model->filePath(index);
     set_return_text(str);
 }
 
-void MainWindow::on_treeView_collapsed(const QModelIndex &index)
+void MainWindow::on_treeView_collapsed(const QModelIndex& index)
 {
     fsm_Index = index;
     QString str = model->filePath(index);
     set_return_text(str);
 }
 
-
-bool MainWindow::eventFilter(QObject *watched, QEvent *event)
+bool MainWindow::eventFilter(QObject* watched, QEvent* event)
 {
-     if (watched==ui->treeView)
-     {
-          if (event->type()==QEvent::FocusIn)
-          {
+    if (watched == ui->treeView) {
+        if (event->type() == QEvent::FocusIn) {
 
-          }
-          else if (event->type()==QEvent::FocusOut)
-          {
+        } else if (event->type() == QEvent::FocusOut) {
+        }
+    }
 
-          }
-     }
+    if (watched == ui->treeWidget) //判断控件
+    {
+        if (event->type() == QEvent::FocusIn) //控件获得焦点事件)
+        {
+            //ui->treeWidget->setStyleSheet( "QTreeWidget::item:hover{background-color:rgb(0,255,0,0)}" "QTreeWidget::item:selected{background-color:rgb(255,0,5)}" );
 
-     if (watched==ui->treeWidget)         //判断控件
-     {
-          if (event->type()==QEvent::FocusIn)     //控件获得焦点事件)
-          {
-              //ui->treeWidget->setStyleSheet( "QTreeWidget::item:hover{background-color:rgb(0,255,0,0)}" "QTreeWidget::item:selected{background-color:rgb(255,0,5)}" );
+        } else if (event->type() == QEvent::FocusOut) //控件失去焦点事件
+        {
+            //ui->treeWidget->setStyleSheet( "QTreeWidget::item:hover{background-color:rgb(0,255,0,0)}" "QTreeWidget::item:selected{background-color:rgb(255,0,0)}" );
+        }
+    }
 
-          }
-          else if (event->type()==QEvent::FocusOut)    //控件失去焦点事件
-          {
-             //ui->treeWidget->setStyleSheet( "QTreeWidget::item:hover{background-color:rgb(0,255,0,0)}" "QTreeWidget::item:selected{background-color:rgb(255,0,0)}" );
-          }
-     }
+    //禁用鼠标滚轮切换标签页
+    if (watched == ui->tabWidget_textEdit->tabBar()) {
+        if (event->type() == QEvent::Wheel) {
+            return true;
+        }
+    }
 
-     //禁用鼠标滚轮切换标签页
-     if(watched == ui->tabWidget_textEdit->tabBar())
-     {
-         if(event->type() == QEvent::Wheel)
-         {
-             return true;
-         }
-
-     }
-
-     return QWidget::eventFilter(watched,event);
-
+    return QWidget::eventFilter(watched, event);
 }
 
 void MainWindow::on_tabWidget_textEdit_tabBarClicked(int index)
 {
 
-    if(index == -1)//点击标签页之外的区域
+    if (index == -1) //点击标签页之外的区域
         return;
 
-    QWidget *pWidget= ui->tabWidget_textEdit->widget(index);
-    QLabel * lbl = new QLabel;
-    lbl = (QLabel*)pWidget->children().at(2);//2为QLabel,1为textEdit,0为VBoxLayout
+    QWidget* pWidget = ui->tabWidget_textEdit->widget(index);
+    QLabel* lbl = new QLabel;
+    lbl = (QLabel*)pWidget->children().at(2); //2为QLabel,1为textEdit,0为VBoxLayout
 
-    if(lbl->text() == tr("untitled") + ".dsl")
-    {
+    if (lbl->text() == tr("untitled") + ".dsl") {
         curFile = "";
         ui->tabWidget_textEdit->tabBar()->setTabText(index, tr("untitled") + ".dsl");
-    }
-    else
-    {
+    } else {
         QFileInfo fi(lbl->text());
         ui->tabWidget_textEdit->tabBar()->setTabText(index, fi.fileName());
         curFile = lbl->text();
     }
 
-    QsciScintilla *edit = new QsciScintilla;
+    QsciScintilla* edit = new QsciScintilla;
     edit = (QsciScintilla*)pWidget->children().at(1);
 
     textEdit = edit;
@@ -4944,39 +4449,32 @@ void MainWindow::on_tabWidget_textEdit_tabBarClicked(int index)
 
     setWindowTitle(ver + lbl->text());
 
-
     QFileInfo f(curFile);
-    if(f.suffix().toLower() == "dsl")
-    {
+    if (f.suffix().toLower() == "dsl") {
         ui->actionCompiling->setEnabled(true);
 
-    }
-    else
-    {
+    } else {
         ui->actionCompiling->setEnabled(false);
-
     }
 
     //初始化fsm
     ui->treeView->setRootIndex(model->index(f.path()));
     fsm_Index = model->index(f.path());
     set_return_text(f.path());
-    ui->treeView->setCurrentIndex(model->index(curFile));//并设置当前条目为打开的文件
+    ui->treeView->setCurrentIndex(model->index(curFile)); //并设置当前条目为打开的文件
 
     textEdit->setFocus();
 
     //刷新打开的文件列表供监控文件的修改使用
     openFileList.clear();
-    for(int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i ++)
-    {
-        QWidget *pWidget= ui->tabWidget_textEdit->widget(i);
+    for (int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i++) {
+        QWidget* pWidget = ui->tabWidget_textEdit->widget(i);
 
-        QLabel * lbl = new QLabel;
-        lbl = (QLabel*)pWidget->children().at(2);//2为QLabel,1为textEdit,0为VBoxLayout
+        QLabel* lbl = new QLabel;
+        lbl = (QLabel*)pWidget->children().at(2); //2为QLabel,1为textEdit,0为VBoxLayout
 
         openFileList.push_back(lbl->text());
         FileSystemWatcher::addWatchPath(lbl->text());
-
     }
 
     One = false;
@@ -4985,87 +4483,66 @@ void MainWindow::on_tabWidget_textEdit_tabBarClicked(int index)
 void MainWindow::closeTab(int index)
 {
 
-    if(ui->tabWidget_textEdit->tabBar()->count() > 1)
-    {
+    if (ui->tabWidget_textEdit->tabBar()->count() > 1) {
 
         ui->tabWidget_textEdit->setCurrentIndex(index);
 
-        QWidget *pWidget= ui->tabWidget_textEdit->widget(index);
-        QsciScintilla *edit = new QsciScintilla;
+        QWidget* pWidget = ui->tabWidget_textEdit->widget(index);
+        QsciScintilla* edit = new QsciScintilla;
         edit = (QsciScintilla*)pWidget->children().at(1);
 
         textEdit = edit;
 
-        QLabel * lbl = new QLabel;
-        lbl = (QLabel*)pWidget->children().at(2);//2为QLabel,1为textEdit,0为VBoxLayout
+        QLabel* lbl = new QLabel;
+        lbl = (QLabel*)pWidget->children().at(2); //2为QLabel,1为textEdit,0为VBoxLayout
 
-        if(lbl->text() == tr("untitled") + ".dsl")
+        if (lbl->text() == tr("untitled") + ".dsl")
             curFile = "";
         else
             curFile = lbl->text();
 
-
-        if(maybeSave(ui->tabWidget_textEdit->tabBar()->tabText(index)))
-        {
+        if (maybeSave(ui->tabWidget_textEdit->tabBar()->tabText(index))) {
             ui->tabWidget_textEdit->removeTab(index);
 
             FileSystemWatcher::removeWatchPath(lbl->text()); //移出文件监控
 
             on_tabWidget_textEdit_tabBarClicked(ui->tabWidget_textEdit->currentIndex());
-
         }
-    }
-    else
+    } else
         ui->tabWidget_textEdit->setTabsClosable(false);
-
 }
 
 void MainWindow::on_tabWidget_textEdit_currentChanged(int index)
 {
 
-    if(index > 0){}
-    if(ui->tabWidget_textEdit->tabBar()->count() > 1 && !loading)
-    {
+    if (index > 0) { }
+    if (ui->tabWidget_textEdit->tabBar()->count() > 1 && !loading) {
 
-
-        for(int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i++)
-        {
-
-
+        for (int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i++) {
         }
-
     }
-
 }
 
 void MainWindow::view_info()
 {
-    if(ui->tabWidget->isHidden())
-    {
+    if (ui->tabWidget->isHidden()) {
         ui->tabWidget->setHidden(false);
         ui->actionInfo_win->setChecked(true);
-    }else if(!ui->tabWidget->isHidden())
-    {
+    } else if (!ui->tabWidget->isHidden()) {
         ui->tabWidget->setHidden(true);
         ui->actionInfo_win->setChecked(false);
     }
-
-
 }
 
 void MainWindow::view_mem_list()
 {
-    if(ui->tabWidget_misc->isHidden())
-    {
+    if (ui->tabWidget_misc->isHidden()) {
         ui->tabWidget_misc->setHidden(false);
         ui->actionMembers_win->setChecked(true);
-    }else if(!ui->tabWidget_misc->isHidden())
-    {
+    } else if (!ui->tabWidget_misc->isHidden()) {
         ui->tabWidget_misc->setHidden(true);
         ui->actionMembers_win->setChecked(false);
     }
-
-
 }
 
 void MainWindow::ds_Decompile()
@@ -5075,5 +4552,3 @@ void MainWindow::ds_Decompile()
     dlg->setModal(true);
     dlg->show();
 }
-
-
