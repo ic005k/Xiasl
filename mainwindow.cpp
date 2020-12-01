@@ -62,7 +62,7 @@ MainWindow::MainWindow(QWidget* parent)
 
     loadLocal();
 
-    ver = "QtiASL V1.0.28    ";
+    ver = "QtiASL V1.0.29    ";
     setWindowTitle(ver);
 
     QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
@@ -82,7 +82,7 @@ MainWindow::MainWindow(QWidget* parent)
     regACPI_win();
     ui->actionKextstat->setEnabled(false);
 
-    ui->toolBar->setIconSize(QSize(25, 25));
+    ui->toolBar->setIconSize(QSize(28, 28));
 
 #endif
 
@@ -1398,6 +1398,23 @@ void MainWindow::gotoLine(QTextEdit* edit)
                 line = str3.toInt();
                 textEdit->setCursorPosition(line - 1, 0);
 
+                QString strLine = textEdit->text(line - 1);
+
+                for (int i = 0; i < strLine.count(); i++) {
+                    QString strSub = strLine.trimmed().mid(0, 1);
+                    if (strLine.mid(i, 1) == strSub) {
+                        textEdit->setCursorPosition(line - 1, i);
+                        break;
+                    }
+                }
+
+                for (int i = 0; i < strLine.count(); i++) {
+                    if (strLine.mid(i, 1) == "(") {
+                        textEdit->setCursorPosition(line - 1, i + 1);
+                        break;
+                    }
+                }
+
                 textEdit->setFocus();
 
                 break;
@@ -1425,9 +1442,25 @@ void MainWindow::getErrorLine(int i)
             if (str2.mid(k - 1, 1) == " ") {
                 str3 = str2.mid(k, str2.count() - k);
 
-                //定位到错误行
-                textEdit->setCursorPosition(str3.toInt() - 1, 0);
                 int linenr = str3.toInt();
+
+                //定位到错误行
+                textEdit->setCursorPosition(linenr - 1, 0);
+                QString strLine = textEdit->text(linenr - 1);
+                for (int i = 0; i < strLine.count(); i++) {
+                    QString strSub = strLine.trimmed().mid(0, 1);
+                    if (strLine.mid(i, 1) == strSub) {
+                        textEdit->setCursorPosition(linenr - 1, i);
+                        break;
+                    }
+                }
+                for (int i = 0; i < strLine.count(); i++) {
+                    if (strLine.mid(i, 1) == "(") {
+                        textEdit->setCursorPosition(linenr - 1, i + 1);
+                        break;
+                    }
+                }
+
                 //SCI_MARKERGET 参数用来设置标记，默认为圆形标记
                 textEdit->SendScintilla(QsciScintilla::SCI_MARKERGET, linenr - 1);
                 //SCI_MARKERSETFORE，SCI_MARKERSETBACK设置标记前景和背景标记
@@ -1435,8 +1468,8 @@ void MainWindow::getErrorLine(int i)
                 textEdit->SendScintilla(QsciScintilla::SCI_MARKERSETBACK, 0, QColor(Qt::red));
                 textEdit->SendScintilla(QsciScintilla::SCI_MARKERADD, linenr - 1);
                 //下划线
-                //textEdit->SendScintilla(QsciScintilla::SCI_STYLESETUNDERLINE,linenr,true);
-                //textEdit->SendScintilla(QsciScintilla::SCI_MARKERDEFINE,0,QsciScintilla::SC_MARK_UNDERLINE);
+                //textEdit->SendScintilla(QsciScintilla::SCI_STYLESETUNDERLINE, linenr, true);
+                //textEdit->SendScintilla(QsciScintilla::SCI_MARKERDEFINE, 0, QsciScintilla::SC_MARK_UNDERLINE);
 
                 textEdit->setFocus();
 

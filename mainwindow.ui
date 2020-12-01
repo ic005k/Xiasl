@@ -14,7 +14,7 @@
    <string>MainWindow</string>
   </property>
   <property name="windowIcon">
-   <iconset>
+   <iconset resource="../QtIASL/my.qrc">
     <normaloff>:/icon/icon.png</normaloff>:/icon/icon.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -126,7 +126,7 @@
     <item row="5" column="7" colspan="4">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <property name="documentMode">
        <bool>true</bool>
@@ -535,6 +535,8 @@
    </property>
   </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="../QtIASL/my.qrc"/>
+ </resources>
  <connections/>
 </ui>
