@@ -221,7 +221,7 @@
     <message>
         <location filename="mainwindow.ui" line="441"/>
         <source>About</source>
-        <translation>关于</translation>
+        <translation type="unfinished">关于</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="446"/>
