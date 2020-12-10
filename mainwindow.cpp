@@ -62,7 +62,7 @@ MainWindow::MainWindow(QWidget* parent)
 
     loadLocal();
 
-    ver = "QtiASL V1.0.29    ";
+    ver = "QtiASL V1.0.30    ";
     setWindowTitle(ver);
 
     QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
@@ -82,7 +82,7 @@ MainWindow::MainWindow(QWidget* parent)
     regACPI_win();
     ui->actionKextstat->setEnabled(false);
 
-    ui->toolBar->setIconSize(QSize(28, 28));
+    ui->toolBar->setIconSize(QSize(22, 22));
 
 #endif
 
@@ -3265,7 +3265,6 @@ void MainWindow::init_menu()
     ui->menu_File->addAction(ui->actionSaveAs);
     ui->menu_File->addSeparator();
     ui->menu_File->addSeparator();
-    ui->menu_File->addAction(ui->actionAbout);
 
     ui->actionNew->setShortcut(tr("ctrl+n"));
     connect(ui->actionNew, &QAction::triggered, this, &MainWindow::newFile);
@@ -3278,8 +3277,6 @@ void MainWindow::init_menu()
 
     ui->actionSaveAs->setShortcut(tr("ctrl+shift+s"));
     connect(ui->actionSaveAs, &QAction::triggered, this, &MainWindow::SaveAs);
-
-    connect(ui->actionAbout, &QAction::triggered, this, &MainWindow::about);
 
     ui->actionGenerate->setShortcut(tr("ctrl+g"));
     connect(ui->actionGenerate, &QAction::triggered, this, &MainWindow::btnGenerate_clicked);
@@ -3321,6 +3318,10 @@ void MainWindow::init_menu()
 
     connect(ui->actionInfo_win, &QAction::triggered, this, &MainWindow::view_info);
     connect(ui->actionMembers_win, &QAction::triggered, this, &MainWindow::view_mem_list);
+
+    connect(ui->actioniasl_usage, &QAction::triggered, this, &MainWindow::iaslUsage);
+    connect(ui->actionUser_Guide, &QAction::triggered, this, &MainWindow::userGuide);
+    connect(ui->actionAbout_1, &QAction::triggered, this, &MainWindow::about);
 
     ui->chkName->setVisible(false);
     ui->chkScope->setVisible(false);
@@ -4351,6 +4352,7 @@ void MainWindow::readKextstat()
     QString result = QString::fromUtf8(pk->readAll());
     newFile();
     textEdit->append(result);
+    textEdit->setModified(false);
 
     ui->tabWidget->setHidden(true);
     ui->actionInfo_win->setChecked(false);
@@ -4584,4 +4586,51 @@ void MainWindow::ds_Decompile()
     dlg->setWindowTitle(tr("DSDT + SSDT Decompile"));
     dlg->setModal(true);
     dlg->show();
+}
+
+void MainWindow::iaslUsage()
+{
+    pk = new QProcess;
+
+    QFileInfo appInfo(qApp->applicationDirPath());
+
+#ifdef Q_OS_WIN32
+    // win
+    pk->start(appInfo.filePath() + "/iasl.exe", QStringList() << "-h");
+#endif
+
+#ifdef Q_OS_LINUX
+    // linux
+    pk->start(appInfo.filePath() + "/iasl", QStringList() << "-h");
+
+#endif
+
+#ifdef Q_OS_MAC
+    // mac
+    pk->start(appInfo.filePath() + "/iasl", QStringList() << "-h");
+
+#endif
+
+    connect(pk, SIGNAL(finished(int)), this, SLOT(readHelpResult(int)));
+}
+
+void MainWindow::readHelpResult(int exitCode)
+{
+    Q_UNUSED(exitCode);
+    QString result;
+
+    result = QString::fromUtf8(pk->readAll());
+    newFile();
+    textEdit->append(result);
+    textEdit->setModified(false);
+}
+
+void MainWindow::userGuide()
+{
+    //QFileInfo appInfo(qApp->applicationDirPath());
+    //QString qtManulFile = appInfo.filePath() + "/aslcompiler.pdf";
+    //QDesktopServices::openUrl(QUrl::fromLocalFile(qtManulFile));
+
+    QUrl url(QString("https://acpica.org/documentation"));
+    QDesktopServices::openUrl(url);
 }

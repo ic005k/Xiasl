@@ -10,6 +10,7 @@
 #include <QCommandLineParser>
 #include <QDateTime>
 #include <QDebug>
+#include <QDesktopServices>
 #include <QDesktopWidget>
 #include <QDir>
 #include <QElapsedTimer>
@@ -44,7 +45,7 @@
 #include <QTranslator>
 #include <QTreeWidget>
 #include <QTreeWidgetItem>
-#include <QtDebug>
+//#include <QtDebug>
 
 #ifdef Q_OS_WIN32
 #include <Shlobj.h>
@@ -135,6 +136,8 @@ public slots:
 private slots:
     void treeWidgetBack_itemClicked(QTreeWidgetItem* item, int column);
 
+    void userGuide();
+
     void ds_Decompile();
 
     void view_info();
@@ -150,12 +153,14 @@ private slots:
     void set_wrap();
 
     void on_btnRefreshTree();
+
     void refresh_tree(QsciScintilla* textEdit);
 
     void timer_linkage();
 
     void readResult(int exitCode);
     void readDecompileResult(int exitCode);
+    void readHelpResult(int exitCode);
 
     void readKextstat();
 
@@ -234,6 +239,8 @@ private slots:
     void on_tabWidget_textEdit_tabBarClicked(int index);
 
     void on_tabWidget_textEdit_currentChanged(int index);
+
+    void iaslUsage();
 
 private:
     Ui::MainWindow* ui;
