@@ -376,6 +376,8 @@
     <addaction name="separator"/>
     <addaction name="actionReplace"/>
     <addaction name="actionReplace_Find"/>
+    <addaction name="actionFind"/>
+    <addaction name="actionReplaceAll"/>
     <addaction name="separator"/>
     <addaction name="actionKextstat"/>
    </widget>
@@ -397,6 +399,7 @@
     <property name="title">
      <string>Help</string>
     </property>
+    <addaction name="actionCheckUpdate"/>
     <addaction name="actioniasl_usage"/>
     <addaction name="actionUser_Guide"/>
     <addaction name="actionAbout_1"/>
@@ -560,6 +563,21 @@
   <action name="actionUser_Guide">
    <property name="text">
     <string>ACPICA Documentation</string>
+   </property>
+  </action>
+  <action name="actionCheckUpdate">
+   <property name="text">
+    <string>Check Update</string>
+   </property>
+  </action>
+  <action name="actionReplaceAll">
+   <property name="text">
+    <string>Batch Replace(max=100)</string>
+   </property>
+  </action>
+  <action name="actionFind">
+   <property name="text">
+    <string>Find</string>
    </property>
   </action>
  </widget>

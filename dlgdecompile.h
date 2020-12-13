@@ -1,23 +1,22 @@
 #ifndef DLGDECOMPILE_H
 #define DLGDECOMPILE_H
 
-#include <QDialog>
-#include <QFileDialog>
-#include <QProcess>
 #include <QDebug>
+#include <QDialog>
 #include <QFile>
+#include <QFileDialog>
 #include <QFileInfo>
+#include <QProcess>
 
 namespace Ui {
 class dlgDecompile;
 }
 
-class dlgDecompile : public QDialog
-{
+class dlgDecompile : public QDialog {
     Q_OBJECT
 
 public:
-    explicit dlgDecompile(QWidget *parent = nullptr);
+    explicit dlgDecompile(QWidget* parent = nullptr);
     ~dlgDecompile();
 
 private slots:
@@ -35,11 +34,10 @@ private slots:
 
 public slots:
 
-
 private:
-    Ui::dlgDecompile *ui;
+    Ui::dlgDecompile* ui;
 
-    QProcess *Decompile;
+    QProcess* Decompile;
 };
 
 #endif // DLGDECOMPILE_H

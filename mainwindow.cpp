@@ -62,8 +62,12 @@ MainWindow::MainWindow(QWidget* parent)
 
     loadLocal();
 
-    ver = "QtiASL V1.0.30    ";
+    CurVerison = "1.0.30";
+    ver = "QtiASL V" + CurVerison + "        ";
     setWindowTitle(ver);
+
+    QDir dir;
+    if (dir.mkpath(QDir::homePath() + "/.config/QtiASL/")) { }
 
     QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
 
@@ -76,14 +80,11 @@ MainWindow::MainWindow(QWidget* parent)
 
     font.setFamily("SauceCodePro Nerd Font");
 #ifdef Q_OS_WIN32
-
     font.setPointSize(9);
-
     regACPI_win();
     ui->actionKextstat->setEnabled(false);
-
     ui->toolBar->setIconSize(QSize(22, 22));
-
+    win = true;
 #endif
 
 #ifdef Q_OS_LINUX
@@ -91,13 +92,14 @@ MainWindow::MainWindow(QWidget* parent)
     ui->actionKextstat->setEnabled(false);
     ui->actionGenerate->setEnabled(false);
     ui->toolBar->setIconSize(QSize(22, 22));
+    linuxOS = true;
 #endif
 
 #ifdef Q_OS_MAC
     font.setPointSize(13);
     ui->actionGenerate->setEnabled(false);
     ui->toolBar->setIconSize(QSize(22, 22));
-
+    mac = true;
 #endif
 
     init_treeWidget();
@@ -162,6 +164,12 @@ MainWindow::MainWindow(QWidget* parent)
     ui->actionReplace_Find->setIcon(QIcon(":/icon/rf.png"));
     ui->toolBar->addAction(ui->actionReplace_Find);
 
+    ui->actionFind->setIcon(QIcon(":/icon/fn.png"));
+    ui->toolBar->addAction(ui->actionFind);
+
+    ui->actionReplaceAll->setIcon(QIcon(":/icon/ra.png"));
+    ui->toolBar->addAction(ui->actionReplaceAll);
+
     ui->toolBar->addSeparator();
     ui->toolBar->addWidget(ui->cboxCompilationOptions);
     ui->actionGo_to_previous_error->setIcon(QIcon(":/icon/1.png"));
@@ -179,6 +187,9 @@ MainWindow::MainWindow(QWidget* parent)
 
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(timer_linkage()));
+
+    manager = new QNetworkAccessManager(this);
+    connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));
 
     init_recentFiles();
 
@@ -205,7 +216,7 @@ void MainWindow::loadTabFiles()
     loading = true;
 
     //读取标签页
-    QString qfile = QDir::homePath() + "/QtiASL.ini";
+    QString qfile = QDir::homePath() + "/.config/QtiASL/QtiASL.ini";
     QFileInfo fi(qfile);
 
     if (fi.exists()) {
@@ -1131,10 +1142,39 @@ void MainWindow::on_btnReplace()
     textEdit->replace(ui->editReplace->text());
 }
 
+void MainWindow::ReplaceAll()
+{
+    loading = true;
+
+    int total = 0;
+
+    QString str = ui->editFind->text().trimmed();
+    if (!textEdit->findFirst(str, true, CaseSensitive, false, true, true))
+        return;
+
+    for (int i = 0; i < 100; i++) {
+        on_btnReplaceFind();
+        total++;
+
+        if (!textEdit->findFirst(str, true, CaseSensitive, false, true, true))
+            break;
+    }
+    //qInfo() << total;
+    loading = false;
+}
+
+void MainWindow::forEach(QString str, QString strReplace)
+{
+    if (textEdit->findFirst(str, true, CaseSensitive, false, true, true)) {
+
+        textEdit->replace(strReplace);
+    }
+}
+
 void MainWindow::on_btnFindNext()
 {
     QString str = ui->editFind->text().trimmed();
-    //正则、大小写、匹配整个词、循环查找、向下或向上：目前已开启向下的循环查找ß
+    //正则、大小写、匹配整个词、循环查找、向下或向上：目前已开启向下的循环查找
     if (textEdit->findFirst(str, true, CaseSensitive, false, true, true)) {
 
         if (red < 55) {
@@ -3241,17 +3281,17 @@ void MainWindow::init_info_edit()
 void MainWindow::init_recentFiles()
 {
     //最近打开的文件
-    //Mac:"/Users/../Library/Preferences/com.github-com-ic005k-qtiasl.V1.plist"
-    //Win:"\\HKEY_CURRENT_USER\\Software\\QtiASL\\V1"
-    QCoreApplication::setOrganizationName("QtiASL");
-    QCoreApplication::setOrganizationDomain("github.com/ic005k/QtiASL");
-    QCoreApplication::setApplicationName("V1");
+    //Mac:"/Users/../Library/Preferences/com.github-com-ic005k.QtiASL.plist"
+    //Win:"\\HKEY_CURRENT_USER\\Software\\ic005k\\QtiASL"
+    QCoreApplication::setOrganizationName("ic005k");
+    QCoreApplication::setOrganizationDomain("github.com/ic005k");
+    QCoreApplication::setApplicationName("QtiASL");
 
     m_recentFiles = new RecentFiles(this);
     if (!zh_cn)
-        m_recentFiles->attachToMenuAfterItem(ui->menu_File, "SaveAS...", SLOT(recentOpen(QString))); //在此处插入菜单
+        m_recentFiles->attachToMenuAfterItem(ui->menu_File, "SaveAS...", SLOT(recentOpen(QString)));
     else
-        m_recentFiles->attachToMenuAfterItem(ui->menu_File, "另存...", SLOT(recentOpen(QString))); //在此处插入菜单
+        m_recentFiles->attachToMenuAfterItem(ui->menu_File, "另存...", SLOT(recentOpen(QString)));
 
     m_recentFiles->setNumOfRecentFiles(25); //最多显示最近的文件个数
 }
@@ -3295,12 +3335,15 @@ void MainWindow::init_menu()
 
     ui->actionFindNext->setShortcut(tr("ctrl+f"));
     connect(ui->actionFindNext, &QAction::triggered, this, &MainWindow::on_btnFindNext);
+    //ui->actionFind->setShortcut(tr("ctrl+f"));
+    connect(ui->actionFind, &QAction::triggered, this, &MainWindow::on_btnFindNext);
 
     ui->actionReplace->setShortcut(tr("ctrl+k"));
     connect(ui->actionReplace, &QAction::triggered, this, &MainWindow::on_btnReplace);
 
     ui->actionReplace_Find->setShortcut(tr("ctrl+j"));
     connect(ui->actionReplace_Find, &QAction::triggered, this, &MainWindow::on_btnReplaceFind);
+    connect(ui->actionReplaceAll, &QAction::triggered, this, &MainWindow::ReplaceAll);
 
     //ui->actionGo_to_previous_error->setShortcut(tr("ctrl+e"));
     connect(ui->actionGo_to_previous_error, &QAction::triggered, this, &MainWindow::on_btnPreviousError);
@@ -3319,6 +3362,7 @@ void MainWindow::init_menu()
     connect(ui->actionInfo_win, &QAction::triggered, this, &MainWindow::view_info);
     connect(ui->actionMembers_win, &QAction::triggered, this, &MainWindow::view_mem_list);
 
+    connect(ui->actionCheckUpdate, &QAction::triggered, this, &MainWindow::CheckUpdate);
     connect(ui->actioniasl_usage, &QAction::triggered, this, &MainWindow::iaslUsage);
     connect(ui->actionUser_Guide, &QAction::triggered, this, &MainWindow::userGuide);
     connect(ui->actionAbout_1, &QAction::triggered, this, &MainWindow::about);
@@ -3338,7 +3382,7 @@ void MainWindow::init_menu()
     ui->cboxCompilationOptions->setEditable(true);
 
     //读取编译参数
-    QString qfile = QDir::homePath() + "/QtiASL.ini";
+    QString qfile = QDir::homePath() + "/.config/QtiASL/QtiASL.ini";
     QFileInfo fi(qfile);
 
     if (fi.exists()) {
@@ -3547,7 +3591,7 @@ void MainWindow::init_edit(QsciScintilla* textEdit)
     textEdit->setLexer(textLexer);
 
     //读取字体
-    QString qfile = QDir::homePath() + "/QtiASL.ini";
+    QString qfile = QDir::homePath() + "/.config/QtiASL/QtiASL.ini";
     QFileInfo fi(qfile);
 
     if (fi.exists()) {
@@ -3652,7 +3696,7 @@ void MainWindow::init_filesystem()
     ui->tabWidget_misc->setCurrentIndex(0);
 
     //读取之前的目录
-    QString qfile = QDir::homePath() + "/QtiASL.ini";
+    QString qfile = QDir::homePath() + "/.config/QtiASL/QtiASL.ini";
     //QFile file(qfile);
     QFileInfo fi(qfile);
 
@@ -3941,7 +3985,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
 {
 
     //存储编译选项
-    QString qfile = QDir::homePath() + "/QtiASL.ini";
+    QString qfile = QDir::homePath() + "/.config/QtiASL/QtiASL.ini";
     QFile file(qfile);
     //QSettings Reg(qfile, QSettings::NativeFormat);
     QSettings Reg(qfile, QSettings::IniFormat); //全平台都采用ini格式
@@ -4195,7 +4239,7 @@ void MainWindow::set_font()
         textEdit->setMarginsFont(m_font);
 
         //存储字体信息
-        QString qfile = QDir::homePath() + "/QtiASL.ini";
+        QString qfile = QDir::homePath() + "/.config/QtiASL/QtiASL.ini";
         QFile file(qfile);
         //QSettings Reg(qfile, QSettings::NativeFormat);
         QSettings Reg(qfile, QSettings::IniFormat); //全平台都采用ini格式
@@ -4633,4 +4677,79 @@ void MainWindow::userGuide()
 
     QUrl url(QString("https://acpica.org/documentation"));
     QDesktopServices::openUrl(url);
+}
+
+void MainWindow::CheckUpdate()
+{
+
+    QNetworkRequest quest;
+    quest.setUrl(QUrl("https://api.github.com/repos/ic005k/QtiASL/releases/latest"));
+    quest.setHeader(QNetworkRequest::UserAgentHeader, "RT-Thread ART");
+    manager->get(quest);
+}
+
+void MainWindow::replyFinished(QNetworkReply* reply)
+{
+    QString str = reply->readAll();
+    QMessageBox box;
+    box.setText(str);
+    //box.exec();
+    //qDebug() << QSslSocket::supportsSsl() << QSslSocket::sslLibraryBuildVersionString() << QSslSocket::sslLibraryVersionString();
+
+    parse_UpdateJSON(str);
+
+    reply->deleteLater();
+}
+
+int MainWindow::parse_UpdateJSON(QString str)
+{
+
+    QJsonParseError err_rpt;
+    QJsonDocument root_Doc = QJsonDocument::fromJson(str.toUtf8(), &err_rpt);
+
+    if (err_rpt.error != QJsonParseError::NoError) {
+        QMessageBox::critical(this, "", tr("Network error!"));
+        return -1;
+    }
+    if (root_Doc.isObject()) {
+        QJsonObject root_Obj = root_Doc.object();
+
+        QString macUrl, winUrl, linuxUrl;
+        QVariantList list = root_Obj.value("assets").toArray().toVariantList();
+        for (int i = 0; i < list.count(); i++) {
+            QVariantMap map = list[i].toMap();
+            QFileInfo file(map["name"].toString());
+            if (file.suffix().toLower() == "zip")
+                macUrl = map["browser_download_url"].toString();
+
+            if (file.suffix().toLower() == "7z")
+                winUrl = map["browser_download_url"].toString();
+
+            if (file.suffix() == "AppImage")
+                linuxUrl = map["browser_download_url"].toString();
+        }
+
+        QJsonObject PulseValue = root_Obj.value("assets").toObject();
+        QString Verison = root_Obj.value("tag_name").toString();
+        QString Url;
+        if (mac)
+            Url = macUrl;
+        if (win)
+            Url = winUrl;
+        if (linuxOS)
+            Url = linuxUrl;
+
+        QString UpdateTime = root_Obj.value("published_at").toString();
+        QString ReleaseNote = root_Obj.value("body").toString();
+
+        if (Verison > CurVerison) {
+            QString warningStr = tr("New version detected!") + "\n" + tr("Version: ") + "V" + Verison + "\n" + tr("Published at: ") + UpdateTime + "\n" + tr("Release Notes: ") + "\n" + ReleaseNote;
+            int ret = QMessageBox::warning(this, "", warningStr, tr("Download"), tr("Cancel"));
+            if (ret == 0) {
+                QDesktopServices::openUrl(QUrl(Url));
+            }
+        } else
+            QMessageBox::information(this, "", tr("It is currently the latest version!"));
+    }
+    return 0;
 }

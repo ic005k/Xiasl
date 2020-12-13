@@ -24,5 +24,6 @@
         <file>icon/re.png</file>
         <file>icon/rf.png</file>
         <file>icon/bat.png</file>
+        <file>icon/ra.png</file>
     </qresource>
 </RCC>

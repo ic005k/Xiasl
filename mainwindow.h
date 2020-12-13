@@ -45,7 +45,15 @@
 #include <QTranslator>
 #include <QTreeWidget>
 #include <QTreeWidgetItem>
-//#include <QtDebug>
+
+//网络相关头文件
+#include <QtNetwork/QNetworkAccessManager>
+#include <QtNetwork/QNetworkReply>
+#include <QtNetwork/QNetworkRequest>
+//JSON相关头文件
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
 
 #ifdef Q_OS_WIN32
 #include <Shlobj.h>
@@ -242,10 +250,24 @@ private slots:
 
     void iaslUsage();
 
+    void replyFinished(QNetworkReply* reply);
+    void CheckUpdate();
+
+    void ReplaceAll();
+
 private:
     Ui::MainWindow* ui;
 
     dlgDecompile* dlg;
+
+    void forEach(QString str, QString strReplace);
+
+    QNetworkAccessManager* manager;
+    int parse_UpdateJSON(QString str);
+    bool mac = false;
+    bool win = false;
+    bool linuxOS = false;
+    QString CurVerison = "V1.0";
 
     void loadTabFiles();
 
