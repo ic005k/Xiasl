@@ -334,6 +334,7 @@ private:
     void init_treeWidget();
 
     void init_statusBar();
+    QLabel* locationLabel;
 
     void init_filesystem();
     QFileSystemModel* model;

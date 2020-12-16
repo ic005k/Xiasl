@@ -988,7 +988,14 @@ void MainWindow::set_currsor_position(QsciScintilla* textEdit)
     int ColNum, RowNum;
     textEdit->getCursorPosition(&RowNum, &ColNum);
 
-    ui->statusbar->showMessage(tr("Row") + " : " + QString::number(RowNum + 1) + "    " + tr("Column") + " : " + QString::number(ColNum));
+    QString msg = tr("Row") + " : " + QString::number(RowNum + 1) + "    " + tr("Column") + " : " + QString::number(ColNum);
+
+    locationLabel->setText(msg);
+
+    locationLabel->setAlignment(Qt::AlignCenter);
+    locationLabel->setMinimumSize(locationLabel->sizeHint());
+    statusBar()->setStyleSheet(QString("QStatusBar::item{border: 0px}")); // 设置不显示label的边框
+    statusBar()->setSizeGripEnabled(false); //设置是否显示右边的大小控制点
 
     //联动treeWidget
     mem_linkage(ui->treeWidget, RowNum);
@@ -1058,9 +1065,9 @@ int CodeEditor::lineNumberAreaWidth()
         ++digits;
     }
 
-    int space = 3 + fontMetrics().horizontalAdvance(QLatin1Char('9')) * digits;
+    //int space = 3 + fontMetrics().horizontalAdvance(QLatin1Char('9')) * digits;
 
-    return space;
+    return 0;
 }
 
 void CodeEditor::updateLineNumberAreaWidth(int /* newBlockCount */)
@@ -1175,6 +1182,7 @@ void MainWindow::on_btnFindNext()
 {
     QString str = ui->editFind->text().trimmed();
     //正则、大小写、匹配整个词、循环查找、向下或向上：目前已开启向下的循环查找
+
     if (textEdit->findFirst(str, true, CaseSensitive, false, true, true)) {
 
         if (red < 55) {
@@ -1255,7 +1263,9 @@ void MainWindow::on_btnFindPrevious()
     QPainter p(this);
     QFontMetrics fm = p.fontMetrics();
     QString t = textEdit->text(row).mid(0, col);
-    int char_w = fm.horizontalAdvance(t); //一个字符的宽度
+    int char_w;
+    //char_w = fm.horizontalAdvance(t); //一个字符的宽度
+    char_w = fm.averageCharWidth();
     qDebug() << col;
     if (char_w < textEdit->viewport()->width())
         hscrollbar->setSliderPosition(0);
@@ -3622,7 +3632,10 @@ void MainWindow::init_edit(QsciScintilla* textEdit)
 void MainWindow::init_treeWidget()
 {
 
-    int w = screen()->size().width();
+    int w;
+    //w = screen()->size().width();
+    QScreen* screen = QGuiApplication::primaryScreen();
+    w = screen->size().width();
 
     ui->tabWidget_misc->setMaximumWidth(w / 3 - 20);
 
@@ -3689,7 +3702,8 @@ void MainWindow::init_filesystem()
     ui->treeView->setAnimated(false);
     ui->treeView->setIndentation(20);
     ui->treeView->setSortingEnabled(true);
-    const QSize availableSize = ui->treeView->screen()->availableGeometry().size();
+    //const QSize availableSize = ui->treeView->screen()->availableGeometry().size();
+    const QSize availableSize = ui->treeView->geometry().size();
     ui->treeView->resize(availableSize / 2);
     ui->treeView->setColumnWidth(0, ui->treeView->width() / 3);
 
@@ -4129,6 +4143,9 @@ void MainWindow::dropEvent(QDropEvent* e)
 void MainWindow::init_statusBar()
 {
     //状态栏
+    locationLabel = new QLabel(this);
+    statusBar()->addWidget(locationLabel);
+
     lblLayer = new QLabel(this);
     QPalette label_palette;
     label_palette.setColor(QPalette::Background, QColor(0, 0, 255, 200));
@@ -4293,7 +4310,7 @@ void MainWindow::paintEvent(QPaintEvent* event)
     QBrush brush = pal.window();
     int c_red = brush.color().red();
     if (c_red != red) {
-        /*注意：1.代码折叠线的颜色 2.双引号输入时的背景色*/
+        //注意：1.代码折叠线的颜色 2.双引号输入时的背景色
         for (int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i++) {
             QWidget* pWidget = ui->tabWidget_textEdit->widget(i);
             QsciScintilla* edit = new QsciScintilla;

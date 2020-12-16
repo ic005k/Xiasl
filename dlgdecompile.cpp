@@ -9,6 +9,8 @@ dlgDecompile::dlgDecompile(QWidget* parent)
     , ui(new Ui::dlgDecompile)
 {
     ui->setupUi(this);
+
+    ui->tabWidget->tabBar()->setCurrentIndex(0);
 }
 
 dlgDecompile::~dlgDecompile()
