@@ -1,12 +1,11 @@
-# QtiASL
-开源跨平台的dsdt&ssdt分析编辑器
+# QtiASL--开源跨平台的DSDT&SSDT集成开发环境
 
 写这个工具的初衷是为了完善win和linux平台下的dsdt编辑器生态。
 
 目前可用于在win或winpe下提取和编辑dsdt文件，mac或Linux下也可以使用该工具来编写和调试dsdt、ssdt。
 
 
-基本特征包括但不限于：
+## 基本特征包括但不限于：
 
 0.流畅、高效的编辑环境，数万乃至数十万行代码均能非常流畅地编辑
 
@@ -44,16 +43,16 @@
 
 ......
 
-国内github下载文件可以尝试采用：https://toolwa.com/github/
+### 国内github下载文件可以尝试采用：https://toolwa.com/github/
 
 
-QtiASL的诞生离不开以下第三方开源软件的支持，感谢！
+## QtiASL的诞生离不开以下第三方开源软件的支持，感谢！
 
 ACPI：https://acpica.org/source
 
 QSci：https://riverbankcomputing.com/software/qscintilla/download
 
-讨论区：
+## 讨论区：
 
 pcbeta远景：http://bbs.pcbeta.com/viewthread-1867564-1-1.html
 
@@ -62,4 +61,4 @@ insanelymac: https://www.insanelymac.com/forum/topic/344860-open-source-cross-pl
 
 ![截图](https://github.com/ic005k/QtiASL/blob/master/qtiasl.png)
 
-备注：此项目开始于2020年8月
+## 备注：此项目开始于2020年8月
