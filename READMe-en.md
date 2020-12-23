@@ -1,3 +1,4 @@
+[简体中文](https://github.com/ic005k/QtiASL/blob/master/README.md) | [English](https://github.com/ic005k/QtiASL/blob/master/READMe-en.md)
 # QtiASL-- open source cross-platform DSDT&SSDT integrated development environment
 
 The original intention of writing this tool is to improve the dsdt editor ecology under win and linux platforms.
