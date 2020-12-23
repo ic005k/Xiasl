@@ -35,7 +35,7 @@ At present, it can be used to extract and edit dsdt files under win or winpe, an
 
 * humanized search function, and supports simple regular expressions
 
-:: Unlimited levels of revocation and recovery
+* Unlimited levels of revocation and recovery
 
 * compile the wrong place, next to the line number with red dot to identify
 
