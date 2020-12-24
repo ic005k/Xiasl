@@ -43,7 +43,7 @@ At present, it can be used to extract and edit dsdt files under win or winpe, an
 
 ......
 
-## QtiASL can not be born without the support of the following third-party open source software, thank you!
+## Thanks for the support of the following third-party open source software!
 
 [ACPI](https://acpica.org/source)&nbsp; &nbsp; &nbsp; &nbsp; [QSci](https://riverbankcomputing.com/software/qscintilla/download)
 
