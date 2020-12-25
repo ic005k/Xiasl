@@ -47,7 +47,7 @@
 ### [国内github下载文件推荐](https://toolwa.com/github/)
 
 
-## 感谢以下第三方开源软件的支持！
+## 感谢以下开源软件的支持！
 
 [ACPI](https://acpica.org/source)&nbsp;&nbsp;&nbsp;&nbsp;[QSci](https://riverbankcomputing.com/software/qscintilla/download)
 
