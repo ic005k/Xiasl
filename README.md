@@ -53,7 +53,7 @@
 
 ## 讨论区：
 
-[pcbeta远景](http://bbs.pcbeta.com/viewthread-1867564-1-1.html)&nbsp;&nbsp;&nbsp;&nbsp;[insanelymac](https://www.insanelymac.com/forum/topic/344860-open-source-cross-platform-dsdtssdt-analysis-editor/)
+[insanelymac](https://www.insanelymac.com/forum/topic/344860-open-source-cross-platform-dsdtssdt-analysis-editor/)
 
 
 ![截图](https://github.com/ic005k/QtiASL/blob/master/qtiasl.png)
