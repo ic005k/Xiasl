@@ -1,4 +1,4 @@
-[简体中文](https://github.com/ic005k/QtiASL/blob/master/README-en.md) | [English](https://github.com/ic005k/QtiASL/blob/master/READMe.md)
+[简体中文](https://github.com/ic005k/QtiASL/blob/master/README-cn.md) | [English](https://github.com/ic005k/QtiASL/blob/master/README.md)
 
 # QtiASL-- open source cross-platform DSDT&SSDT integrated development environment
 
