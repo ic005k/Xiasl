@@ -1,4 +1,4 @@
-[简体中文](https://github.com/ic005k/QtiASL/blob/master/READMe-en.md) | [English](https://github.com/ic005k/QtiASL/blob/master/READMe.md)
+[简体中文](https://github.com/ic005k/QtiASL/blob/master/READMe-en.md) | [English](https://github.com/ic005k/QtiASL/blob/master/README.md)
 # QtiASL--开源跨平台的DSDT&SSDT集成开发环境
 
 写这个工具的初衷是为了完善win和linux平台下的dsdt编辑器生态。
