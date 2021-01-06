@@ -62,7 +62,7 @@ MainWindow::MainWindow(QWidget* parent)
 
     loadLocal();
 
-    CurVerison = "1.0.30";
+    CurVerison = "1.0.32";
     ver = "QtiASL V" + CurVerison + "        ";
     setWindowTitle(ver);
 
@@ -99,6 +99,7 @@ MainWindow::MainWindow(QWidget* parent)
     font.setPointSize(13);
     ui->actionGenerate->setEnabled(false);
     ui->toolBar->setIconSize(QSize(22, 22));
+    //ui->actionCheckUpdate->setVisible(false);
     mac = true;
 #endif
 
