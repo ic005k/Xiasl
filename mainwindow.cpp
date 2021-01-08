@@ -62,7 +62,7 @@ MainWindow::MainWindow(QWidget* parent)
 
     loadLocal();
 
-    CurVerison = "1.0.32";
+    CurVerison = "1.0.33";
     ver = "QtiASL V" + CurVerison + "        ";
     setWindowTitle(ver);
 
@@ -149,6 +149,9 @@ MainWindow::MainWindow(QWidget* parent)
     ui->toolBar->addSeparator();
     ui->toolBar->addWidget(ui->chkCaseSensitive);
     ui->toolBar->addWidget(ui->editFind);
+    lblCount = new QLabel(this);
+    lblCount->setText("0");
+    ui->toolBar->addWidget(lblCount);
 
     ui->actionFindPrevious->setIcon(QIcon(":/icon/fp.png"));
     ui->toolBar->addAction(ui->actionFindPrevious);
@@ -1152,7 +1155,7 @@ void MainWindow::on_btnReplace()
 
 void MainWindow::ReplaceAll()
 {
-    loading = true;
+    /*loading = true;
 
     int total = 0;
 
@@ -1168,7 +1171,25 @@ void MainWindow::ReplaceAll()
             break;
     }
     //qInfo() << total;
-    loading = false;
+    loading = false;*/
+
+    if(ui->editReplace->text().trimmed() == "")
+        return;
+
+    int row, col;
+    textEdit->getCursorPosition(&row, &col);
+
+    QString searchtext = ui->editFind->text().trimmed();
+    QString replacetext = ui->editReplace->text().trimmed();
+    QString document = textEdit->text();
+    if (!ui->chkCaseSensitive->isChecked())
+        document.replace(searchtext, replacetext, Qt::CaseInsensitive);
+    else
+        document.replace(searchtext, replacetext);
+
+    textEdit->setText(document);
+
+    textEdit->setCursorPosition(row, col);
 }
 
 void MainWindow::forEach(QString str, QString strReplace)
@@ -1181,6 +1202,8 @@ void MainWindow::forEach(QString str, QString strReplace)
 
 void MainWindow::on_btnFindNext()
 {
+    clearSearchHighlight();
+
     QString str = ui->editFind->text().trimmed();
     //正则、大小写、匹配整个词、循环查找、向下或向上：目前已开启向下的循环查找
 
@@ -1223,10 +1246,14 @@ void MainWindow::on_btnFindNext()
 
     find_down = true;
     find_up = false;
+
+    highlighsearchtext(str);
 }
 
 void MainWindow::on_btnFindPrevious()
 {
+
+    clearSearchHighlight();
 
     QString name = ui->editFind->text().trimmed();
     std::string str = name.toStdString();
@@ -1277,6 +1304,8 @@ void MainWindow::on_btnFindPrevious()
 
     find_down = false;
     find_up = true;
+
+    highlighsearchtext(name);
 }
 
 void MainWindow::on_treeWidget_itemClicked(QTreeWidgetItem* item, int column)
@@ -3346,7 +3375,7 @@ void MainWindow::init_menu()
 
     ui->actionFindNext->setShortcut(tr("ctrl+f"));
     connect(ui->actionFindNext, &QAction::triggered, this, &MainWindow::on_btnFindNext);
-    //ui->actionFind->setShortcut(tr("ctrl+f"));
+    //ui->actionFind->setShortcut(tr("ctrl+f")); //注意：win下不起作用
     connect(ui->actionFind, &QAction::triggered, this, &MainWindow::on_btnFindNext);
 
     ui->actionReplace->setShortcut(tr("ctrl+k"));
@@ -3356,10 +3385,10 @@ void MainWindow::init_menu()
     connect(ui->actionReplace_Find, &QAction::triggered, this, &MainWindow::on_btnReplaceFind);
     connect(ui->actionReplaceAll, &QAction::triggered, this, &MainWindow::ReplaceAll);
 
-    //ui->actionGo_to_previous_error->setShortcut(tr("ctrl+e"));
+    ui->actionGo_to_previous_error->setShortcut(tr("ctrl+alt+e"));
     connect(ui->actionGo_to_previous_error, &QAction::triggered, this, &MainWindow::on_btnPreviousError);
 
-    //ui->actionGo_to_the_next_error->setShortcut(tr("ctrl+i"));
+    ui->actionGo_to_the_next_error->setShortcut(tr("ctrl+e"));
     connect(ui->actionGo_to_the_next_error, &QAction::triggered, this, &MainWindow::on_btnNextError);
 
     //ui->actionFont_2->setShortcut(tr("ctrl+f"));
@@ -4281,9 +4310,14 @@ void MainWindow::set_wrap()
 void MainWindow::on_editFind_textChanged(const QString& arg1)
 {
 
-    if (arg1.count() > 0)
+    if (arg1.count() > 0) {
+
         on_btnFindNext();
-    else {
+    } else {
+
+        clearSearchHighlight();
+        lblCount->setText("0");
+
         if (red < 55) {
 
             QPalette palette;
@@ -4770,4 +4804,48 @@ int MainWindow::parse_UpdateJSON(QString str)
             QMessageBox::information(this, "", tr("It is currently the latest version!"));
     }
     return 0;
+}
+
+void MainWindow::highlighsearchtext(QString searchText)
+{
+    QString document;
+
+    if (ui->chkCaseSensitive->isChecked()) {
+        search_string = searchText;
+        document = textEdit->text();
+    } else {
+        search_string = searchText.toLower();
+        document = textEdit->text().toLower();
+    }
+
+    //qDebug() << document;
+
+    textEdit->SendScintilla(QsciScintilla::SCI_INDICSETSTYLE, 0, 8);
+    m_searchTextPosList.clear();
+
+    int end = document.lastIndexOf(searchText);
+
+    if (!searchText.isEmpty()) {
+        int curpos = -1;
+        if (end != -1) {
+            while (curpos != end) {
+                curpos = document.indexOf(search_string, curpos + 1);
+
+                //textEdit->SendScintilla(QsciScintilla::SCI_INDICATORFILLRANGE, curpos, search_string.length());
+
+                m_searchTextPosList.append(curpos);
+            }
+        }
+    }
+
+    int count = m_searchTextPosList.count();
+    lblCount->setText(QString::number(count));
+}
+
+void MainWindow::clearSearchHighlight()
+{
+    for (int i = 0; i < m_searchTextPosList.count(); i++) {
+        textEdit->SendScintilla(QsciScintilla::SCI_INDICATORCLEARRANGE, m_searchTextPosList[i], search_string.length());
+    }
+    m_searchTextPosList.clear();
 }

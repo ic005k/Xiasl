@@ -14,7 +14,7 @@
    <string>MainWindow</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../../../DataBak/qt-test/QtIASL/my.qrc">
+   <iconset resource="my.qrc">
     <normaloff>:/icon/icon.png</normaloff>:/icon/icon.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -25,7 +25,7 @@
        <enum>QTabWidget::West</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <property name="documentMode">
        <bool>true</bool>
@@ -269,9 +269,6 @@
     </item>
     <item row="6" column="5">
      <widget class="QTabWidget" name="tabWidget_textEdit">
-      <property name="styleSheet">
-       <string notr="true"/>
-      </property>
       <property name="currentIndex">
        <number>-1</number>
       </property>
@@ -358,9 +355,9 @@
     <addaction name="separator"/>
     <addaction name="actionNew"/>
    </widget>
-   <widget class="QMenu" name="menu_Tools">
+   <widget class="QMenu" name="menu_Edit">
     <property name="title">
-     <string>Tools</string>
+     <string>Edit</string>
     </property>
     <addaction name="actionGenerate"/>
     <addaction name="actionDSDecompile"/>
@@ -405,8 +402,8 @@
     <addaction name="actionAbout_1"/>
    </widget>
    <addaction name="menu_File"/>
+   <addaction name="menu_Edit"/>
    <addaction name="menuView"/>
-   <addaction name="menu_Tools"/>
    <addaction name="menu_Preferences"/>
    <addaction name="menuHelp"/>
   </widget>
@@ -572,7 +569,7 @@
   </action>
   <action name="actionReplaceAll">
    <property name="text">
-    <string>Batch Replace(max=100)</string>
+    <string>Replace All</string>
    </property>
   </action>
   <action name="actionFind">
@@ -582,7 +579,7 @@
   </action>
  </widget>
  <resources>
-  <include location="../../../DataBak/qt-test/QtIASL/my.qrc"/>
+  <include location="my.qrc"/>
  </resources>
  <connections/>
 </ui>

@@ -260,6 +260,12 @@ private:
 
     dlgDecompile* dlg;
 
+    void highlighsearchtext(QString searchText);
+    void clearSearchHighlight();
+    QList<int> m_searchTextPosList;
+    QString search_string;
+    QLabel* lblCount;
+
     void forEach(QString str, QString strReplace);
 
     QNetworkAccessManager* manager;
