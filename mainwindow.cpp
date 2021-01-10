@@ -62,7 +62,7 @@ MainWindow::MainWindow(QWidget* parent)
 
     loadLocal();
 
-    CurVerison = "1.0.33";
+    CurVerison = "1.0.34";
     ver = "QtiASL V" + CurVerison + "        ";
     setWindowTitle(ver);
 
@@ -124,70 +124,9 @@ MainWindow::MainWindow(QWidget* parent)
     splitterRight->addWidget(ui->tabWidget_textEdit);
     splitterRight->addWidget(ui->tabWidget);
 
-    ui->gridLayout_9->addWidget(splitterMain);
+    ui->gridLayout_7->addWidget(splitterMain);
 
     ui->tabWidget->setHidden(true);
-
-    ui->actionNew->setIcon(QIcon(":/icon/new.png"));
-    ui->toolBar->addAction(ui->actionNew);
-
-    ui->actionOpen->setIcon(QIcon(":/icon/open.png"));
-    ui->toolBar->addAction(ui->actionOpen);
-
-    ui->actionSave->setIcon(QIcon(":/icon/save.png"));
-    ui->toolBar->addAction(ui->actionSave);
-
-    ui->actionSaveAs->setIcon(QIcon(":/icon/saveas.png"));
-    ui->toolBar->addAction(ui->actionSaveAs);
-
-    ui->toolBar->addSeparator();
-
-    ui->toolBar->addWidget(ui->chkAll);
-    ui->actionDSDecompile->setIcon(QIcon(":/icon/bat.png"));
-    ui->toolBar->addAction(ui->actionDSDecompile);
-
-    ui->toolBar->addSeparator();
-    ui->toolBar->addWidget(ui->chkCaseSensitive);
-    ui->toolBar->addWidget(ui->editFind);
-    lblCount = new QLabel(this);
-    lblCount->setText("0");
-    ui->toolBar->addWidget(lblCount);
-
-    ui->actionFindPrevious->setIcon(QIcon(":/icon/fp.png"));
-    ui->toolBar->addAction(ui->actionFindPrevious);
-
-    ui->actionFindNext->setIcon(QIcon(":/icon/fn.png"));
-    ui->toolBar->addAction(ui->actionFindNext);
-
-    ui->toolBar->addSeparator();
-    ui->toolBar->addWidget(ui->editReplace);
-
-    ui->actionReplace->setIcon(QIcon(":/icon/re.png"));
-    ui->toolBar->addAction(ui->actionReplace);
-
-    ui->actionReplace_Find->setIcon(QIcon(":/icon/rf.png"));
-    ui->toolBar->addAction(ui->actionReplace_Find);
-
-    ui->actionFind->setIcon(QIcon(":/icon/fn.png"));
-    ui->toolBar->addAction(ui->actionFind);
-
-    ui->actionReplaceAll->setIcon(QIcon(":/icon/ra.png"));
-    ui->toolBar->addAction(ui->actionReplaceAll);
-
-    ui->toolBar->addSeparator();
-    ui->toolBar->addWidget(ui->cboxCompilationOptions);
-    ui->actionGo_to_previous_error->setIcon(QIcon(":/icon/1.png"));
-    ui->toolBar->addAction(ui->actionGo_to_previous_error);
-
-    ui->actionCompiling->setIcon(QIcon(":/icon/2.png"));
-    ui->toolBar->addAction(ui->actionCompiling);
-
-    ui->actionGo_to_the_next_error->setIcon(QIcon(":/icon/3.png"));
-    ui->toolBar->addAction(ui->actionGo_to_the_next_error);
-
-    ui->toolBar->addSeparator();
-    ui->actionRefreshTree->setIcon(QIcon(":/icon/r.png"));
-    ui->toolBar->addAction(ui->actionRefreshTree);
 
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(timer_linkage()));
@@ -200,6 +139,8 @@ MainWindow::MainWindow(QWidget* parent)
     init_statusBar();
 
     init_filesystem();
+
+    init_toolbar();
 
     loadTabFiles();
 
@@ -483,8 +424,12 @@ void MainWindow::loadFile(const QString& fileName, int row, int col)
         textEdit->getCursorPosition(&RowNum, &ColNum);
     }
 
-    text = QString::fromUtf8(file.readAll());
+    //text = QString::fromUtf8(file.readAll());
+    in.setCodec("UTF-8");
+    text = in.readAll();
     textEdit->setText(text);
+    file.close();
+
     if (row != -1 && col != -1) {
         textEdit->setCursorPosition(row, col);
     }
@@ -1173,13 +1118,13 @@ void MainWindow::ReplaceAll()
     //qInfo() << total;
     loading = false;*/
 
-    if(ui->editReplace->text().trimmed() == "")
+    if (ui->editReplace->text().trimmed() == "")
         return;
 
     int row, col;
     textEdit->getCursorPosition(&row, &col);
 
-    QString searchtext = ui->editFind->text().trimmed();
+    QString searchtext = ui->editFind->currentText().trimmed();
     QString replacetext = ui->editReplace->text().trimmed();
     QString document = textEdit->text();
     if (!ui->chkCaseSensitive->isChecked())
@@ -1202,9 +1147,10 @@ void MainWindow::forEach(QString str, QString strReplace)
 
 void MainWindow::on_btnFindNext()
 {
-    clearSearchHighlight();
 
-    QString str = ui->editFind->text().trimmed();
+    clearSearchHighlight(textEdit);
+
+    QString str = ui->editFind->currentText().trimmed();
     //正则、大小写、匹配整个词、循环查找、向下或向上：目前已开启向下的循环查找
 
     if (textEdit->findFirst(str, true, CaseSensitive, false, true, true)) {
@@ -1253,9 +1199,9 @@ void MainWindow::on_btnFindNext()
 void MainWindow::on_btnFindPrevious()
 {
 
-    clearSearchHighlight();
+    clearSearchHighlight(textEdit);
 
-    QString name = ui->editFind->text().trimmed();
+    QString name = ui->editFind->currentText().trimmed();
     std::string str = name.toStdString();
     const char* ch = str.c_str();
 
@@ -3336,6 +3282,77 @@ void MainWindow::init_recentFiles()
     m_recentFiles->setNumOfRecentFiles(25); //最多显示最近的文件个数
 }
 
+void MainWindow::init_toolbar()
+{
+    ui->actionNew->setIcon(QIcon(":/icon/new.png"));
+    ui->toolBar->addAction(ui->actionNew);
+
+    ui->actionOpen->setIcon(QIcon(":/icon/open.png"));
+    ui->toolBar->addAction(ui->actionOpen);
+
+    ui->actionSave->setIcon(QIcon(":/icon/save.png"));
+    ui->toolBar->addAction(ui->actionSave);
+
+    ui->actionSaveAs->setIcon(QIcon(":/icon/saveas.png"));
+    ui->toolBar->addAction(ui->actionSaveAs);
+
+    ui->toolBar->addSeparator();
+
+    ui->toolBar->addWidget(ui->chkAll);
+    ui->actionDSDecompile->setIcon(QIcon(":/icon/bat.png"));
+    ui->toolBar->addAction(ui->actionDSDecompile);
+
+    ui->toolBar->addSeparator();
+    ui->toolBar->addWidget(ui->chkCaseSensitive);
+    ui->toolBar->addWidget(ui->editFind);
+    ui->editFind->setMinimumWidth(320);
+    ui->editFind->lineEdit()->setPlaceholderText(tr("Find") + "  (" + tr("History entries") + ": " + QString::number(ui->editFind->count()) + ")");
+    ui->editFind->lineEdit()->setClearButtonEnabled(true);
+    ui->editFind->setAutoCompletionCaseSensitivity(Qt::CaseSensitive);
+    connect(ui->editFind->lineEdit(), &QLineEdit::returnPressed, this, &MainWindow::on_editFind_returnPressed);
+
+    lblCount = new QLabel(this);
+    lblCount->setText("0");
+    ui->toolBar->addWidget(lblCount);
+
+    ui->actionFindPrevious->setIcon(QIcon(":/icon/fp.png"));
+    ui->toolBar->addAction(ui->actionFindPrevious);
+
+    ui->actionFindNext->setIcon(QIcon(":/icon/fn.png"));
+    ui->toolBar->addAction(ui->actionFindNext);
+
+    ui->toolBar->addSeparator();
+    ui->toolBar->addWidget(ui->editReplace);
+    //ui->editReplace->setMaximumWidth(200);
+
+    ui->actionReplace->setIcon(QIcon(":/icon/re.png"));
+    ui->toolBar->addAction(ui->actionReplace);
+
+    ui->actionReplace_Find->setIcon(QIcon(":/icon/rf.png"));
+    ui->toolBar->addAction(ui->actionReplace_Find);
+
+    ui->actionFind->setIcon(QIcon(":/icon/fn.png"));
+    ui->toolBar->addAction(ui->actionFind);
+
+    ui->actionReplaceAll->setIcon(QIcon(":/icon/ra.png"));
+    ui->toolBar->addAction(ui->actionReplaceAll);
+
+    ui->toolBar->addSeparator();
+    ui->toolBar->addWidget(ui->cboxCompilationOptions);
+    ui->actionGo_to_previous_error->setIcon(QIcon(":/icon/1.png"));
+    ui->toolBar->addAction(ui->actionGo_to_previous_error);
+
+    ui->actionCompiling->setIcon(QIcon(":/icon/2.png"));
+    ui->toolBar->addAction(ui->actionCompiling);
+
+    ui->actionGo_to_the_next_error->setIcon(QIcon(":/icon/3.png"));
+    ui->toolBar->addAction(ui->actionGo_to_the_next_error);
+
+    ui->toolBar->addSeparator();
+    ui->actionRefreshTree->setIcon(QIcon(":/icon/r.png"));
+    ui->toolBar->addAction(ui->actionRefreshTree);
+}
+
 void MainWindow::init_menu()
 {
 
@@ -3396,6 +3413,8 @@ void MainWindow::init_menu()
 
     ui->actionWrapWord->setShortcut(tr("ctrl+w"));
     connect(ui->actionWrapWord, &QAction::triggered, this, &MainWindow::set_wrap);
+
+    connect(ui->actionClear_search_history, &QAction::triggered, this, &MainWindow::on_clearFindText);
 
     connect(ui->actionKextstat, &QAction::triggered, this, &MainWindow::kextstat);
 
@@ -3654,9 +3673,24 @@ void MainWindow::init_edit(QsciScintilla* textEdit)
     textEdit->setAcceptDrops(false);
     this->setAcceptDrops(true);
 
-    ui->editFind->setClearButtonEnabled(true);
-
     ui->editReplace->setClearButtonEnabled(true);
+
+    if (red < 55) {
+
+        QPalette palette;
+        palette = ui->editFind->palette();
+        palette.setColor(QPalette::Base, QColor(50, 50, 50));
+        palette.setColor(QPalette::Text, Qt::white); //字色
+        ui->editFind->setPalette(palette);
+
+    } else {
+
+        QPalette palette;
+        palette = ui->editFind->palette();
+        palette.setColor(QPalette::Base, Qt::white);
+        palette.setColor(QPalette::Text, Qt::black); //字色
+        ui->editFind->setPalette(palette);
+    }
 }
 
 void MainWindow::init_treeWidget()
@@ -3754,6 +3788,15 @@ void MainWindow::init_filesystem()
         fsm_Index = model->index(dir);
         ui->btnReturn->setText(btn);
         //set_return_text(dir);
+
+        //读取搜索文本
+        int count = Reg.value("countFindText").toInt();
+        for (int i = 0; i < count; i++) {
+            QString item = Reg.value("FindText" + QString::number(i + 1)).toString();
+
+            findTextList.append(item);
+        }
+        ui->editFind->addItems(findTextList);
     }
 }
 
@@ -4035,6 +4078,16 @@ void MainWindow::closeEvent(QCloseEvent* event)
     QSettings Reg(qfile, QSettings::IniFormat); //全平台都采用ini格式
     Reg.setValue("options", ui->cboxCompilationOptions->currentText().trimmed());
 
+    //存储搜索历史文本
+    int count = ui->editFind->count();
+
+    if (count > 200)
+        count = 200;
+    for (int i = 0; i < count; i++) {
+        Reg.setValue("FindText" + QString::number(i + 1), ui->editFind->itemText(i));
+    }
+    Reg.setValue("countFindText", count);
+
     //存储当前的目录结构
     QWidget* pWidget = ui->tabWidget_textEdit->widget(ui->tabWidget_textEdit->currentIndex());
     QLabel* lbl = new QLabel;
@@ -4305,34 +4358,6 @@ void MainWindow::set_wrap()
         textEdit->setWrapMode(QsciScintilla::WrapWord);
     else
         textEdit->setWrapMode(QsciScintilla::WrapNone);
-}
-
-void MainWindow::on_editFind_textChanged(const QString& arg1)
-{
-
-    if (arg1.count() > 0) {
-
-        on_btnFindNext();
-    } else {
-
-        clearSearchHighlight();
-        lblCount->setText("0");
-
-        if (red < 55) {
-
-            QPalette palette;
-            palette = ui->editFind->palette();
-            palette.setColor(QPalette::Base, QColor(50, 50, 50));
-            ui->editFind->setPalette(palette);
-
-        } else {
-
-            QPalette palette;
-            palette = ui->editFind->palette();
-            palette.setColor(QPalette::Base, Qt::white);
-            ui->editFind->setPalette(palette);
-        }
-    }
 }
 
 /*重载窗体重绘事件，用来刷新软件使用中，系统切换亮、暗模式*/
@@ -4646,12 +4671,24 @@ void MainWindow::closeTab(int index)
 void MainWindow::on_tabWidget_textEdit_currentChanged(int index)
 {
 
-    if (index > 0) { }
+    if (index >= 0) {
+
+        QWidget* pWidget = ui->tabWidget_textEdit->widget(oldIndex);
+        QsciScintilla* edit = new QsciScintilla;
+        edit = (QsciScintilla*)pWidget->children().at(1);
+        clearSearchHighlight(edit);
+        oldIndex = index;
+    }
+
     if (ui->tabWidget_textEdit->tabBar()->count() > 1 && !loading) {
 
         for (int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i++) {
         }
     }
+
+    QMessageBox box;
+    box.setText(QString::number(index));
+    //box.exec();
 }
 
 void MainWindow::view_info()
@@ -4808,44 +4845,155 @@ int MainWindow::parse_UpdateJSON(QString str)
 
 void MainWindow::highlighsearchtext(QString searchText)
 {
-    QString document;
+    if (searchText.trimmed() == "")
+        return;
+
+    std::string document;
 
     if (ui->chkCaseSensitive->isChecked()) {
         search_string = searchText;
-        document = textEdit->text();
+        document = textEdit->text().toStdString();
     } else {
         search_string = searchText.toLower();
-        document = textEdit->text().toLower();
+        document = textEdit->text().toLower().toStdString();
     }
 
-    //qDebug() << document;
+    textEdit->SendScintilla(QsciScintillaBase::SCI_INDICSETSTYLE, 0, 8);
+    if (red < 55) {
+        textEdit->SendScintilla(QsciScintillaBase::SCI_INDICSETOUTLINEALPHA, 0, 255);
+        textEdit->SendScintilla(QsciScintillaBase::SCI_INDICSETALPHA, 0, 50);
+        textEdit->SendScintilla(QsciScintillaBase::SCI_INDICSETFORE, 0, QColor(Qt::white));
+    } else {
+        textEdit->SendScintilla(QsciScintillaBase::SCI_INDICSETOUTLINEALPHA, 0, 200);
+        textEdit->SendScintilla(QsciScintillaBase::SCI_INDICSETALPHA, 0, 30);
+        textEdit->SendScintilla(QsciScintillaBase::SCI_INDICSETFORE, 0, QColor(Qt::red));
+    }
 
-    textEdit->SendScintilla(QsciScintilla::SCI_INDICSETSTYLE, 0, 8);
     m_searchTextPosList.clear();
 
-    int end = document.lastIndexOf(searchText);
-
+    /*int end = document.lastIndexOf(searchText);
     if (!searchText.isEmpty()) {
         int curpos = -1;
         if (end != -1) {
             while (curpos != end) {
                 curpos = document.indexOf(search_string, curpos + 1);
-
-                //textEdit->SendScintilla(QsciScintilla::SCI_INDICATORFILLRANGE, curpos, search_string.length());
-
+                textEdit->SendScintilla(QsciScintilla::SCI_INDICATORFILLRANGE, curpos, search_string.length());
                 m_searchTextPosList.append(curpos);
             }
         }
+    }*/
+
+    //查找document中flag 出现的所有位置,采用标准字符串来计算，QString会有一些问题
+    std::string flag = search_string.toStdString();
+    int position = 0;
+    int i = 1;
+    while ((position = document.find(flag, position)) != std::string::npos) {
+        //qDebug() << "position  " << i << " : " << position;
+
+        textEdit->SendScintilla(QsciScintilla::SCI_INDICATORFILLRANGE, position, search_string.toStdString().length());
+
+        m_searchTextPosList.append(position);
+
+        position++;
+        i++;
     }
 
     int count = m_searchTextPosList.count();
     lblCount->setText(QString::number(count));
 }
 
-void MainWindow::clearSearchHighlight()
+void MainWindow::clearSearchHighlight(QsciScintilla* textEdit)
 {
     for (int i = 0; i < m_searchTextPosList.count(); i++) {
-        textEdit->SendScintilla(QsciScintilla::SCI_INDICATORCLEARRANGE, m_searchTextPosList[i], search_string.length());
+        textEdit->SendScintilla(QsciScintillaBase::SCI_INDICATORCLEARRANGE, m_searchTextPosList[i], search_string.toStdString().length());
     }
     m_searchTextPosList.clear();
+}
+
+void MainWindow::on_editFind_editTextChanged(const QString& arg1)
+{
+    if (arg1.count() > 0) {
+
+        on_btnFindNext();
+    } else {
+
+        clearSearchHighlight(textEdit);
+        lblCount->setText("0");
+        ui->editFind->lineEdit()->setPlaceholderText(tr("Find") + "  (" + tr("History entries") + ": " + QString::number(ui->editFind->count()) + ")");
+
+        if (red < 55) {
+
+            QPalette palette;
+            palette = ui->editFind->palette();
+            palette.setColor(QPalette::Base, QColor(50, 50, 50));
+            palette.setColor(QPalette::Text, Qt::white); //字色
+            ui->editFind->setPalette(palette);
+
+        } else {
+
+            QPalette palette;
+            palette = ui->editFind->palette();
+            palette.setColor(QPalette::Base, Qt::white);
+            palette.setColor(QPalette::Text, Qt::black); //字色
+            ui->editFind->setPalette(palette);
+        }
+    }
+}
+
+void MainWindow::keyPressEvent(QKeyEvent* event)
+{
+
+    if (event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return) {
+
+        if (ui->editFind->hasFocus()) {
+        }
+    }
+}
+
+void MainWindow::keyReleaseEvent(QKeyEvent* event)
+{
+    if (ui->editFind->hasFocus()) {
+
+        if (event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return) {
+        }
+    }
+}
+
+void MainWindow::init_findTextList()
+{
+
+    QString strBak = ui->editFind->currentText();
+
+    for (int i = 0; i < findTextList.count(); i++) {
+        if (ui->editFind->currentText().trimmed() == findTextList.at(i))
+
+            findTextList.removeAt(i);
+    }
+
+    findTextList.insert(0, ui->editFind->currentText().trimmed());
+
+    for (int i = 0; i < findTextList.count(); i++) {
+        if (findTextList.at(i) == tr("Clear history entries"))
+
+            findTextList.removeAt(i);
+    }
+
+    findTextList.append(tr("Clear history entries"));
+
+    ui->editFind->clear();
+    ui->editFind->addItems(findTextList);
+
+    ui->editFind->setCurrentText(strBak);
+}
+
+void MainWindow::on_editFind_currentIndexChanged(const QString& arg1)
+{
+    if (arg1 == tr("Clear history entries"))
+        ui->editFind->clear();
+}
+
+void MainWindow::on_clearFindText()
+{
+    ui->editFind->clear();
+    ui->editFind->lineEdit()->setPlaceholderText(tr("Find") + "  (" + tr("History entries") + ": " + QString::number(ui->editFind->count()) + ")");
 }

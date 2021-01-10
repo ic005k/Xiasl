@@ -133,6 +133,8 @@ protected:
     void dragEnterEvent(QDragEnterEvent* e);
     void dropEvent(QDropEvent* e);
     void paintEvent(QPaintEvent* event);
+    void keyPressEvent(QKeyEvent* event);
+    void keyReleaseEvent(QKeyEvent* event);
 
 public slots:
     void Open();
@@ -143,6 +145,8 @@ public slots:
 
 private slots:
     void treeWidgetBack_itemClicked(QTreeWidgetItem* item, int column);
+
+    void on_clearFindText();
 
     void userGuide();
 
@@ -232,8 +236,6 @@ private slots:
 
     void on_chkCaseSensitive_clicked(bool checked);
 
-    void on_editFind_textChanged(const QString& arg1);
-
     void on_btnCompile();
 
     void on_treeView_doubleClicked(const QModelIndex& index);
@@ -255,16 +257,24 @@ private slots:
 
     void ReplaceAll();
 
+    void on_editFind_editTextChanged(const QString& arg1);
+
+    void on_editFind_currentIndexChanged(const QString& arg1);
+
 private:
     Ui::MainWindow* ui;
 
     dlgDecompile* dlg;
 
     void highlighsearchtext(QString searchText);
-    void clearSearchHighlight();
+    void clearSearchHighlight(QsciScintilla* textEdit);
     QList<int> m_searchTextPosList;
     QString search_string;
     QLabel* lblCount;
+    int oldIndex = 0;
+
+    QStringList findTextList;
+    void init_findTextList();
 
     void forEach(QString str, QString strReplace);
 
@@ -330,6 +340,8 @@ private:
     void mem_linkage(QTreeWidget* tw, int RowNum);
 
     void init_menu();
+
+    void init_toolbar();
 
     void init_recentFiles();
 
