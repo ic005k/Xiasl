@@ -45,6 +45,7 @@
 #include <QTranslator>
 #include <QTreeWidget>
 #include <QTreeWidgetItem>
+#include <QWidget>
 
 //网络相关头文件
 #include <QtNetwork/QNetworkAccessManager>
@@ -96,6 +97,8 @@ public:
     MainWindow(QWidget* parent = nullptr);
     ~MainWindow();
 
+    QString getTabTitle();
+
     void setMark();
     void about();
     void getErrorLine(int i);
@@ -142,6 +145,8 @@ public slots:
     void dealover(); //处理线程返回的结束信号
 
     bool eventFilter(QObject*, QEvent*);
+
+    void on_NewWindow();
 
 private slots:
     void treeWidgetBack_itemClicked(QTreeWidgetItem* item, int column);
@@ -210,7 +215,7 @@ private slots:
 
     void on_editShowMsg_selectionChanged();
 
-    void on_editFind_returnPressed();
+    void editFind_returnPressed();
 
     void on_MainWindow_destroyed();
 
@@ -263,6 +268,9 @@ private slots:
 
 private:
     Ui::MainWindow* ui;
+
+    int lblNumber = 2;
+    int editNumber = 1;
 
     dlgDecompile* dlg;
 

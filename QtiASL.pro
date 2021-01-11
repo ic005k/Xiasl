@@ -47,6 +47,10 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    MyTabBar.cpp \
+    MyTabPage.cpp \
+    MyTabPopup.cpp \
+    MyTabWidget.cpp \
     dlgdecompile.cpp \
     filesystemwatcher.cpp \
     main.cpp \
@@ -55,6 +59,10 @@ SOURCES += \
     recentfiles.cpp
 
 HEADERS += \
+    MyTabBar.h \
+    MyTabPage.h \
+    MyTabPopup.h \
+    MyTabWidget.h \
     Qsci/qsciabstractapis.h \
     Qsci/qsciapis.h \
     Qsci/qscicommand.h \

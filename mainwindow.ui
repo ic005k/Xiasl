@@ -300,7 +300,7 @@
      <bool>false</bool>
     </property>
    </widget>
-   <widget class="QTabWidget" name="tabWidget_textEdit">
+   <widget class="MyTabWidget" name="tabWidget_textEdit">
     <property name="geometry">
      <rect>
       <x>209</x>
