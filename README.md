@@ -36,6 +36,14 @@ At present, it can be used to extract and edit dsdt files under win or winpe, an
 
 * humanized search function, and supports simple regular expressions
 
+* Search box supports history list and input auto-complete
+
+* Automatically mark all search results
+
+* Search result counter
+
+* Drag and drop tabs to form a new window
+
 * Unlimited levels of revocation and recovery
 
 * compile the wrong place, next to the line number with red dot to identify
