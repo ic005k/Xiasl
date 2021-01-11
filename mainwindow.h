@@ -148,6 +148,9 @@ public slots:
 
     void on_NewWindow();
 
+    void on_tabWidget_textEdit_currentChanged(int index);
+    void on_tabWidget_textEdit_tabBarClicked(int index);
+
 private slots:
     void treeWidgetBack_itemClicked(QTreeWidgetItem* item, int column);
 
@@ -251,9 +254,9 @@ private slots:
 
     void on_treeView_collapsed(const QModelIndex& index);
 
-    void on_tabWidget_textEdit_tabBarClicked(int index);
 
-    void on_tabWidget_textEdit_currentChanged(int index);
+
+
 
     void iaslUsage();
 
