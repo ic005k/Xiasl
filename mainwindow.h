@@ -254,10 +254,6 @@ private slots:
 
     void on_treeView_collapsed(const QModelIndex& index);
 
-
-
-
-
     void iaslUsage();
 
     void replyFinished(QNetworkReply* reply);
@@ -282,7 +278,6 @@ private:
     QList<int> m_searchTextPosList;
     QString search_string;
     QLabel* lblCount;
-    int oldIndex = 0;
 
     QStringList findTextList;
     void init_findTextList();

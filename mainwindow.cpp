@@ -75,7 +75,7 @@ MainWindow::MainWindow(QWidget* parent)
 
     loadLocal();
 
-    CurVerison = "1.0.35";
+    CurVerison = "1.0.36";
     ver = "QtiASL V" + CurVerison + "        ";
     setWindowTitle(ver);
 
@@ -4696,23 +4696,17 @@ void MainWindow::closeTab(int index)
 
 void MainWindow::on_tabWidget_textEdit_currentChanged(int index)
 {
-    QMessageBox box;
-    box.setText(QString::number(oldIndex) + "  " + QString::number(index));
-    //box.exec();
 
-    if (index >= 0) {
+    if (index >= 0 && m_searchTextPosList.count() > 0) {
 
-        if (oldIndex >= ui->tabWidget_textEdit->tabBar()->count())
-            oldIndex = index;
-
-        if (oldIndex >= 0) {
-            QWidget* pWidget = ui->tabWidget_textEdit->widget(oldIndex);
+        for (int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i++) {
+            QWidget* pWidget = ui->tabWidget_textEdit->widget(i);
             QsciScintilla* edit = new QsciScintilla;
             edit = (QsciScintilla*)pWidget->children().at(editNumber);
             clearSearchHighlight(edit);
         }
 
-        oldIndex = index;
+        m_searchTextPosList.clear();
     }
 }
 
@@ -4932,7 +4926,6 @@ void MainWindow::clearSearchHighlight(QsciScintilla* textEdit)
     for (int i = 0; i < m_searchTextPosList.count(); i++) {
         textEdit->SendScintilla(QsciScintillaBase::SCI_INDICATORCLEARRANGE, m_searchTextPosList[i], search_string.toStdString().length());
     }
-    m_searchTextPosList.clear();
 }
 
 void MainWindow::on_editFind_editTextChanged(const QString& arg1)
