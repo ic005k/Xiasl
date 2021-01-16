@@ -107,6 +107,8 @@ public:
 
     QsciScintilla* textEdit;
 
+    QsciScintilla* miniEdit;
+
     void setCurrentFile(const QString& fileName);
 
     void update_ui_tree();
@@ -154,6 +156,8 @@ public slots:
 private slots:
     void treeWidgetBack_itemClicked(QTreeWidgetItem* item, int column);
 
+    void on_miniMap();
+
     void on_clearFindText();
 
     void userGuide();
@@ -197,6 +201,8 @@ private slots:
     void btnCompile_clicked();
 
     void textEdit_cursorPositionChanged();
+
+    void miniEdit_cursorPositionChanged();
 
     void textEdit_linesChanged();
 
@@ -354,6 +360,8 @@ private:
     void init_info_edit();
 
     void init_edit(QsciScintilla* textEdit);
+
+    void init_miniEdit();
 
     void init_treeWidget();
 
