@@ -75,7 +75,7 @@ MainWindow::MainWindow(QWidget* parent)
 
     loadLocal();
 
-    CurVerison = "1.0.36";
+    CurVerison = "1.0.37";
     ver = "QtiASL V" + CurVerison + "        ";
     setWindowTitle(ver);
 
@@ -127,6 +127,8 @@ MainWindow::MainWindow(QWidget* parent)
     textEdit = new QsciScintilla;
     init_edit(textEdit);
 
+    init_miniEdit();
+
     init_info_edit();
 
     splitterMain = new QSplitter(Qt::Horizontal, this);
@@ -136,6 +138,7 @@ MainWindow::MainWindow(QWidget* parent)
     splitterRight->setOpaqueResize(true);
     splitterRight->addWidget(ui->tabWidget_textEdit);
     splitterRight->addWidget(ui->tabWidget);
+    splitterMain->addWidget(miniEdit);
 
     ui->gridLayout_7->addWidget(splitterMain);
 
@@ -181,6 +184,13 @@ void MainWindow::loadTabFiles()
 
         QSettings Reg(qfile, QSettings::IniFormat);
         int count = Reg.value("count").toInt();
+
+        //minimap
+        ui->actionMinimap->setChecked(Reg.value("minimap").toBool());
+        if (ui->actionMinimap->isChecked())
+            miniEdit->setVisible(true);
+        else
+            miniEdit->setVisible(false);
 
         bool file_exists = false;
 
@@ -374,6 +384,7 @@ QString MainWindow::openFile(QString fileName)
     if (fi.suffix().toLower() == "dsl") {
         ui->actionWrapWord->setChecked(false); //取消自动换行，影响dsl文件开启速度
         textEdit->setWrapMode(QsciScintilla::WrapNone);
+        miniEdit->setWrapMode(QsciScintilla::WrapNone);
     }
 
     return fileName;
@@ -441,6 +452,8 @@ void MainWindow::loadFile(const QString& fileName, int row, int col)
     in.setCodec("UTF-8");
     text = in.readAll();
     textEdit->setText(text);
+    miniEdit->clear();
+    miniEdit->setText(text);
     file.close();
 
     if (row != -1 && col != -1) {
@@ -963,6 +976,18 @@ void MainWindow::set_currsor_position(QsciScintilla* textEdit)
 
     //联动treeWidget
     mem_linkage(ui->treeWidget, RowNum);
+
+    //mini
+    miniEdit->setCursorPosition(RowNum, ColNum);
+}
+
+void MainWindow::miniEdit_cursorPositionChanged()
+{
+    int ColNum, RowNum;
+    miniEdit->getCursorPosition(&RowNum, &ColNum);
+    textEdit->setCursorPosition(RowNum, ColNum);
+    if (!ui->editFind->hasFocus())
+        textEdit->setFocus();
 }
 
 /*换行之后，1s后再刷新成员树*/
@@ -3378,6 +3403,7 @@ void MainWindow::init_menu()
     ui->menu_File->addSeparator();
     ui->menu_File->addSeparator();
 
+    //File
     ui->actionNew->setShortcut(tr("ctrl+n"));
     connect(ui->actionNew, &QAction::triggered, this, &MainWindow::newFile);
 
@@ -3390,6 +3416,7 @@ void MainWindow::init_menu()
     ui->actionSaveAs->setShortcut(tr("ctrl+shift+s"));
     connect(ui->actionSaveAs, &QAction::triggered, this, &MainWindow::SaveAs);
 
+    //Edit
     ui->actionGenerate->setShortcut(tr("ctrl+g"));
     connect(ui->actionGenerate, &QAction::triggered, this, &MainWindow::btnGenerate_clicked);
 
@@ -3423,7 +3450,10 @@ void MainWindow::init_menu()
     ui->actionGo_to_the_next_error->setShortcut(tr("ctrl+e"));
     connect(ui->actionGo_to_the_next_error, &QAction::triggered, this, &MainWindow::on_btnNextError);
 
-    //ui->actionFont_2->setShortcut(tr("ctrl+f"));
+    connect(ui->actionKextstat, &QAction::triggered, this, &MainWindow::kextstat);
+
+    //Preference
+    ui->actionFont_2->setShortcut(tr("ctrl+9"));
     connect(ui->actionFont_2, &QAction::triggered, this, &MainWindow::set_font);
 
     ui->actionWrapWord->setShortcut(tr("ctrl+w"));
@@ -3431,11 +3461,17 @@ void MainWindow::init_menu()
 
     connect(ui->actionClear_search_history, &QAction::triggered, this, &MainWindow::on_clearFindText);
 
-    connect(ui->actionKextstat, &QAction::triggered, this, &MainWindow::kextstat);
+    //View
+    connect(ui->actionMembers_win, &QAction::triggered, this, &MainWindow::view_mem_list);
+    ui->actionMembers_win->setShortcut(tr("ctrl+1"));
 
     connect(ui->actionInfo_win, &QAction::triggered, this, &MainWindow::view_info);
-    connect(ui->actionMembers_win, &QAction::triggered, this, &MainWindow::view_mem_list);
+    ui->actionInfo_win->setShortcut(tr("ctrl+2"));
 
+    connect(ui->actionMinimap, &QAction::triggered, this, &MainWindow::on_miniMap);
+    ui->actionMinimap->setShortcut(tr("ctrl+3"));
+
+    //Help
     connect(ui->actionCheckUpdate, &QAction::triggered, this, &MainWindow::CheckUpdate);
     connect(ui->actioniasl_usage, &QAction::triggered, this, &MainWindow::iaslUsage);
     connect(ui->actionUser_Guide, &QAction::triggered, this, &MainWindow::userGuide);
@@ -3638,10 +3674,57 @@ void MainWindow::setLexer(QsciLexer* textLexer, QsciScintilla* textEdit)
     textEdit->setMarkerBackgroundColor(QColor("#eaf593"), 2);*/
 }
 
+void MainWindow::init_miniEdit()
+{
+    //mini view
+    miniEdit = new QsciScintilla();
+
+#ifdef Q_OS_WIN32
+    miniEdit->setMaximumWidth(160);
+
+#endif
+
+#ifdef Q_OS_LINUX
+    miniEdit->setMaximumWidth(120);
+
+#endif
+
+#ifdef Q_OS_MAC
+    miniEdit->setMaximumWidth(115);
+
+#endif
+
+    miniEdit->setContextMenuPolicy(Qt::NoContextMenu);
+
+    miniEdit->setMarginWidth(0, 0);
+    miniEdit->setMargins(0);
+    miniEdit->setReadOnly(0);
+    miniEdit->setWrapMode(QsciScintilla::WrapNone);
+
+    QFont font;
+    font.setPixelSize(1);
+    if (miniEdit->lexer() == nullptr) {
+        miniEdit->setColor(QColor("white"));
+        miniEdit->setPaper(QColor("#393d44"));
+        miniEdit->setFont(font);
+    } else {
+        QsciLexer* lexer = miniEdit->lexer();
+        lexer->setDefaultColor(QColor("white"));
+        lexer->setDefaultPaper(QColor("#393d44"));
+        lexer->setDefaultFont(font);
+    }
+
+    miniEdit->SendScintilla(QsciScintilla::SCI_SETSCROLLWIDTH, -1);
+    miniEdit->SendScintilla(QsciScintilla::SCI_SETSCROLLWIDTHTRACKING, false);
+
+    connect(miniEdit, &QsciScintilla::cursorPositionChanged, this, &MainWindow::miniEdit_cursorPositionChanged);
+
+    miniEdit->SendScintilla(QsciScintillaBase::SCI_SETCURSOR, 0, 7);
+}
+
 void MainWindow::init_edit(QsciScintilla* textEdit)
 {
 
-    //textEdit = new QsciScintilla(this);
     textEditBack = new QsciScintilla();
 
     textEdit->setWrapMode(QsciScintilla::WrapNone); //不自动换行
@@ -3716,7 +3799,7 @@ void MainWindow::init_treeWidget()
     QScreen* screen = QGuiApplication::primaryScreen();
     w = screen->size().width();
 
-    ui->tabWidget_misc->setMaximumWidth(w / 3 - 20);
+    ui->tabWidget_misc->setMaximumWidth(w / 3 - 60);
 
     treeWidgetBak = new QTreeWidget;
 
@@ -4103,6 +4186,9 @@ void MainWindow::closeEvent(QCloseEvent* event)
     }
     Reg.setValue("countFindText", count);
 
+    //存储minimap
+    Reg.setValue("minimap", ui->actionMinimap->isChecked());
+
     //存储当前的目录结构
     QWidget* pWidget = ui->tabWidget_textEdit->widget(ui->tabWidget_textEdit->currentIndex());
     QLabel* lbl = new QLabel;
@@ -4313,6 +4399,7 @@ void MainWindow::newFile()
 
     textEdit->clear();
     textEditBack->clear();
+    miniEdit->clear();
 
     lblLayer->setText("");
     lblMsg->setText("");
@@ -4346,7 +4433,11 @@ void MainWindow::set_font()
 {
 
     bool ok;
-    font = QFontDialog::getFont(&ok, this);
+    QFontDialog fd;
+    //fd.setCurrentFont().
+    //fd.show();
+
+    font = fd.getFont(&ok, font);
 
     if (ok) {
 
@@ -4359,8 +4450,8 @@ void MainWindow::set_font()
         //存储字体信息
         QString qfile = QDir::homePath() + "/.config/QtiASL/QtiASL.ini";
         QFile file(qfile);
-        //QSettings Reg(qfile, QSettings::NativeFormat);
-        QSettings Reg(qfile, QSettings::IniFormat); //全平台都采用ini格式
+
+        QSettings Reg(qfile, QSettings::IniFormat);
         Reg.setValue("FontName", font.family());
         Reg.setValue("FontSize", font.pointSize());
         Reg.setValue("FontBold", font.bold());
@@ -4372,18 +4463,21 @@ void MainWindow::set_font()
 /*菜单：是否自动换行*/
 void MainWindow::set_wrap()
 {
-    if (ui->actionWrapWord->isChecked())
+    if (ui->actionWrapWord->isChecked()) {
         textEdit->setWrapMode(QsciScintilla::WrapWord);
-    else
+        miniEdit->setWrapMode(QsciScintilla::WrapWord);
+    } else {
         textEdit->setWrapMode(QsciScintilla::WrapNone);
+        miniEdit->setWrapMode(QsciScintilla::WrapNone);
+    }
 }
 
-/*重载窗体重绘事件，用来刷新软件使用中，系统切换亮、暗模式*/
+/*重载窗体重绘事件*/
 void MainWindow::paintEvent(QPaintEvent* event)
 {
     Q_UNUSED(event);
 
-    //获取背景色
+    //获取背景色,用来刷新软件使用中，系统切换亮、暗模式
     QPalette pal = this->palette();
     QBrush brush = pal.window();
     int c_red = brush.color().red();
@@ -4604,6 +4698,8 @@ void MainWindow::on_tabWidget_textEdit_tabBarClicked(int index)
     if (index == -1) //点击标签页之外的区域
         return;
 
+    int indexBak = index;
+
     QWidget* pWidget = ui->tabWidget_textEdit->widget(index);
     QLabel* lbl = new QLabel;
     lbl = (QLabel*)pWidget->children().at(lblNumber); //2为QLabel,1为textEdit,0为VBoxLayout
@@ -4621,6 +4717,12 @@ void MainWindow::on_tabWidget_textEdit_tabBarClicked(int index)
     edit = (QsciScintilla*)pWidget->children().at(editNumber);
 
     textEdit = edit;
+
+    int row, col;
+    textEdit->getCursorPosition(&row, &col);
+    miniEdit->clear();
+    miniEdit->setText(textEdit->text());
+    miniEdit->setCursorPosition(row, col);
 
     on_btnRefreshTree();
 
@@ -4660,6 +4762,8 @@ void MainWindow::on_tabWidget_textEdit_tabBarClicked(int index)
     hs = edit->horizontalScrollBar()->sliderPosition();
 
     One = false;
+
+    ui->tabWidget_textEdit->setCurrentIndex(indexBak);
 }
 
 void MainWindow::closeTab(int index)
@@ -5033,4 +5137,16 @@ void MainWindow::on_NewWindow()
     QProcess* process = new QProcess;
     process->setEnvironment(process->environment());
     process->start(pathSource, arguments);
+}
+
+void MainWindow::on_miniMap()
+{
+    if (!ui->actionMinimap->isChecked()) {
+        miniEdit->setVisible(false);
+
+    }
+
+    else {
+        miniEdit->setVisible(true);
+    }
 }

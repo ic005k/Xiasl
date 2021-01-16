@@ -300,7 +300,7 @@
      <bool>false</bool>
     </property>
    </widget>
-   <widget class="MyTabWidget" name="tabWidget_textEdit">
+   <widget class="MyTabWidget" name="tabWidget_textEdit" native="true">
     <property name="geometry">
      <rect>
       <x>209</x>
@@ -309,22 +309,22 @@
       <height>16</height>
      </rect>
     </property>
-    <property name="currentIndex">
+    <property name="currentIndex" stdset="0">
      <number>-1</number>
     </property>
-    <property name="usesScrollButtons">
+    <property name="usesScrollButtons" stdset="0">
      <bool>true</bool>
     </property>
-    <property name="documentMode">
+    <property name="documentMode" stdset="0">
      <bool>true</bool>
     </property>
-    <property name="tabsClosable">
+    <property name="tabsClosable" stdset="0">
      <bool>false</bool>
     </property>
-    <property name="movable">
+    <property name="movable" stdset="0">
      <bool>true</bool>
     </property>
-    <property name="tabBarAutoHide">
+    <property name="tabBarAutoHide" stdset="0">
      <bool>true</bool>
     </property>
    </widget>
@@ -370,7 +370,7 @@
      <x>0</x>
      <y>0</y>
      <width>1440</width>
-     <height>24</height>
+     <height>30</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -419,8 +419,9 @@
     <property name="title">
      <string>View</string>
     </property>
-    <addaction name="actionInfo_win"/>
     <addaction name="actionMembers_win"/>
+    <addaction name="actionInfo_win"/>
+    <addaction name="actionMinimap"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -612,7 +613,25 @@
     <string>Clear search history</string>
    </property>
   </action>
+  <action name="actionMinimap">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Minimap</string>
+   </property>
+  </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>MyTabWidget</class>
+   <extends>QWidget</extends>
+   <header>mytabwidget.h</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="my.qrc"/>
  </resources>
