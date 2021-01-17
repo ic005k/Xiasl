@@ -54,6 +54,12 @@ thread_one::thread_one(QObject* parent)
 {
 }
 
+MiniEditor::MiniEditor(QWidget* parent)
+    : QsciScintilla(parent)
+{
+    connect(this, &QsciScintilla::cursorPositionChanged, this, &MiniEditor::miniEdit_cursorPositionChanged);
+}
+
 CodeEditor::CodeEditor(QWidget* parent)
     : QPlainTextEdit(parent)
 {
@@ -133,16 +139,19 @@ MainWindow::MainWindow(QWidget* parent)
 
     splitterMain = new QSplitter(Qt::Horizontal, this);
 
-    splitterMain->addWidget(ui->tabWidget_misc);
+    //splitterMain->addWidget(ui->dockWidget);
+
     QSplitter* splitterRight = new QSplitter(Qt::Vertical, splitterMain);
     splitterRight->setOpaqueResize(true);
+
     splitterRight->addWidget(ui->tabWidget_textEdit);
-    splitterRight->addWidget(ui->tabWidget);
+    //splitterRight->addWidget(ui->dockWidget3);
+
     splitterMain->addWidget(miniEdit);
 
-    ui->gridLayout_7->addWidget(splitterMain);
+    ui->gridLayout_10->addWidget(splitterMain);
 
-    ui->tabWidget->setHidden(true);
+    ui->dockWidget3_2->setHidden(true);
 
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(timer_linkage()));
@@ -186,7 +195,10 @@ void MainWindow::loadTabFiles()
         int count = Reg.value("count").toInt();
 
         //minimap
-        ui->actionMinimap->setChecked(Reg.value("minimap").toBool());
+        if (Reg.contains("minimap"))
+            ui->actionMinimap->setChecked(Reg.value("minimap").toBool());
+        else
+            ui->actionMinimap->setChecked(true);
         if (ui->actionMinimap->isChecked())
             miniEdit->setVisible(true);
         else
@@ -543,7 +555,7 @@ void MainWindow::setCurrentFile(const QString& fileName)
         //设置编译功能屏蔽
         ui->actionCompiling->setEnabled(false);
 
-        ui->tabWidget->setVisible(false);
+        ui->dockWidget3_2->setVisible(false);
     }
 
     ui->tabWidget_textEdit->setTabText(ui->tabWidget_textEdit->currentIndex(), f.fileName());
@@ -934,7 +946,7 @@ void MainWindow::readResult(int exitCode)
         on_btnNextError();
     }
 
-    ui->tabWidget->setHidden(false);
+    ui->dockWidget3_2->setHidden(false);
     ui->actionInfo_win->setChecked(true);
 
     loading = false;
@@ -962,6 +974,7 @@ void MainWindow::textEdit_cursorPositionChanged()
 
 void MainWindow::set_currsor_position(QsciScintilla* textEdit)
 {
+
     int ColNum, RowNum;
     textEdit->getCursorPosition(&RowNum, &ColNum);
 
@@ -977,17 +990,32 @@ void MainWindow::set_currsor_position(QsciScintilla* textEdit)
     //联动treeWidget
     mem_linkage(ui->treeWidget, RowNum);
 
-    //mini
-    miniEdit->setCursorPosition(RowNum, ColNum);
+    //miniEdit->setCursorPosition(RowNum, ColNum);
+    //miniEdit->verticalScrollBar()->setSliderPosition(textEdit->verticalScrollBar()->sliderPosition());
 }
 
 void MainWindow::miniEdit_cursorPositionChanged()
 {
+
+    //清除所有标记
+    //textEdit->SendScintilla(QsciScintilla::SCI_MARKERDELETEALL);
+
     int ColNum, RowNum;
     miniEdit->getCursorPosition(&RowNum, &ColNum);
     textEdit->setCursorPosition(RowNum, ColNum);
     if (!ui->editFind->hasFocus())
         textEdit->setFocus();
+
+    /*textEdit->SendScintilla(QsciScintilla::SCI_MARKERGET, RowNum - 1);
+    //SCI_MARKERSETFORE，SCI_MARKERSETBACK设置标记前景和背景标记
+    textEdit->SendScintilla(QsciScintilla::SCI_MARKERSETFORE, 0, QColor(Qt::red));
+    textEdit->SendScintilla(QsciScintilla::SCI_MARKERSETBACK, 0, QColor(Qt::red));
+    textEdit->SendScintilla(QsciScintilla::SCI_MARKERADD, RowNum - 1);
+    //下划线
+    textEdit->SendScintilla(QsciScintilla::SCI_STYLESETUNDERLINE, RowNum, true);
+    textEdit->SendScintilla(QsciScintilla::SCI_MARKERDEFINE, 0, QsciScintilla::SC_MARK_UNDERLINE);*/
+
+    miniEdit->clearFocus();
 }
 
 /*换行之后，1s后再刷新成员树*/
@@ -1812,6 +1840,17 @@ void MainWindow::refresh_tree(QsciScintilla* textEdit)
 void MainWindow::on_btnRefreshTree()
 {
     refresh_tree(textEdit);
+
+    syncMiniEdit();
+}
+
+void MainWindow::syncMiniEdit()
+{
+    int row, col;
+    textEdit->getCursorPosition(&row, &col);
+    miniEdit->clear();
+    miniEdit->setText(textEdit->text());
+    miniEdit->setCursorPosition(row, col);
 }
 
 QString getMemberName(QString str_member, QsciScintilla* textEdit, int RowNum)
@@ -3285,7 +3324,7 @@ void MainWindow::init_info_edit()
 
     textEditTemp = new QTextEdit();
 
-    ui->tabWidget->setMaximumHeight(220);
+    //ui->tabWidget->setMaximumHeight(220);
 
     ui->editShowMsg->setLineWrapMode(ui->editShowMsg->NoWrap);
     ui->editShowMsg->setReadOnly(true);
@@ -3676,8 +3715,9 @@ void MainWindow::setLexer(QsciLexer* textLexer, QsciScintilla* textEdit)
 
 void MainWindow::init_miniEdit()
 {
-    //mini view
+
     miniEdit = new QsciScintilla();
+    //miniEdit = new MiniEditor();
 
 #ifdef Q_OS_WIN32
     miniEdit->setMaximumWidth(160);
@@ -3719,6 +3759,8 @@ void MainWindow::init_miniEdit()
 
     connect(miniEdit, &QsciScintilla::cursorPositionChanged, this, &MainWindow::miniEdit_cursorPositionChanged);
 
+    //connect(miniEdit->verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(setValue()));
+
     miniEdit->SendScintilla(QsciScintillaBase::SCI_SETCURSOR, 0, 7);
 }
 
@@ -3740,6 +3782,8 @@ void MainWindow::init_edit(QsciScintilla* textEdit)
     connect(textEdit, &QsciScintilla::cursorPositionChanged, this, &MainWindow::textEdit_cursorPositionChanged);
     connect(textEdit, &QsciScintilla::textChanged, this, &MainWindow::textEdit_textChanged);
     connect(textEdit, &QsciScintilla::linesChanged, this, &MainWindow::textEdit_linesChanged);
+
+    connect(textEdit->verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(setValue2()));
 
     textEdit->setFont(font);
     textEdit->setMarginsFont(font);
@@ -3798,8 +3842,7 @@ void MainWindow::init_treeWidget()
     //w = screen()->size().width();
     QScreen* screen = QGuiApplication::primaryScreen();
     w = screen->size().width();
-
-    ui->tabWidget_misc->setMaximumWidth(w / 3 - 60);
+    ui->tabWidget_misc->setMinimumWidth(w / 3 - 60);
 
     treeWidgetBak = new QTreeWidget;
 
@@ -4590,7 +4633,7 @@ void MainWindow::readKextstat()
     textEdit->append(result);
     textEdit->setModified(false);
 
-    ui->tabWidget->setHidden(true);
+    ui->dockWidget3_2->setHidden(true);
     ui->actionInfo_win->setChecked(false);
 }
 
@@ -4816,22 +4859,22 @@ void MainWindow::on_tabWidget_textEdit_currentChanged(int index)
 
 void MainWindow::view_info()
 {
-    if (ui->tabWidget->isHidden()) {
-        ui->tabWidget->setHidden(false);
+    if (ui->dockWidget3_2->isHidden()) {
+        ui->dockWidget3_2->setHidden(false);
         ui->actionInfo_win->setChecked(true);
-    } else if (!ui->tabWidget->isHidden()) {
-        ui->tabWidget->setHidden(true);
+    } else if (!ui->dockWidget3_2->isHidden()) {
+        ui->dockWidget3_2->setHidden(true);
         ui->actionInfo_win->setChecked(false);
     }
 }
 
 void MainWindow::view_mem_list()
 {
-    if (ui->tabWidget_misc->isHidden()) {
-        ui->tabWidget_misc->setHidden(false);
+    if (ui->dockWidget->isHidden()) {
+        ui->dockWidget->setHidden(false);
         ui->actionMembers_win->setChecked(true);
-    } else if (!ui->tabWidget_misc->isHidden()) {
-        ui->tabWidget_misc->setHidden(true);
+    } else if (!ui->dockWidget->isHidden()) {
+        ui->dockWidget->setHidden(true);
         ui->actionMembers_win->setChecked(false);
     }
 }
@@ -5149,4 +5192,57 @@ void MainWindow::on_miniMap()
     else {
         miniEdit->setVisible(true);
     }
+}
+
+void MiniEditor::mousePressEvent(QMouseEvent* event)
+{
+
+    if (Qt::LeftButton == event->button()) {
+    }
+}
+
+void MiniEditor::mouseDoubleClickEvent(QMouseEvent* event)
+{
+    Q_UNUSED(event);
+}
+
+void MiniEditor::mouseMoveEvent(QMouseEvent* event)
+{
+    Q_UNUSED(event);
+}
+
+void MiniEditor::miniEdit_cursorPositionChanged()
+{
+}
+
+void MainWindow::setValue()
+{
+
+    //if (miniEdit->geometry().contains(this->mapFromGlobal(QCursor::pos()))) {
+    int t = textEdit->verticalScrollBar()->maximum();
+    int m = miniEdit->verticalScrollBar()->maximum();
+    double b = (double)miniEdit->verticalScrollBar()->sliderPosition() / (double)m;
+    int p = b * t;
+
+    textEdit->verticalScrollBar()->setSliderPosition(p);
+
+    textEdit->verticalScrollBar()->setHidden(true);
+    //}
+}
+
+void MainWindow::setValue2()
+{
+
+    //if (textEdit->geometry().contains(this->mapFromGlobal(QCursor::pos())))
+
+    //{
+    int t = textEdit->verticalScrollBar()->maximum();
+    int m = miniEdit->verticalScrollBar()->maximum();
+    double b = (double)textEdit->verticalScrollBar()->sliderPosition() / (double)t;
+    int p = b * m;
+
+    miniEdit->verticalScrollBar()->setSliderPosition(p);
+
+    //textEdit->verticalScrollBar()->setHidden(true);
+    //}
 }

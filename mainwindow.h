@@ -81,6 +81,7 @@ class QWidget;
 class LineNumberArea;
 class QsciScintilla;
 class thread_one;
+class MiniEditor;
 
 void refreshTree();
 void getMembers(QString str_member, QsciScintilla* textEdit);
@@ -106,8 +107,10 @@ public:
     void loadFile(const QString& fileName, int row, int col);
 
     QsciScintilla* textEdit;
+    //MiniEditor* textEdit;
 
     QsciScintilla* miniEdit;
+    //MiniEditor* miniEdit;
 
     void setCurrentFile(const QString& fileName);
 
@@ -152,6 +155,11 @@ public slots:
 
     void on_tabWidget_textEdit_currentChanged(int index);
     void on_tabWidget_textEdit_tabBarClicked(int index);
+
+    void miniEdit_cursorPositionChanged();
+
+    void setValue();
+    void setValue2();
 
 private slots:
     void treeWidgetBack_itemClicked(QTreeWidgetItem* item, int column);
@@ -201,8 +209,6 @@ private slots:
     void btnCompile_clicked();
 
     void textEdit_cursorPositionChanged();
-
-    void miniEdit_cursorPositionChanged();
 
     void textEdit_linesChanged();
 
@@ -390,6 +396,24 @@ private:
     void update_member(bool show, QString str_void, QList<QTreeWidgetItem*> tw_list);
 
     void set_mark(int linenr);
+
+    void syncMiniEdit();
+};
+
+class MiniEditor : public QsciScintilla {
+    Q_OBJECT
+
+public:
+    MiniEditor(QWidget* parent = nullptr);
+
+protected:
+    void mousePressEvent(QMouseEvent* event);
+    void mouseDoubleClickEvent(QMouseEvent* event);
+    void mouseMoveEvent(QMouseEvent* event);
+private slots:
+    void miniEdit_cursorPositionChanged();
+
+private:
 };
 
 class CodeEditor : public QPlainTextEdit {

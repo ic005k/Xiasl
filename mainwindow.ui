@@ -18,222 +18,80 @@
     <normaloff>:/icon/icon.png</normaloff>:/icon/icon.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout_9">
-    <item row="0" column="6">
+   <layout class="QGridLayout" name="gridLayout_12">
+    <item row="0" column="3">
+     <widget class="QLineEdit" name="editReplace">
+      <property name="placeholderText">
+       <string>Replace</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="1" colspan="3">
+     <layout class="QGridLayout" name="gridLayout_10"/>
+    </item>
+    <item row="1" column="4" colspan="2">
+     <widget class="MyTabWidget" name="tabWidget_textEdit" native="true">
+      <property name="currentIndex" stdset="0">
+       <number>-1</number>
+      </property>
+      <property name="usesScrollButtons" stdset="0">
+       <bool>true</bool>
+      </property>
+      <property name="documentMode" stdset="0">
+       <bool>true</bool>
+      </property>
+      <property name="tabsClosable" stdset="0">
+       <bool>false</bool>
+      </property>
+      <property name="movable" stdset="0">
+       <bool>true</bool>
+      </property>
+      <property name="tabBarAutoHide" stdset="0">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="5">
      <widget class="QComboBox" name="cboxCompilationOptions">
       <property name="toolTip">
        <string>Compilation options</string>
       </property>
      </widget>
     </item>
-    <item row="1" column="4" rowspan="2" colspan="2">
-     <widget class="QTabWidget" name="tabWidget">
-      <property name="currentIndex">
-       <number>0</number>
+    <item row="3" column="2" colspan="2">
+     <widget class="QComboBox" name="editFind">
+      <property name="toolTip">
+       <string/>
       </property>
-      <property name="documentMode">
+      <property name="editable">
        <bool>true</bool>
       </property>
-      <widget class="QWidget" name="tabBasicInfo">
-       <attribute name="title">
-        <string>BasicInfo</string>
-       </attribute>
-       <layout class="QGridLayout" name="gridLayout_2">
-        <item row="0" column="0">
-         <widget class="QTextEdit" name="editShowMsg">
-          <property name="font">
-           <font>
-            <family>SauceCodePro Nerd Font</family>
-           </font>
-          </property>
-          <property name="lineWrapMode">
-           <enum>QTextEdit::NoWrap</enum>
-          </property>
-          <property name="readOnly">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="tabErrors">
-       <attribute name="title">
-        <string>Errors</string>
-       </attribute>
-       <layout class="QGridLayout" name="gridLayout_3">
-        <item row="0" column="0">
-         <widget class="QTextEdit" name="editErrors">
-          <property name="font">
-           <font>
-            <family>SauceCodePro Nerd Font</family>
-           </font>
-          </property>
-          <property name="lineWrapMode">
-           <enum>QTextEdit::NoWrap</enum>
-          </property>
-          <property name="readOnly">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="tabWarnings">
-       <attribute name="title">
-        <string>Warnings</string>
-       </attribute>
-       <layout class="QGridLayout" name="gridLayout_4">
-        <item row="0" column="0">
-         <widget class="QTextEdit" name="editWarnings">
-          <property name="font">
-           <font>
-            <family>SauceCodePro Nerd Font</family>
-           </font>
-          </property>
-          <property name="lineWrapMode">
-           <enum>QTextEdit::NoWrap</enum>
-          </property>
-          <property name="readOnly">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="tabRemarks">
-       <attribute name="title">
-        <string>Remarks</string>
-       </attribute>
-       <layout class="QGridLayout" name="gridLayout_5">
-        <item row="0" column="0">
-         <widget class="QTextEdit" name="editRemarks">
-          <property name="font">
-           <font>
-            <family>SauceCodePro Nerd Font</family>
-           </font>
-          </property>
-          <property name="lineWrapMode">
-           <enum>QTextEdit::NoWrap</enum>
-          </property>
-          <property name="readOnly">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="tabOptimizations">
-       <attribute name="title">
-        <string>Optimizations</string>
-       </attribute>
-       <layout class="QGridLayout" name="gridLayout_6">
-        <item row="0" column="0">
-         <widget class="QTextEdit" name="editOptimizations">
-          <property name="font">
-           <font>
-            <family>SauceCodePro Nerd Font</family>
-           </font>
-          </property>
-          <property name="lineWrapMode">
-           <enum>QTextEdit::NoWrap</enum>
-          </property>
-          <property name="readOnly">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
+      <property name="placeholderText">
+       <string>Find</string>
+      </property>
      </widget>
     </item>
-    <item row="2" column="1" colspan="2">
-     <widget class="QTabWidget" name="tabWidget_misc">
-      <property name="tabPosition">
-       <enum>QTabWidget::West</enum>
+    <item row="4" column="1" colspan="2">
+     <widget class="QCheckBox" name="chkAll">
+      <property name="toolTip">
+       <string>Decompile all AML files in the directory where the opened file is located</string>
       </property>
-      <property name="currentIndex">
-       <number>1</number>
+      <property name="text">
+       <string>Batch decompilation</string>
       </property>
-      <property name="documentMode">
-       <bool>true</bool>
-      </property>
-      <widget class="QWidget" name="tab_misc1">
-       <attribute name="title">
-        <string>Members</string>
-       </attribute>
-       <layout class="QGridLayout" name="gridLayout">
-        <item row="0" column="0">
-         <widget class="QLabel" name="lblMembers">
-          <property name="text">
-           <string>Members</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QTreeWidget" name="treeWidget">
-          <property name="font">
-           <font>
-            <family>SauceCodePro Nerd Font</family>
-           </font>
-          </property>
-          <property name="frameShape">
-           <enum>QFrame::StyledPanel</enum>
-          </property>
-          <property name="frameShadow">
-           <enum>QFrame::Sunken</enum>
-          </property>
-          <property name="lineWidth">
-           <number>1</number>
-          </property>
-          <property name="midLineWidth">
-           <number>0</number>
-          </property>
-          <property name="horizontalScrollBarPolicy">
-           <enum>Qt::ScrollBarAsNeeded</enum>
-          </property>
-          <property name="sizeAdjustPolicy">
-           <enum>QAbstractScrollArea::AdjustIgnored</enum>
-          </property>
-          <property name="columnCount">
-           <number>2</number>
-          </property>
-          <attribute name="headerHighlightSections">
-           <bool>false</bool>
-          </attribute>
-          <column>
-           <property name="text">
-            <string notr="true">1</string>
-           </property>
-          </column>
-          <column>
-           <property name="text">
-            <string notr="true">2</string>
-           </property>
-          </column>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="tab_misc2">
-       <attribute name="title">
-        <string>Filesystem Browser</string>
-       </attribute>
-       <layout class="QGridLayout" name="gridLayout_8">
-        <item row="0" column="0">
-         <widget class="QPushButton" name="btnReturn">
-          <property name="text">
-           <string>Return</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QTreeView" name="treeView"/>
-        </item>
-       </layout>
-      </widget>
      </widget>
     </item>
-    <item row="3" column="1">
+    <item row="5" column="1" colspan="2">
+     <widget class="QCheckBox" name="chkCaseSensitive">
+      <property name="text">
+       <string>CaseSensitive</string>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="0">
      <widget class="QCheckBox" name="chkScope">
       <property name="text">
        <string>S</string>
@@ -243,7 +101,7 @@
       </property>
      </widget>
     </item>
-    <item row="3" column="2">
+    <item row="6" column="1">
      <widget class="QCheckBox" name="chkDevice">
       <property name="text">
        <string>D</string>
@@ -253,7 +111,7 @@
       </property>
      </widget>
     </item>
-    <item row="3" column="3" colspan="2">
+    <item row="6" column="4">
      <widget class="QCheckBox" name="chkMethod">
       <property name="text">
        <string>M</string>
@@ -263,7 +121,7 @@
       </property>
      </widget>
     </item>
-    <item row="3" column="5">
+    <item row="6" column="5">
      <widget class="QCheckBox" name="chkName">
       <property name="text">
        <string>N</string>
@@ -273,96 +131,7 @@
       </property>
      </widget>
     </item>
-    <item row="2" column="3">
-     <layout class="QGridLayout" name="gridLayout_7"/>
-    </item>
-    <item row="0" column="3">
-     <widget class="QLineEdit" name="editReplace">
-      <property name="placeholderText">
-       <string>Replace</string>
-      </property>
-     </widget>
-    </item>
    </layout>
-   <widget class="QCheckBox" name="chkCaseSensitive">
-    <property name="geometry">
-     <rect>
-      <x>123</x>
-      <y>50</y>
-      <width>111</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>CaseSensitive</string>
-    </property>
-    <property name="checked">
-     <bool>false</bool>
-    </property>
-   </widget>
-   <widget class="MyTabWidget" name="tabWidget_textEdit" native="true">
-    <property name="geometry">
-     <rect>
-      <x>209</x>
-      <y>102</y>
-      <width>16</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="currentIndex" stdset="0">
-     <number>-1</number>
-    </property>
-    <property name="usesScrollButtons" stdset="0">
-     <bool>true</bool>
-    </property>
-    <property name="documentMode" stdset="0">
-     <bool>true</bool>
-    </property>
-    <property name="tabsClosable" stdset="0">
-     <bool>false</bool>
-    </property>
-    <property name="movable" stdset="0">
-     <bool>true</bool>
-    </property>
-    <property name="tabBarAutoHide" stdset="0">
-     <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="chkAll">
-    <property name="geometry">
-     <rect>
-      <x>68</x>
-      <y>23</y>
-      <width>149</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="toolTip">
-     <string>Decompile all AML files in the directory where the opened file is located</string>
-    </property>
-    <property name="text">
-     <string>Batch decompilation</string>
-    </property>
-   </widget>
-   <widget class="QComboBox" name="editFind">
-    <property name="geometry">
-     <rect>
-      <x>258</x>
-      <y>18</y>
-      <width>200</width>
-      <height>32</height>
-     </rect>
-    </property>
-    <property name="toolTip">
-     <string/>
-    </property>
-    <property name="editable">
-     <bool>true</bool>
-    </property>
-    <property name="placeholderText">
-     <string>Find</string>
-    </property>
-   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -370,7 +139,7 @@
      <x>0</x>
      <y>0</y>
      <width>1440</width>
-     <height>30</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -449,6 +218,252 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+  </widget>
+  <widget class="QDockWidget" name="dockWidget">
+   <property name="allowedAreas">
+    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents">
+    <layout class="QGridLayout" name="gridLayout_9">
+     <item row="0" column="0">
+      <widget class="QTabWidget" name="tabWidget_misc">
+       <property name="tabPosition">
+        <enum>QTabWidget::West</enum>
+       </property>
+       <property name="currentIndex">
+        <number>0</number>
+       </property>
+       <property name="documentMode">
+        <bool>true</bool>
+       </property>
+       <widget class="QWidget" name="tab_misc1">
+        <attribute name="title">
+         <string>Members</string>
+        </attribute>
+        <layout class="QGridLayout" name="gridLayout">
+         <item row="0" column="0">
+          <widget class="QLabel" name="lblMembers">
+           <property name="text">
+            <string>Members</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QTreeWidget" name="treeWidget">
+           <property name="font">
+            <font>
+             <family>SauceCodePro Nerd Font</family>
+            </font>
+           </property>
+           <property name="frameShape">
+            <enum>QFrame::StyledPanel</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Sunken</enum>
+           </property>
+           <property name="lineWidth">
+            <number>1</number>
+           </property>
+           <property name="midLineWidth">
+            <number>0</number>
+           </property>
+           <property name="horizontalScrollBarPolicy">
+            <enum>Qt::ScrollBarAsNeeded</enum>
+           </property>
+           <property name="sizeAdjustPolicy">
+            <enum>QAbstractScrollArea::AdjustIgnored</enum>
+           </property>
+           <property name="columnCount">
+            <number>2</number>
+           </property>
+           <attribute name="headerHighlightSections">
+            <bool>false</bool>
+           </attribute>
+           <column>
+            <property name="text">
+             <string notr="true">1</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string notr="true">2</string>
+            </property>
+           </column>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="tab_misc2">
+        <attribute name="title">
+         <string>Filesystem Browser</string>
+        </attribute>
+        <layout class="QGridLayout" name="gridLayout_8">
+         <item row="0" column="0">
+          <widget class="QPushButton" name="btnReturn">
+           <property name="text">
+            <string>Return</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QTreeView" name="treeView"/>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="dockWidget3_2">
+   <property name="minimumSize">
+    <size>
+     <width>301</width>
+     <height>177</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>524287</width>
+     <height>524287</height>
+    </size>
+   </property>
+   <property name="baseSize">
+    <size>
+     <width>0</width>
+     <height>0</height>
+    </size>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>8</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_7">
+    <layout class="QGridLayout" name="gridLayout_7">
+     <item row="0" column="0">
+      <widget class="QTabWidget" name="tabWidget">
+       <property name="currentIndex">
+        <number>0</number>
+       </property>
+       <property name="documentMode">
+        <bool>true</bool>
+       </property>
+       <widget class="QWidget" name="tabBasicInfo">
+        <attribute name="title">
+         <string>BasicInfo</string>
+        </attribute>
+        <layout class="QGridLayout" name="gridLayout_2">
+         <item row="0" column="0">
+          <widget class="QTextEdit" name="editShowMsg">
+           <property name="font">
+            <font>
+             <family>SauceCodePro Nerd Font</family>
+            </font>
+           </property>
+           <property name="lineWrapMode">
+            <enum>QTextEdit::NoWrap</enum>
+           </property>
+           <property name="readOnly">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="tabErrors">
+        <attribute name="title">
+         <string>Errors</string>
+        </attribute>
+        <layout class="QGridLayout" name="gridLayout_3">
+         <item row="0" column="0">
+          <widget class="QTextEdit" name="editErrors">
+           <property name="font">
+            <font>
+             <family>SauceCodePro Nerd Font</family>
+            </font>
+           </property>
+           <property name="lineWrapMode">
+            <enum>QTextEdit::NoWrap</enum>
+           </property>
+           <property name="readOnly">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="tabWarnings">
+        <attribute name="title">
+         <string>Warnings</string>
+        </attribute>
+        <layout class="QGridLayout" name="gridLayout_4">
+         <item row="0" column="0">
+          <widget class="QTextEdit" name="editWarnings">
+           <property name="font">
+            <font>
+             <family>SauceCodePro Nerd Font</family>
+            </font>
+           </property>
+           <property name="lineWrapMode">
+            <enum>QTextEdit::NoWrap</enum>
+           </property>
+           <property name="readOnly">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="tabRemarks">
+        <attribute name="title">
+         <string>Remarks</string>
+        </attribute>
+        <layout class="QGridLayout" name="gridLayout_5">
+         <item row="0" column="0">
+          <widget class="QTextEdit" name="editRemarks">
+           <property name="font">
+            <font>
+             <family>SauceCodePro Nerd Font</family>
+            </font>
+           </property>
+           <property name="lineWrapMode">
+            <enum>QTextEdit::NoWrap</enum>
+           </property>
+           <property name="readOnly">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="tabOptimizations">
+        <attribute name="title">
+         <string>Optimizations</string>
+        </attribute>
+        <layout class="QGridLayout" name="gridLayout_6">
+         <item row="0" column="0">
+          <widget class="QTextEdit" name="editOptimizations">
+           <property name="font">
+            <font>
+             <family>SauceCodePro Nerd Font</family>
+            </font>
+           </property>
+           <property name="lineWrapMode">
+            <enum>QTextEdit::NoWrap</enum>
+           </property>
+           <property name="readOnly">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+     </item>
+    </layout>
+   </widget>
   </widget>
   <action name="actionOpen">
    <property name="text">
