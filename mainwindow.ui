@@ -146,12 +146,12 @@
     <property name="title">
      <string>File</string>
     </property>
+    <addaction name="actionNew"/>
     <addaction name="actionOpen"/>
     <addaction name="actionSave"/>
     <addaction name="actionSaveAs"/>
     <addaction name="separator"/>
-    <addaction name="separator"/>
-    <addaction name="actionNew"/>
+    <addaction name="actionOpen_directory"/>
    </widget>
    <widget class="QMenu" name="menu_Edit">
     <property name="title">
@@ -234,7 +234,7 @@
         <enum>QTabWidget::West</enum>
        </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>1</number>
        </property>
        <property name="documentMode">
         <bool>true</bool>
@@ -643,6 +643,11 @@
    </property>
    <property name="text">
     <string>Minimap</string>
+   </property>
+  </action>
+  <action name="actionOpen_directory">
+   <property name="text">
+    <string>Open the directory of the current file</string>
    </property>
   </action>
  </widget>

@@ -139,19 +139,19 @@ public:
     QSplitter* splitterMain;
 
 protected:
-    void closeEvent(QCloseEvent* event);
-    void dragEnterEvent(QDragEnterEvent* e);
-    void dropEvent(QDropEvent* e);
-    void paintEvent(QPaintEvent* event);
-    void keyPressEvent(QKeyEvent* event);
-    void keyReleaseEvent(QKeyEvent* event);
+    void closeEvent(QCloseEvent* event) override;
+    void dragEnterEvent(QDragEnterEvent* e) override;
+    void dropEvent(QDropEvent* e) override;
+    void paintEvent(QPaintEvent* event) override;
+    void keyPressEvent(QKeyEvent* event) override;
+    void keyReleaseEvent(QKeyEvent* event) override;
 
 public slots:
     void Open();
     QString openFile(QString fileName);
     void dealover(); //处理线程返回的结束信号
 
-    bool eventFilter(QObject*, QEvent*);
+    bool eventFilter(QObject*, QEvent*) override;
 
     void on_NewWindow();
 
@@ -164,6 +164,8 @@ public slots:
     void setValue2();
 
 private slots:
+    void on_actionOpenDir();
+
     void treeWidgetBack_itemClicked(QTreeWidgetItem* item, int column);
 
     void on_miniMap();
@@ -400,6 +402,10 @@ private:
     void set_mark(int linenr);
 
     void syncMiniEdit();
+
+#ifndef QT_NO_CONTEXTMENU
+    void contextMenuEvent(QContextMenuEvent* event) override;
+#endif // QT_NO_CONTEXTMENU
 };
 
 class MiniEditor : public QsciScintilla {
@@ -409,9 +415,9 @@ public:
     MiniEditor(QWidget* parent = nullptr);
 
 protected:
-    void mousePressEvent(QMouseEvent* event);
-    void mouseDoubleClickEvent(QMouseEvent* event);
-    void mouseMoveEvent(QMouseEvent* event);
+    void mousePressEvent(QMouseEvent* event) override;
+    void mouseDoubleClickEvent(QMouseEvent* event) override;
+    void mouseMoveEvent(QMouseEvent* event) override;
 private slots:
     void miniEdit_cursorPositionChanged();
 

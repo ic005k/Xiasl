@@ -81,7 +81,7 @@ MainWindow::MainWindow(QWidget* parent)
 
     loadLocal();
 
-    CurVerison = "1.0.37";
+    CurVerison = "1.0.38";
     ver = "QtiASL V" + CurVerison + "        ";
     setWindowTitle(ver);
 
@@ -270,7 +270,7 @@ void MainWindow::about()
     str = tr("Last modified: ");
 
     QString last = str + appInfo.lastModified().toString("yyyy-MM-dd hh:mm:ss");
-    QString str1 = "<a style='color:blue;' href = https://github.com/ic005k/QtiASL>QtiASL Editor</a><br><br>";
+    QString str1 = "<a style='color:blue;' href = https://github.com/ic005k/QtiASL>QtiASL IDE</a><br><br>";
 
     QMessageBox::about(this, "About", str1 + last);
 }
@@ -304,7 +304,7 @@ QString MainWindow::openFile(QString fileName)
 
         Decompile = new QProcess;
 
-        ui->tabWidget->setHidden(false);
+        ui->dockWidget3_2->setHidden(false);
         ui->actionInfo_win->setChecked(true);
 
         QString name;
@@ -492,7 +492,7 @@ void MainWindow::loadFile(const QString& fileName, int row, int col)
     ui->tabWidget_textEdit->currentWidget()->setWindowTitle("        " + ft.fileName());
 
     setCurrentFile(fileName);
-    statusBar()->showMessage(tr("File loaded"), 2000);
+    statusBar()->showMessage("                                              " + tr("File loaded"), 2000);
 
     ui->editShowMsg->clear();
 
@@ -3319,9 +3319,6 @@ void MainWindow::init_info_edit()
 
     textEditTemp = new QTextEdit();
 
-    QScreen* screen = QGuiApplication::primaryScreen();
-    int h = screen->size().height();
-
     ui->editShowMsg->setLineWrapMode(ui->editShowMsg->NoWrap);
     ui->editShowMsg->setReadOnly(true);
 
@@ -3338,8 +3335,8 @@ void MainWindow::init_info_edit()
     ui->editOptimizations->setReadOnly(true);
     ui->tabWidget->removeTab(4); //暂时不用"优化"这项
 
-    //ui->dockWidget3_2->setMaximumHeight(h / 4);
     ui->dockWidget3_2->setHidden(true);
+    resizeDocks({ ui->dockWidget3_2 }, { 200 }, Qt::Vertical);
 }
 
 void MainWindow::init_recentFiles()
@@ -3434,13 +3431,6 @@ void MainWindow::init_toolbar()
 void MainWindow::init_menu()
 {
 
-    ui->menu_File->addAction(ui->actionNew);
-    ui->menu_File->addAction(ui->actionOpen);
-    ui->menu_File->addAction(ui->actionSave);
-    ui->menu_File->addAction(ui->actionSaveAs);
-    ui->menu_File->addSeparator();
-    ui->menu_File->addSeparator();
-
     //File
     ui->actionNew->setShortcut(tr("ctrl+n"));
     connect(ui->actionNew, &QAction::triggered, this, &MainWindow::newFile);
@@ -3453,6 +3443,9 @@ void MainWindow::init_menu()
 
     ui->actionSaveAs->setShortcut(tr("ctrl+shift+s"));
     connect(ui->actionSaveAs, &QAction::triggered, this, &MainWindow::SaveAs);
+
+    ui->actionOpen_directory->setShortcut(tr("ctrl+0"));
+    connect(ui->actionOpen_directory, &QAction::triggered, this, &MainWindow::on_actionOpenDir);
 
     //Edit
     ui->actionGenerate->setShortcut(tr("ctrl+g"));
@@ -3881,6 +3874,17 @@ void MainWindow::init_filesystem()
 
     ui->treeView->installEventFilter(this); //安装事件过滤器
     ui->treeView->setAlternatingRowColors(true); //不同的底色交替显示
+
+    ui->treeView->setContextMenuPolicy(Qt::CustomContextMenu); //给控件设置上下文菜单策略
+    QMenu* menu = new QMenu(this);
+    QAction* actionOpenDir = new QAction(tr("Open directory"), this);
+    menu->addAction(actionOpenDir);
+    connect(actionOpenDir, &QAction::triggered, this, &MainWindow::on_actionOpenDir);
+    connect(ui->treeView, &QTreeView::customContextMenuRequested, [=](const QPoint& pos) {
+        Q_UNUSED(pos);
+        //qDebug() << pos; //参数pos用来传递右键点击时的鼠标的坐标
+        menu->exec(QCursor::pos());
+    });
 
     model = new QFileSystemModel;
 
@@ -4740,18 +4744,16 @@ void MainWindow::on_tabWidget_textEdit_tabBarClicked(int index)
     if (index == -1) //点击标签页之外的区域
         return;
 
-    int indexBak = index;
-
     QWidget* pWidget = ui->tabWidget_textEdit->widget(index);
     QLabel* lbl = new QLabel;
     lbl = (QLabel*)pWidget->children().at(lblNumber); //2为QLabel,1为textEdit,0为VBoxLayout
 
     if (lbl->text() == tr("untitled") + ".dsl") {
         curFile = "";
-        ui->tabWidget_textEdit->tabBar()->setTabText(index, tr("untitled") + ".dsl");
+
     } else {
         QFileInfo fi(lbl->text());
-        ui->tabWidget_textEdit->tabBar()->setTabText(index, fi.fileName());
+
         curFile = lbl->text();
     }
 
@@ -4759,12 +4761,6 @@ void MainWindow::on_tabWidget_textEdit_tabBarClicked(int index)
     edit = (QsciScintilla*)pWidget->children().at(editNumber);
 
     textEdit = edit;
-
-    int row, col;
-    textEdit->getCursorPosition(&row, &col);
-    miniEdit->clear();
-    miniEdit->setText(textEdit->text());
-    miniEdit->setCursorPosition(row, col);
 
     on_btnRefreshTree();
 
@@ -4804,8 +4800,6 @@ void MainWindow::on_tabWidget_textEdit_tabBarClicked(int index)
     hs = edit->horizontalScrollBar()->sliderPosition();
 
     One = false;
-
-    ui->tabWidget_textEdit->setCurrentIndex(indexBak);
 }
 
 void MainWindow::closeTab(int index)
@@ -5244,4 +5238,18 @@ void MainWindow::setValue2()
 
     //textEdit->verticalScrollBar()->setHidden(true);
     //}
+}
+
+#ifndef QT_NO_CONTEXTMENU
+void MainWindow::contextMenuEvent(QContextMenuEvent* event)
+{
+
+    Q_UNUSED(event);
+}
+#endif
+
+void MainWindow::on_actionOpenDir()
+{
+    QString dir = "file:" + model->filePath(fsm_Index);
+    QDesktopServices::openUrl(QUrl(dir, QUrl::TolerantMode));
 }
