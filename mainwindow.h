@@ -20,6 +20,7 @@
 #include <QFileOpenEvent>
 #include <QFileSystemModel>
 #include <QFontDialog>
+#include <QGridLayout>
 #include <QLabel>
 #include <QMainWindow>
 #include <QMessageBox>
@@ -82,6 +83,7 @@ class LineNumberArea;
 class QsciScintilla;
 class thread_one;
 class MiniEditor;
+class MyWidget;
 
 void refreshTree();
 void getMembers(QString str_member, QsciScintilla* textEdit);
@@ -476,6 +478,14 @@ class QscilexerCppAttach : public QsciLexerCPP {
     Q_OBJECT
 public:
     const char* keywords(int set) const;
+};
+
+class MyWidget : public QGridLayout {
+public:
+    QSize sizeHint() const
+    {
+        return QSize(600, 180); /* 在这里定义dock的初始大小 */
+    }
 };
 
 #endif // MAINWINDOW_H

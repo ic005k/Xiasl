@@ -321,8 +321,8 @@
   <widget class="QDockWidget" name="dockWidget3_2">
    <property name="minimumSize">
     <size>
-     <width>301</width>
-     <height>177</height>
+     <width>319</width>
+     <height>200</height>
     </size>
    </property>
    <property name="maximumSize">
@@ -331,10 +331,16 @@
      <height>524287</height>
     </size>
    </property>
+   <property name="sizeIncrement">
+    <size>
+     <width>0</width>
+     <height>200</height>
+    </size>
+   </property>
    <property name="baseSize">
     <size>
      <width>0</width>
-     <height>0</height>
+     <height>177</height>
     </size>
    </property>
    <attribute name="dockWidgetArea">

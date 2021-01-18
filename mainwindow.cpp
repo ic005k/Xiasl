@@ -139,19 +139,14 @@ MainWindow::MainWindow(QWidget* parent)
 
     splitterMain = new QSplitter(Qt::Horizontal, this);
 
-    //splitterMain->addWidget(ui->dockWidget);
-
     QSplitter* splitterRight = new QSplitter(Qt::Vertical, splitterMain);
     splitterRight->setOpaqueResize(true);
 
     splitterRight->addWidget(ui->tabWidget_textEdit);
-    //splitterRight->addWidget(ui->dockWidget3);
 
     splitterMain->addWidget(miniEdit);
 
     ui->gridLayout_10->addWidget(splitterMain);
-
-    ui->dockWidget3_2->setHidden(true);
 
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(timer_linkage()));
@@ -3324,7 +3319,8 @@ void MainWindow::init_info_edit()
 
     textEditTemp = new QTextEdit();
 
-    //ui->tabWidget->setMaximumHeight(220);
+    QScreen* screen = QGuiApplication::primaryScreen();
+    int h = screen->size().height();
 
     ui->editShowMsg->setLineWrapMode(ui->editShowMsg->NoWrap);
     ui->editShowMsg->setReadOnly(true);
@@ -3341,6 +3337,9 @@ void MainWindow::init_info_edit()
     ui->editOptimizations->setLineWrapMode(ui->editOptimizations->NoWrap);
     ui->editOptimizations->setReadOnly(true);
     ui->tabWidget->removeTab(4); //暂时不用"优化"这项
+
+    //ui->dockWidget3_2->setMaximumHeight(h / 4);
+    ui->dockWidget3_2->setHidden(true);
 }
 
 void MainWindow::init_recentFiles()
@@ -3842,7 +3841,7 @@ void MainWindow::init_treeWidget()
     //w = screen()->size().width();
     QScreen* screen = QGuiApplication::primaryScreen();
     w = screen->size().width();
-    ui->tabWidget_misc->setMinimumWidth(w / 3 - 60);
+    ui->tabWidget_misc->setMinimumWidth(w / 3);
 
     treeWidgetBak = new QTreeWidget;
 
@@ -3872,7 +3871,7 @@ void MainWindow::init_treeWidget()
     ui->treeWidget->installEventFilter(this);
     ui->treeWidget->setAlternatingRowColors(true); //底色交替显示
     ui->treeWidget->setStyleSheet("QTreeWidget::item:hover{background-color:rgba(127,255,0,50)}"
-                                  "QTreeWidget::item:selected{background-color:rgba(30, 150, 255, 255); color:rgba(255,255,255,255)}");
+                                  "QTreeWidget::item:selected{background-color:rgba(30, 100, 255, 255); color:rgba(255,255,255,255)}");
 
     //connect(ui->treeWidget, &QTreeWidget::itemClicked, this, &MainWindow::treeWidgetBack_itemClicked);
 }
@@ -4374,7 +4373,7 @@ void MainWindow::init_statusBar()
 
     lblLayer = new QLabel(this);
     QPalette label_palette;
-    label_palette.setColor(QPalette::Background, QColor(30, 150, 255, 255));
+    label_palette.setColor(QPalette::Background, QColor(30, 100, 255, 255));
     label_palette.setColor(QPalette::WindowText, Qt::white);
     lblLayer->setAutoFillBackground(true);
     lblLayer->setPalette(label_palette);
