@@ -304,7 +304,14 @@ QString MainWindow::openFile(QString fileName)
 
         Decompile = new QProcess;
 
+        //显示信息窗口并初始化表头
         ui->dockWidget3_2->setHidden(false);
+        //标记tab头
+        int info_count = 0;
+        ui->tabWidget->setTabText(1, tr("Errors") + " (" + QString::number(info_count) + ")");
+        ui->tabWidget->setTabText(2, tr("Warnings") + " (" + QString::number(info_count) + ")");
+        ui->tabWidget->setTabText(3, tr("Remarks") + " (" + QString::number(info_count) + ")");
+        ui->tabWidget->setTabText(4, "Optimizations (" + QString::number(info_count) + ")");
         ui->actionInfo_win->setChecked(true);
 
         QString name;
