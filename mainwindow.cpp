@@ -81,7 +81,7 @@ MainWindow::MainWindow(QWidget* parent)
 
     loadLocal();
 
-    CurVerison = "1.0.38";
+    CurVerison = "1.0.39";
     ver = "QtiASL V" + CurVerison + "        ";
     setWindowTitle(ver);
 
@@ -726,11 +726,15 @@ void MainWindow::btnGenerate_clicked()
     QProcess dump;
     QProcess iasl;
 
+    QDir dir;
+    QString acpiDir = QDir::homePath() + "/Desktop/ACPI Tables/";
+    if (dir.mkpath(acpiDir)) { }
+
 #ifdef Q_OS_WIN32
     // win
+    dir.setCurrent(acpiDir);
     dump.execute(appInfo.filePath() + "/acpidump.exe", QStringList() << "-b"); //阻塞
-    iasl.execute(appInfo.filePath() + "/iasl.exe", QStringList() << "-d"
-                                                                 << "dsdt.dat");
+    iasl.execute(appInfo.filePath() + "/iasl.exe", QStringList() << "-d" << acpiDir + "dsdt.dat");
 #endif
 
 #ifdef Q_OS_LINUX
@@ -749,7 +753,7 @@ void MainWindow::btnGenerate_clicked()
 
 #endif
 
-    loadFile(appInfo.filePath() + "/dsdt.dsl", -1, -1);
+    loadFile(acpiDir + "dsdt.dsl", -1, -1);
 }
 
 void MainWindow::btnCompile_clicked()
@@ -4831,10 +4835,12 @@ void MainWindow::closeTab(int index)
             curFile = lbl->text();
 
         if (maybeSave(ui->tabWidget_textEdit->tabBar()->tabText(index))) {
-            ui->tabWidget_textEdit->removeTab(index);
 
-            FileSystemWatcher::removeWatchPath(lbl->text()); //移出文件监控
+            ui->tabWidget_textEdit->removeTab(index);
+            if (QFileInfo(lbl->text()).exists())
+                FileSystemWatcher::removeWatchPath(lbl->text()); //移出文件监控
         }
+
     } else
         ui->tabWidget_textEdit->setTabsClosable(false);
 
