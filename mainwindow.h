@@ -4,6 +4,12 @@
 #include "dlgdecompile.h"
 #include "recentfiles.h"
 
+#include <Qsci/qsciapis.h>
+#include <Qsci/qscilexercoffeescript.h>
+#include <Qsci/qscilexercpp.h>
+#include <Qsci/qscilexerverilog.h>
+#include <Qsci/qsciscintilla.h>
+
 #include <QApplication>
 #include <QCloseEvent>
 #include <QCommandLineOption>
@@ -62,12 +68,6 @@
 #include <stdio.h>
 #include <windows.h>
 #endif
-
-#include <Qsci/qsciapis.h>
-#include <Qsci/qscilexercoffeescript.h>
-#include <Qsci/qscilexercpp.h>
-#include <Qsci/qscilexerverilog.h>
-#include <Qsci/qsciscintilla.h>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {

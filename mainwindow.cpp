@@ -81,7 +81,7 @@ MainWindow::MainWindow(QWidget* parent)
 
     loadLocal();
 
-    CurVerison = "1.0.39";
+    CurVerison = "1.0.40";
     ver = "QtiASL V" + CurVerison + "        ";
     setWindowTitle(ver);
 
@@ -398,7 +398,7 @@ QString MainWindow::openFile(QString fileName)
     if (fi.suffix().toLower() == "dsl") {
         ui->actionWrapWord->setChecked(false); //取消自动换行，影响dsl文件开启速度
         textEdit->setWrapMode(QsciScintilla::WrapNone);
-        miniEdit->setWrapMode(QsciScintilla::WrapNone);
+        //miniEdit->setWrapMode(QsciScintilla::WrapNone);
     }
 
     return fileName;
@@ -1009,6 +1009,7 @@ void MainWindow::miniEdit_cursorPositionChanged()
     int ColNum, RowNum;
     miniEdit->getCursorPosition(&RowNum, &ColNum);
     textEdit->setCursorPosition(RowNum, ColNum);
+
     if (!ui->editFind->hasFocus())
         textEdit->setFocus();
 
@@ -3593,9 +3594,6 @@ void MainWindow::setLexer(QsciLexer* textLexer, QsciScintilla* textEdit)
     if (red < 55) //暗模式，mac下为50
     {
 
-        //背景色
-        //textLexer->setPaper(QColor(28, 28, 28));
-
         //设置光标所在行背景色
         textEdit->setCaretLineBackgroundColor(QColor(180, 180, 0));
         textEdit->setCaretLineFrameWidth(1);
@@ -3612,9 +3610,6 @@ void MainWindow::setLexer(QsciLexer* textLexer, QsciScintilla* textEdit)
         textLexer->setColor(QColor(84, 235, 159), QsciLexerCPP::DoubleQuotedString); //双引号
     } else {
 
-        //背景色
-        //textLexer->setPaper(QColor(255, 255, 255));
-
         textEdit->setCaretLineBackgroundColor(QColor(255, 255, 0, 50));
         textEdit->setCaretLineFrameWidth(0);
         textEdit->setCaretLineVisible(true);
@@ -3629,10 +3624,6 @@ void MainWindow::setLexer(QsciLexer* textLexer, QsciScintilla* textEdit)
         textLexer->setColor(QColor(20, 20, 20), QsciLexerCPP::Operator);
         textLexer->setColor(QColor(205, 38, 38), QsciLexerCPP::DoubleQuotedString); //双引号
     }
-
-    //QFont font1;
-    //font1.setBold(true);
-    //textLexer->setFont(font1, QsciLexerCPP::KeywordSet2);
 
     //匹配大小括弧
     textEdit->setBraceMatching(QsciScintilla::SloppyBraceMatch);
@@ -3738,33 +3729,43 @@ void MainWindow::init_miniEdit()
 #endif
 
     miniEdit->setContextMenuPolicy(Qt::NoContextMenu);
-
     miniEdit->setMarginWidth(0, 0);
     miniEdit->setMargins(0);
     miniEdit->setReadOnly(0);
+    miniEdit->SendScintilla(QsciScintillaBase::SCI_SETCURSOR, 0, 7);
+
     miniEdit->setWrapMode(QsciScintilla::WrapNone);
 
-    QFont font;
-    font.setPixelSize(1);
+    QFont minifont;
+    minifont.setFamily(font.family());
+    minifont.setPointSize(1);
+
+    /*QscilexerCppAttach* miniLexer = new QscilexerCppAttach;
+    miniEdit->setLexer(miniLexer);
+    miniLexer->setColor(QColor("white"));
+    miniLexer->setPaper(QColor("#393d44"));
+    miniLexer->setFont(minifont);
+    miniEdit->setMarginsFont(minifont);*/
+
     if (miniEdit->lexer() == nullptr) {
         miniEdit->setColor(QColor("white"));
         miniEdit->setPaper(QColor("#393d44"));
-        miniEdit->setFont(font);
+        miniEdit->setFont(minifont);
+
     } else {
         QsciLexer* lexer = miniEdit->lexer();
         lexer->setDefaultColor(QColor("white"));
         lexer->setDefaultPaper(QColor("#393d44"));
-        lexer->setDefaultFont(font);
+        lexer->setDefaultFont(minifont);
     }
 
-    miniEdit->SendScintilla(QsciScintilla::SCI_SETSCROLLWIDTH, -1);
-    miniEdit->SendScintilla(QsciScintilla::SCI_SETSCROLLWIDTHTRACKING, false);
-
     connect(miniEdit, &QsciScintilla::cursorPositionChanged, this, &MainWindow::miniEdit_cursorPositionChanged);
-
     //connect(miniEdit->verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(setValue()));
 
-    miniEdit->SendScintilla(QsciScintillaBase::SCI_SETCURSOR, 0, 7);
+    //水平滚动棒
+    miniEdit->SendScintilla(QsciScintilla::SCI_SETSCROLLWIDTH, -1);
+    miniEdit->SendScintilla(QsciScintilla::SCI_SETSCROLLWIDTHTRACKING, false);
+    miniEdit->horizontalScrollBar()->setHidden(true);
 }
 
 void MainWindow::init_edit(QsciScintilla* textEdit)
@@ -3772,7 +3773,8 @@ void MainWindow::init_edit(QsciScintilla* textEdit)
 
     textEditBack = new QsciScintilla();
 
-    textEdit->setWrapMode(QsciScintilla::WrapNone); //不自动换行
+    textEdit->setWrapMode(QsciScintilla::WrapNone);
+
     //设置编码为UTF-8
     textEdit->SendScintilla(QsciScintilla::SCI_SETCODEPAGE, QsciScintilla::SC_CP_UTF8);
 
@@ -4491,18 +4493,25 @@ void MainWindow::set_font()
 
     bool ok;
     QFontDialog fd;
-    //fd.setCurrentFont().
-    //fd.show();
 
     font = fd.getFont(&ok, font);
 
     if (ok) {
 
-        textLexer->setFont(font);
+        for (int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i++) {
 
-        QFont m_font;
-        m_font.setFamily(font.family());
-        textEdit->setMarginsFont(m_font);
+            QWidget* pWidget = ui->tabWidget_textEdit->widget(i);
+            QsciScintilla* edit = new QsciScintilla;
+            edit = (QsciScintilla*)pWidget->children().at(editNumber);
+
+            textLexer->setFont(font);
+            edit->setLexer(textLexer);
+            setLexer(textLexer, edit);
+
+            QFont m_font;
+            m_font.setFamily(font.family());
+            edit->setMarginsFont(m_font);
+        }
 
         //存储字体信息
         QString qfile = QDir::homePath() + "/.config/QtiASL/QtiASL.ini";
@@ -4520,10 +4529,12 @@ void MainWindow::set_font()
 /*菜单：是否自动换行*/
 void MainWindow::set_wrap()
 {
+
     if (ui->actionWrapWord->isChecked()) {
         textEdit->setWrapMode(QsciScintilla::WrapWord);
         miniEdit->setWrapMode(QsciScintilla::WrapWord);
     } else {
+
         textEdit->setWrapMode(QsciScintilla::WrapNone);
         miniEdit->setWrapMode(QsciScintilla::WrapNone);
     }
@@ -4754,6 +4765,11 @@ void MainWindow::on_tabWidget_textEdit_tabBarClicked(int index)
 
     if (index == -1) //点击标签页之外的区域
         return;
+
+    //取消自动换行
+    ui->actionWrapWord->setChecked(false);
+    textEdit->setWrapMode(QsciScintilla::WrapNone);
+    miniEdit->setWrapMode(QsciScintilla::WrapNone);
 
     QWidget* pWidget = ui->tabWidget_textEdit->widget(index);
     QLabel* lbl = new QLabel;

@@ -322,7 +322,7 @@
    <property name="minimumSize">
     <size>
      <width>319</width>
-     <height>200</height>
+     <height>180</height>
     </size>
    </property>
    <property name="maximumSize">
@@ -350,6 +350,9 @@
     <layout class="QGridLayout" name="gridLayout_7">
      <item row="0" column="0">
       <widget class="QTabWidget" name="tabWidget">
+       <property name="tabPosition">
+        <enum>QTabWidget::North</enum>
+       </property>
        <property name="currentIndex">
         <number>0</number>
        </property>
