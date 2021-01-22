@@ -3766,6 +3766,10 @@ void MainWindow::init_miniEdit()
     miniEdit->SendScintilla(QsciScintilla::SCI_SETSCROLLWIDTH, -1);
     miniEdit->SendScintilla(QsciScintilla::SCI_SETSCROLLWIDTHTRACKING, false);
     miniEdit->horizontalScrollBar()->setHidden(true);
+
+    //接受文件拖放打开
+    miniEdit->setAcceptDrops(false);
+    this->setAcceptDrops(true);
 }
 
 void MainWindow::init_edit(QsciScintilla* textEdit)
