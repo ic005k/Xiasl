@@ -2,7 +2,7 @@
 #include "MyTabBar.h"
 #include "MyTabPage.h"
 #include "MyTabPopup.h"
-#include "MyTabWidget.h"
+#include "mytabwidget.h"
 #include "filesystemwatcher.h"
 #include "ui_mainwindow.h"
 
@@ -81,7 +81,7 @@ MainWindow::MainWindow(QWidget* parent)
 
     loadLocal();
 
-    CurVerison = "1.0.40";
+    CurVerison = "1.0.41";
     ver = "QtiASL V" + CurVerison + "        ";
     setWindowTitle(ver);
 
@@ -96,6 +96,8 @@ MainWindow::MainWindow(QWidget* parent)
     dlg = new dlgDecompile(this);
 
     init_menu();
+
+    init_recentFiles();
 
     font.setFamily("SauceCodePro Nerd Font");
 #ifdef Q_OS_WIN32
@@ -116,7 +118,7 @@ MainWindow::MainWindow(QWidget* parent)
 
 #ifdef Q_OS_MAC
     font.setPointSize(13);
-    ui->actionGenerate->setEnabled(false);
+    ui->actionGenerate->setEnabled(true);
     ui->toolBar->setIconSize(QSize(22, 22));
     //ui->actionCheckUpdate->setVisible(false);
     mac = true;
@@ -153,8 +155,6 @@ MainWindow::MainWindow(QWidget* parent)
 
     manager = new QNetworkAccessManager(this);
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));
-
-    init_recentFiles();
 
     init_statusBar();
 
@@ -278,12 +278,7 @@ void MainWindow::about()
 QString MainWindow::openFile(QString fileName)
 {
 
-    QSettings settings;
     QFileInfo fInfo(fileName);
-
-    settings.setValue("currentDirectory", fInfo.absolutePath());
-    //qDebug() << settings.fileName(); //最近打开的文件所保存的位置
-    m_recentFiles->setMostRecentFile(fileName);
 
     if (fInfo.suffix() == "aml" || fInfo.suffix() == "dat") {
         //如果之前这个文件被打开过，则返回
@@ -409,10 +404,12 @@ void MainWindow::loadFile(const QString& fileName, int row, int col)
 
     loading = true;
 
+    QLabel* lbl = new QLabel;
+
     /*如果之前文件已打开，则返回已打开的文件*/
     for (int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i++) {
         QWidget* pWidget = ui->tabWidget_textEdit->widget(i);
-        QLabel* lbl = new QLabel;
+
         lbl = (QLabel*)pWidget->children().at(lblNumber); //2为QLabel,1为textEdit,0为VBoxLayout
 
         if (fileName == lbl->text()) {
@@ -490,11 +487,11 @@ void MainWindow::loadFile(const QString& fileName, int row, int col)
 
     //给当前tab里面的lbl赋值
     QWidget* pWidget = ui->tabWidget_textEdit->currentWidget();
-    QLabel* lbl = new QLabel;
     lbl = (QLabel*)pWidget->children().at(lblNumber); //2为QLabel,1为textEdit,0为VBoxLayout
     lbl->setText(fileName);
     QFileInfo ft(fileName);
     ui->tabWidget_textEdit->tabBar()->setTabToolTip(ui->tabWidget_textEdit->currentIndex(), ft.fileName());
+
     //为拖拽tab准备拖动后的标题名
     ui->tabWidget_textEdit->currentWidget()->setWindowTitle("        " + ft.fileName());
 
@@ -513,6 +510,16 @@ void MainWindow::loadFile(const QString& fileName, int row, int col)
     QIcon icon(":/icon/d.png");
     ui->tabWidget_textEdit->tabBar()->setTabIcon(ui->tabWidget_textEdit->currentIndex(), icon);
     One = false;
+
+    //最近打开的文件
+    QSettings settings;
+    QFileInfo fInfo(fileName);
+    QCoreApplication::setOrganizationName("ic005k");
+    QCoreApplication::setOrganizationDomain("github.com/ic005k");
+    QCoreApplication::setApplicationName("QtiASL");
+    settings.setValue("currentDirectory", fInfo.absolutePath());
+    //qDebug() << settings.fileName(); //最近打开的文件所保存的位置
+    m_recentFiles->setMostRecentFile(fileName);
 
     loading = false;
 }
@@ -573,11 +580,13 @@ void MainWindow::set_return_text(QString text)
 void MainWindow::Open()
 {
 
-    fileName = QFileDialog::getOpenFileName(this, "DSDT", "", "DSDT(*.aml *.dsl *.dat);;All(*.*)");
+    QStringList fileNames = QFileDialog::getOpenFileNames(this, "DSDT", "", "DSDT(*.aml *.dsl *.dat);;All(*.*)");
+    for (int i = 0; i < fileNames.count(); i++) {
+        if (!fileNames.at(i).isEmpty()) {
 
-    if (!fileName.isEmpty()) {
-
-        loadFile(openFile(fileName), -1, -1);
+            loadFile(openFile(fileNames.at(i)), -1, -1);
+            fileName = fileNames.at(i);
+        }
     }
 }
 
@@ -718,23 +727,41 @@ bool MainWindow::saveFile(const QString& fileName)
     return true;
 }
 
-void MainWindow::btnGenerate_clicked()
+void MainWindow::getACPITables(bool ssdt)
 {
+
     QFileInfo appInfo(qApp->applicationDirPath());
     qDebug() << appInfo.filePath();
 
     QProcess dump;
     QProcess iasl;
 
-    QDir dir;
     QString acpiDir = QDir::homePath() + "/Desktop/ACPI Tables/";
+
+    QDir dir;
     if (dir.mkpath(acpiDir)) { }
+    if (dir.mkpath(acpiDir + "temp/")) { }
+
+    //设置文件过滤器
+    QStringList nameFilters;
 
 #ifdef Q_OS_WIN32
-    // win
     dir.setCurrent(acpiDir);
-    dump.execute(appInfo.filePath() + "/acpidump.exe", QStringList() << "-b"); //阻塞
-    iasl.execute(appInfo.filePath() + "/iasl.exe", QStringList() << "-d" << acpiDir + "dsdt.dat");
+    dump.execute(appInfo.filePath() + "/acpidump.exe", QStringList() << "-b");
+
+    dir.setCurrent(acpiDir + "temp/");
+    dump.execute(appInfo.filePath() + "/acpidump.exe", QStringList() << "-b");
+
+    //设置文件过滤格式
+    nameFilters << "ssdt*.dat";
+    //将过滤后的文件名称存入到files列表中
+    QStringList ssdtFiles = dir.entryList(nameFilters, QDir::Files | QDir::Readable, QDir::Name);
+
+    dir.setCurrent(acpiDir);
+    if (!ssdt)
+        iasl.execute(appInfo.filePath() + "/iasl.exe", QStringList() << "-e" << ssdtFiles << "-d"
+                                                                     << "dsdt.dat");
+
 #endif
 
 #ifdef Q_OS_LINUX
@@ -746,14 +773,111 @@ void MainWindow::btnGenerate_clicked()
 #endif
 
 #ifdef Q_OS_MAC
-    // mac
-    dump.execute(appInfo.filePath() + "/acpidump", QStringList() << "-b");
-    iasl.execute(appInfo.filePath() + "/iasl", QStringList() << "-d"
-                                                             << "dsdt.dat");
+    dir.setCurrent(acpiDir);
+    dump.execute(appInfo.filePath() + "/patchmatic", QStringList() << "-extractall" << acpiDir);
+
+    dir.setCurrent(acpiDir + "temp/");
+    dump.execute(appInfo.filePath() + "/patchmatic", QStringList() << "-extract" << acpiDir + "temp/");
+
+    //设置文件过滤格式
+    nameFilters << "ssdt*.aml";
+    //将过滤后的文件名称存入到files列表中
+    QStringList ssdtFiles = dir.entryList(nameFilters, QDir::Files | QDir::Readable, QDir::Name);
+
+    dir.setCurrent(acpiDir);
+    if (!ssdt)
+        iasl.execute(appInfo.filePath() + "/iasl", QStringList() << "-e" << ssdtFiles << "-d"
+                                                                 << "dsdt.aml");
 
 #endif
 
-    loadFile(acpiDir + "dsdt.dsl", -1, -1);
+    deleteDirfile(acpiDir + "temp/");
+
+    //获取当前加载的SSDT列表
+    QCoreApplication::setOrganizationName("ic005k");
+    QCoreApplication::setOrganizationDomain("github.com/ic005k");
+    QCoreApplication::setApplicationName("SSDT");
+
+    m_ssdtFiles->setNumOfRecentFiles(ssdtFiles.count()); //最多显示最近的文件个数
+
+    for (int i = ssdtFiles.count() - 1; i > -1; i--) {
+        qDebug() << ssdtFiles.at(i);
+
+        QFileInfo fInfo(acpiDir + ssdtFiles.at(i));
+        QSettings settings;
+        settings.setValue("currentDirectory", fInfo.absolutePath());
+        //qDebug() << settings.fileName(); //最近打开的文件所保存的位置
+        m_ssdtFiles->setMostRecentFile(acpiDir + ssdtFiles.at(i));
+    }
+
+    if (!ssdt) {
+        loadFile(acpiDir + "dsdt.dsl", -1, -1);
+
+        QString dirAcpi = "file:" + acpiDir;
+        QDesktopServices::openUrl(QUrl(dirAcpi, QUrl::TolerantMode));
+    }
+}
+
+bool MainWindow::DeleteDirectory(const QString& path)
+{
+    if (path.isEmpty()) {
+        return false;
+    }
+
+    QDir dir(path);
+    if (!dir.exists()) {
+        return true;
+    }
+
+    dir.setFilter(QDir::AllEntries | QDir::NoDotAndDotDot);
+    QFileInfoList fileList = dir.entryInfoList();
+    foreach (QFileInfo fi, fileList) {
+        if (fi.isFile()) {
+            fi.dir().remove(fi.fileName());
+        } else {
+            DeleteDirectory(fi.absoluteFilePath());
+        }
+    }
+    return dir.rmpath(dir.absolutePath());
+}
+
+int MainWindow::deleteDirfile(QString dirName)
+{
+    QDir directory(dirName);
+    if (!directory.exists()) {
+        return true;
+    }
+
+    QString srcPath = QDir::toNativeSeparators(dirName);
+    if (!srcPath.endsWith(QDir::separator()))
+        srcPath += QDir::separator();
+
+    QStringList fileNames = directory.entryList(QDir::AllEntries | QDir::NoDotAndDotDot | QDir::Hidden);
+    bool error = false;
+    for (QStringList::size_type i = 0; i != fileNames.size(); ++i) {
+        QString filePath = srcPath + fileNames.at(i);
+        QFileInfo fileInfo(filePath);
+        if (fileInfo.isFile() || fileInfo.isSymLink()) {
+            QFile::setPermissions(filePath, QFile::WriteOwner);
+            if (!QFile::remove(filePath)) {
+                error = true;
+            }
+        } else if (fileInfo.isDir()) {
+            if (!deleteDirfile(filePath)) {
+                error = true;
+            }
+        }
+    }
+
+    if (!directory.rmdir(QDir::toNativeSeparators(directory.path()))) {
+        error = true;
+    }
+    return !error;
+}
+
+void MainWindow::btnGenerate_clicked()
+{
+    getACPITables(false);
 }
 
 void MainWindow::btnCompile_clicked()
@@ -3361,12 +3485,22 @@ void MainWindow::init_recentFiles()
     QCoreApplication::setApplicationName("QtiASL");
 
     m_recentFiles = new RecentFiles(this);
-    if (!zh_cn)
-        m_recentFiles->attachToMenuAfterItem(ui->menu_File, "SaveAS...", SLOT(recentOpen(QString)));
-    else
-        m_recentFiles->attachToMenuAfterItem(ui->menu_File, "另存...", SLOT(recentOpen(QString)));
-
+    m_recentFiles->attachToMenuAfterItem(ui->menu_File, tr("Open"), SLOT(recentOpen(QString)));
     m_recentFiles->setNumOfRecentFiles(25); //最多显示最近的文件个数
+
+    //SSDT list
+    QCoreApplication::setOrganizationName("ic005k");
+    QCoreApplication::setOrganizationDomain("github.com/ic005k");
+    QCoreApplication::setApplicationName("SSDT");
+
+    m_ssdtFiles = new RecentFiles(this);
+    m_ssdtFiles->setTitle(tr("Current SSDT List"));
+
+    if (!linuxOS) {
+        m_ssdtFiles->attachToMenuAfterItem(ui->menu_Edit, tr("Generate ACPI tables"), SLOT(recentOpen(QString)));
+
+        getACPITables(true); //获取SSDT列表
+    }
 }
 
 void MainWindow::init_toolbar()
@@ -4363,6 +4497,12 @@ void MainWindow::recentOpen(QString filename)
     loadFile(openFile(filename), -1, -1);
 }
 
+void MainWindow::ssdtOpen(QString filename)
+{
+
+    loadFile(openFile(filename), -1, -1);
+}
+
 void MainWindow::dragEnterEvent(QDragEnterEvent* e)
 {
 
@@ -4378,12 +4518,14 @@ void MainWindow::dropEvent(QDropEvent* e)
         return;
     }
 
-    QString fileName = urls.first().toLocalFile();
-    if (fileName.isEmpty()) {
-        return;
-    }
+    for (int i = 0; i < urls.count(); i++) {
+        QString fileName = urls.at(i).toLocalFile();
+        if (fileName.isEmpty()) {
+            return;
+        }
 
-    loadFile(openFile(fileName), -1, -1);
+        loadFile(openFile(fileName), -1, -1);
+    }
 }
 
 void MainWindow::init_statusBar()

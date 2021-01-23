@@ -62,7 +62,6 @@ HEADERS += \
     MyTabBar.h \
     MyTabPage.h \
     MyTabPopup.h \
-    MyTabWidget.h \
     Qsci/qsciabstractapis.h \
     Qsci/qsciapis.h \
     Qsci/qscicommand.h \
@@ -120,6 +119,7 @@ HEADERS += \
     filesystemwatcher.h \
     mainwindow.h \
     myapp.h \
+    mytabwidget.h \
     recentfiles.h
 
 FORMS += \

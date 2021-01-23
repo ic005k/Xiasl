@@ -3,6 +3,7 @@
 
 #include "dlgdecompile.h"
 #include "recentfiles.h"
+#include "ssdtList.h"
 
 #include <Qsci/qsciapis.h>
 #include <Qsci/qscilexercoffeescript.h>
@@ -132,11 +133,15 @@ public:
 
     RecentFiles* m_recentFiles;
 
+    RecentFiles* m_ssdtFiles;
+
     int current_line = 0;
 
     thread_one* mythread; //线程对象
 
     QSplitter* splitterMain;
+
+    void getACPITables(bool ssdt);
 
 protected:
     void closeEvent(QCloseEvent* event) override;
@@ -201,6 +206,7 @@ private slots:
     void readKextstat();
 
     void recentOpen(QString filename);
+    void ssdtOpen(QString filename);
 
     void newFile();
 
@@ -402,6 +408,10 @@ private:
     void set_mark(int linenr);
 
     void syncMiniEdit();
+
+    int deleteDirfile(QString dirName);
+
+    bool DeleteDirectory(const QString& path);
 
 #ifndef QT_NO_CONTEXTMENU
     void contextMenuEvent(QContextMenuEvent* event) override;
