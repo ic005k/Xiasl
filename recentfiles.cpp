@@ -153,6 +153,32 @@ void RecentFiles::setMostRecentFile(const QString fileName)
         ));
 }
 
+void RecentFiles::setMostRecentSsdtFile(const QString fileName)
+{
+    if (fileName.isEmpty())
+        return;
+
+    QSettings settings;
+    QStringList recentFileList = settings.value(recentFileListId).toStringList();
+    if(recentFileList.count() == MaxRecentFiles) //防止数组越界
+    {
+        recentFileList.removeAt(MaxRecentFiles - 1);
+    }
+
+    recentFileList.removeAll(fileName);
+    recentFileList.prepend(fileName);
+    settings.setValue(recentFileListId, QVariant(recentFileList));
+
+    updateRecentFiles(settings);
+
+    qApp->setProperty("currentSsdtDirectory",
+        QVariant(
+        QFileInfo(fileName)
+        .absoluteDir()
+        .absolutePath()
+        ));
+}
+
 void RecentFiles::setNumOfRecentFiles(int n)
 {
     QSettings settings;
@@ -211,4 +237,10 @@ void RecentFiles::updateRecentFiles(QSettings &settings)
         m_recentFileActions[j]->setVisible(false);
 
     getRecentFiles();
+}
+
+void RecentFiles::setTitle(QString text)
+{
+    m_recentMenu->setTitle(text);
+
 }

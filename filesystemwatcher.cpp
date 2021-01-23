@@ -58,10 +58,10 @@ void FileSystemWatcher::directoryUpdated(const QString& path)
 
     QStringList newEntryList = dir.entryList(QDir::NoDotAndDotDot | QDir::AllDirs | QDir::Files, QDir::DirsFirst);
 
-    //QSet<QString> newDirSet = QSet<QString>::fromList(newEntryList);
-    QSet<QString> newDirSet = QSet<QString>(newEntryList.begin(), newEntryList.end());
-    //QSet<QString> currentDirSet = QSet<QString>::fromList(currEntryList);
-    QSet<QString> currentDirSet = QSet<QString>(currEntryList.begin(), currEntryList.end());
+    QSet<QString> newDirSet = QSet<QString>::fromList(newEntryList);
+    //QSet<QString> newDirSet = QSet<QString>(newEntryList.begin(), newEntryList.end());
+    QSet<QString> currentDirSet = QSet<QString>::fromList(currEntryList);
+    //QSet<QString> currentDirSet = QSet<QString>(currEntryList.begin(), currEntryList.end());
 
     // 添加了文件
     QSet<QString> newFiles = newDirSet - currentDirSet;
@@ -109,7 +109,7 @@ void FileSystemWatcher::fileUpdated(const QString& path)
 
     //qDebug() << QString("The file %1 at path %2 is updated").arg(strName).arg(strPath);
 
-    if (!SelfSaved) {
+    if (!SelfSaved && QFileInfo(path).exists()) {
         QMessageBox message(QMessageBox::Warning, "QtiASL", tr("The file has been modified by another program. Do you want to reload?") + "\n\n" + QString("%1").arg(strName));
         message.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
         message.setButtonText(QMessageBox::Yes, QString(tr("Yes")));

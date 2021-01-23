@@ -32,6 +32,7 @@ public:
 
     QStringList getRecentFiles() const;                     ///< application calls this to get list of recent files
     void        setMostRecentFile(const QString fileName);  ///< called when each new file is opened
+    void        setMostRecentSsdtFile(const QString fileName);
     QString     strippedName(const QString &fullFileName);  ///< returns filename from full path
 
     void        setMenuEnabled(bool tf);
@@ -41,9 +42,12 @@ public:
 
     static const int MaxRecentFiles = 30;  ///< Max number of names we keep.
 
+    void setTitle(QString text);
+
 public slots:
     /// The application can set the number of recent files retained/reported here
     void setNumOfRecentFiles(int n);
+
 
 signals:
     void openFile(QString fileName); ///< emitted when user selects item from "Open Recent" sub-menu

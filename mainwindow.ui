@@ -491,7 +491,7 @@
   </action>
   <action name="actionGenerate">
    <property name="text">
-    <string>Generate</string>
+    <string>Generate ACPI tables</string>
    </property>
   </action>
   <action name="actionCompiling">
