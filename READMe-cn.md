@@ -57,7 +57,7 @@
 
 ## 感谢以下开源软件的支持！
 
-[ACPI](https://acpica.org/source)&nbsp;&nbsp;&nbsp;&nbsp;[QSci](https://riverbankcomputing.com/software/qscintilla/download)
+[ACPI](https://acpica.org/source)&nbsp; &nbsp; &nbsp; &nbsp; [QSci](https://riverbankcomputing.com/software/qscintilla/download) &nbsp; &nbsp; &nbsp; [patchmatic](https://github.com/RehabMan/OS-X-MaciASL-patchmatic)
 
 ## 讨论区：
 
