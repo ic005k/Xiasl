@@ -1,4 +1,4 @@
-#include "MyTabWidget.h"
+#include "mytabwidget.h"
 
 #include "MyTabBar.h"
 #include "MyTabPage.h"
@@ -210,7 +210,6 @@ void MyTabWidget::initTabBar()
 void MyTabWidget::popPage(QWidget* page)
 {
 
-
     takeNormalPage(page);
     //这里套一个自定义标题栏的窗口给page
     MyTabPopup* pop = new MyTabPopup(this);
@@ -262,6 +261,4 @@ void MyTabWidget::popPage(QWidget* page)
     mw_one->on_NewWindow();
 
     mw_one->on_tabWidget_textEdit_tabBarClicked(this->currentIndex());
-
-
 }

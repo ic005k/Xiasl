@@ -2,8 +2,8 @@
 #include "MyTabBar.h"
 #include "MyTabPage.h"
 #include "MyTabPopup.h"
-#include "mytabwidget.h"
 #include "filesystemwatcher.h"
+#include "mytabwidget.h"
 #include "ui_mainwindow.h"
 
 #include <QTabBar>
@@ -765,7 +765,7 @@ void MainWindow::getACPITables(bool ssdt)
 #endif
 
 #ifdef Q_OS_LINUX
-    // linux
+    QStringList ssdtFiles;
     dump.execute(appInfo.filePath() + "/acpidump", QStringList() << "-b");
     iasl.execute(appInfo.filePath() + "/iasl", QStringList() << "-d"
                                                              << "dsdt.dat");
