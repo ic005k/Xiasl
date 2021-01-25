@@ -1,11 +1,6 @@
 [简体中文](https://github.com/ic005k/QtiASL/blob/master/README-cn.md) | [English](https://github.com/ic005k/QtiASL/blob/master/README.md)
 # QtiASL--开源跨平台的DSDT&SSDT集成开发环境
 
-写这个工具的初衷是为了完善win和linux平台下的dsdt编辑器生态。
-
-目前可用于在win或winpe下提取和编辑dsdt文件，mac或Linux下也可以使用该工具来编写和调试dsdt、ssdt。
-
-
 ## 基本特征包括但不限于：
 
 * 流畅、高效的编辑环境，数万乃至数十万行代码均能非常流畅地编辑
