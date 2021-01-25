@@ -2,10 +2,6 @@
 
 # QtiASL-- open source cross-platform DSDT&SSDT integrated development environment
 
-The original intention of writing this tool is to improve the dsdt editor ecology under win and linux platforms.
-
-At present, it can be used to extract and edit dsdt files under win or winpe, and it can also be used to write and debug dsdt and ssdt under mac or Linux.
-
 ## Basic features include but are not limited to:
 
 * Smooth and efficient editing environment, tens of thousands or even hundreds of thousands of lines of code can be edited very smoothly
