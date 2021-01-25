@@ -2,8 +2,8 @@
 #define MAINWINDOW_H
 
 #include "dlgdecompile.h"
+#include "minidialog.h"
 #include "recentfiles.h"
-#include "ssdtList.h"
 
 #include <Qsci/qsciapis.h>
 #include <Qsci/qscilexercoffeescript.h>
@@ -84,6 +84,7 @@ class LineNumberArea;
 class QsciScintilla;
 class thread_one;
 class MiniEditor;
+class MaxEditor;
 class MyWidget;
 
 void refreshTree();
@@ -101,6 +102,10 @@ public:
     MainWindow(QWidget* parent = nullptr);
     ~MainWindow();
 
+    int getDockWidth();
+
+    int getMainWindowHeight();
+
     QString getTabTitle();
 
     void setMark();
@@ -110,10 +115,12 @@ public:
     void loadFile(const QString& fileName, int row, int col);
 
     QsciScintilla* textEdit;
-    //MiniEditor* textEdit;
+    QsciScintilla* getCurrentEditor(int index);
+    //MaxEditor* textEdit;
+    //MaxEditor* getCurrentEditor(int index);
 
-    QsciScintilla* miniEdit;
-    //MiniEditor* miniEdit;
+    //QsciScintilla* miniEdit;
+    MiniEditor* miniEdit;
 
     void setCurrentFile(const QString& fileName);
 
@@ -129,9 +136,9 @@ public:
 
     QProcess* pk;
 
-    QFont font;
-
     RecentFiles* m_recentFiles;
+
+    QFont font;
 
     RecentFiles* m_ssdtFiles;
 
@@ -150,6 +157,7 @@ protected:
     void paintEvent(QPaintEvent* event) override;
     void keyPressEvent(QKeyEvent* event) override;
     void keyReleaseEvent(QKeyEvent* event) override;
+    void mouseMoveEvent(QMouseEvent* e) override;
 
 public slots:
     void Open();
@@ -169,6 +177,10 @@ public slots:
     void setValue2();
 
 private slots:
+    void on_actionExpandAll();
+
+    void on_actionCollapseAll();
+
     void on_actionOpenDir();
 
     void treeWidgetBack_itemClicked(QTreeWidgetItem* item, int column);
@@ -413,6 +425,8 @@ private:
 
     bool DeleteDirectory(const QString& path);
 
+    bool enterEdit(QPoint pp, QsciScintilla* btn);
+
 #ifndef QT_NO_CONTEXTMENU
     void contextMenuEvent(QContextMenuEvent* event) override;
 #endif // QT_NO_CONTEXTMENU
@@ -423,13 +437,31 @@ class MiniEditor : public QsciScintilla {
 
 public:
     MiniEditor(QWidget* parent = nullptr);
+    void mouseMoveEvent(QMouseEvent* event) override;
+    void wheelEvent(QWheelEvent* event) override;
+    void showZoomWin(int x, int y);
 
 protected:
-    void mousePressEvent(QMouseEvent* event) override;
-    void mouseDoubleClickEvent(QMouseEvent* event) override;
-    void mouseMoveEvent(QMouseEvent* event) override;
+    //void mousePressEvent(QMouseEvent* event) override;
+    //void mouseDoubleClickEvent(QMouseEvent* event) override;
+    //void mouseMoveEvent(QMouseEvent* event) override;
 private slots:
     void miniEdit_cursorPositionChanged();
+    void miniEdit_verticalScrollBarChanged();
+
+private:
+    int curY = 0;
+};
+
+class MaxEditor : public QsciScintilla {
+    Q_OBJECT
+
+public:
+    MaxEditor(QWidget* parent = nullptr);
+
+protected:
+    void mouseMoveEvent(QMouseEvent* event) override;
+private slots:
 
 private:
 };

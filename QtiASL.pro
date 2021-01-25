@@ -55,6 +55,7 @@ SOURCES += \
     filesystemwatcher.cpp \
     main.cpp \
     mainwindow.cpp \
+    minidialog.cpp \
     myapp.cpp \
     recentfiles.cpp
 
@@ -118,13 +119,15 @@ HEADERS += \
     dlgdecompile.h \
     filesystemwatcher.h \
     mainwindow.h \
+    minidialog.h \
     myapp.h \
     mytabwidget.h \
     recentfiles.h
 
 FORMS += \
     dlgdecompile.ui \
-    mainwindow.ui
+    mainwindow.ui \
+    minidialog.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

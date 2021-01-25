@@ -22,6 +22,11 @@ int d_count = 0;
 int n_count = 0;
 QsciScintilla* textEditBack;
 
+QsciScintilla* miniDlgEdit;
+miniDialog* miniDlg;
+bool textEditScroll = false;
+bool miniEditWheel = false;
+
 //QVector<QsciScintilla*> textEditList;
 QVector<QString> openFileList;
 
@@ -49,6 +54,8 @@ int colDrag;
 int vs;
 int hs;
 
+extern MainWindow* mw_one;
+
 thread_one::thread_one(QObject* parent)
     : QThread(parent)
 {
@@ -58,6 +65,11 @@ MiniEditor::MiniEditor(QWidget* parent)
     : QsciScintilla(parent)
 {
     connect(this, &QsciScintilla::cursorPositionChanged, this, &MiniEditor::miniEdit_cursorPositionChanged);
+}
+
+MaxEditor::MaxEditor(QWidget* parent)
+    : QsciScintilla(parent)
+{
 }
 
 CodeEditor::CodeEditor(QWidget* parent)
@@ -81,7 +93,7 @@ MainWindow::MainWindow(QWidget* parent)
 
     loadLocal();
 
-    CurVerison = "1.0.41";
+    CurVerison = "1.0.42";
     ver = "QtiASL V" + CurVerison + "        ";
     setWindowTitle(ver);
 
@@ -133,6 +145,7 @@ MainWindow::MainWindow(QWidget* parent)
     ui->tabWidget_textEdit->setIconSize(QSize(8, 8));
 
     textEdit = new QsciScintilla;
+    //textEdit = new MaxEditor;
     init_edit(textEdit);
 
     init_miniEdit();
@@ -149,6 +162,11 @@ MainWindow::MainWindow(QWidget* parent)
     splitterMain->addWidget(miniEdit);
 
     ui->gridLayout_10->addWidget(splitterMain);
+
+    //设置鼠标追踪
+    ui->centralwidget->setMouseTracking(true);
+    this->setMouseTracking(true); //激活整个窗体的鼠标追踪
+    ui->tabWidget_textEdit->setMouseTracking(true);
 
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(timer_linkage()));
@@ -229,13 +247,13 @@ void MainWindow::loadTabFiles()
 
                 QWidget* pWidget = ui->tabWidget_textEdit->currentWidget();
 
-                QsciScintilla* edit = new QsciScintilla;
-                edit = (QsciScintilla*)pWidget->children().at(editNumber);
+                QsciScintilla* currentEdit = new QsciScintilla;
+                currentEdit = (QsciScintilla*)pWidget->children().at(editNumber);
 
-                edit->verticalScrollBar()->setSliderPosition(vs);
-                edit->horizontalScrollBar()->setSliderPosition(hs);
+                currentEdit->verticalScrollBar()->setSliderPosition(vs);
+                currentEdit->horizontalScrollBar()->setSliderPosition(hs);
 
-                edit->setFocus();
+                currentEdit->setFocus();
 
                 file_exists = true;
             }
@@ -404,24 +422,23 @@ void MainWindow::loadFile(const QString& fileName, int row, int col)
 
     loading = true;
 
-    QLabel* lbl = new QLabel;
+    QLabel* currentFile = new QLabel;
 
     /*如果之前文件已打开，则返回已打开的文件*/
     for (int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i++) {
         QWidget* pWidget = ui->tabWidget_textEdit->widget(i);
 
-        lbl = (QLabel*)pWidget->children().at(lblNumber); //2为QLabel,1为textEdit,0为VBoxLayout
+        currentFile = (QLabel*)pWidget->children().at(lblNumber); //2为QLabel,1为textEdit,0为VBoxLayout
 
-        if (fileName == lbl->text()) {
+        if (fileName == currentFile->text()) {
             ui->tabWidget_textEdit->setCurrentIndex(i);
 
             if (!ReLoad) {
                 on_tabWidget_textEdit_tabBarClicked(i);
                 return;
             } else {
-                QsciScintilla* edit = new QsciScintilla;
-                edit = (QsciScintilla*)pWidget->children().at(editNumber);
-                textEdit = edit;
+
+                textEdit = getCurrentEditor(i);
             }
         }
     }
@@ -487,8 +504,8 @@ void MainWindow::loadFile(const QString& fileName, int row, int col)
 
     //给当前tab里面的lbl赋值
     QWidget* pWidget = ui->tabWidget_textEdit->currentWidget();
-    lbl = (QLabel*)pWidget->children().at(lblNumber); //2为QLabel,1为textEdit,0为VBoxLayout
-    lbl->setText(fileName);
+    currentFile = (QLabel*)pWidget->children().at(lblNumber); //2为QLabel,1为textEdit,0为VBoxLayout
+    currentFile->setText(fileName);
     QFileInfo ft(fileName);
     ui->tabWidget_textEdit->tabBar()->setTabToolTip(ui->tabWidget_textEdit->currentIndex(), ft.fileName());
 
@@ -1119,16 +1136,10 @@ void MainWindow::set_currsor_position(QsciScintilla* textEdit)
 
     //联动treeWidget
     mem_linkage(ui->treeWidget, RowNum);
-
-    //miniEdit->setCursorPosition(RowNum, ColNum);
-    //miniEdit->verticalScrollBar()->setSliderPosition(textEdit->verticalScrollBar()->sliderPosition());
 }
 
 void MainWindow::miniEdit_cursorPositionChanged()
 {
-
-    //清除所有标记
-    //textEdit->SendScintilla(QsciScintilla::SCI_MARKERDELETEALL);
 
     int ColNum, RowNum;
     miniEdit->getCursorPosition(&RowNum, &ColNum);
@@ -1136,15 +1147,6 @@ void MainWindow::miniEdit_cursorPositionChanged()
 
     if (!ui->editFind->hasFocus())
         textEdit->setFocus();
-
-    /*textEdit->SendScintilla(QsciScintilla::SCI_MARKERGET, RowNum - 1);
-    //SCI_MARKERSETFORE，SCI_MARKERSETBACK设置标记前景和背景标记
-    textEdit->SendScintilla(QsciScintilla::SCI_MARKERSETFORE, 0, QColor(Qt::red));
-    textEdit->SendScintilla(QsciScintilla::SCI_MARKERSETBACK, 0, QColor(Qt::red));
-    textEdit->SendScintilla(QsciScintilla::SCI_MARKERADD, RowNum - 1);
-    //下划线
-    textEdit->SendScintilla(QsciScintilla::SCI_STYLESETUNDERLINE, RowNum, true);
-    textEdit->SendScintilla(QsciScintilla::SCI_MARKERDEFINE, 0, QsciScintilla::SC_MARK_UNDERLINE);*/
 
     miniEdit->clearFocus();
 }
@@ -3844,8 +3846,10 @@ void MainWindow::setLexer(QsciLexer* textLexer, QsciScintilla* textEdit)
 void MainWindow::init_miniEdit()
 {
 
-    miniEdit = new QsciScintilla();
-    //miniEdit = new MiniEditor();
+    miniEdit = new MiniEditor();
+    miniDlg = new miniDialog(this);
+    miniDlgEdit->setFont(font);
+    miniDlg->close();
 
 #ifdef Q_OS_WIN32
     miniEdit->setMaximumWidth(160);
@@ -3865,7 +3869,7 @@ void MainWindow::init_miniEdit()
     miniEdit->setContextMenuPolicy(Qt::NoContextMenu);
     miniEdit->setMarginWidth(0, 0);
     miniEdit->setMargins(0);
-    miniEdit->setReadOnly(0);
+    miniEdit->setReadOnly(1);
     miniEdit->SendScintilla(QsciScintillaBase::SCI_SETCURSOR, 0, 7);
 
     miniEdit->setWrapMode(QsciScintilla::WrapNone);
@@ -3895,11 +3899,14 @@ void MainWindow::init_miniEdit()
 
     connect(miniEdit, &QsciScintilla::cursorPositionChanged, this, &MainWindow::miniEdit_cursorPositionChanged);
     //connect(miniEdit->verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(setValue()));
+    connect(miniEdit->verticalScrollBar(), SIGNAL(valueChanged(int)), miniEdit, SLOT(miniEdit_verticalScrollBarChanged()));
 
     //水平滚动棒
     miniEdit->SendScintilla(QsciScintilla::SCI_SETSCROLLWIDTH, -1);
     miniEdit->SendScintilla(QsciScintilla::SCI_SETSCROLLWIDTHTRACKING, false);
     miniEdit->horizontalScrollBar()->setHidden(true);
+
+    //miniEdit->SendScintilla(QsciScintilla::SCI_SETMOUSEDOWNCAPTURES, 0, true);
 
     //接受文件拖放打开
     miniEdit->setAcceptDrops(false);
@@ -4018,6 +4025,24 @@ void MainWindow::init_treeWidget()
                                   "QTreeWidget::item:selected{background-color:rgba(30, 100, 255, 255); color:rgba(255,255,255,255)}");
 
     //connect(ui->treeWidget, &QTreeWidget::itemClicked, this, &MainWindow::treeWidgetBack_itemClicked);
+
+    //右键菜单
+    ui->treeWidget->setContextMenuPolicy(Qt::CustomContextMenu); //给控件设置上下文菜单策略
+    QMenu* menu = new QMenu(this);
+
+    QAction* actionExpandAll = new QAction(tr("Expand all"), this);
+    menu->addAction(actionExpandAll);
+    connect(actionExpandAll, &QAction::triggered, this, &MainWindow::on_actionExpandAll);
+
+    QAction* actionCollapseAll = new QAction(tr("Collapse all"), this);
+    menu->addAction(actionCollapseAll);
+    connect(actionCollapseAll, &QAction::triggered, this, &MainWindow::on_actionCollapseAll);
+
+    connect(ui->treeWidget, &QTreeWidget::customContextMenuRequested, [=](const QPoint& pos) {
+        Q_UNUSED(pos);
+        //qDebug() << pos; //参数pos用来传递右键点击时的鼠标的坐标
+        menu->exec(QCursor::pos());
+    });
 }
 
 void MainWindow::init_filesystem()
@@ -4388,33 +4413,29 @@ void MainWindow::closeEvent(QCloseEvent* event)
 
     //存储当前的目录结构
     QWidget* pWidget = ui->tabWidget_textEdit->widget(ui->tabWidget_textEdit->currentIndex());
-    QLabel* lbl = new QLabel;
-    lbl = (QLabel*)pWidget->children().at(lblNumber); //2为QLabel,1为textEdit,0为VBoxLayout
+    QLabel* currentFile = new QLabel;
+    currentFile = (QLabel*)pWidget->children().at(lblNumber); //2为QLabel,1为textEdit,0为VBoxLayout
 
-    QFileInfo f(lbl->text());
+    QFileInfo f(currentFile->text());
     Reg.setValue("dir", f.path());
     Reg.setValue("btn", ui->btnReturn->text());
     Reg.setValue("ci", ui->tabWidget_textEdit->currentIndex()); //存储当前活动的标签页
 
+    //检查文件是否修改，需要保存
     for (int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i++) {
 
-        ui->tabWidget_textEdit->setCurrentIndex(i); //先转到当前页
+        ui->tabWidget_textEdit->setCurrentIndex(i);
+        pWidget = ui->tabWidget_textEdit->widget(i);
+        textEdit = getCurrentEditor(i);
 
-        QWidget* pWidget = ui->tabWidget_textEdit->widget(i);
-        QsciScintilla* edit = new QsciScintilla;
-        edit = (QsciScintilla*)pWidget->children().at(editNumber);
+        currentFile = (QLabel*)pWidget->children().at(lblNumber);
 
-        textEdit = edit;
-
-        QLabel* lbl = new QLabel;
-        lbl = (QLabel*)pWidget->children().at(lblNumber); //2为QLabel,1为textEdit,0为VBoxLayout
-
-        if (lbl->text() == tr("untitled") + ".dsl")
+        if (currentFile->text() == tr("untitled") + ".dsl")
             curFile = "";
         else
-            curFile = lbl->text();
+            curFile = currentFile->text();
 
-        if (edit->isModified()) {
+        if (getCurrentEditor(i)->isModified()) {
 
             int choice;
             if (!zh_cn) {
@@ -4457,18 +4478,14 @@ void MainWindow::closeEvent(QCloseEvent* event)
 
     for (int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i++) {
 
-        QWidget* pWidget = ui->tabWidget_textEdit->widget(i);
-        QsciScintilla* edit = new QsciScintilla;
-        edit = (QsciScintilla*)pWidget->children().at(editNumber);
+        pWidget = ui->tabWidget_textEdit->widget(i);
+        currentFile = (QLabel*)pWidget->children().at(lblNumber); //2为QLabel,1为textEdit,0为VBoxLayout
 
-        QLabel* lbl = new QLabel;
-        lbl = (QLabel*)pWidget->children().at(lblNumber); //2为QLabel,1为textEdit,0为VBoxLayout
+        getCurrentEditor(i)->getCursorPosition(&rowDrag, &colDrag);
+        vs = getCurrentEditor(i)->verticalScrollBar()->sliderPosition();
+        hs = getCurrentEditor(i)->horizontalScrollBar()->sliderPosition();
 
-        edit->getCursorPosition(&rowDrag, &colDrag);
-        vs = edit->verticalScrollBar()->sliderPosition();
-        hs = edit->horizontalScrollBar()->sliderPosition();
-
-        Reg.setValue(QString::number(i) + "/" + "file", lbl->text());
+        Reg.setValue(QString::number(i) + "/" + "file", currentFile->text());
         Reg.setValue(QString::number(i) + "/" + "row", rowDrag);
         Reg.setValue(QString::number(i) + "/" + "col", colDrag);
         Reg.setValue(QString::number(i) + "/" + "vs", vs);
@@ -4576,6 +4593,7 @@ void MainWindow::newFile()
     ui->editRemarks->clear();
 
     textEdit = new QsciScintilla(this);
+    //textEdit = new MaxEditor;
 
     init_edit(textEdit);
 
@@ -4646,18 +4664,16 @@ void MainWindow::set_font()
 
         for (int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i++) {
 
-            QWidget* pWidget = ui->tabWidget_textEdit->widget(i);
-            QsciScintilla* edit = new QsciScintilla;
-            edit = (QsciScintilla*)pWidget->children().at(editNumber);
-
             textLexer->setFont(font);
-            edit->setLexer(textLexer);
-            setLexer(textLexer, edit);
+            getCurrentEditor(i)->setLexer(textLexer);
+            setLexer(textLexer, getCurrentEditor(i));
 
             QFont m_font;
             m_font.setFamily(font.family());
-            edit->setMarginsFont(m_font);
+            getCurrentEditor(i)->setMarginsFont(m_font);
         }
+
+        miniDlgEdit->setFont(font);
 
         //存储字体信息
         QString qfile = QDir::homePath() + "/.config/QtiASL/QtiASL.ini";
@@ -4679,10 +4695,12 @@ void MainWindow::set_wrap()
     if (ui->actionWrapWord->isChecked()) {
         textEdit->setWrapMode(QsciScintilla::WrapWord);
         miniEdit->setWrapMode(QsciScintilla::WrapWord);
+        miniDlgEdit->setWrapMode(QsciScintilla::WrapWord);
     } else {
 
         textEdit->setWrapMode(QsciScintilla::WrapNone);
         miniEdit->setWrapMode(QsciScintilla::WrapNone);
+        miniDlgEdit->setWrapMode(QsciScintilla::WrapNone);
     }
 }
 
@@ -4698,10 +4716,8 @@ void MainWindow::paintEvent(QPaintEvent* event)
     if (c_red != red) {
         //注意：1.代码折叠线的颜色 2.双引号输入时的背景色
         for (int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i++) {
-            QWidget* pWidget = ui->tabWidget_textEdit->widget(i);
-            QsciScintilla* edit = new QsciScintilla;
-            edit = (QsciScintilla*)pWidget->children().at(editNumber);
-            init_edit(edit);
+
+            init_edit(getCurrentEditor(i));
         }
     }
 }
@@ -4916,6 +4932,7 @@ void MainWindow::on_tabWidget_textEdit_tabBarClicked(int index)
     ui->actionWrapWord->setChecked(false);
     textEdit->setWrapMode(QsciScintilla::WrapNone);
     miniEdit->setWrapMode(QsciScintilla::WrapNone);
+    miniDlgEdit->setWrapMode(QsciScintilla::WrapNone);
 
     QWidget* pWidget = ui->tabWidget_textEdit->widget(index);
     QLabel* lbl = new QLabel;
@@ -4930,10 +4947,7 @@ void MainWindow::on_tabWidget_textEdit_tabBarClicked(int index)
         curFile = lbl->text();
     }
 
-    QsciScintilla* edit = new QsciScintilla;
-    edit = (QsciScintilla*)pWidget->children().at(editNumber);
-
-    textEdit = edit;
+    textEdit = getCurrentEditor(index);
 
     on_btnRefreshTree();
 
@@ -4968,12 +4982,30 @@ void MainWindow::on_tabWidget_textEdit_tabBarClicked(int index)
     }
 
     dragFileName = lbl->text();
-    edit->getCursorPosition(&rowDrag, &colDrag);
-    vs = edit->verticalScrollBar()->sliderPosition();
-    hs = edit->horizontalScrollBar()->sliderPosition();
+    getCurrentEditor(index)->getCursorPosition(&rowDrag, &colDrag);
+    vs = getCurrentEditor(index)->verticalScrollBar()->sliderPosition();
+    hs = getCurrentEditor(index)->horizontalScrollBar()->sliderPosition();
 
     One = false;
 }
+
+QsciScintilla* MainWindow::getCurrentEditor(int index)
+{
+    QWidget* pWidget = ui->tabWidget_textEdit->widget(index);
+    QsciScintilla* edit = new QsciScintilla;
+    edit = (QsciScintilla*)pWidget->children().at(editNumber);
+
+    return edit;
+}
+
+/*MaxEditor* MainWindow::getCurrentEditor(int index)
+{
+    QWidget* pWidget = ui->tabWidget_textEdit->widget(index);
+    MaxEditor* edit = new MaxEditor;
+    edit = (MaxEditor*)pWidget->children().at(editNumber);
+
+    return edit;
+}*/
 
 void MainWindow::closeTab(int index)
 {
@@ -4982,12 +5014,9 @@ void MainWindow::closeTab(int index)
 
         ui->tabWidget_textEdit->setCurrentIndex(index);
 
+        textEdit = getCurrentEditor(index);
+
         QWidget* pWidget = ui->tabWidget_textEdit->widget(index);
-        QsciScintilla* edit = new QsciScintilla;
-        edit = (QsciScintilla*)pWidget->children().at(editNumber);
-
-        textEdit = edit;
-
         QLabel* lbl = new QLabel;
         lbl = (QLabel*)pWidget->children().at(lblNumber); //2为QLabel,1为textEdit,0为VBoxLayout
 
@@ -5015,10 +5044,8 @@ void MainWindow::on_tabWidget_textEdit_currentChanged(int index)
     if (index >= 0 && m_searchTextPosList.count() > 0) {
 
         for (int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i++) {
-            QWidget* pWidget = ui->tabWidget_textEdit->widget(i);
-            QsciScintilla* edit = new QsciScintilla;
-            edit = (QsciScintilla*)pWidget->children().at(editNumber);
-            clearSearchHighlight(edit);
+
+            clearSearchHighlight(getCurrentEditor(i));
         }
 
         m_searchTextPosList.clear();
@@ -5362,31 +5389,240 @@ void MainWindow::on_miniMap()
     }
 }
 
-void MiniEditor::mousePressEvent(QMouseEvent* event)
+/*void MiniEditor::mousePressEvent(QMouseEvent* event)
 {
 
+    this->SendScintilla(QsciScintilla::SCI_SETMOUSEDOWNCAPTURES, 1);
     if (Qt::LeftButton == event->button()) {
+        //QMessageBox box;
+        //box.exec();
+        int x, y;
+        this->getCursorPosition(&x, &y);
+        qDebug() << x << y;
     }
 }
 
 void MiniEditor::mouseDoubleClickEvent(QMouseEvent* event)
 {
     Q_UNUSED(event);
-}
+}*/
 
 void MiniEditor::mouseMoveEvent(QMouseEvent* event)
 {
-    Q_UNUSED(event);
+    textEditScroll = false;
+    miniEditWheel = false;
+    if (!textEditScroll) {
+        showZoomWin(event->x(), event->y());
+        //connect(this->verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(miniEdit_verticalScrollBarChanged()));
+    }
+}
+
+void MiniEditor::wheelEvent(QWheelEvent* event)
+{
+    int spos = this->verticalScrollBar()->sliderPosition();
+    miniEditWheel = true;
+
+    if (event->delta() > 0) {
+
+        this->verticalScrollBar()->setSliderPosition(spos - 3);
+
+    } else {
+        this->verticalScrollBar()->setSliderPosition(spos + 3);
+    }
+}
+
+void MiniEditor::showZoomWin(int x, int y)
+{
+
+    int totalLines = this->lines();
+
+    if (x < 10) {
+        miniDlg->close();
+        return;
+    }
+
+    curY = y;
+    int textHeight = this->textHeight(0);
+    int y0 = y / textHeight + this->verticalScrollBar()->sliderPosition();
+
+    QString t1, t2, t3, t4, t5, t6, t7, t8, t9;
+
+    miniDlgEdit->clear();
+
+    if (totalLines < 10) {
+        for (int i = 0; i < totalLines; i++) {
+
+            miniDlgEdit->append(QString::number(i + 1) + "  " + this->text(i));
+
+            //清除所有标记
+            miniDlgEdit->SendScintilla(QsciScintilla::SCI_MARKERDELETEALL);
+
+            //SCI_MARKERGET 参数用来设置标记，默认为圆形标记
+            miniDlgEdit->SendScintilla(QsciScintilla::SCI_MARKERGET, y0);
+
+            //SCI_MARKERSETFORE，SCI_MARKERSETBACK设置标记前景和背景标记
+            miniDlgEdit->SendScintilla(QsciScintilla::SCI_MARKERSETFORE, 0, QColor(Qt::blue));
+            miniDlgEdit->SendScintilla(QsciScintilla::SCI_MARKERSETBACK, 0, QColor(Qt::blue));
+
+            miniDlgEdit->SendScintilla(QsciScintilla::SCI_MARKERADD, y0);
+            //下划线
+            miniDlgEdit->SendScintilla(QsciScintilla::SCI_STYLESETUNDERLINE, y0 + 1, true);
+            miniDlgEdit->SendScintilla(QsciScintilla::SCI_MARKERDEFINE, 0, QsciScintilla::SC_MARK_UNDERLINE);
+        }
+    } else {
+
+        if (y0 <= 5) {
+            t1 = this->text(0);
+            t2 = this->text(1);
+            t3 = this->text(2);
+            t4 = this->text(3);
+            t5 = this->text(4);
+            t6 = this->text(5);
+            t7 = this->text(6);
+            t8 = this->text(7);
+            t9 = this->text(8);
+
+            miniDlgEdit->append(QString::number(1) + "  " + t1);
+            miniDlgEdit->append(QString::number(2) + "  " + t2);
+            miniDlgEdit->append(QString::number(3) + "  " + t3);
+            miniDlgEdit->append(QString::number(4) + "  " + t4);
+            miniDlgEdit->append(QString::number(5) + "  " + t5);
+            miniDlgEdit->append(QString::number(6) + "  " + t6);
+            miniDlgEdit->append(QString::number(7) + "  " + t7);
+            miniDlgEdit->append(QString::number(8) + "  " + t8);
+            miniDlgEdit->append(QString::number(9) + "  " + t9);
+
+            //清除所有标记
+            miniDlgEdit->SendScintilla(QsciScintilla::SCI_MARKERDELETEALL);
+
+            //SCI_MARKERGET 参数用来设置标记，默认为圆形标记
+            miniDlgEdit->SendScintilla(QsciScintilla::SCI_MARKERGET, y0);
+
+            //SCI_MARKERSETFORE，SCI_MARKERSETBACK设置标记前景和背景标记
+            miniDlgEdit->SendScintilla(QsciScintilla::SCI_MARKERSETFORE, 0, QColor(Qt::blue));
+            miniDlgEdit->SendScintilla(QsciScintilla::SCI_MARKERSETBACK, 0, QColor(Qt::blue));
+
+            miniDlgEdit->SendScintilla(QsciScintilla::SCI_MARKERADD, y0);
+            //下划线
+            miniDlgEdit->SendScintilla(QsciScintilla::SCI_STYLESETUNDERLINE, y0 + 1, true);
+            miniDlgEdit->SendScintilla(QsciScintilla::SCI_MARKERDEFINE, 0, QsciScintilla::SC_MARK_UNDERLINE);
+        }
+
+        if (y0 > 5 && y0 < totalLines - 9) {
+            t1 = this->text(y0 - 4);
+            t2 = this->text(y0 - 3);
+            t3 = this->text(y0 - 2);
+            t4 = this->text(y0 - 1);
+            t5 = this->text(y0);
+            t6 = this->text(y0 + 1);
+            t7 = this->text(y0 + 2);
+            t8 = this->text(y0 + 3);
+            t9 = this->text(y0 + 4);
+
+            miniDlgEdit->append(QString::number(y0 - 3) + "  " + t1);
+            miniDlgEdit->append(QString::number(y0 - 2) + "  " + t2);
+            miniDlgEdit->append(QString::number(y0 - 1) + "  " + t3);
+            miniDlgEdit->append(QString::number(y0 - 0) + "  " + t4);
+            miniDlgEdit->append(QString::number(y0 + 1) + "  " + t5);
+            miniDlgEdit->append(QString::number(y0 + 2) + "  " + t6);
+            miniDlgEdit->append(QString::number(y0 + 3) + "  " + t7);
+            miniDlgEdit->append(QString::number(y0 + 4) + "  " + t8);
+            miniDlgEdit->append(QString::number(y0 + 5) + "  " + t9);
+
+            //清除所有标记
+            miniDlgEdit->SendScintilla(QsciScintilla::SCI_MARKERDELETEALL);
+
+            //SCI_MARKERGET 参数用来设置标记，默认为圆形标记
+            miniDlgEdit->SendScintilla(QsciScintilla::SCI_MARKERGET, 4);
+
+            //SCI_MARKERSETFORE，SCI_MARKERSETBACK设置标记前景和背景标记
+            miniDlgEdit->SendScintilla(QsciScintilla::SCI_MARKERSETFORE, 0, QColor(Qt::blue));
+            miniDlgEdit->SendScintilla(QsciScintilla::SCI_MARKERSETBACK, 0, QColor(Qt::blue));
+
+            miniDlgEdit->SendScintilla(QsciScintilla::SCI_MARKERADD, 4);
+            //下划线
+            miniDlgEdit->SendScintilla(QsciScintilla::SCI_STYLESETUNDERLINE, 5, true);
+            miniDlgEdit->SendScintilla(QsciScintilla::SCI_MARKERDEFINE, 0, QsciScintilla::SC_MARK_UNDERLINE);
+        }
+
+        if (y0 >= totalLines - 9 && y0 <= totalLines) {
+            t1 = this->text(totalLines - 9);
+            t2 = this->text(totalLines - 8);
+            t3 = this->text(totalLines - 7);
+            t4 = this->text(totalLines - 6);
+            t5 = this->text(totalLines - 5);
+            t6 = this->text(totalLines - 4);
+            t7 = this->text(totalLines - 3);
+            t8 = this->text(totalLines - 2);
+            t9 = this->text(totalLines - 1);
+
+            miniDlgEdit->append(QString::number(totalLines - 8) + "  " + t1);
+            miniDlgEdit->append(QString::number(totalLines - 7) + "  " + t2);
+            miniDlgEdit->append(QString::number(totalLines - 6) + "  " + t3);
+            miniDlgEdit->append(QString::number(totalLines - 5) + "  " + t4);
+            miniDlgEdit->append(QString::number(totalLines - 4) + "  " + t5);
+            miniDlgEdit->append(QString::number(totalLines - 3) + "  " + t6);
+            miniDlgEdit->append(QString::number(totalLines - 2) + "  " + t7);
+            miniDlgEdit->append(QString::number(totalLines - 1) + "  " + t8);
+            miniDlgEdit->append(QString::number(totalLines) + "  " + t9);
+
+            //清除所有标记
+            miniDlgEdit->SendScintilla(QsciScintilla::SCI_MARKERDELETEALL);
+
+            //SCI_MARKERGET 参数用来设置标记，默认为圆形标记
+            miniDlgEdit->SendScintilla(QsciScintilla::SCI_MARKERGET, 9 - (totalLines - y0));
+
+            //SCI_MARKERSETFORE，SCI_MARKERSETBACK设置标记前景和背景标记
+            miniDlgEdit->SendScintilla(QsciScintilla::SCI_MARKERSETFORE, 0, QColor(Qt::blue));
+            miniDlgEdit->SendScintilla(QsciScintilla::SCI_MARKERSETBACK, 0, QColor(Qt::blue));
+
+            miniDlgEdit->SendScintilla(QsciScintilla::SCI_MARKERADD, 9 - (totalLines - y0));
+            //下划线
+            miniDlgEdit->SendScintilla(QsciScintilla::SCI_STYLESETUNDERLINE, 9 - (totalLines - y0) + 1, true);
+            miniDlgEdit->SendScintilla(QsciScintilla::SCI_MARKERDEFINE, 0, QsciScintilla::SC_MARK_UNDERLINE);
+        }
+    }
+
+    int miniEditX = this->x();
+    int w = 650;
+    int h = miniDlgEdit->textHeight(y) * 11;
+    int y1 = y;
+
+    if (y >= mw_one->getMainWindowHeight() - h)
+        y1 = mw_one->getMainWindowHeight() - h;
+    else
+        y1 = y;
+
+    miniDlg->setGeometry(mw_one->getDockWidth() + miniEditX - w, y1, w, h);
+
+    miniDlg->show();
 }
 
 void MiniEditor::miniEdit_cursorPositionChanged()
 {
 }
 
+void MiniEditor::miniEdit_verticalScrollBarChanged()
+{
+
+    if (!textEditScroll) {
+        if (curY == 0)
+            curY = this->height() / 2;
+        showZoomWin(20, curY);
+    } else
+        miniDlg->close();
+}
+
+void MaxEditor::mouseMoveEvent(QMouseEvent* event)
+{
+    Q_UNUSED(event);
+
+    miniDlg->close();
+}
+
 void MainWindow::setValue()
 {
 
-    //if (miniEdit->geometry().contains(this->mapFromGlobal(QCursor::pos()))) {
     int t = textEdit->verticalScrollBar()->maximum();
     int m = miniEdit->verticalScrollBar()->maximum();
     double b = (double)miniEdit->verticalScrollBar()->sliderPosition() / (double)m;
@@ -5395,14 +5631,16 @@ void MainWindow::setValue()
     textEdit->verticalScrollBar()->setSliderPosition(p);
 
     textEdit->verticalScrollBar()->setHidden(true);
-    //}
+
+    //connect(miniEdit->verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(miniEdit_verticalScrollBarChanged()));
 }
 
 void MainWindow::setValue2()
 {
 
-    //if (textEdit->geometry().contains(this->mapFromGlobal(QCursor::pos())))
+    textEditScroll = true;
 
+    //if (textEdit->geometry().contains(this->mapFromGlobal(QCursor::pos())))
     //{
     int t = textEdit->verticalScrollBar()->maximum();
     int m = miniEdit->verticalScrollBar()->maximum();
@@ -5427,4 +5665,60 @@ void MainWindow::on_actionOpenDir()
 {
     QString dir = "file:" + model->filePath(fsm_Index);
     QDesktopServices::openUrl(QUrl(dir, QUrl::TolerantMode));
+}
+
+void MainWindow::on_actionExpandAll()
+{
+    ui->treeWidget->expandAll();
+}
+
+void MainWindow::on_actionCollapseAll()
+{
+    ui->treeWidget->collapseAll();
+}
+
+void MainWindow::mouseMoveEvent(QMouseEvent* e)
+{
+    e->accept();
+
+    if (enterEdit(e->pos(), miniEdit)) {
+        //qDebug() << "miniEdit";
+    }
+
+    if (enterEdit(e->pos(), textEdit)) {
+        //qDebug() << "textEdit";
+    }
+
+    miniDlg->close();
+}
+
+bool MainWindow::enterEdit(QPoint pp, QsciScintilla* btn)
+{
+    int height = btn->height();
+    int width = btn->width();
+    QPoint btnMinPos = btn->pos();
+    QPoint btnMaxPos = btn->pos();
+    btnMaxPos.setX(btn->pos().x() + width);
+    btnMaxPos.setY(btn->pos().y() + height);
+    if (pp.x() >= btnMinPos.x() && pp.y() >= btnMinPos.y()
+        && pp.x() <= btnMaxPos.x() && pp.y() <= btnMaxPos.y())
+        return true;
+    else
+        return false;
+}
+
+int MainWindow::getDockWidth()
+{
+    if (ui->dockWidget->x() != 0)
+        return 0;
+
+    if (ui->dockWidget->isVisible())
+        return ui->dockWidget->width();
+    else
+        return 0;
+}
+
+int MainWindow::getMainWindowHeight()
+{
+    return this->height();
 }
