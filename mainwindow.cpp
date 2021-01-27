@@ -96,7 +96,7 @@ MainWindow::MainWindow(QWidget* parent)
 
     loadLocal();
 
-    CurVerison = "1.0.43";
+    CurVerison = "1.0.44";
     ver = "QtiASL V" + CurVerison + "        ";
     setWindowTitle(ver);
 
@@ -162,11 +162,6 @@ MainWindow::MainWindow(QWidget* parent)
 
     ui->centralwidget->layout()->setMargin(0);
     ui->centralwidget->layout()->setSpacing(0);
-    //ui->horizontalLayout->setMargin(0);
-    //ui->horizontalLayout->setSpacing(0);
-
-    //ui->horizontalLayout->addWidget(ui->tabWidget_textEdit);
-    //ui->horizontalLayout->addWidget(miniEdit);
 
     //删除titleba
     QWidget* lTitleBar = ui->dockWidget_5->titleBarWidget();
@@ -176,28 +171,19 @@ MainWindow::MainWindow(QWidget* parent)
     ui->dockWidgetContents_5->layout()->setMargin(0);
     ui->gridLayout_10->setMargin(0);
     ui->gridLayout_10->setSpacing(0);
-    //ui->dockWidget_5->layout()->setMargin(0);
-    //ui->dockWidget_5->layout()->addWidget(miniEdit);
     ui->gridLayout_10->addWidget(miniEdit);
 
     //splitterMain = new QSplitter(Qt::Horizontal, this);
-
     //QSplitter* splitterRight = new QSplitter(Qt::Horizontal, splitterMain);
-
     //splitterRight->setOpaqueResize(true);
-
     //splitterRight->addWidget(ui->tabWidget_textEdit);
     //splitterRight->addWidget(miniEdit);
-
-    //ui->gridLayout_10->setMargin(0);
-    //ui->gridLayout_10->addWidget(splitterMain);
-    //ui->gridLayout_10->addWidget(ui->tabWidget_textEdit);
-    //ui->gridLayout_10->addWidget(miniEdit);
 
     //设置鼠标追踪
     ui->centralwidget->setMouseTracking(true);
     this->setMouseTracking(true); //激活整个窗体的鼠标追踪
     ui->tabWidget_textEdit->setMouseTracking(true);
+    ui->toolBar->setMouseTracking(true);
 
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(timer_linkage()));
@@ -3896,12 +3882,12 @@ void MainWindow::init_miniEdit()
 #endif
 
 #ifdef Q_OS_LINUX
-     ui->dockWidget_5->setFixedWidth(120);
+    ui->dockWidget_5->setFixedWidth(120);
 
 #endif
 
 #ifdef Q_OS_MAC
-     ui->dockWidget_5->setFixedWidth(115);
+    ui->dockWidget_5->setFixedWidth(115);
 
 #endif
 
