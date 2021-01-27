@@ -104,6 +104,12 @@ public:
 
     int getDockWidth();
 
+    int getMiniDockX();
+
+    int getTabWidgetEditX();
+
+    int getTabWidgetEditW();
+
     int getMainWindowHeight();
 
     QString getTabTitle();

@@ -64,6 +64,9 @@ thread_one::thread_one(QObject* parent)
 MiniEditor::MiniEditor(QWidget* parent)
     : QsciScintilla(parent)
 {
+    //setWindowFlags(Qt::FramelessWindowHint);
+    //this->setMargins(0);
+
     connect(this, &QsciScintilla::cursorPositionChanged, this, &MiniEditor::miniEdit_cursorPositionChanged);
 }
 
@@ -93,7 +96,7 @@ MainWindow::MainWindow(QWidget* parent)
 
     loadLocal();
 
-    CurVerison = "1.0.42";
+    CurVerison = "1.0.43";
     ver = "QtiASL V" + CurVerison + "        ";
     setWindowTitle(ver);
 
@@ -135,6 +138,9 @@ MainWindow::MainWindow(QWidget* parent)
     //ui->actionCheckUpdate->setVisible(false);
     mac = true;
 #endif
+    init_info_edit();
+
+    init_miniEdit();
 
     init_treeWidget();
 
@@ -145,23 +151,48 @@ MainWindow::MainWindow(QWidget* parent)
     ui->tabWidget_textEdit->setIconSize(QSize(8, 8));
 
     textEdit = new QsciScintilla;
-    //textEdit = new MaxEditor;
+
     init_edit(textEdit);
 
-    init_miniEdit();
+    ui->dockWidgetContents->layout()->setMargin(0); //成员列表
+    ui->gridLayout->setMargin(0);
+    ui->gridLayout_8->setMargin(0);
 
-    init_info_edit();
+    ui->dockWidgetContents_6->layout()->setMargin(0); //信息窗口
 
-    splitterMain = new QSplitter(Qt::Horizontal, this);
+    ui->centralwidget->layout()->setMargin(0);
+    ui->centralwidget->layout()->setSpacing(0);
+    //ui->horizontalLayout->setMargin(0);
+    //ui->horizontalLayout->setSpacing(0);
 
-    QSplitter* splitterRight = new QSplitter(Qt::Vertical, splitterMain);
-    splitterRight->setOpaqueResize(true);
+    //ui->horizontalLayout->addWidget(ui->tabWidget_textEdit);
+    //ui->horizontalLayout->addWidget(miniEdit);
 
-    splitterRight->addWidget(ui->tabWidget_textEdit);
+    //删除titleba
+    QWidget* lTitleBar = ui->dockWidget_5->titleBarWidget();
+    QWidget* lEmptyWidget = new QWidget();
+    ui->dockWidget_5->setTitleBarWidget(lEmptyWidget);
+    delete lTitleBar;
+    ui->dockWidgetContents_5->layout()->setMargin(0);
+    ui->gridLayout_10->setMargin(0);
+    ui->gridLayout_10->setSpacing(0);
+    //ui->dockWidget_5->layout()->setMargin(0);
+    //ui->dockWidget_5->layout()->addWidget(miniEdit);
+    ui->gridLayout_10->addWidget(miniEdit);
 
-    splitterMain->addWidget(miniEdit);
+    //splitterMain = new QSplitter(Qt::Horizontal, this);
 
-    ui->gridLayout_10->addWidget(splitterMain);
+    //QSplitter* splitterRight = new QSplitter(Qt::Horizontal, splitterMain);
+
+    //splitterRight->setOpaqueResize(true);
+
+    //splitterRight->addWidget(ui->tabWidget_textEdit);
+    //splitterRight->addWidget(miniEdit);
+
+    //ui->gridLayout_10->setMargin(0);
+    //ui->gridLayout_10->addWidget(splitterMain);
+    //ui->gridLayout_10->addWidget(ui->tabWidget_textEdit);
+    //ui->gridLayout_10->addWidget(miniEdit);
 
     //设置鼠标追踪
     ui->centralwidget->setMouseTracking(true);
@@ -213,9 +244,9 @@ void MainWindow::loadTabFiles()
         else
             ui->actionMinimap->setChecked(true);
         if (ui->actionMinimap->isChecked())
-            miniEdit->setVisible(true);
+            ui->dockWidget_5->setVisible(true);
         else
-            miniEdit->setVisible(false);
+            ui->dockWidget_5->setVisible(false);
 
         bool file_exists = false;
 
@@ -301,12 +332,14 @@ QString MainWindow::openFile(QString fileName)
     if (fInfo.suffix() == "aml" || fInfo.suffix() == "dat") {
         //如果之前这个文件被打开过，则返回
         QString str = fInfo.path() + "/" + fInfo.baseName() + ".dsl";
+
+        QLabel* currentFile = new QLabel;
         for (int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i++) {
             QWidget* pWidget = ui->tabWidget_textEdit->widget(i);
-            QLabel* lbl = new QLabel;
-            lbl = (QLabel*)pWidget->children().at(lblNumber); //2为QLabel,1为textEdit,0为VBoxLayout
 
-            if (str == lbl->text()) {
+            currentFile = (QLabel*)pWidget->children().at(lblNumber); //2为QLabel,1为textEdit,0为VBoxLayout
+
+            if (str == currentFile->text()) {
                 return str;
             }
         }
@@ -318,7 +351,7 @@ QString MainWindow::openFile(QString fileName)
         Decompile = new QProcess;
 
         //显示信息窗口并初始化表头
-        ui->dockWidget3_2->setHidden(false);
+        ui->dockWidget_6->setHidden(false);
         //标记tab头
         int info_count = 0;
         ui->tabWidget->setTabText(1, tr("Errors") + " (" + QString::number(info_count) + ")");
@@ -581,7 +614,7 @@ void MainWindow::setCurrentFile(const QString& fileName)
         //设置编译功能屏蔽
         ui->actionCompiling->setEnabled(false);
 
-        ui->dockWidget3_2->setVisible(false);
+        ui->dockWidget_6->setVisible(false);
     }
 
     ui->tabWidget_textEdit->setTabText(ui->tabWidget_textEdit->currentIndex(), f.fileName());
@@ -1093,7 +1126,7 @@ void MainWindow::readResult(int exitCode)
         on_btnNextError();
     }
 
-    ui->dockWidget3_2->setHidden(false);
+    ui->dockWidget_6->setHidden(false);
     ui->actionInfo_win->setChecked(true);
 
     loading = false;
@@ -3455,6 +3488,11 @@ void MainWindow::on_MainWindow_destroyed()
 void MainWindow::init_info_edit()
 {
 
+    ui->gridLayout_3->setMargin(0);
+    ui->gridLayout_4->setMargin(0);
+    ui->gridLayout_5->setMargin(0);
+    ui->gridLayout_6->setMargin(0);
+
     textEditTemp = new QTextEdit();
 
     ui->editShowMsg->setLineWrapMode(ui->editShowMsg->NoWrap);
@@ -3473,8 +3511,8 @@ void MainWindow::init_info_edit()
     ui->editOptimizations->setReadOnly(true);
     ui->tabWidget->removeTab(4); //暂时不用"优化"这项
 
-    ui->dockWidget3_2->setHidden(true);
-    resizeDocks({ ui->dockWidget3_2 }, { 200 }, Qt::Vertical);
+    ui->dockWidget_6->setHidden(true);
+    resizeDocks({ ui->dockWidget_6 }, { 150 }, Qt::Vertical);
 }
 
 void MainWindow::init_recentFiles()
@@ -3528,7 +3566,7 @@ void MainWindow::init_toolbar()
     ui->toolBar->addSeparator();
     ui->toolBar->addWidget(ui->chkCaseSensitive);
     ui->toolBar->addWidget(ui->editFind);
-    ui->editFind->setMinimumWidth(320);
+    ui->editFind->setMinimumWidth(350);
     ui->editFind->lineEdit()->setPlaceholderText(tr("Find") + "  (" + tr("History entries") + ": " + QString::number(ui->editFind->count()) + ")");
     ui->editFind->lineEdit()->setClearButtonEnabled(true);
     ui->editFind->setAutoCompletionCaseSensitivity(Qt::CaseSensitive);
@@ -3546,7 +3584,7 @@ void MainWindow::init_toolbar()
 
     ui->toolBar->addSeparator();
     ui->toolBar->addWidget(ui->editReplace);
-    //ui->editReplace->setMaximumWidth(200);
+    //ui->editReplace->setFixedWidth(ui->editFind->width());
 
     ui->actionReplace->setIcon(QIcon(":/icon/re.png"));
     ui->toolBar->addAction(ui->actionReplace);
@@ -3846,23 +3884,24 @@ void MainWindow::setLexer(QsciLexer* textLexer, QsciScintilla* textEdit)
 void MainWindow::init_miniEdit()
 {
 
-    miniEdit = new MiniEditor();
+    miniEdit = new MiniEditor;
     miniDlg = new miniDialog(this);
     miniDlgEdit->setFont(font);
     miniDlg->close();
 
 #ifdef Q_OS_WIN32
-    miniEdit->setMaximumWidth(160);
+
+    ui->dockWidget_5->setFixedWidth(155);
 
 #endif
 
 #ifdef Q_OS_LINUX
-    miniEdit->setMaximumWidth(120);
+     ui->dockWidget_5->setFixedWidth(120);
 
 #endif
 
 #ifdef Q_OS_MAC
-    miniEdit->setMaximumWidth(115);
+     ui->dockWidget_5->setFixedWidth(115);
 
 #endif
 
@@ -3989,7 +4028,6 @@ void MainWindow::init_treeWidget()
 {
 
     int w;
-    //w = screen()->size().width();
     QScreen* screen = QGuiApplication::primaryScreen();
     w = screen->size().width();
     ui->tabWidget_misc->setMinimumWidth(w / 3);
@@ -4601,6 +4639,7 @@ void MainWindow::newFile()
     MyTabPage* page = new MyTabPage;
 
     QVBoxLayout* vboxLayout = new QVBoxLayout(page);
+    vboxLayout->setMargin(0);
     vboxLayout->addWidget(textEdit);
     QLabel* lbl = new QLabel(tr("untitled") + ".dsl");
     vboxLayout->addWidget(lbl);
@@ -4820,7 +4859,7 @@ void MainWindow::readKextstat()
     textEdit->append(result);
     textEdit->setModified(false);
 
-    ui->dockWidget3_2->setHidden(true);
+    ui->dockWidget_6->setHidden(true);
     ui->actionInfo_win->setChecked(false);
 }
 
@@ -5054,11 +5093,11 @@ void MainWindow::on_tabWidget_textEdit_currentChanged(int index)
 
 void MainWindow::view_info()
 {
-    if (ui->dockWidget3_2->isHidden()) {
-        ui->dockWidget3_2->setHidden(false);
+    if (ui->dockWidget_6->isHidden()) {
+        ui->dockWidget_6->setHidden(false);
         ui->actionInfo_win->setChecked(true);
-    } else if (!ui->dockWidget3_2->isHidden()) {
-        ui->dockWidget3_2->setHidden(true);
+    } else if (!ui->dockWidget_6->isHidden()) {
+        ui->dockWidget_6->setHidden(true);
         ui->actionInfo_win->setChecked(false);
     }
 }
@@ -5380,12 +5419,12 @@ void MainWindow::on_NewWindow()
 void MainWindow::on_miniMap()
 {
     if (!ui->actionMinimap->isChecked()) {
-        miniEdit->setVisible(false);
+        ui->dockWidget_5->setVisible(false);
 
     }
 
     else {
-        miniEdit->setVisible(true);
+        ui->dockWidget_5->setVisible(true);
     }
 }
 
@@ -5583,7 +5622,7 @@ void MiniEditor::showZoomWin(int x, int y)
         }
     }
 
-    int miniEditX = this->x();
+    int miniEditX = mw_one->getTabWidgetEditX() + mw_one->getTabWidgetEditW();
     int w = 650;
     int h = miniDlgEdit->textHeight(y) * 11;
     int y1 = y;
@@ -5721,4 +5760,19 @@ int MainWindow::getDockWidth()
 int MainWindow::getMainWindowHeight()
 {
     return this->height();
+}
+
+int MainWindow::getMiniDockX()
+{
+    return ui->dockWidget_5->x();
+}
+
+int MainWindow::getTabWidgetEditX()
+{
+    return ui->tabWidget_textEdit->x();
+}
+
+int MainWindow::getTabWidgetEditW()
+{
+    return ui->tabWidget_textEdit->width();
 }
