@@ -588,7 +588,7 @@ void MainWindow::setCurrentFile(const QString& fileName)
     ui->treeView->setCurrentIndex(model->index(shownName)); //并设置当前条目为打开的文件
     ui->treeView->setFocus();
 
-    if (f.suffix().toLower() == "dsl") {
+    if (f.suffix().toLower() == "dsl" || f.suffix().toLower() == "cpp" || f.suffix().toLower() == "c") {
         ui->actionWrapWord->setChecked(false); //取消自动换行，影响dsl文件开启速度
         textEdit->setWrapMode(QsciScintilla::WrapNone);
 
@@ -922,8 +922,9 @@ void MainWindow::btnGenerate_clicked()
 void MainWindow::btnCompile_clicked()
 {
     QFileInfo cf_info(curFile);
-    if (cf_info.suffix().toLower() != "dsl")
+    if (cf_info.suffix().toLower() != "dsl" && cf_info.suffix().toLower() != "cpp" && cf_info.suffix().toLower() != "c") {
         return;
+    }
 
     QFileInfo appInfo(qApp->applicationDirPath());
     co = new QProcess;
@@ -935,26 +936,30 @@ void MainWindow::btnCompile_clicked()
 
     qTime.start();
 
-    QString op = ui->cboxCompilationOptions->currentText().trimmed();
+    if (cf_info.suffix().toLower() == "dsl") {
+        QString op = ui->cboxCompilationOptions->currentText().trimmed();
 
 #ifdef Q_OS_WIN32
-    // win
-    co->start(appInfo.filePath() + "/iasl.exe", QStringList() << op << curFile);
+        co->start(appInfo.filePath() + "/iasl.exe", QStringList() << op << curFile);
 #endif
 
 #ifdef Q_OS_LINUX
-    // linux
-    co->start(appInfo.filePath() + "/iasl", QStringList() << op << curFile);
-
+        co->start(appInfo.filePath() + "/iasl", QStringList() << op << curFile);
 #endif
 
 #ifdef Q_OS_MAC
-    // mac
-    co->start(appInfo.filePath() + "/iasl", QStringList() << op << curFile);
-
+        co->start(appInfo.filePath() + "/iasl", QStringList() << op << curFile);
 #endif
 
-    connect(co, SIGNAL(finished(int)), this, SLOT(readResult(int)));
+        connect(co, SIGNAL(finished(int)), this, SLOT(readResult(int)));
+    }
+
+    if (cf_info.suffix().toLower() == "cpp") {
+        QString tName = QFileInfo(curFile).path() + "/" + QFileInfo(curFile).baseName();
+        co->start("g++", QStringList() << curFile << "-o" << tName);
+
+        connect(co, SIGNAL(finished(int)), this, SLOT(readCppResult(int)));
+    }
 
     /*仅供测试*/
     //connect(co , SIGNAL(readyReadStandardOutput()) , this , SLOT(readResult(int)));
@@ -1032,7 +1037,43 @@ void MainWindow::readDecompileResult(int exitCode)
     loading = false;
 }
 
-/*读取编译结果信息*/
+void MainWindow::readCppResult(int exitCode)
+{
+    ui->editShowMsg->clear();
+
+    QString result, result2;
+
+    result = QString::fromUtf8(co->readAll());
+    result2 = QString::fromUtf8(co->readAllStandardError());
+
+    ui->editShowMsg->append(result);
+
+    ui->editShowMsg->append(result2);
+
+    if (exitCode == 0) {
+
+        float a = qTime.elapsed() / 1000.00;
+        lblMsg->setText(tr("Compiled") + "(" + QTime::currentTime().toString() + "    " + QString::number(a, 'f', 2) + " s)");
+
+        ui->actionGo_to_previous_error->setEnabled(false);
+        ui->actionGo_to_the_next_error->setEnabled(false);
+        ui->tabWidget->setCurrentIndex(0);
+
+        if (!zh_cn)
+            QMessageBox::information(this, "QtiASL", "Compilation successful.");
+        else {
+            QMessageBox message(QMessageBox::Information, "QtiASL", tr("Compilation successful."));
+            message.setStandardButtons(QMessageBox::Ok);
+            message.setButtonText(QMessageBox::Ok, QString(tr("Ok")));
+            message.exec();
+        }
+    }
+
+    ui->dockWidget_6->setHidden(false);
+    ui->actionInfo_win->setChecked(true);
+}
+
+/*读取编译结果信息dsl*/
 void MainWindow::readResult(int exitCode)
 {
     loading = true;
@@ -4872,7 +4913,7 @@ void MainWindow::on_tabWidget_textEdit_tabBarClicked(int index)
     setWindowTitle(ver + lbl->text());
 
     QFileInfo f(curFile);
-    if (f.suffix().toLower() == "dsl") {
+    if (f.suffix().toLower() == "dsl" || f.suffix().toLower() == "cpp" || f.suffix().toLower() == "c") {
         ui->actionCompiling->setEnabled(true);
 
     } else {
