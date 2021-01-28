@@ -219,6 +219,7 @@ private slots:
 
     void readResult(int exitCode);
     void readCppResult(int exitCode);
+    void readCppRunResult(int exitCode);
     void readDecompileResult(int exitCode);
     void readHelpResult(int exitCode);
 

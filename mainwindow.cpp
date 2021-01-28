@@ -1037,6 +1037,18 @@ void MainWindow::readDecompileResult(int exitCode)
     loading = false;
 }
 
+void MainWindow::readCppRunResult(int exitCode)
+{
+    if (exitCode == 0) {
+
+        QString result;
+
+        result = QString::fromUtf8(co->readAll());
+
+        ui->editShowMsg->append(result);
+    }
+}
+
 void MainWindow::readCppResult(int exitCode)
 {
     ui->editShowMsg->clear();
@@ -1059,6 +1071,11 @@ void MainWindow::readCppResult(int exitCode)
         ui->actionGo_to_the_next_error->setEnabled(false);
         ui->tabWidget->setCurrentIndex(0);
 
+        co = new QProcess;
+        QString tName = QFileInfo(curFile).path() + "/" + QFileInfo(curFile).baseName();
+        co->start(tName);
+        connect(co, SIGNAL(finished(int)), this, SLOT(readCppRunResult(int)));
+
         if (!zh_cn)
             QMessageBox::information(this, "QtiASL", "Compilation successful.");
         else {
@@ -1067,6 +1084,12 @@ void MainWindow::readCppResult(int exitCode)
             message.setButtonText(QMessageBox::Ok, QString(tr("Ok")));
             message.exec();
         }
+    } else {
+        //ui->actionGo_to_previous_error->setEnabled(true);
+        //ui->actionGo_to_the_next_error->setEnabled(true);
+        ui->tabWidget->setCurrentIndex(0);
+
+        //on_btnNextError();
     }
 
     ui->dockWidget_6->setHidden(false);
