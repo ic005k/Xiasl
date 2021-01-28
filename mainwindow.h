@@ -369,6 +369,8 @@ private:
 
     QLabel* lblLayer;
 
+    QLabel* lblEncoding;
+
     QLineEdit* editLayer;
 
     QElapsedTimer qTime;

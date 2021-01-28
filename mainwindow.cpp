@@ -96,7 +96,7 @@ MainWindow::MainWindow(QWidget* parent)
 
     loadLocal();
 
-    CurVerison = "1.0.44";
+    CurVerison = "1.0.43";
     ver = "QtiASL V" + CurVerison + "        ";
     setWindowTitle(ver);
 
@@ -109,6 +109,8 @@ MainWindow::MainWindow(QWidget* parent)
     connect(mythread, &thread_one::over, this, &MainWindow::dealover);
 
     dlg = new dlgDecompile(this);
+
+    init_statusBar();
 
     init_menu();
 
@@ -190,8 +192,6 @@ MainWindow::MainWindow(QWidget* parent)
 
     manager = new QNetworkAccessManager(this);
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));
-
-    init_statusBar();
 
     init_filesystem();
 
@@ -496,7 +496,10 @@ void MainWindow::loadFile(const QString& fileName, int row, int col)
     }
 
     //text = QString::fromUtf8(file.readAll());
-    in.setCodec("UTF-8");
+    if (ui->actionUTF_8->isChecked())
+        in.setCodec("UTF-8");
+    if (ui->actionGBK->isChecked())
+        in.setCodec("GBK");
     text = in.readAll();
     textEdit->setText(text);
     miniEdit->clear();
@@ -3664,6 +3667,23 @@ void MainWindow::init_menu()
 
     connect(ui->actionClear_search_history, &QAction::triggered, this, &MainWindow::on_clearFindText);
 
+    QActionGroup* AG = new QActionGroup(this);
+    AG->addAction(ui->actionUTF_8);
+    AG->addAction(ui->actionGBK);
+
+    ui->actionUTF_8->setCheckable(true);
+    ui->actionGBK->setCheckable(true);
+
+    connect(AG, &QActionGroup::triggered,
+        [=]() mutable {
+            if (ui->actionUTF_8->isChecked() == true) {
+                lblEncoding->setText("UTF-8");
+
+            } else if (ui->actionGBK->isChecked() == true) {
+                lblEncoding->setText("GBK");
+            }
+        });
+
     //View
     connect(ui->actionMembers_win, &QAction::triggered, this, &MainWindow::view_mem_list);
     ui->actionMembers_win->setShortcut(tr("ctrl+1"));
@@ -3704,6 +3724,15 @@ void MainWindow::init_menu()
         QString op = Reg.value("options").toString().trimmed();
         if (op.count() > 0)
             ui->cboxCompilationOptions->setCurrentText(op);
+
+        //编码
+        //ui->actionUTF_8->setChecked(Reg.value("utf-8").toBool());
+        if (ui->actionUTF_8->isChecked())
+            lblEncoding->setText("UTF-8");
+
+        //ui->actionGBK->setChecked(Reg.value("gbk").toBool());
+        if (ui->actionGBK->isChecked())
+            lblEncoding->setText("GBK");
     }
 
     //设置编译功能屏蔽
@@ -4435,6 +4464,10 @@ void MainWindow::closeEvent(QCloseEvent* event)
     //存储minimap
     Reg.setValue("minimap", ui->actionMinimap->isChecked());
 
+    //存储编码选项
+    Reg.setValue("utf-8", ui->actionUTF_8->isChecked());
+    Reg.setValue("gbk", ui->actionGBK->isChecked());
+
     //存储当前的目录结构
     QWidget* pWidget = ui->tabWidget_textEdit->widget(ui->tabWidget_textEdit->currentIndex());
     QLabel* currentFile = new QLabel;
@@ -4587,6 +4620,17 @@ void MainWindow::init_statusBar()
     editLayer = new QLineEdit();
     editLayer->setReadOnly(true);
     ui->statusbar->addPermanentWidget(lblLayer);
+
+    lblEncoding = new QLabel(this);
+    lblEncoding->setText("UTF-8");
+    ui->statusbar->addPermanentWidget(lblEncoding);
+
+    QComboBox* cboxEncoding = new QComboBox;
+    cboxEncoding->addItem("UTF-8");
+    cboxEncoding->addItem("GBK");
+    ui->statusbar->layout()->setMargin(0);
+    ui->statusbar->layout()->setSpacing(0);
+    //ui->statusbar->addPermanentWidget(cboxEncoding);
 
     lblMsg = new QLabel(this);
     ui->statusbar->addPermanentWidget(lblMsg);
