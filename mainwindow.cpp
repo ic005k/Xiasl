@@ -96,7 +96,7 @@ MainWindow::MainWindow(QWidget* parent)
 
     loadLocal();
 
-    CurVerison = "1.0.43";
+    CurVerison = "1.0.44";
     ver = "QtiASL V" + CurVerison + "        ";
     setWindowTitle(ver);
 
@@ -3700,11 +3700,6 @@ void MainWindow::init_menu()
     connect(ui->actionUser_Guide, &QAction::triggered, this, &MainWindow::userGuide);
     connect(ui->actionAbout_1, &QAction::triggered, this, &MainWindow::about);
 
-    ui->chkName->setVisible(false);
-    ui->chkScope->setVisible(false);
-    ui->chkDevice->setVisible(false);
-    ui->chkMethod->setVisible(false);
-
     QIcon icon;
 
     icon.addFile(":/icon/return.png");
@@ -4171,152 +4166,6 @@ void MainWindow::init_filesystem()
         }
         ui->editFind->addItems(findTextList);
     }
-}
-
-void MainWindow::on_chkScope_clicked()
-{
-
-    if (ui->chkScope->isChecked())
-        show_s = true;
-    else
-        show_s = false;
-
-    if (!show_s) {
-
-        int count = ui->treeWidget->topLevelItemCount();
-        tw_scope.clear();
-        for (int i = 0; i < count; i++) {
-            //重要，否则刷新非常慢
-            ui->treeWidget->setCurrentItem(ui->treeWidget->topLevelItem(count - 1));
-
-            QString str = ui->treeWidget->topLevelItem(i)->text(0).trimmed();
-            if (str.mid(0, 4) == "Scop") {
-                tw_scope.append(ui->treeWidget->takeTopLevelItem(i));
-
-                count--;
-                i = i - 1;
-            }
-        }
-    } else {
-        if (tw_scope.count() == s_count && s_count != 0) {
-            ui->treeWidget->addTopLevelItems(tw_scope);
-            ui->treeWidget->sortItems(1, Qt::AscendingOrder);
-        }
-
-        if (tw_scope.count() != s_count || s_count == 0)
-            on_btnRefreshTree();
-    }
-    ui->treeWidget->update();
-
-    textEdit_cursorPositionChanged();
-}
-
-void MainWindow::on_chkDevice_clicked()
-{
-    ui->treeWidget->update();
-
-    if (ui->chkDevice->isChecked())
-        show_d = true;
-    else
-        show_d = false;
-
-    if (!show_d) {
-
-        int count = ui->treeWidget->topLevelItemCount();
-        tw_device.clear();
-        for (int i = 0; i < count; i++) {
-            ui->treeWidget->setCurrentItem(ui->treeWidget->topLevelItem(count - 1));
-
-            QString str = ui->treeWidget->topLevelItem(i)->text(0).trimmed();
-            if (str.mid(0, 4) == "Devi") {
-                tw_device.append(ui->treeWidget->takeTopLevelItem(i));
-                ui->treeWidget->update();
-                count--;
-                i = i - 1;
-            }
-        }
-    } else {
-        if (tw_device.count() == d_count && d_count > 0) {
-            ui->treeWidget->addTopLevelItems(tw_device);
-            ui->treeWidget->sortItems(1, Qt::AscendingOrder);
-        }
-        if (tw_device.count() != d_count || d_count == 0)
-            on_btnRefreshTree();
-    }
-    ui->treeWidget->update();
-    textEdit_cursorPositionChanged();
-}
-
-void MainWindow::on_chkMethod_clicked()
-{
-    ui->treeWidget->update();
-
-    if (ui->chkMethod->isChecked())
-        show_m = true;
-    else
-        show_m = false;
-
-    if (!show_m) {
-
-        int count = ui->treeWidget->topLevelItemCount();
-        tw_method.clear();
-        for (int i = 0; i < count; i++) {
-            ui->treeWidget->setCurrentItem(ui->treeWidget->topLevelItem(count - 1));
-
-            QString str = ui->treeWidget->topLevelItem(i)->text(0).trimmed();
-            if (str.mid(0, 4) == "Meth") {
-                tw_method.append(ui->treeWidget->takeTopLevelItem(i));
-
-                count--;
-                i = i - 1;
-            }
-        }
-    } else {
-        if (tw_method.count() == m_count && m_count > 0) {
-            ui->treeWidget->addTopLevelItems(tw_method);
-            ui->treeWidget->sortItems(1, Qt::AscendingOrder);
-        }
-        if (tw_method.count() != m_count || m_count == 0)
-            on_btnRefreshTree();
-    }
-    ui->treeWidget->update();
-    textEdit_cursorPositionChanged();
-}
-
-void MainWindow::on_chkName_clicked()
-{
-    ui->treeWidget->update();
-
-    if (ui->chkName->isChecked())
-        show_n = true;
-    else
-        show_n = false;
-
-    if (!show_n) {
-
-        int count = ui->treeWidget->topLevelItemCount();
-        tw_name.clear();
-        for (int i = 0; i < count; i++) {
-            ui->treeWidget->setCurrentItem(ui->treeWidget->topLevelItem(count - 1));
-
-            QString str = ui->treeWidget->topLevelItem(i)->text(0).trimmed();
-            if (str.mid(0, 4) == "Name") {
-                tw_name.append(ui->treeWidget->takeTopLevelItem(i));
-                ui->treeWidget->update();
-                count--;
-                i = i - 1;
-            }
-        }
-    } else {
-        if (tw_name.count() == n_count && n_count > 0) {
-            ui->treeWidget->addTopLevelItems(tw_name);
-            ui->treeWidget->sortItems(1, Qt::AscendingOrder);
-        }
-        if (tw_name.count() != n_count || n_count == 0)
-            on_btnRefreshTree();
-    }
-    ui->treeWidget->update();
-    textEdit_cursorPositionChanged();
 }
 
 void MainWindow::separ_info(QString str_key, QTextEdit* editInfo)

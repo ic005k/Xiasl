@@ -19,7 +19,14 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_7">
-    <item row="0" column="7" rowspan="4" colspan="2">
+    <item row="1" column="4" rowspan="3">
+     <widget class="QComboBox" name="cboxCompilationOptions">
+      <property name="toolTip">
+       <string>Compilation options</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="3" rowspan="4" colspan="2">
      <widget class="MyTabWidget" name="tabWidget_textEdit" native="true">
       <property name="currentIndex" stdset="0">
        <number>-1</number>
@@ -41,7 +48,17 @@
       </property>
      </widget>
     </item>
-    <item row="1" column="2">
+    <item row="2" column="1">
+     <widget class="QCheckBox" name="chkAll">
+      <property name="toolTip">
+       <string>Decompile all AML files in the directory where the opened file is located</string>
+      </property>
+      <property name="text">
+       <string>Batch decompilation</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
      <widget class="QComboBox" name="editFind">
       <property name="toolTip">
        <string/>
@@ -54,41 +71,7 @@
       </property>
      </widget>
     </item>
-    <item row="1" column="4" rowspan="2">
-     <widget class="QLineEdit" name="editReplace">
-      <property name="placeholderText">
-       <string>Replace</string>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="8" rowspan="3">
-     <widget class="QComboBox" name="cboxCompilationOptions">
-      <property name="toolTip">
-       <string>Compilation options</string>
-      </property>
-     </widget>
-    </item>
     <item row="2" column="0">
-     <widget class="QCheckBox" name="chkScope">
-      <property name="text">
-       <string>S</string>
-      </property>
-      <property name="checked">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="1">
-     <widget class="QCheckBox" name="chkDevice">
-      <property name="text">
-       <string>D</string>
-      </property>
-      <property name="checked">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="2">
      <widget class="QCheckBox" name="chkCaseSensitive">
       <property name="text">
        <string>CaseSensitive</string>
@@ -98,33 +81,10 @@
       </property>
      </widget>
     </item>
-    <item row="2" column="3">
-     <widget class="QCheckBox" name="chkAll">
-      <property name="toolTip">
-       <string>Decompile all AML files in the directory where the opened file is located</string>
-      </property>
-      <property name="text">
-       <string>Batch decompilation</string>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="5">
-     <widget class="QCheckBox" name="chkMethod">
-      <property name="text">
-       <string>M</string>
-      </property>
-      <property name="checked">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="6">
-     <widget class="QCheckBox" name="chkName">
-      <property name="text">
-       <string>N</string>
-      </property>
-      <property name="checked">
-       <bool>false</bool>
+    <item row="1" column="2" rowspan="2">
+     <widget class="QLineEdit" name="editReplace">
+      <property name="placeholderText">
+       <string>Replace</string>
       </property>
      </widget>
     </item>

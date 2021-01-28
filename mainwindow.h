@@ -262,14 +262,6 @@ private slots:
 
     void on_MainWindow_destroyed();
 
-    void on_chkScope_clicked();
-
-    void on_chkDevice_clicked();
-
-    void on_chkMethod_clicked();
-
-    void on_chkName_clicked();
-
     void on_editErrors_cursorPositionChanged();
 
     void on_editWarnings_cursorPositionChanged();
