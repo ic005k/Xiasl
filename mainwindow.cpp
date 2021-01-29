@@ -707,6 +707,9 @@ bool MainWindow::SaveAs()
 
 bool MainWindow::saveFile(const QString& fileName)
 {
+    if (!textEdit->isModified())
+        return false;
+
     QString errorMessage;
 
     QGuiApplication::setOverrideCursor(Qt::WaitCursor);
@@ -732,9 +735,10 @@ bool MainWindow::saveFile(const QString& fileName)
 
     //添加文件的监控
     bool add = true;
+    QLabel* lbl = new QLabel;
     for (int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i++) {
         QWidget* pWidget = ui->tabWidget_textEdit->widget(i);
-        QLabel* lbl = new QLabel;
+
         lbl = (QLabel*)pWidget->children().at(lblNumber); //2为QLabel,1为textEdit,0为VBoxLayout
         if (fileName == lbl->text()) {
             add = false;
@@ -751,7 +755,7 @@ bool MainWindow::saveFile(const QString& fileName)
 
     //刷新文件路径
     QWidget* pWidget = ui->tabWidget_textEdit->widget(ui->tabWidget_textEdit->currentIndex());
-    QLabel* lbl = new QLabel;
+
     lbl = (QLabel*)pWidget->children().at(lblNumber); //2为QLabel,1为textEdit,0为VBoxLayout
     lbl->setText(fileName);
     QFileInfo ft(fileName);
@@ -954,9 +958,20 @@ void MainWindow::btnCompile_clicked()
         connect(co, SIGNAL(finished(int)), this, SLOT(readResult(int)));
     }
 
+    //cpp
     if (cf_info.suffix().toLower() == "cpp") {
+        QDir::setCurrent(QFileInfo(curFile).path());
         QString tName = QFileInfo(curFile).path() + "/" + QFileInfo(curFile).baseName();
         co->start("g++", QStringList() << curFile << "-o" << tName);
+
+        connect(co, SIGNAL(finished(int)), this, SLOT(readCppResult(int)));
+    }
+
+    //c
+    if (cf_info.suffix().toLower() == "c") {
+        QDir::setCurrent(QFileInfo(curFile).path());
+        QString tName = QFileInfo(curFile).path() + "/" + QFileInfo(curFile).baseName();
+        co->start("gcc", QStringList() << curFile << "-o" << tName);
 
         connect(co, SIGNAL(finished(int)), this, SLOT(readCppResult(int)));
     }
@@ -1052,20 +1067,30 @@ void MainWindow::readCppRunResult(int exitCode)
 void MainWindow::readCppResult(int exitCode)
 {
     ui->editShowMsg->clear();
+    ui->editErrors->clear();
+    ui->editRemarks->clear();
+    ui->editWarnings->clear();
+
+    //标记tab头
+    ui->tabWidget->setTabText(1, tr("Errors"));
+    ui->tabWidget->setTabText(2, tr("Warnings"));
+    ui->tabWidget->setTabText(3, tr("Remarks"));
 
     QString result, result2;
 
     result = QString::fromUtf8(co->readAll());
     result2 = QString::fromUtf8(co->readAllStandardError());
 
-    ui->editShowMsg->append(result);
+    float a = qTime.elapsed() / 1000.00;
+    lblMsg->setText(tr("Compiled") + "(" + QTime::currentTime().toString() + "    " + QString::number(a, 'f', 2) + " s)");
 
-    ui->editShowMsg->append(result2);
+    //清除所有标记
+    textEdit->SendScintilla(QsciScintilla::SCI_MARKERDELETEALL);
 
     if (exitCode == 0) {
 
-        float a = qTime.elapsed() / 1000.00;
-        lblMsg->setText(tr("Compiled") + "(" + QTime::currentTime().toString() + "    " + QString::number(a, 'f', 2) + " s)");
+        ui->editShowMsg->append(result);
+        ui->editShowMsg->append(result2);
 
         ui->actionGo_to_previous_error->setEnabled(false);
         ui->actionGo_to_the_next_error->setEnabled(false);
@@ -1073,7 +1098,10 @@ void MainWindow::readCppResult(int exitCode)
 
         co = new QProcess;
         QString tName = QFileInfo(curFile).path() + "/" + QFileInfo(curFile).baseName();
+        if (win)
+            tName = tName + ".exe";
         co->start(tName);
+
         connect(co, SIGNAL(finished(int)), this, SLOT(readCppRunResult(int)));
 
         if (!zh_cn)
@@ -1085,11 +1113,18 @@ void MainWindow::readCppResult(int exitCode)
             message.exec();
         }
     } else {
-        //ui->actionGo_to_previous_error->setEnabled(true);
-        //ui->actionGo_to_the_next_error->setEnabled(true);
-        ui->tabWidget->setCurrentIndex(0);
+        ui->actionGo_to_previous_error->setEnabled(true);
+        ui->actionGo_to_the_next_error->setEnabled(true);
 
-        //on_btnNextError();
+        ui->editErrors->append(result);
+        ui->editErrors->append(result2);
+        ui->tabWidget->setCurrentIndex(1);
+
+        //回到第一行
+        QTextBlock block = ui->editErrors->document()->findBlockByNumber(0);
+        ui->editErrors->setTextCursor(QTextCursor(block));
+
+        goCppNextError();
     }
 
     ui->dockWidget_6->setHidden(false);
@@ -1579,8 +1614,111 @@ void MainWindow::set_cursor_line_color(QTextEdit* edit)
     edit->setExtraSelections(extraSelection);
 }
 
+void MainWindow::goCppPreviousError()
+{
+    miniDlg->close();
+
+    const QTextCursor cursor = ui->editErrors->textCursor();
+
+    int RowNum = cursor.blockNumber() - 2;
+
+    QTextBlock block = ui->editErrors->document()->findBlockByNumber(RowNum);
+    ui->editErrors->setTextCursor(QTextCursor(block));
+
+    bool yes = false;
+
+    for (int i = RowNum; i > -1; i--) {
+        QTextBlock block = ui->editErrors->document()->findBlockByNumber(i);
+        ui->editErrors->setTextCursor(QTextCursor(block));
+
+        QString str = ui->editErrors->document()->findBlockByLineNumber(i).text();
+        QString sub = str.trimmed();
+
+        if (sub.contains(curFile)) {
+
+            yes = true;
+
+            QTextBlock block = ui->editErrors->document()->findBlockByNumber(i + 1);
+            ui->editErrors->setTextCursor(QTextCursor(block));
+
+            QList<QTextEdit::ExtraSelection> extraSelection;
+            QTextEdit::ExtraSelection selection;
+            //QColor lineColor = QColor(Qt::gray).lighter(150);
+            QColor lineColor = QColor(Qt::red);
+            selection.format.setForeground(Qt::white);
+            selection.format.setBackground(lineColor);
+            selection.format.setProperty(QTextFormat::FullWidthSelection, true);
+            selection.cursor = ui->editErrors->textCursor();
+            selection.cursor.clearSelection();
+            extraSelection.append(selection);
+            ui->editErrors->setExtraSelections(extraSelection);
+
+            //定位到错误行
+            getCppErrorLine(i);
+
+            ui->tabWidget->setCurrentIndex(1);
+
+            break;
+        }
+    }
+
+    if (!yes)
+        goCppNextError();
+}
+
+void MainWindow::goCppNextError()
+{
+    miniDlg->close();
+
+    const QTextCursor cursor = ui->editErrors->textCursor();
+    int RowNum = cursor.blockNumber();
+
+    QTextBlock block = ui->editErrors->document()->findBlockByNumber(RowNum);
+    ui->editErrors->setTextCursor(QTextCursor(block));
+
+    bool yes = false;
+
+    for (int i = RowNum; i < ui->editErrors->document()->lineCount(); i++) {
+        QTextBlock block = ui->editErrors->document()->findBlockByNumber(i);
+        ui->editErrors->setTextCursor(QTextCursor(block));
+
+        QString str = ui->editErrors->document()->findBlockByLineNumber(i).text();
+        QString sub = str.trimmed();
+
+        if (sub.contains(curFile)) {
+
+            yes = true;
+
+            QTextBlock block = ui->editErrors->document()->findBlockByNumber(i + 1);
+            ui->editErrors->setTextCursor(QTextCursor(block));
+
+            QList<QTextEdit::ExtraSelection> extraSelection;
+            QTextEdit::ExtraSelection selection;
+            QColor lineColor = QColor(Qt::red);
+            selection.format.setForeground(Qt::white);
+            selection.format.setBackground(lineColor);
+            selection.format.setProperty(QTextFormat::FullWidthSelection, true);
+            selection.cursor = ui->editErrors->textCursor();
+            selection.cursor.clearSelection();
+            extraSelection.append(selection);
+            ui->editErrors->setExtraSelections(extraSelection);
+
+            //定位到错误行
+            getCppErrorLine(i);
+
+            ui->tabWidget->setCurrentIndex(1);
+
+            break;
+        }
+    }
+
+    if (!yes)
+        goCppPreviousError();
+}
+
 void MainWindow::on_btnNextError()
 {
+    miniDlg->close();
 
     const QTextCursor cursor = ui->editErrors->textCursor();
     int RowNum = cursor.blockNumber();
@@ -1625,6 +1763,7 @@ void MainWindow::on_btnNextError()
 
 void MainWindow::on_btnPreviousError()
 {
+    miniDlg->close();
 
     const QTextCursor cursor = ui->editErrors->textCursor();
     int RowNum = cursor.blockNumber();
@@ -1736,6 +1875,61 @@ void MainWindow::gotoLine(QTextEdit* edit)
     }
 }
 
+void MainWindow::setErrorMarkers(int linenr)
+{
+    //SCI_MARKERGET 参数用来设置标记，默认为圆形标记
+    textEdit->SendScintilla(QsciScintilla::SCI_MARKERGET, linenr - 1);
+    //SCI_MARKERSETFORE，SCI_MARKERSETBACK设置标记前景和背景标记
+    textEdit->SendScintilla(QsciScintilla::SCI_MARKERSETFORE, 0, QColor(Qt::red));
+    textEdit->SendScintilla(QsciScintilla::SCI_MARKERSETBACK, 0, QColor(Qt::red));
+    textEdit->SendScintilla(QsciScintilla::SCI_MARKERADD, linenr - 1);
+    //下划线
+    //textEdit->SendScintilla(QsciScintilla::SCI_STYLESETUNDERLINE, linenr, true);
+    //textEdit->SendScintilla(QsciScintilla::SCI_MARKERDEFINE, 0, QsciScintilla::SC_MARK_UNDERLINE);
+}
+void MainWindow::getCppErrorLine(int i)
+{
+    //定位到错误行
+    QString str1 = ui->editErrors->document()->findBlockByLineNumber(i).text().trimmed();
+    QString str2, str3, str4;
+    if (str1 != "") {
+        for (int j = 0; j < str1.count(); j++) {
+
+            if (str1.mid(j, 1) == ":") {
+                str2 = str1.mid(j + 1, str1.count() - j);
+                //qDebug() << str2;
+                break;
+            }
+        }
+
+        for (int k = 0; k < str2.count(); k++) {
+            if (str2.mid(k, 1) == ":") {
+                str3 = str2.mid(0, k);
+                str4 = str2.mid(k + 1, str2.count() - k);
+                //qDebug() << str3 << str4;
+                int linenr = str3.toInt();
+                int col = 0;
+
+                for (int n = 0; n < str4.count(); n++) {
+                    if (str4.mid(n, 1) == ":") {
+                        str4 = str4.mid(0, n);
+                        //qDebug() << str4;
+                        col = str4.toInt();
+                        break;
+                    }
+                }
+
+                //定位到错误行
+                textEdit->setCursorPosition(linenr - 1, col - 1);
+                setErrorMarkers(linenr);
+                textEdit->setFocus();
+
+                break;
+            }
+        }
+    }
+}
+
 void MainWindow::getErrorLine(int i)
 {
     //定位到错误行
@@ -1759,6 +1953,7 @@ void MainWindow::getErrorLine(int i)
 
                 //定位到错误行
                 textEdit->setCursorPosition(linenr - 1, 0);
+
                 QString strLine = textEdit->text(linenr - 1);
                 for (int i = 0; i < strLine.count(); i++) {
                     QString strSub = strLine.trimmed().mid(0, 1);
@@ -1774,16 +1969,7 @@ void MainWindow::getErrorLine(int i)
                     }
                 }
 
-                //SCI_MARKERGET 参数用来设置标记，默认为圆形标记
-                textEdit->SendScintilla(QsciScintilla::SCI_MARKERGET, linenr - 1);
-                //SCI_MARKERSETFORE，SCI_MARKERSETBACK设置标记前景和背景标记
-                textEdit->SendScintilla(QsciScintilla::SCI_MARKERSETFORE, 0, QColor(Qt::red));
-                textEdit->SendScintilla(QsciScintilla::SCI_MARKERSETBACK, 0, QColor(Qt::red));
-                textEdit->SendScintilla(QsciScintilla::SCI_MARKERADD, linenr - 1);
-                //下划线
-                //textEdit->SendScintilla(QsciScintilla::SCI_STYLESETUNDERLINE, linenr, true);
-                //textEdit->SendScintilla(QsciScintilla::SCI_MARKERDEFINE, 0, QsciScintilla::SC_MARK_UNDERLINE);
-
+                setErrorMarkers(linenr);
                 textEdit->setFocus();
 
                 break;
@@ -3565,7 +3751,6 @@ void MainWindow::init_info_edit()
     ui->tabWidget->removeTab(4); //暂时不用"优化"这项
 
     ui->dockWidget_6->setHidden(true);
-    resizeDocks({ ui->dockWidget_6 }, { 150 }, Qt::Vertical);
 }
 
 void MainWindow::init_recentFiles()
@@ -3715,10 +3900,10 @@ void MainWindow::init_menu()
     connect(ui->actionReplaceAll, &QAction::triggered, this, &MainWindow::ReplaceAll);
 
     ui->actionGo_to_previous_error->setShortcut(tr("ctrl+alt+e"));
-    connect(ui->actionGo_to_previous_error, &QAction::triggered, this, &MainWindow::on_btnPreviousError);
+    connect(ui->actionGo_to_previous_error, &QAction::triggered, this, &MainWindow::on_PreviousError);
 
     ui->actionGo_to_the_next_error->setShortcut(tr("ctrl+e"));
-    connect(ui->actionGo_to_the_next_error, &QAction::triggered, this, &MainWindow::on_btnNextError);
+    connect(ui->actionGo_to_the_next_error, &QAction::triggered, this, &MainWindow::on_NextError);
 
     connect(ui->actionKextstat, &QAction::triggered, this, &MainWindow::kextstat);
 
@@ -4104,7 +4289,7 @@ void MainWindow::init_treeWidget()
     int w;
     QScreen* screen = QGuiApplication::primaryScreen();
     w = screen->size().width();
-    ui->tabWidget_misc->setMinimumWidth(w / 3);
+    //ui->tabWidget_misc->setMinimumWidth(w / 3 - 80);
 
     treeWidgetBak = new QTreeWidget;
 
@@ -4229,6 +4414,13 @@ void MainWindow::init_filesystem()
             findTextList.append(item);
         }
         ui->editFind->addItems(findTextList);
+
+        //读取成员列表窗口的宽度和信息显示窗口的高度
+        int m_w = Reg.value("members_win", 375).toInt();
+        resizeDocks({ ui->dockWidget }, { m_w }, Qt::Horizontal);
+
+        int i_w = Reg.value("info_win", 150).toInt();
+        resizeDocks({ ui->dockWidget_6 }, { i_w }, Qt::Vertical);
     }
 }
 
@@ -4380,6 +4572,10 @@ void MainWindow::closeEvent(QCloseEvent* event)
     //存储编码选项
     Reg.setValue("utf-8", ui->actionUTF_8->isChecked());
     Reg.setValue("gbk", ui->actionGBK->isChecked());
+
+    //存储成员列表和信息窗口高度
+    Reg.setValue("members_win", ui->dockWidget->width());
+    Reg.setValue("info_win", ui->dockWidgetContents_6->height());
 
     //存储当前的目录结构
     QWidget* pWidget = ui->tabWidget_textEdit->widget(ui->tabWidget_textEdit->currentIndex());
@@ -4833,6 +5029,8 @@ void MainWindow::loadLocal()
 
 void MainWindow::on_btnCompile()
 {
+    miniDlg->close();
+
     btnCompile_clicked();
 }
 
@@ -4906,6 +5104,8 @@ bool MainWindow::eventFilter(QObject* watched, QEvent* event)
 
 void MainWindow::on_tabWidget_textEdit_tabBarClicked(int index)
 {
+
+    miniDlg->close();
 
     if (index == -1) //点击标签页之外的区域
         return;
@@ -5395,7 +5595,6 @@ void MiniEditor::mouseMoveEvent(QMouseEvent* event)
     miniEditWheel = false;
     if (!textEditScroll) {
         showZoomWin(event->x(), event->y());
-        //connect(this->verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(miniEdit_verticalScrollBarChanged()));
     }
 }
 
@@ -5565,6 +5764,11 @@ void MiniEditor::showZoomWin(int x, int y)
         }
     }
 
+    if (t1.trimmed() == "" && t5.trimmed() == "" && t2.trimmed() == "" && t3.trimmed() == "" && t4.trimmed() == "") {
+        miniDlg->close();
+        return;
+    }
+
     int miniEditX = mw_one->getTabWidgetEditX() + mw_one->getTabWidgetEditW();
     int w = 650;
     int h = miniDlgEdit->textHeight(y) * 11;
@@ -5718,4 +5922,22 @@ int MainWindow::getTabWidgetEditX()
 int MainWindow::getTabWidgetEditW()
 {
     return ui->tabWidget_textEdit->width();
+}
+
+void MainWindow::on_PreviousError()
+{
+    if (QFileInfo(curFile).suffix().toLower() == "dsl")
+        on_btnPreviousError();
+
+    if (QFileInfo(curFile).suffix().toLower() == "cpp" || QFileInfo(curFile).suffix().toLower() == "c")
+        goCppPreviousError();
+}
+
+void MainWindow::on_NextError()
+{
+    if (QFileInfo(curFile).suffix().toLower() == "dsl")
+        on_btnNextError();
+
+    if (QFileInfo(curFile).suffix().toLower() == "cpp" || QFileInfo(curFile).suffix().toLower() == "c")
+        goCppNextError();
 }

@@ -254,9 +254,8 @@ private slots:
 
     void on_editShowMsg_cursorPositionChanged();
 
-    void on_btnNextError();
-
-    void on_btnPreviousError();
+    void on_PreviousError();
+    void on_NextError();
 
     void on_editShowMsg_selectionChanged();
 
@@ -420,14 +419,16 @@ private:
     void update_member(bool show, QString str_void, QList<QTreeWidgetItem*> tw_list);
 
     void set_mark(int linenr);
-
     void syncMiniEdit();
-
     int deleteDirfile(QString dirName);
-
     bool DeleteDirectory(const QString& path);
-
     bool enterEdit(QPoint pp, QsciScintilla* btn);
+    void on_btnNextError();
+    void on_btnPreviousError();
+    void goCppPreviousError();
+    void goCppNextError();
+    void getCppErrorLine(int i);
+    void setErrorMarkers(int linenr);
 
 #ifndef QT_NO_CONTEXTMENU
     void contextMenuEvent(QContextMenuEvent* event) override;
