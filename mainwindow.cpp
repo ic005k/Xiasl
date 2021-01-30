@@ -183,9 +183,10 @@ MainWindow::MainWindow(QWidget* parent)
 
     //设置鼠标追踪
     ui->centralwidget->setMouseTracking(true);
-    this->setMouseTracking(true); //激活整个窗体的鼠标追踪
-    ui->tabWidget_textEdit->setMouseTracking(true);
+    this->setMouseTracking(true);
     ui->toolBar->setMouseTracking(true);
+    ui->dockWidget_6->setMouseTracking(true);
+    ui->statusbar->setMouseTracking(true);
 
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(timer_linkage()));
@@ -3804,7 +3805,7 @@ void MainWindow::init_toolbar()
     ui->toolBar->addSeparator();
     ui->toolBar->addWidget(ui->chkCaseSensitive);
     ui->toolBar->addWidget(ui->editFind);
-    ui->editFind->setMinimumWidth(350);
+    ui->editFind->setFixedWidth(320);
     ui->editFind->lineEdit()->setPlaceholderText(tr("Find") + "  (" + tr("History entries") + ": " + QString::number(ui->editFind->count()) + ")");
     ui->editFind->lineEdit()->setClearButtonEnabled(true);
     ui->editFind->setAutoCompletionCaseSensitivity(Qt::CaseSensitive);
@@ -5617,7 +5618,7 @@ void MiniEditor::showZoomWin(int x, int y)
 
     int totalLines = this->lines();
 
-    if (x < 10) {
+    if (x < 15) {
         miniDlg->close();
         return;
     }
@@ -5781,7 +5782,8 @@ void MiniEditor::showZoomWin(int x, int y)
 
     miniDlg->setGeometry(mw_one->getDockWidth() + miniEditX - w, y1, w, h);
 
-    miniDlg->show();
+    if (miniDlg->isHidden())
+        miniDlg->show();
 }
 
 void MiniEditor::miniEdit_cursorPositionChanged()
@@ -5921,7 +5923,7 @@ int MainWindow::getTabWidgetEditX()
 
 int MainWindow::getTabWidgetEditW()
 {
-    return ui->tabWidget_textEdit->width();
+    return ui->tabWidget_textEdit->width(); // + textEdit->verticalScrollBar()->width();
 }
 
 void MainWindow::on_PreviousError()
