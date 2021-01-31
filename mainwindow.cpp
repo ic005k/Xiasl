@@ -96,7 +96,7 @@ MainWindow::MainWindow(QWidget* parent)
 
     loadLocal();
 
-    CurVerison = "1.0.44";
+    CurVerison = "1.0.45";
     ver = "QtiASL V" + CurVerison + "        ";
     setWindowTitle(ver);
 
@@ -339,6 +339,7 @@ QString MainWindow::openFile(QString fileName)
 
         //显示信息窗口并初始化表头
         ui->dockWidget_6->setHidden(false);
+        InfoWinShow = true;
         //标记tab头
         int info_count = 0;
         ui->tabWidget->setTabText(1, tr("Errors") + " (" + QString::number(info_count) + ")");
@@ -596,15 +597,12 @@ void MainWindow::setCurrentFile(const QString& fileName)
         //设置编译功能使能
         ui->actionCompiling->setEnabled(true);
 
-        //ui->tabWidget_misc->setCurrentIndex(0);
-
     } else {
-        //ui->tabWidget_misc->setCurrentIndex(1);
 
         //设置编译功能屏蔽
         ui->actionCompiling->setEnabled(false);
 
-        ui->dockWidget_6->setVisible(false);
+        ui->dockWidget_6->setHidden(true);
     }
 
     ui->tabWidget_textEdit->setTabText(ui->tabWidget_textEdit->currentIndex(), f.fileName());
@@ -1129,6 +1127,7 @@ void MainWindow::readCppResult(int exitCode)
     }
 
     ui->dockWidget_6->setHidden(false);
+    InfoWinShow = true;
     ui->actionInfo_win->setChecked(true);
 }
 
@@ -1216,6 +1215,7 @@ void MainWindow::readResult(int exitCode)
     }
 
     ui->dockWidget_6->setHidden(false);
+    InfoWinShow = true;
     ui->actionInfo_win->setChecked(true);
 
     loading = false;
@@ -3751,7 +3751,7 @@ void MainWindow::init_info_edit()
     ui->editOptimizations->setReadOnly(true);
     ui->tabWidget->removeTab(4); //暂时不用"优化"这项
 
-    ui->dockWidget_6->setHidden(true);
+    //ui->dockWidget_6->setHidden(true);
 }
 
 void MainWindow::init_recentFiles()
@@ -4393,11 +4393,11 @@ void MainWindow::init_filesystem()
 
     //读取之前的目录
     QString qfile = QDir::homePath() + "/.config/QtiASL/QtiASL.ini";
-    //QFile file(qfile);
+
     QFileInfo fi(qfile);
 
     if (fi.exists()) {
-        //QSettings Reg(qfile, QSettings::NativeFormat);
+
         QSettings Reg(qfile, QSettings::IniFormat); //全平台都采用ini格式
 
         QString dir = Reg.value("dir").toString().trimmed();
@@ -4420,8 +4420,8 @@ void MainWindow::init_filesystem()
         int m_w = Reg.value("members_win", 375).toInt();
         resizeDocks({ ui->dockWidget }, { m_w }, Qt::Horizontal);
 
-        int i_w = Reg.value("info_win", 150).toInt();
-        resizeDocks({ ui->dockWidget_6 }, { i_w }, Qt::Vertical);
+        int i_h = Reg.value("info_win", 150).toInt();
+        resizeDocks({ ui->dockWidget_6 }, { i_h }, Qt::Vertical);
     }
 }
 
@@ -4574,9 +4574,10 @@ void MainWindow::closeEvent(QCloseEvent* event)
     Reg.setValue("utf-8", ui->actionUTF_8->isChecked());
     Reg.setValue("gbk", ui->actionGBK->isChecked());
 
-    //存储成员列表和信息窗口高度
+    //存储成员列表的宽度和信息窗口高度
     Reg.setValue("members_win", ui->dockWidget->width());
-    Reg.setValue("info_win", ui->dockWidgetContents_6->height());
+    if (InfoWinShow) //不显示不存储
+        Reg.setValue("info_win", ui->dockWidget_6->height());
 
     //存储当前的目录结构
     QWidget* pWidget = ui->tabWidget_textEdit->widget(ui->tabWidget_textEdit->currentIndex());
@@ -5239,6 +5240,7 @@ void MainWindow::view_info()
 {
     if (ui->dockWidget_6->isHidden()) {
         ui->dockWidget_6->setHidden(false);
+        InfoWinShow = true;
         ui->actionInfo_win->setChecked(true);
     } else if (!ui->dockWidget_6->isHidden()) {
         ui->dockWidget_6->setHidden(true);
@@ -5942,4 +5944,11 @@ void MainWindow::on_NextError()
 
     if (QFileInfo(curFile).suffix().toLower() == "cpp" || QFileInfo(curFile).suffix().toLower() == "c")
         goCppNextError();
+}
+
+void MainWindow::msg(int value)
+{
+    QMessageBox box;
+    box.setText(QString::number(value));
+    box.exec();
 }

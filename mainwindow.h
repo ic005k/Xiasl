@@ -156,6 +156,8 @@ public:
 
     void getACPITables(bool ssdt);
 
+    void msg(int value);
+
 protected:
     void closeEvent(QCloseEvent* event) override;
     void dragEnterEvent(QDragEnterEvent* e) override;
@@ -429,6 +431,7 @@ private:
     void goCppNextError();
     void getCppErrorLine(int i);
     void setErrorMarkers(int linenr);
+    bool InfoWinShow = false;
 
 #ifndef QT_NO_CONTEXTMENU
     void contextMenuEvent(QContextMenuEvent* event) override;

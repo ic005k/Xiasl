@@ -40,6 +40,7 @@ void MyApplication::new_win()
 
         if (newfile) {
             MainWindow* mw = new MainWindow();
+            mw_one = mw;
             mw->loadFile(mw->openFile(fileName), -1, -1);
             mw->show();
             filelist.push_back(fileName);
