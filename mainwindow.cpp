@@ -96,7 +96,7 @@ MainWindow::MainWindow(QWidget* parent)
 
     loadLocal();
 
-    CurVerison = "1.0.45";
+    CurVerison = "1.0.46";
     ver = "QtiASL V" + CurVerison + "        ";
     setWindowTitle(ver);
 
@@ -665,9 +665,11 @@ bool MainWindow::maybeSave(QString info)
 
 bool MainWindow::Save()
 {
+
     if (curFile.isEmpty()) {
         return SaveAs();
     } else {
+
         return saveFile(curFile);
     }
 }
@@ -706,8 +708,6 @@ bool MainWindow::SaveAs()
 
 bool MainWindow::saveFile(const QString& fileName)
 {
-    if (!textEdit->isModified())
-        return false;
 
     QString errorMessage;
 
@@ -766,6 +766,8 @@ bool MainWindow::saveFile(const QString& fileName)
 
     SelfSaved = true; //文件监控提示
 
+    ui->actionSave->setEnabled(false);
+
     return true;
 }
 
@@ -809,8 +811,8 @@ void MainWindow::getACPITables(bool ssdt)
 #ifdef Q_OS_LINUX
     QStringList ssdtFiles;
     dump.execute(appInfo.filePath() + "/acpidump", QStringList() << "-b");
-    iasl.execute(appInfo.filePath() + "/iasl", QStringList() << "-d"
-                                                             << "dsdt.dat");
+    //iasl.execute(appInfo.filePath() + "/iasl", QStringList() << "-d"
+    //                                                         << "dsdt.dat");
 
 #endif
 
@@ -1232,11 +1234,13 @@ void MainWindow::textEdit_cursorPositionChanged()
         if (!textEdit->isModified()) {
             QIcon icon(":/icon/d.png");
             ui->tabWidget_textEdit->tabBar()->setTabIcon(i, icon);
+            ui->actionSave->setEnabled(false);
         }
 
         if (textEdit->isModified()) {
             QIcon icon(":/icon/s.png");
             ui->tabWidget_textEdit->tabBar()->setTabIcon(i, icon);
+            ui->actionSave->setEnabled(true);
         }
     }
 }
@@ -3751,7 +3755,7 @@ void MainWindow::init_info_edit()
     ui->editOptimizations->setReadOnly(true);
     ui->tabWidget->removeTab(4); //暂时不用"优化"这项
 
-    //ui->dockWidget_6->setHidden(true);
+    ui->dockWidget_6->setHidden(true);
 }
 
 void MainWindow::init_recentFiles()
@@ -5171,6 +5175,14 @@ void MainWindow::on_tabWidget_textEdit_tabBarClicked(int index)
     hs = getCurrentEditor(index)->horizontalScrollBar()->sliderPosition();
 
     One = false;
+
+    if (!textEdit->isModified()) {
+
+        ui->actionSave->setEnabled(false);
+    } else {
+
+        ui->actionSave->setEnabled(true);
+    }
 }
 
 QsciScintilla* MainWindow::getCurrentEditor(int index)
