@@ -15,6 +15,7 @@
 #include <QCloseEvent>
 #include <QCommandLineOption>
 #include <QCommandLineParser>
+#include <QCompleter>
 #include <QDateTime>
 #include <QDebug>
 #include <QDesktopServices>
@@ -157,6 +158,7 @@ public:
     void getACPITables(bool ssdt);
 
     void msg(int value);
+    void msgstr(QString str);
 
 protected:
     void closeEvent(QCloseEvent* event) override;
@@ -366,6 +368,8 @@ private:
 
     QLabel* lblEncoding;
 
+    QLabel* lblCurrentFile = new QLabel;
+
     QLineEdit* editLayer;
 
     QElapsedTimer qTime;
@@ -432,6 +436,7 @@ private:
     void getCppErrorLine(int i);
     void setErrorMarkers(int linenr);
     bool InfoWinShow = false;
+    void setEditFindCompleter();
 
 #ifndef QT_NO_CONTEXTMENU
     void contextMenuEvent(QContextMenuEvent* event) override;

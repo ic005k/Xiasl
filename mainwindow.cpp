@@ -96,7 +96,7 @@ MainWindow::MainWindow(QWidget* parent)
 
     loadLocal();
 
-    CurVerison = "1.0.46";
+    CurVerison = "1.0.47";
     ver = "QtiASL V" + CurVerison + "        ";
     setWindowTitle(ver);
 
@@ -320,13 +320,12 @@ QString MainWindow::openFile(QString fileName)
         //如果之前这个文件被打开过，则返回
         QString str = fInfo.path() + "/" + fInfo.baseName() + ".dsl";
 
-        QLabel* currentFile = new QLabel;
         for (int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i++) {
             QWidget* pWidget = ui->tabWidget_textEdit->widget(i);
 
-            currentFile = (QLabel*)pWidget->children().at(lblNumber); //2为QLabel,1为textEdit,0为VBoxLayout
+            lblCurrentFile = (QLabel*)pWidget->children().at(lblNumber); //2为QLabel,1为textEdit,0为VBoxLayout
 
-            if (str == currentFile->text()) {
+            if (str == lblCurrentFile->text()) {
                 return str;
             }
         }
@@ -443,15 +442,13 @@ void MainWindow::loadFile(const QString& fileName, int row, int col)
 
     loading = true;
 
-    QLabel* currentFile = new QLabel;
-
     /*如果之前文件已打开，则返回已打开的文件*/
     for (int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i++) {
         QWidget* pWidget = ui->tabWidget_textEdit->widget(i);
 
-        currentFile = (QLabel*)pWidget->children().at(lblNumber); //2为QLabel,1为textEdit,0为VBoxLayout
+        lblCurrentFile = (QLabel*)pWidget->children().at(lblNumber); //2为QLabel,1为textEdit,0为VBoxLayout
 
-        if (fileName == currentFile->text()) {
+        if (fileName == lblCurrentFile->text()) {
             ui->tabWidget_textEdit->setCurrentIndex(i);
 
             if (!ReLoad) {
@@ -528,8 +525,8 @@ void MainWindow::loadFile(const QString& fileName, int row, int col)
 
     //给当前tab里面的lbl赋值
     QWidget* pWidget = ui->tabWidget_textEdit->currentWidget();
-    currentFile = (QLabel*)pWidget->children().at(lblNumber); //2为QLabel,1为textEdit,0为VBoxLayout
-    currentFile->setText(fileName);
+    lblCurrentFile = (QLabel*)pWidget->children().at(lblNumber); //2为QLabel,1为textEdit,0为VBoxLayout
+    lblCurrentFile->setText(fileName);
     QFileInfo ft(fileName);
     ui->tabWidget_textEdit->tabBar()->setTabToolTip(ui->tabWidget_textEdit->currentIndex(), ft.fileName());
 
@@ -685,19 +682,19 @@ bool MainWindow::SaveAs()
     //另存时，先移除当前的文件监控
     if (curFile != "") {
         QWidget* pWidget = ui->tabWidget_textEdit->widget(ui->tabWidget_textEdit->currentIndex());
-        QLabel* lbl = new QLabel;
-        lbl = (QLabel*)pWidget->children().at(lblNumber); //2为QLabel,1为textEdit,0为VBoxLayout
-        FileSystemWatcher::removeWatchPath(lbl->text());
+
+        lblCurrentFile = (QLabel*)pWidget->children().at(lblNumber); //2为QLabel,1为textEdit,0为VBoxLayout
+        FileSystemWatcher::removeWatchPath(lblCurrentFile->text());
     }
 
     //去重
     for (int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i++) {
 
         QWidget* pWidget = ui->tabWidget_textEdit->widget(i);
-        QLabel* lbl = new QLabel;
-        lbl = (QLabel*)pWidget->children().at(lblNumber); //2为QLabel,1为textEdit,0为VBoxLayout
 
-        if (fn == lbl->text()) {
+        lblCurrentFile = (QLabel*)pWidget->children().at(lblNumber); //2为QLabel,1为textEdit,0为VBoxLayout
+
+        if (fn == lblCurrentFile->text()) {
 
             ui->tabWidget_textEdit->removeTab(i);
         }
@@ -734,12 +731,12 @@ bool MainWindow::saveFile(const QString& fileName)
 
     //添加文件的监控
     bool add = true;
-    QLabel* lbl = new QLabel;
+
     for (int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i++) {
         QWidget* pWidget = ui->tabWidget_textEdit->widget(i);
 
-        lbl = (QLabel*)pWidget->children().at(lblNumber); //2为QLabel,1为textEdit,0为VBoxLayout
-        if (fileName == lbl->text()) {
+        lblCurrentFile = (QLabel*)pWidget->children().at(lblNumber); //2为QLabel,1为textEdit,0为VBoxLayout
+        if (fileName == lblCurrentFile->text()) {
             add = false;
         }
     }
@@ -755,8 +752,8 @@ bool MainWindow::saveFile(const QString& fileName)
     //刷新文件路径
     QWidget* pWidget = ui->tabWidget_textEdit->widget(ui->tabWidget_textEdit->currentIndex());
 
-    lbl = (QLabel*)pWidget->children().at(lblNumber); //2为QLabel,1为textEdit,0为VBoxLayout
-    lbl->setText(fileName);
+    lblCurrentFile = (QLabel*)pWidget->children().at(lblNumber); //2为QLabel,1为textEdit,0为VBoxLayout
+    lblCurrentFile->setText(fileName);
     QFileInfo ft(fileName);
     ui->tabWidget_textEdit->tabBar()->setTabToolTip(ui->tabWidget_textEdit->currentIndex(), ft.fileName());
 
@@ -1101,7 +1098,9 @@ void MainWindow::readCppResult(int exitCode)
         QString tName = QFileInfo(curFile).path() + "/" + QFileInfo(curFile).baseName();
         if (win)
             tName = tName + ".exe";
-        co->start(tName);
+
+        QStringList strList;
+        co->start(tName, strList);
 
         connect(co, SIGNAL(finished(int)), this, SLOT(readCppRunResult(int)));
 
@@ -3812,7 +3811,10 @@ void MainWindow::init_toolbar()
     ui->editFind->setFixedWidth(320);
     ui->editFind->lineEdit()->setPlaceholderText(tr("Find") + "  (" + tr("History entries") + ": " + QString::number(ui->editFind->count()) + ")");
     ui->editFind->lineEdit()->setClearButtonEnabled(true);
-    ui->editFind->setAutoCompletionCaseSensitivity(Qt::CaseSensitive);
+    //ui->editFind->setAutoCompletionCaseSensitivity(Qt::CaseSensitive);
+
+    setEditFindCompleter();
+
     connect(ui->editFind->lineEdit(), &QLineEdit::returnPressed, this, &MainWindow::editFind_returnPressed);
 
     lblCount = new QLabel(this);
@@ -4585,10 +4587,10 @@ void MainWindow::closeEvent(QCloseEvent* event)
 
     //存储当前的目录结构
     QWidget* pWidget = ui->tabWidget_textEdit->widget(ui->tabWidget_textEdit->currentIndex());
-    QLabel* currentFile = new QLabel;
-    currentFile = (QLabel*)pWidget->children().at(lblNumber); //2为QLabel,1为textEdit,0为VBoxLayout
 
-    QFileInfo f(currentFile->text());
+    lblCurrentFile = (QLabel*)pWidget->children().at(lblNumber); //2为QLabel,1为textEdit,0为VBoxLayout
+
+    QFileInfo f(lblCurrentFile->text());
     Reg.setValue("dir", f.path());
     Reg.setValue("btn", ui->btnReturn->text());
     Reg.setValue("ci", ui->tabWidget_textEdit->currentIndex()); //存储当前活动的标签页
@@ -4600,12 +4602,12 @@ void MainWindow::closeEvent(QCloseEvent* event)
         pWidget = ui->tabWidget_textEdit->widget(i);
         textEdit = getCurrentEditor(i);
 
-        currentFile = (QLabel*)pWidget->children().at(lblNumber);
+        lblCurrentFile = (QLabel*)pWidget->children().at(lblNumber);
 
-        if (currentFile->text() == tr("untitled") + ".dsl")
+        if (lblCurrentFile->text() == tr("untitled") + ".dsl")
             curFile = "";
         else
-            curFile = currentFile->text();
+            curFile = lblCurrentFile->text();
 
         if (getCurrentEditor(i)->isModified()) {
 
@@ -4651,13 +4653,13 @@ void MainWindow::closeEvent(QCloseEvent* event)
     for (int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i++) {
 
         pWidget = ui->tabWidget_textEdit->widget(i);
-        currentFile = (QLabel*)pWidget->children().at(lblNumber); //2为QLabel,1为textEdit,0为VBoxLayout
+        lblCurrentFile = (QLabel*)pWidget->children().at(lblNumber); //2为QLabel,1为textEdit,0为VBoxLayout
 
         getCurrentEditor(i)->getCursorPosition(&rowDrag, &colDrag);
         vs = getCurrentEditor(i)->verticalScrollBar()->sliderPosition();
         hs = getCurrentEditor(i)->horizontalScrollBar()->sliderPosition();
 
-        Reg.setValue(QString::number(i) + "/" + "file", currentFile->text());
+        Reg.setValue(QString::number(i) + "/" + "file", lblCurrentFile->text());
         Reg.setValue(QString::number(i) + "/" + "row", rowDrag);
         Reg.setValue(QString::number(i) + "/" + "col", colDrag);
         Reg.setValue(QString::number(i) + "/" + "vs", vs);
@@ -4990,10 +4992,8 @@ QString MainWindow::getLayerName(QTreeWidgetItem* hItem)
 void MainWindow::kextstat()
 {
     pk = new QProcess;
-    QString cs = "";
     QStringList cs1;
-    cs1 << cs;
-    pk->start("kextstat");
+    pk->start("kextstat", cs1);
     connect(pk, SIGNAL(finished(int)), this, SLOT(readKextstat()));
 }
 
@@ -5123,23 +5123,22 @@ void MainWindow::on_tabWidget_textEdit_tabBarClicked(int index)
     miniDlgEdit->setWrapMode(QsciScintilla::WrapNone);
 
     QWidget* pWidget = ui->tabWidget_textEdit->widget(index);
-    QLabel* lbl = new QLabel;
-    lbl = (QLabel*)pWidget->children().at(lblNumber); //2为QLabel,1为textEdit,0为VBoxLayout
 
-    if (lbl->text() == tr("untitled") + ".dsl") {
+    lblCurrentFile = (QLabel*)pWidget->children().at(lblNumber); //2为QLabel,1为textEdit,0为VBoxLayout
+
+    if (lblCurrentFile->text() == tr("untitled") + ".dsl") {
         curFile = "";
 
     } else {
-        QFileInfo fi(lbl->text());
 
-        curFile = lbl->text();
+        curFile = lblCurrentFile->text();
     }
 
     textEdit = getCurrentEditor(index);
 
     on_btnRefreshTree();
 
-    setWindowTitle(ver + lbl->text());
+    setWindowTitle(ver + lblCurrentFile->text());
 
     QFileInfo f(curFile);
     if (f.suffix().toLower() == "dsl" || f.suffix().toLower() == "cpp" || f.suffix().toLower() == "c") {
@@ -5162,14 +5161,13 @@ void MainWindow::on_tabWidget_textEdit_tabBarClicked(int index)
     for (int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i++) {
         QWidget* pWidget = ui->tabWidget_textEdit->widget(i);
 
-        QLabel* lbl = new QLabel;
-        lbl = (QLabel*)pWidget->children().at(lblNumber); //2为QLabel,1为textEdit,0为VBoxLayout
+        lblCurrentFile = (QLabel*)pWidget->children().at(lblNumber); //2为QLabel,1为textEdit,0为VBoxLayout
 
-        openFileList.push_back(lbl->text());
-        FileSystemWatcher::addWatchPath(lbl->text());
+        openFileList.push_back(lblCurrentFile->text());
+        FileSystemWatcher::addWatchPath(lblCurrentFile->text());
     }
 
-    dragFileName = lbl->text();
+    dragFileName = curFile;
     getCurrentEditor(index)->getCursorPosition(&rowDrag, &colDrag);
     vs = getCurrentEditor(index)->verticalScrollBar()->sliderPosition();
     hs = getCurrentEditor(index)->horizontalScrollBar()->sliderPosition();
@@ -5194,15 +5192,6 @@ QsciScintilla* MainWindow::getCurrentEditor(int index)
     return edit;
 }
 
-/*MaxEditor* MainWindow::getCurrentEditor(int index)
-{
-    QWidget* pWidget = ui->tabWidget_textEdit->widget(index);
-    MaxEditor* edit = new MaxEditor;
-    edit = (MaxEditor*)pWidget->children().at(editNumber);
-
-    return edit;
-}*/
-
 void MainWindow::closeTab(int index)
 {
 
@@ -5213,19 +5202,19 @@ void MainWindow::closeTab(int index)
         textEdit = getCurrentEditor(index);
 
         QWidget* pWidget = ui->tabWidget_textEdit->widget(index);
-        QLabel* lbl = new QLabel;
-        lbl = (QLabel*)pWidget->children().at(lblNumber); //2为QLabel,1为textEdit,0为VBoxLayout
 
-        if (lbl->text() == tr("untitled") + ".dsl")
+        lblCurrentFile = (QLabel*)pWidget->children().at(lblNumber); //2为QLabel,1为textEdit,0为VBoxLayout
+
+        if (lblCurrentFile->text() == tr("untitled") + ".dsl")
             curFile = "";
         else
-            curFile = lbl->text();
+            curFile = lblCurrentFile->text();
 
         if (maybeSave(ui->tabWidget_textEdit->tabBar()->tabText(index))) {
 
             ui->tabWidget_textEdit->removeTab(index);
-            if (QFileInfo(lbl->text()).exists())
-                FileSystemWatcher::removeWatchPath(lbl->text()); //移出文件监控
+            if (QFileInfo(lblCurrentFile->text()).exists())
+                FileSystemWatcher::removeWatchPath(lblCurrentFile->text()); //移出文件监控
         }
 
     } else
@@ -5443,7 +5432,7 @@ void MainWindow::highlighsearchtext(QString searchText)
 
     //查找document中flag 出现的所有位置,采用标准字符串来计算，QString会有一些问题
     std::string flag = search_string.toStdString();
-    int position = 0;
+    unsigned long position = 0;
     int i = 1;
     while ((position = document.find(flag, position)) != std::string::npos) {
         //qDebug() << "position  " << i << " : " << position;
@@ -5512,6 +5501,8 @@ void MainWindow::keyReleaseEvent(QKeyEvent* event)
     if (ui->editFind->hasFocus()) {
 
         if (event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return) {
+
+            setEditFindCompleter();
         }
     }
 }
@@ -5591,8 +5582,7 @@ void MainWindow::on_miniMap()
 
     this->SendScintilla(QsciScintilla::SCI_SETMOUSEDOWNCAPTURES, 1);
     if (Qt::LeftButton == event->button()) {
-        //QMessageBox box;
-        //box.exec();
+
         int x, y;
         this->getCursorPosition(&x, &y);
         qDebug() << x << y;
@@ -5618,7 +5608,8 @@ void MiniEditor::wheelEvent(QWheelEvent* event)
     int spos = this->verticalScrollBar()->sliderPosition();
     miniEditWheel = true;
 
-    if (event->delta() > 0) {
+    //if (event->delta() > 0) {
+    if (event->angleDelta().y() > 0) {
 
         this->verticalScrollBar()->setSliderPosition(spos - 3);
 
@@ -5963,4 +5954,23 @@ void MainWindow::msg(int value)
     QMessageBox box;
     box.setText(QString::number(value));
     box.exec();
+}
+
+void MainWindow::msgstr(QString str)
+{
+    QMessageBox box;
+    box.setText(str);
+    box.exec();
+}
+
+void MainWindow::setEditFindCompleter()
+{
+    QStringList valueList;
+    for (int i = 0; i < ui->editFind->count(); i++) {
+        valueList.append(ui->editFind->itemText(i));
+    }
+    QCompleter* editFindCompleter = new QCompleter(valueList, this);
+    editFindCompleter->setCaseSensitivity(Qt::CaseSensitive);
+    editFindCompleter->setCompletionMode(QCompleter::InlineCompletion);
+    ui->editFind->setCompleter(editFindCompleter);
 }

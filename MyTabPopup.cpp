@@ -1,21 +1,20 @@
 #include "MyTabPopup.h"
 
+#include <QDebug>
 #include <QMouseEvent>
 #include <QVBoxLayout>
-#include <QDebug>
 
-MyTabPopup::MyTabPopup(QWidget *parent)
+MyTabPopup::MyTabPopup(QWidget* parent)
     : QDialog(parent)
 {
-
 }
 
-void MyTabPopup::setContentWidget(QWidget *page)
+void MyTabPopup::setContentWidget(QWidget* page)
 {
-    if(!page)
+    if (!page)
         return;
-    content=page;
-    QVBoxLayout *layout=new QVBoxLayout(this);
+    content = page;
+    QVBoxLayout* layout = new QVBoxLayout(this);
     layout->setMargin(0);
     layout->addWidget(page);
 }
@@ -25,21 +24,27 @@ QWidget* MyTabPopup::getContentWidget()
     return content;
 }
 
-bool MyTabPopup::event(QEvent *event)
+bool MyTabPopup::event(QEvent* event)
 {
-    switch(event->type())
-    {
+    /*switch (event->type()) {
     case QEvent::MouseButtonRelease:
-    case QEvent::NonClientAreaMouseButtonRelease:
-    {
-        QMouseEvent *e=static_cast<QMouseEvent*>(event);
-        if(e&&e->button()==Qt::LeftButton)
-        {
+    case QEvent::NonClientAreaMouseButtonRelease: {
+        QMouseEvent* e = static_cast<QMouseEvent*>(event);
+        if (e && e->button() == Qt::LeftButton) {
+            emit dragRelease(e->globalPos());
+        }
+    } break;
+    }*/
+
+    if (event->type() == QEvent::MouseButtonRelease) {
+    }
+
+    if (event->type() == QEvent::NonClientAreaMouseButtonRelease) {
+        QMouseEvent* e = static_cast<QMouseEvent*>(event);
+        if (e && e->button() == Qt::LeftButton) {
             emit dragRelease(e->globalPos());
         }
     }
-        break;
-    }
+
     return QDialog::event(event);
 }
-
