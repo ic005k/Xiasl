@@ -3955,6 +3955,7 @@ void MainWindow::init_menu()
     connect(ui->actioniasl_usage, &QAction::triggered, this, &MainWindow::iaslUsage);
     connect(ui->actionUser_Guide, &QAction::triggered, this, &MainWindow::userGuide);
     connect(ui->actionAbout_1, &QAction::triggered, this, &MainWindow::about);
+    ui->actionAbout_1->setMenuRole(QAction::AboutRole);
 
     QIcon icon;
 
@@ -5598,6 +5599,7 @@ void MiniEditor::mouseMoveEvent(QMouseEvent* event)
 {
     textEditScroll = false;
     miniEditWheel = false;
+    mw_one->repaint();
     if (!textEditScroll) {
         showZoomWin(event->x(), event->y());
     }
@@ -5787,8 +5789,9 @@ void MiniEditor::showZoomWin(int x, int y)
 
     miniDlg->setGeometry(mw_one->getDockWidth() + miniEditX - w, y1, w, h);
 
-    if (miniDlg->isHidden())
+    if (miniDlg->isHidden()) {
         miniDlg->show();
+    }
 }
 
 void MiniEditor::miniEdit_cursorPositionChanged()
