@@ -25,5 +25,10 @@
         <file>icon/rf.png</file>
         <file>icon/bat.png</file>
         <file>icon/ra.png</file>
+        <file>icon/i1.png</file>
+        <file>icon/i2.png</file>
+        <file>icon/i3.png</file>
+        <file>icon/i4.png</file>
+        <file>icon/i5.png</file>
     </qresource>
 </RCC>

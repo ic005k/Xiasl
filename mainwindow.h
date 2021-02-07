@@ -302,6 +302,8 @@ private slots:
 
     void on_editFind_currentIndexChanged(const QString& arg1);
 
+    void on_listWidget_itemSelectionChanged();
+
 private:
     Ui::MainWindow* ui;
 

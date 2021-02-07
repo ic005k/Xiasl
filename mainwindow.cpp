@@ -96,7 +96,7 @@ MainWindow::MainWindow(QWidget* parent)
 
     loadLocal();
 
-    CurVerison = "1.0.47";
+    CurVerison = "1.0.48";
     ver = "QtiASL V" + CurVerison + "        ";
     setWindowTitle(ver);
 
@@ -121,7 +121,7 @@ MainWindow::MainWindow(QWidget* parent)
     font.setPointSize(9);
     regACPI_win();
     ui->actionKextstat->setEnabled(false);
-    ui->toolBar->setIconSize(QSize(22, 22));
+    ui->toolBar->setIconSize(QSize(25, 25));
     win = true;
 #endif
 
@@ -129,14 +129,14 @@ MainWindow::MainWindow(QWidget* parent)
     font.setPointSize(11);
     ui->actionKextstat->setEnabled(false);
     ui->actionGenerate->setEnabled(false);
-    ui->toolBar->setIconSize(QSize(22, 22));
+    ui->toolBar->setIconSize(QSize(25, 25));
     linuxOS = true;
 #endif
 
 #ifdef Q_OS_MAC
     font.setPointSize(13);
     ui->actionGenerate->setEnabled(true);
-    ui->toolBar->setIconSize(QSize(22, 22));
+    ui->toolBar->setIconSize(QSize(20, 20));
     //ui->actionCheckUpdate->setVisible(false);
     mac = true;
 #endif
@@ -159,8 +159,6 @@ MainWindow::MainWindow(QWidget* parent)
     ui->dockWidgetContents->layout()->setMargin(0); //成员列表
     ui->gridLayout->setMargin(0);
     ui->gridLayout_8->setMargin(0);
-
-    ui->dockWidgetContents_6->layout()->setMargin(0); //信息窗口
 
     ui->centralwidget->layout()->setMargin(0);
     ui->centralwidget->layout()->setSpacing(0);
@@ -341,11 +339,19 @@ QString MainWindow::openFile(QString fileName)
         InfoWinShow = true;
         //标记tab头
         int info_count = 0;
+
         ui->tabWidget->setTabText(1, tr("Errors") + " (" + QString::number(info_count) + ")");
         ui->tabWidget->setTabText(2, tr("Warnings") + " (" + QString::number(info_count) + ")");
         ui->tabWidget->setTabText(3, tr("Remarks") + " (" + QString::number(info_count) + ")");
-        ui->tabWidget->setTabText(4, "Optimizations (" + QString::number(info_count) + ")");
+        ui->tabWidget->setTabText(4, tr("Scribble"));
         ui->actionInfo_win->setChecked(true);
+
+        ui->listWidget->clear();
+        ui->listWidget->addItem(new QListWidgetItem(QIcon(":/icon/i1.png"), tr("BasicInfo")));
+        ui->listWidget->addItem(new QListWidgetItem(QIcon(":/icon/i2.png"), ui->tabWidget->tabBar()->tabText(1)));
+        ui->listWidget->addItem(new QListWidgetItem(QIcon(":/icon/i3.png"), ui->tabWidget->tabBar()->tabText(2)));
+        ui->listWidget->addItem(new QListWidgetItem(QIcon(":/icon/i4.png"), ui->tabWidget->tabBar()->tabText(3)));
+        ui->listWidget->addItem(new QListWidgetItem(QIcon(":/icon/i5.png"), ui->tabWidget->tabBar()->tabText(4)));
 
         QString name;
         //设置文件过滤器
@@ -1040,7 +1046,7 @@ void MainWindow::readDecompileResult(int exitCode)
 
         ui->tabWidget->setTabText(3, tr("Remarks") + " (" + QString::number(info_count) + ")");
 
-        ui->tabWidget->setTabText(4, "Optimizations (" + QString::number(info_count) + ")");
+        ui->tabWidget->setTabText(4, tr("Scribble"));
 
         ui->tabWidget->setCurrentIndex(0);
 
@@ -1093,6 +1099,7 @@ void MainWindow::readCppResult(int exitCode)
         ui->actionGo_to_previous_error->setEnabled(false);
         ui->actionGo_to_the_next_error->setEnabled(false);
         ui->tabWidget->setCurrentIndex(0);
+        ui->listWidget->setCurrentRow(0);
 
         co = new QProcess;
         QString tName = QFileInfo(curFile).path() + "/" + QFileInfo(curFile).baseName();
@@ -1119,6 +1126,7 @@ void MainWindow::readCppResult(int exitCode)
         ui->editErrors->append(result);
         ui->editErrors->append(result2);
         ui->tabWidget->setCurrentIndex(1);
+        ui->listWidget->setCurrentRow(1);
 
         //回到第一行
         QTextBlock block = ui->editErrors->document()->findBlockByNumber(0);
@@ -1197,6 +1205,8 @@ void MainWindow::readResult(int exitCode)
         ui->actionGo_to_previous_error->setEnabled(false);
         ui->actionGo_to_the_next_error->setEnabled(false);
         ui->tabWidget->setCurrentIndex(0);
+        ui->listWidget->setCurrentRow(0);
+        ui->listWidget->setFocus();
 
         if (!zh_cn)
             QMessageBox::information(this, "QtiASL", "Compilation successful.");
@@ -1211,6 +1221,8 @@ void MainWindow::readResult(int exitCode)
         ui->actionGo_to_previous_error->setEnabled(true);
         ui->actionGo_to_the_next_error->setEnabled(true);
         ui->tabWidget->setCurrentIndex(1);
+        ui->listWidget->setCurrentRow(1);
+        ui->listWidget->setFocus();
 
         on_btnNextError();
     }
@@ -1658,16 +1670,18 @@ void MainWindow::goCppPreviousError()
             ui->editErrors->setExtraSelections(extraSelection);
 
             //定位到错误行
-            getCppErrorLine(i);
+            getCppErrorLine(i + 1);
 
             ui->tabWidget->setCurrentIndex(1);
+            ui->listWidget->setCurrentRow(1);
 
             break;
         }
     }
 
-    if (!yes)
+    if (!yes) {
         goCppNextError();
+    }
 }
 
 void MainWindow::goCppNextError()
@@ -1708,16 +1722,18 @@ void MainWindow::goCppNextError()
             ui->editErrors->setExtraSelections(extraSelection);
 
             //定位到错误行
-            getCppErrorLine(i);
+            getCppErrorLine(i + 1);
 
             ui->tabWidget->setCurrentIndex(1);
+            ui->listWidget->setCurrentRow(1);
 
             break;
         }
     }
 
-    if (!yes)
+    if (!yes) {
         goCppPreviousError();
+    }
 }
 
 void MainWindow::on_btnNextError()
@@ -3731,10 +3747,34 @@ void MainWindow::on_MainWindow_destroyed()
 void MainWindow::init_info_edit()
 {
 
+    ui->dockWidgetContents_6->layout()->setMargin(0);
+    ui->dockWidgetContents_6->layout()->setSpacing(0);
+    ui->gridLayout_2->setMargin(0);
     ui->gridLayout_3->setMargin(0);
     ui->gridLayout_4->setMargin(0);
     ui->gridLayout_5->setMargin(0);
     ui->gridLayout_6->setMargin(0);
+    ui->gridLayout_13->setMargin(0);
+
+    ui->listWidget->setFrameShape(QListWidget::NoFrame);
+    //ui->listWidget->setGeometry(ui->listWidget->x(), 20, ui->listWidget->width(), ui->listWidget->height());
+    ui->listWidget->setSpacing(0);
+
+    ui->listWidget->setIconSize(QSize(20, 20));
+
+    //ui->listWidget->setViewMode(QListView::IconMode);
+    //ui->listWidget->setViewMode(QListWidget::IconMode);
+    ui->listWidget->setViewMode(QListView::ListMode);
+
+    ui->listWidget->addItem(new QListWidgetItem(QIcon(":/icon/i1.png"), tr("BasicInfo")));
+    ui->listWidget->addItem(new QListWidgetItem(QIcon(":/icon/i2.png"), tr("Errors")));
+    ui->listWidget->addItem(new QListWidgetItem(QIcon(":/icon/i3.png"), tr("Warnings")));
+    ui->listWidget->addItem(new QListWidgetItem(QIcon(":/icon/i4.png"), tr("Remarks")));
+    ui->listWidget->addItem(new QListWidgetItem(QIcon(":/icon/i5.png"), tr("Scribble")));
+
+    ui->tabWidget->tabBar()->setHidden(true);
+    ui->tabWidget->setCurrentIndex(0);
+    ui->listWidget->setCurrentRow(0);
 
     textEditTemp = new QTextEdit();
 
@@ -3752,9 +3792,29 @@ void MainWindow::init_info_edit()
 
     ui->editOptimizations->setLineWrapMode(ui->editOptimizations->NoWrap);
     ui->editOptimizations->setReadOnly(true);
-    ui->tabWidget->removeTab(4); //暂时不用"优化"这项
+    ui->tabWidget->removeTab(5); //No need to "optimize" this for now
 
     ui->dockWidget_6->setHidden(true);
+
+    //Loading scribble board files
+    ui->editScribble->setPlaceholderText(tr("This is a scribble board to temporarily record something, and the content will be saved and loaded automatically."));
+    QString fileScribble = QDir::homePath() + "/.config/QtiASL/Scribble.txt";
+    QFileInfo fi(fileScribble);
+    if (fi.exists()) {
+        QFile file(fileScribble);
+        if (!file.open(QFile::ReadOnly | QFile::Text)) {
+            QMessageBox::warning(this, tr("Application"),
+                tr("Cannot read file %1:\n%2.")
+                    .arg(QDir::toNativeSeparators(fileName), file.errorString()));
+
+        } else {
+
+            QTextStream in(&file);
+            in.setCodec("UTF-8");
+            QString text = in.readAll();
+            ui->editScribble->setPlainText(text);
+        }
+    }
 }
 
 void MainWindow::init_recentFiles()
@@ -4461,14 +4521,28 @@ void MainWindow::separ_info(QString str_key, QTextEdit* editInfo)
     }
 
     //标记tab头
-    if (str_key == "Error")
+
+    if (str_key == "Error") {
         ui->tabWidget->setTabText(1, tr("Errors") + " (" + QString::number(info_count) + ")");
-    if (str_key == "Warning")
+    }
+
+    if (str_key == "Warning") {
         ui->tabWidget->setTabText(2, tr("Warnings") + " (" + QString::number(info_count) + ")");
-    if (str_key == "Remark")
+    }
+
+    if (str_key == "Remark") {
         ui->tabWidget->setTabText(3, tr("Remarks") + " (" + QString::number(info_count) + ")");
+    }
+
     if (str_key == "Optimization")
-        ui->tabWidget->setTabText(4, "Optimizations (" + QString::number(info_count) + ")");
+        ui->tabWidget->setTabText(4, tr("Scribble"));
+
+    ui->listWidget->clear();
+    ui->listWidget->addItem(new QListWidgetItem(QIcon(":/icon/i1.png"), tr("BasicInfo")));
+    ui->listWidget->addItem(new QListWidgetItem(QIcon(":/icon/i2.png"), ui->tabWidget->tabBar()->tabText(1)));
+    ui->listWidget->addItem(new QListWidgetItem(QIcon(":/icon/i3.png"), ui->tabWidget->tabBar()->tabText(2)));
+    ui->listWidget->addItem(new QListWidgetItem(QIcon(":/icon/i4.png"), ui->tabWidget->tabBar()->tabText(3)));
+    ui->listWidget->addItem(new QListWidgetItem(QIcon(":/icon/i5.png"), ui->tabWidget->tabBar()->tabText(4)));
 }
 
 void MainWindow::on_editErrors_cursorPositionChanged()
@@ -4648,7 +4722,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
         }
     }
 
-    //记录标签页
+    //Save tabs
     Reg.setValue("count", ui->tabWidget_textEdit->tabBar()->count());
 
     for (int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i++) {
@@ -4667,7 +4741,20 @@ void MainWindow::closeEvent(QCloseEvent* event)
         Reg.setValue(QString::number(i) + "/" + "hs", hs);
     }
 
-    //多窗口中，关闭窗体，删除自己
+    //Save scribble board
+    QString errorMessage;
+    QSaveFile fileScribble(QDir::homePath() + "/.config/QtiASL/Scribble.txt");
+    if (fileScribble.open(QFile::WriteOnly | QFile::Text)) {
+        QTextStream out(&fileScribble);
+        out << ui->editScribble->document()->toPlainText();
+
+        if (!fileScribble.commit()) {
+            errorMessage = tr("Cannot write file %1:\n%2.")
+                               .arg(QDir::toNativeSeparators(fileName), file.errorString());
+        }
+    }
+
+    //In multi-window, close the form and delete yourself
     for (int i = 0; i < wdlist.count(); i++) {
         if (this == wdlist.at(i)) {
             wdlist.removeAt(i);
@@ -5976,4 +6063,10 @@ void MainWindow::setEditFindCompleter()
     editFindCompleter->setCaseSensitivity(Qt::CaseSensitive);
     editFindCompleter->setCompletionMode(QCompleter::InlineCompletion);
     ui->editFind->setCompleter(editFindCompleter);
+}
+
+void MainWindow::on_listWidget_itemSelectionChanged()
+{
+    int index = ui->listWidget->currentRow();
+    ui->tabWidget->setCurrentIndex(index);
 }
