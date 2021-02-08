@@ -96,7 +96,7 @@ MainWindow::MainWindow(QWidget* parent)
 
     loadLocal();
 
-    CurVerison = "1.0.48";
+    CurVerison = "1.0.49";
     ver = "QtiASL V" + CurVerison + "        ";
     setWindowTitle(ver);
 
@@ -121,7 +121,7 @@ MainWindow::MainWindow(QWidget* parent)
     font.setPointSize(9);
     regACPI_win();
     ui->actionKextstat->setEnabled(false);
-    ui->toolBar->setIconSize(QSize(25, 25));
+    ui->toolBar->setIconSize(QSize(20, 20));
     win = true;
 #endif
 
@@ -129,7 +129,7 @@ MainWindow::MainWindow(QWidget* parent)
     font.setPointSize(11);
     ui->actionKextstat->setEnabled(false);
     ui->actionGenerate->setEnabled(false);
-    ui->toolBar->setIconSize(QSize(25, 25));
+    ui->toolBar->setIconSize(QSize(20, 20));
     linuxOS = true;
 #endif
 
@@ -2199,6 +2199,7 @@ void MainWindow::update_ui_tree()
     QString lbl = tr("Members") + ":  Scope(" + QString::number(s_count) + ")  " + "Device(" + QString::number(d_count) + ")  " + "Method(" + QString::number(m_count) + ")"; //  + "N(" + QString::number(n_count) + ")"
     ui->treeWidget->setHeaderLabel(lbl);
     ui->lblMembers->setText(lbl);
+    ui->dockWidget->setWindowTitle(ui->lblMembers->text());
     ui->treeWidget->update();
 
     float a = qTime.elapsed() / 1000.00;
@@ -4354,9 +4355,9 @@ void MainWindow::init_edit(QsciScintilla* textEdit)
 void MainWindow::init_treeWidget()
 {
 
-    int w;
-    QScreen* screen = QGuiApplication::primaryScreen();
-    w = screen->size().width();
+    //int w;
+    //QScreen* screen = QGuiApplication::primaryScreen();
+    //w = screen->size().width();
     //ui->tabWidget_misc->setMinimumWidth(w / 3 - 80);
 
     treeWidgetBak = new QTreeWidget;
@@ -4408,6 +4409,8 @@ void MainWindow::init_treeWidget()
         //qDebug() << pos; //参数pos用来传递右键点击时的鼠标的坐标
         menu->exec(QCursor::pos());
     });
+
+    ui->lblMembers->setHidden(true);
 }
 
 void MainWindow::init_filesystem()
@@ -4859,6 +4862,7 @@ void MainWindow::newFile()
     QString lblMembers = tr("Members") + ":  Scope(" + QString::number(s_count) + ")  " + "Device(" + QString::number(d_count) + ")  " + "Method(" + QString::number(m_count) + ")";
     ui->treeWidget->setHeaderLabel(lblMembers);
     ui->lblMembers->setText(lblMembers);
+    ui->dockWidget->setWindowTitle(ui->lblMembers->text());
 
     ui->editShowMsg->clear();
     ui->editErrors->clear();
@@ -5520,7 +5524,9 @@ void MainWindow::highlighsearchtext(QString searchText)
 
     //查找document中flag 出现的所有位置,采用标准字符串来计算，QString会有一些问题
     std::string flag = search_string.toStdString();
-    unsigned long position = 0;
+
+    unsigned long long position = 0;
+
     int i = 1;
     while ((position = document.find(flag, position)) != std::string::npos) {
         //qDebug() << "position  " << i << " : " << position;
