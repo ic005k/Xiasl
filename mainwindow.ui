@@ -543,19 +543,9 @@
     <string>Compile</string>
    </property>
   </action>
-  <action name="actionAbout">
-   <property name="text">
-    <string>About</string>
-   </property>
-  </action>
   <action name="actionNew">
    <property name="text">
     <string>New</string>
-   </property>
-  </action>
-  <action name="actionFont">
-   <property name="text">
-    <string>字体-Font</string>
    </property>
   </action>
   <action name="actionFont_2">
@@ -644,11 +634,6 @@
   <action name="actioniasl_usage">
    <property name="text">
     <string>iASL Usage</string>
-   </property>
-  </action>
-  <action name="actionAbout_2">
-   <property name="text">
-    <string>About</string>
    </property>
   </action>
   <action name="actionAbout_1">

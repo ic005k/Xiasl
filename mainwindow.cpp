@@ -5021,6 +5021,16 @@ void MainWindow::paintEvent(QPaintEvent* event)
 
         setVScrollBarStyle(c_red);
     }
+
+    if (ui->actionMembers_win->isChecked()) {
+        if (ui->dockWidget->isHidden())
+            ui->actionMembers_win->setChecked(false);
+    }
+
+    if (ui->actionInfo_win->isChecked()) {
+        if (ui->dockWidget_6->isHidden())
+            ui->actionInfo_win->setChecked(false);
+    }
 }
 
 void MainWindow::setVScrollBarStyle(int red)
@@ -6171,4 +6181,9 @@ void MainWindow::on_tabWidget_misc_currentChanged(int index)
         ui->dockWidget->setWindowTitle(tr("Members"));
     if (index == 1)
         ui->dockWidget->setWindowTitle(tr("Filesystem Browser"));
+}
+
+void MainWindow::mousePressEvent(QMouseEvent* e)
+{
+    Q_UNUSED(e);
 }

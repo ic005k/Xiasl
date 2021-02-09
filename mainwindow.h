@@ -168,6 +168,7 @@ protected:
     void keyPressEvent(QKeyEvent* event) override;
     void keyReleaseEvent(QKeyEvent* event) override;
     void mouseMoveEvent(QMouseEvent* e) override;
+    void mousePressEvent(QMouseEvent* e) override;
 
 public slots:
     void Open();
