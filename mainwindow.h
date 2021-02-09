@@ -304,6 +304,8 @@ private slots:
 
     void on_listWidget_itemSelectionChanged();
 
+    void on_tabWidget_misc_currentChanged(int index);
+
 private:
     Ui::MainWindow* ui;
 
@@ -439,6 +441,8 @@ private:
     void setErrorMarkers(int linenr);
     bool InfoWinShow = false;
     void setEditFindCompleter();
+
+    void setVScrollBarStyle(int red);
 
 #ifndef QT_NO_CONTEXTMENU
     void contextMenuEvent(QContextMenuEvent* event) override;

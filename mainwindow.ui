@@ -194,12 +194,12 @@
   <widget class="QDockWidget" name="dockWidget">
    <property name="minimumSize">
     <size>
-     <width>196</width>
-     <height>239</height>
+     <width>191</width>
+     <height>189</height>
     </size>
    </property>
    <property name="features">
-    <set>QDockWidget::AllDockWidgetFeatures</set>
+    <set>QDockWidget::DockWidgetFeatureMask</set>
    </property>
    <property name="allowedAreas">
     <set>Qt::LeftDockWidgetArea</set>
@@ -215,10 +215,10 @@
      <item row="0" column="0">
       <widget class="QTabWidget" name="tabWidget_misc">
        <property name="tabPosition">
-        <enum>QTabWidget::West</enum>
+        <enum>QTabWidget::North</enum>
        </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>1</number>
        </property>
        <property name="documentMode">
         <bool>true</bool>

@@ -100,6 +100,11 @@ MainWindow::MainWindow(QWidget* parent)
     ver = "QtiASL V" + CurVerison + "        ";
     setWindowTitle(ver);
 
+    //获取背景色
+    QPalette pal = this->palette();
+    QBrush brush = pal.window();
+    red = brush.color().red();
+
     QDir dir;
     if (dir.mkpath(QDir::homePath() + "/.config/QtiASL/")) { }
 
@@ -121,7 +126,7 @@ MainWindow::MainWindow(QWidget* parent)
     font.setPointSize(9);
     regACPI_win();
     ui->actionKextstat->setEnabled(false);
-    ui->toolBar->setIconSize(QSize(20, 20));
+    ui->toolBar->setIconSize(QSize(22, 22));
     win = true;
 #endif
 
@@ -2196,10 +2201,12 @@ void MainWindow::update_ui_tree()
     ui->treeWidget->addTopLevelItems(tw_list);
     ui->treeWidget->expandAll();
 
-    QString lbl = tr("Members") + ":  Scope(" + QString::number(s_count) + ")  " + "Device(" + QString::number(d_count) + ")  " + "Method(" + QString::number(m_count) + ")"; //  + "N(" + QString::number(n_count) + ")"
+    QString lbl = "Scope(" + QString::number(s_count) + ")  " + "Device(" + QString::number(d_count) + ")  " + "Method(" + QString::number(m_count) + ")"; //  + "N(" + QString::number(n_count) + ")"
     ui->treeWidget->setHeaderLabel(lbl);
     ui->lblMembers->setText(lbl);
-    ui->dockWidget->setWindowTitle(ui->lblMembers->text());
+
+    ui->tabWidget_misc->tabBar()->setTabText(0, lbl);
+
     ui->treeWidget->update();
 
     float a = qTime.elapsed() / 1000.00;
@@ -4245,23 +4252,33 @@ void MainWindow::init_miniEdit()
     minifont.setFamily(font.family());
     minifont.setPointSize(1);
 
-    /*QscilexerCppAttach* miniLexer = new QscilexerCppAttach;
+    QscilexerCppAttach* miniLexer = new QscilexerCppAttach;
     miniEdit->setLexer(miniLexer);
-    miniLexer->setColor(QColor("white"));
-    miniLexer->setPaper(QColor("#393d44"));
     miniLexer->setFont(minifont);
-    miniEdit->setMarginsFont(minifont);*/
 
-    if (miniEdit->lexer() == nullptr) {
-        miniEdit->setColor(QColor("white"));
-        miniEdit->setPaper(QColor("#393d44"));
-        miniEdit->setFont(minifont);
+    if (red < 55) //暗模式，mac下为50
+    {
 
+        miniLexer->setColor(QColor(30, 190, 30), QsciLexerCPP::CommentLine); //"//"注释颜色
+        miniLexer->setColor(QColor(30, 190, 30), QsciLexerCPP::Comment);
+
+        miniLexer->setColor(QColor(210, 210, 210), QsciLexerCPP::Identifier);
+        miniLexer->setColor(QColor(245, 150, 147), QsciLexerCPP::Number);
+        miniLexer->setColor(QColor(100, 100, 250), QsciLexerCPP::Keyword);
+        miniLexer->setColor(QColor(210, 32, 240), QsciLexerCPP::KeywordSet2);
+        miniLexer->setColor(QColor(245, 245, 245), QsciLexerCPP::Operator);
+        miniLexer->setColor(QColor(84, 235, 159), QsciLexerCPP::DoubleQuotedString); //双引号
     } else {
-        QsciLexer* lexer = miniEdit->lexer();
-        lexer->setDefaultColor(QColor("white"));
-        lexer->setDefaultPaper(QColor("#393d44"));
-        lexer->setDefaultFont(minifont);
+
+        miniLexer->setColor(QColor(30, 190, 30), QsciLexerCPP::CommentLine); //"//"注释颜色
+        miniLexer->setColor(QColor(30, 190, 30), QsciLexerCPP::Comment);
+
+        miniLexer->setColor(QColor(255, 0, 0), QsciLexerCPP::Number);
+        miniLexer->setColor(QColor(0, 0, 255), QsciLexerCPP::Keyword);
+        miniLexer->setColor(QColor(0, 0, 0), QsciLexerCPP::Identifier);
+        miniLexer->setColor(QColor(210, 0, 210), QsciLexerCPP::KeywordSet2);
+        miniLexer->setColor(QColor(20, 20, 20), QsciLexerCPP::Operator);
+        miniLexer->setColor(QColor(205, 38, 38), QsciLexerCPP::DoubleQuotedString); //双引号
     }
 
     connect(miniEdit, &QsciScintilla::cursorPositionChanged, this, &MainWindow::miniEdit_cursorPositionChanged);
@@ -4355,10 +4372,11 @@ void MainWindow::init_edit(QsciScintilla* textEdit)
 void MainWindow::init_treeWidget()
 {
 
-    //int w;
-    //QScreen* screen = QGuiApplication::primaryScreen();
-    //w = screen->size().width();
+    int w;
+    QScreen* screen = QGuiApplication::primaryScreen();
+    w = screen->size().width();
     //ui->tabWidget_misc->setMinimumWidth(w / 3 - 80);
+    //ui->tabWidget_misc->setStyleSheet("QTabBar::tab {width:0px;}");
 
     treeWidgetBak = new QTreeWidget;
 
@@ -4377,13 +4395,14 @@ void MainWindow::init_treeWidget()
     ui->treeWidget->setColumnCount(2);
     ui->treeWidget->setColumnHidden(1, true);
 
-    ui->treeWidget->setColumnWidth(0, ui->tab_misc1->width() - 230);
-
+    //ui->treeWidget->setColumnWidth(0, ui->tab_misc1->width() - 230);
     ui->treeWidget->setColumnWidth(1, 100);
     ui->treeWidget->setHeaderItem(new QTreeWidgetItem(QStringList() << tr("Members") << "Lines"));
 
     ui->treeWidget->setStyle(QStyleFactory::create("windows")); //连接的虚线
     ui->treeWidget->setIconSize(QSize(12, 12));
+
+    setVScrollBarStyle(red);
 
     ui->treeWidget->installEventFilter(this);
     ui->treeWidget->setAlternatingRowColors(true); //底色交替显示
@@ -4411,6 +4430,7 @@ void MainWindow::init_treeWidget()
     });
 
     ui->lblMembers->setHidden(true);
+    ui->dockWidget->setWindowTitle(tr("Members"));
 }
 
 void MainWindow::init_filesystem()
@@ -4859,10 +4879,11 @@ void MainWindow::newFile()
     s_count = 0;
     d_count = 0;
     m_count = 0;
-    QString lblMembers = tr("Members") + ":  Scope(" + QString::number(s_count) + ")  " + "Device(" + QString::number(d_count) + ")  " + "Method(" + QString::number(m_count) + ")";
+    QString lblMembers = "Scope(" + QString::number(s_count) + ")  " + "Device(" + QString::number(d_count) + ")  " + "Method(" + QString::number(m_count) + ")";
     ui->treeWidget->setHeaderLabel(lblMembers);
     ui->lblMembers->setText(lblMembers);
-    ui->dockWidget->setWindowTitle(ui->lblMembers->text());
+
+    ui->tabWidget_misc->tabBar()->setTabText(0, lblMembers);
 
     ui->editShowMsg->clear();
     ui->editErrors->clear();
@@ -4996,6 +5017,72 @@ void MainWindow::paintEvent(QPaintEvent* event)
         for (int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i++) {
 
             init_edit(getCurrentEditor(i));
+        }
+
+        setVScrollBarStyle(c_red);
+    }
+}
+
+void MainWindow::setVScrollBarStyle(int red)
+{
+    if (mac) {
+        if (red < 55) {
+
+            ui->treeWidget->verticalScrollBar()->setStyleSheet("QScrollBar:vertical"
+                                                               "{"
+                                                               "width:9px;"
+                                                               "background:rgba(255,255,255,0%);"
+                                                               "margin:0px,0px,0px,0px;"
+                                                               "padding-top:9px;"
+                                                               "padding-bottom:9px;"
+                                                               "}"
+
+                                                               "QScrollBar::handle:vertical"
+                                                               "{"
+                                                               "width:9px;"
+                                                               "background:rgba(150,150,150,50%);"
+                                                               " border-radius:4px;"
+                                                               "min-height:20;"
+                                                               "}"
+
+                                                               "QScrollBar::handle:vertical:hover"
+                                                               "{"
+                                                               "width:9px;"
+                                                               "background:rgba(150,150,150,50%);"
+                                                               " border-radius:4px;"
+                                                               "min-height:20;"
+                                                               "}"
+
+            );
+
+        } else {
+
+            ui->treeWidget->verticalScrollBar()->setStyleSheet("QScrollBar:vertical"
+                                                               "{"
+                                                               "width:9px;"
+                                                               "background:rgba(255,255,255,0%);"
+                                                               "margin:0px,0px,0px,0px;"
+                                                               "padding-top:9px;"
+                                                               "padding-bottom:9px;"
+                                                               "}"
+
+                                                               "QScrollBar::handle:vertical"
+                                                               "{"
+                                                               "width:9px;"
+                                                               "background:rgba(0,0,0,25%);"
+                                                               " border-radius:4px;"
+                                                               "min-height:20;"
+                                                               "}"
+
+                                                               "QScrollBar::handle:vertical:hover"
+                                                               "{"
+                                                               "width:9px;"
+                                                               "background:rgba(0,0,0,50%);"
+                                                               " border-radius:4px;"
+                                                               "min-height:20;"
+                                                               "}"
+
+            );
         }
     }
 }
@@ -6075,4 +6162,13 @@ void MainWindow::on_listWidget_itemSelectionChanged()
 {
     int index = ui->listWidget->currentRow();
     ui->tabWidget->setCurrentIndex(index);
+}
+
+void MainWindow::on_tabWidget_misc_currentChanged(int index)
+{
+
+    if (index == 0)
+        ui->dockWidget->setWindowTitle(tr("Members"));
+    if (index == 1)
+        ui->dockWidget->setWindowTitle(tr("Filesystem Browser"));
 }
