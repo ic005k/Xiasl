@@ -4,6 +4,8 @@
 
 ## Basic features include but are not limited to:
 
+* Automatically load the list of currently used SSDTs (under Windows and Mac)
+
 * Smooth and efficient editing environment, tens of thousands or even hundreds of thousands of lines of code can be edited very smoothly
 
 * grammar highlights
