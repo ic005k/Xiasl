@@ -3,7 +3,7 @@
 
 extern QsciScintilla* miniDlgEdit;
 extern miniDialog* miniDlg;
-//extern QFont font;
+extern int red;
 
 ZoomEditor::ZoomEditor(QWidget* parent)
     : QsciScintilla(parent)
@@ -15,10 +15,21 @@ miniDialog::miniDialog(QWidget* parent)
     , ui(new Ui::miniDialog)
 {
     ui->setupUi(this);
+
     //setWindowFlags (Qt::CustomizeWindowHint);
     setWindowFlags(Qt::FramelessWindowHint);
+    ui->gridLayout_2->setMargin(0);
     miniDlgEdit = new ZoomEditor(this);
     ui->gridLayout->addWidget(miniDlgEdit);
+
+    QColor color;
+
+    if (red > 55)
+        color.setRgb(245, 245, 245, 255);
+    else
+        color.setRgb(50, 50, 50, 255);
+
+    miniDlgEdit->setPaper(color);
 
     miniDlgEdit->setContextMenuPolicy(Qt::NoContextMenu);
     miniDlgEdit->setMarginWidth(0, 0);
@@ -29,6 +40,7 @@ miniDialog::miniDialog(QWidget* parent)
     //水平滚动棒
     miniDlgEdit->SendScintilla(QsciScintilla::SCI_SETSCROLLWIDTH, -1);
     miniDlgEdit->SendScintilla(QsciScintilla::SCI_SETSCROLLWIDTHTRACKING, false);
+
     miniDlgEdit->horizontalScrollBar()->setHidden(true);
     miniDlgEdit->verticalScrollBar()->setHidden(true);
 }

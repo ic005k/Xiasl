@@ -359,8 +359,6 @@ private:
 
     bool CaseSensitive = false;
 
-    int red;
-
     QString ver;
 
     QTimer* timer;
@@ -444,6 +442,9 @@ private:
     void setEditFindCompleter();
 
     void setVScrollBarStyle(int red);
+
+    void loadFindString();
+    const QString iniFile = QDir::homePath() + "/.config/QtiASL/QtiASL.ini";
 
 #ifndef QT_NO_CONTEXTMENU
     void contextMenuEvent(QContextMenuEvent* event) override;

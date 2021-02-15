@@ -56,6 +56,8 @@ int hs;
 
 extern MainWindow* mw_one;
 
+int red;
+
 thread_one::thread_one(QObject* parent)
     : QThread(parent)
 {
@@ -96,7 +98,7 @@ MainWindow::MainWindow(QWidget* parent)
 
     loadLocal();
 
-    CurVerison = "1.0.49";
+    CurVerison = "1.0.50";
     ver = "QtiASL V" + CurVerison + "        ";
     setWindowTitle(ver);
 
@@ -202,6 +204,8 @@ MainWindow::MainWindow(QWidget* parent)
     init_toolbar();
 
     loadTabFiles();
+
+    loadFindString();
 
     One = false;
 }
@@ -4497,15 +4501,6 @@ void MainWindow::init_filesystem()
         ui->btnReturn->setText(btn);
         //set_return_text(dir);
 
-        //读取搜索文本
-        int count = Reg.value("countFindText").toInt();
-        for (int i = 0; i < count; i++) {
-            QString item = Reg.value("FindText" + QString::number(i + 1)).toString();
-
-            findTextList.append(item);
-        }
-        ui->editFind->addItems(findTextList);
-
         //读取成员列表窗口的宽度和信息显示窗口的高度
         int m_w = Reg.value("members_win", 375).toInt();
         resizeDocks({ ui->dockWidget }, { m_w }, Qt::Horizontal);
@@ -5649,6 +5644,7 @@ void MainWindow::clearSearchHighlight(QsciScintilla* textEdit)
 
 void MainWindow::on_editFind_editTextChanged(const QString& arg1)
 {
+
     if (arg1.count() > 0) {
 
         on_btnFindNext();
@@ -5968,8 +5964,8 @@ void MiniEditor::showZoomWin(int x, int y)
     }
 
     int miniEditX = mw_one->getTabWidgetEditX() + mw_one->getTabWidgetEditW();
-    int w = 650;
-    int h = miniDlgEdit->textHeight(y) * 11;
+    int w = 800;
+    int h = miniDlgEdit->textHeight(y) * 9;
     int y1 = y;
 
     if (y >= mw_one->getMainWindowHeight() - h)
@@ -6186,4 +6182,27 @@ void MainWindow::on_tabWidget_misc_currentChanged(int index)
 void MainWindow::mousePressEvent(QMouseEvent* e)
 {
     Q_UNUSED(e);
+}
+
+void MainWindow::loadFindString()
+{
+
+    //读取之前的目录
+
+    QFileInfo fi(iniFile);
+
+    if (fi.exists()) {
+
+        QSettings Reg(iniFile, QSettings::IniFormat); //全平台都采用ini格式
+
+        //读取搜索文本
+        int count = Reg.value("countFindText").toInt();
+        for (int i = 0; i < count; i++) {
+            QString item = Reg.value("FindText" + QString::number(i + 1)).toString();
+
+            findTextList.append(item);
+        }
+        ui->editFind->addItems(findTextList);
+        ui->editFind->lineEdit()->setPlaceholderText(tr("Find") + "  (" + tr("History entries") + ": " + QString::number(ui->editFind->count()) + ")");
+    }
 }
