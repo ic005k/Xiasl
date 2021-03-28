@@ -5,7 +5,6 @@
 #include <QFileInfo>
 #include <QMainWindow>
 
-extern bool SelfSaved;
 extern bool ReLoad;
 extern MainWindow* mw_one;
 extern QVector<QString> openFileList;
@@ -110,7 +109,7 @@ void FileSystemWatcher::fileUpdated(const QString& path)
 
     //qDebug() << QString("The file %1 at path %2 is updated").arg(strName).arg(strPath);
 
-    if (!SelfSaved && QFileInfo(path).exists()) {
+    if (QFileInfo(path).exists()) {
         QMessageBox message(QMessageBox::Warning, "QtiASL", tr("The file has been modified by another program. Do you want to reload?") + "\n\n" + QString("%1").arg(strName));
         message.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
         message.setButtonText(QMessageBox::Yes, QString(tr("Yes")));
@@ -128,9 +127,5 @@ void FileSystemWatcher::fileUpdated(const QString& path)
         }
     }
 
-    SelfSaved = false;
-
-    for (int i = 0; i < openFileList.count(); i++) {
-        addWatchPath(openFileList.at(i));
-    }
+    mw_one->addFilesWatch();
 }

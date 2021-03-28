@@ -103,6 +103,10 @@ public:
     MainWindow(QWidget* parent = nullptr);
     ~MainWindow();
 
+    void addFilesWatch();
+    void removeFilesWatch();
+    QString getCurrentFileName(int index);
+
     int getDockWidth();
 
     int getMiniDockX();
@@ -306,6 +310,8 @@ private slots:
     void on_listWidget_itemSelectionChanged();
 
     void on_tabWidget_misc_currentChanged(int index);
+
+    void on_editFind_currentTextChanged(const QString& arg1);
 
 private:
     Ui::MainWindow* ui;
