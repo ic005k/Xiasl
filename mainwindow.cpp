@@ -206,6 +206,8 @@ MainWindow::MainWindow(QWidget* parent)
 
     loadFindString();
 
+    //setVScrollBarStyle(red);
+
     One = false;
 }
 
@@ -4408,6 +4410,7 @@ void MainWindow::init_treeWidget()
     QFont hFont;
     hFont.setPointSize(font.pointSize() - 1);
     ui->treeWidget->header()->setFont(hFont);
+    ui->treeWidget->setIconSize(QSize(12, 12));
 
     ui->treeWidget->setHeaderHidden(true);
 
@@ -4418,15 +4421,24 @@ void MainWindow::init_treeWidget()
     ui->treeWidget->setColumnWidth(1, 100);
     ui->treeWidget->setHeaderItem(new QTreeWidgetItem(QStringList() << tr("Members") << "Lines"));
 
-    ui->treeWidget->setStyle(QStyleFactory::create("windows")); //连接的虚线
-    ui->treeWidget->setIconSize(QSize(12, 12));
-
-    setVScrollBarStyle(red);
+    //ui->treeWidget->setStyle(QStyleFactory::create("Windows")); //连接的虚线
+    //ui->editFind->addItems(QStyleFactory::keys());
+    //QStyle* style = QStyleFactory::create("Windows");
+    //qApp->setStyle(style);
 
     ui->treeWidget->installEventFilter(this);
     ui->treeWidget->setAlternatingRowColors(true); //底色交替显示
-    ui->treeWidget->setStyleSheet("QTreeWidget::item:hover{background-color:rgba(127,255,0,50)}"
-                                  "QTreeWidget::item:selected{background-color:rgba(30, 100, 255, 255); color:rgba(255,255,255,255)}");
+    ui->treeWidget->setStyleSheet("QTreeView::branch:hover {background-color:rgba(127,255,0,50)}"
+
+                                  "QTreeView::branch:selected {background: rgba(30, 255, 25, 255);selection-background-color:rgba(30, 255, 25, 255);}"
+
+                                  "QTreeWidget::item:hover{background-color:rgba(127,255,0,50)}"
+
+                                  "QTreeWidget::item:selected{background-color:rgba(30, 255, 25, 255); color:rgba(5,5,5,255);}"
+
+                                  "QTreeView::branch:open:has-children:!has-siblings,QTreeView::branch:open:has-children:has-siblings {image: url(:/icon/////sub.png);}"
+
+                                  "QTreeView::branch:has-children:!has-siblings:closed,QTreeView::branch:closed:has-children:has-siblings {image: url(:/icon///main.png);}");
 
     //connect(ui->treeWidget, &QTreeWidget::itemClicked, this, &MainWindow::treeWidgetBack_itemClicked);
 
@@ -5029,7 +5041,7 @@ void MainWindow::paintEvent(QPaintEvent* event)
             init_edit(getCurrentEditor(i));
         }
 
-        setVScrollBarStyle(c_red);
+        //setVScrollBarStyle(c_red);
     }
 
     if (ui->actionMembers_win->isChecked()) {
@@ -5050,16 +5062,16 @@ void MainWindow::setVScrollBarStyle(int red)
 
             ui->treeWidget->verticalScrollBar()->setStyleSheet("QScrollBar:vertical"
                                                                "{"
-                                                               "width:9px;"
+                                                               "width:25px;"
                                                                "background:rgba(255,255,255,0%);"
                                                                "margin:0px,0px,0px,0px;"
-                                                               "padding-top:9px;"
-                                                               "padding-bottom:9px;"
+                                                               "padding-top:25px;"
+                                                               "padding-bottom:25px;"
                                                                "}"
 
                                                                "QScrollBar::handle:vertical"
                                                                "{"
-                                                               "width:9px;"
+                                                               "width:25px;"
                                                                "background:rgba(150,150,150,50%);"
                                                                " border-radius:4px;"
                                                                "min-height:20;"
@@ -5067,7 +5079,7 @@ void MainWindow::setVScrollBarStyle(int red)
 
                                                                "QScrollBar::handle:vertical:hover"
                                                                "{"
-                                                               "width:9px;"
+                                                               "width:25px;"
                                                                "background:rgba(150,150,150,50%);"
                                                                " border-radius:4px;"
                                                                "min-height:20;"
@@ -5075,20 +5087,24 @@ void MainWindow::setVScrollBarStyle(int red)
 
             );
 
+            textEdit->verticalScrollBar()->setStyleSheet(ui->treeWidget->verticalScrollBar()->styleSheet());
+            miniEdit->verticalScrollBar()->setStyleSheet(ui->treeWidget->verticalScrollBar()->styleSheet());
+
         } else {
 
             ui->treeWidget->verticalScrollBar()->setStyleSheet("QScrollBar:vertical"
                                                                "{"
-                                                               "width:9px;"
+                                                               "width:22px;"
                                                                "background:rgba(255,255,255,0%);"
                                                                "margin:0px,0px,0px,0px;"
-                                                               "padding-top:9px;"
-                                                               "padding-bottom:9px;"
+                                                               "padding-top:22px;"
+                                                               "padding-bottom:22px;"
+
                                                                "}"
 
                                                                "QScrollBar::handle:vertical"
                                                                "{"
-                                                               "width:9px;"
+                                                               "width:22px;"
                                                                "background:rgba(0,0,0,25%);"
                                                                " border-radius:4px;"
                                                                "min-height:20;"
@@ -5096,7 +5112,7 @@ void MainWindow::setVScrollBarStyle(int red)
 
                                                                "QScrollBar::handle:vertical:hover"
                                                                "{"
-                                                               "width:9px;"
+                                                               "width:22px;"
                                                                "background:rgba(0,0,0,50%);"
                                                                " border-radius:4px;"
                                                                "min-height:20;"
@@ -5727,8 +5743,10 @@ void MainWindow::init_findTextList()
 
 void MainWindow::on_editFind_currentIndexChanged(const QString& arg1)
 {
-    if (arg1 == tr("Clear history entries"))
-        ui->editFind->clear();
+    Q_UNUSED(arg1);
+
+    //QStyle* style = QStyleFactory::create(arg1);
+    //qApp->setStyle(style);
 }
 
 void MainWindow::on_clearFindText()
@@ -6213,4 +6231,10 @@ void MainWindow::loadFindString()
 
 void MainWindow::on_editFind_currentTextChanged(const QString& arg1)
 {
+    Q_UNUSED(arg1);
+}
+
+void MainWindow::on_actionQuit_triggered()
+{
+    this->close();
 }

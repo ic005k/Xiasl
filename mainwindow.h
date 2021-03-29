@@ -313,6 +313,8 @@ private slots:
 
     void on_editFind_currentTextChanged(const QString& arg1);
 
+    void on_actionQuit_triggered();
+
 private:
     Ui::MainWindow* ui;
 

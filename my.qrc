@@ -30,5 +30,7 @@
         <file>icon/i3.png</file>
         <file>icon/i4.png</file>
         <file>icon/i5.png</file>
+        <file>icon/main.png</file>
+        <file>icon/sub.png</file>
     </qresource>
 </RCC>
