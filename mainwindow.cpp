@@ -4361,8 +4361,10 @@ void MainWindow::init_edit(QsciScintilla* textEdit)
     textLexer->setFont(font);
     setLexer(textLexer, textEdit);
 
-    ui->treeWidget->setFont(font.family());
-    miniDlgEdit->setFont(ui->treeWidget->font());
+    if (!linuxOS) {
+        ui->treeWidget->setFont(font.family());
+        miniDlgEdit->setFont(ui->treeWidget->font());
+    }
 
     //接受文件拖放打开
     textEdit->setAcceptDrops(false);
@@ -4996,8 +4998,10 @@ void MainWindow::set_font()
             getCurrentEditor(i)->setMarginsFont(m_font);
         }
 
-        ui->treeWidget->setFont(font.family());
-        miniDlgEdit->setFont(ui->treeWidget->font());
+        if (!linuxOS) {
+            ui->treeWidget->setFont(font.family());
+            miniDlgEdit->setFont(ui->treeWidget->font());
+        }
 
         //存储字体信息
         QString qfile = QDir::homePath() + "/.config/QtiASL/QtiASL.ini";
