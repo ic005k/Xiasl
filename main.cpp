@@ -50,9 +50,9 @@ int main(int argc, char* argv[])
 
     fileName = QString::fromLocal8Bit(argv[1]); //解决乱码
 
-#endif
-
-#ifdef Q_OS_LINUX
+    QFont f;
+    f.setFamily("Microsoft YaHei UI");
+    a->setFont(f);
 
 #endif
 
