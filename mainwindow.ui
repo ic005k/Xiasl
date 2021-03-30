@@ -253,10 +253,18 @@ QTreeWidget::item:hover{background-color:rgba(127,255,0,50)}
 
 QTreeWidget::item:selected{background-color:rgba(30, 255, 25, 255); color:rgba(5,5,5,255);}
 
-QTreeView::branch:open:has-children:!has-siblings,QTreeView::branch:open:has-children:has-siblings {image: url(:/icon/////sub.png);}
+QTreeView::branch:open:has-children:!has-siblings,QTreeView::branch:open:has-children:has-siblings {image: url(:/icon/sub.png);}
 
-QTreeView::branch:has-children:!has-siblings:closed,QTreeView::branch:closed:has-children:has-siblings {image: url(:/icon///main.png);}
-</string>
+QTreeView::branch:has-children:!has-siblings:closed,QTreeView::branch:closed:has-children:has-siblings {image: url(:/icon/main.png);}
+
+
+
+ 
+/*QTreeView::branch:has-siblings:adjoins-item{border-image:url(:/icon/branch-more.png)0;}
+ 
+QTreeView::branch:!has-children:!has-siblings:adjoins-item{border-image:url(:/icon//branch-end.png)0;}
+
+ QTreeView::branch:has-siblings:!adjoins-item{border-image:url(:/icon/branch-line.png)0;}*/</string>
            </property>
            <property name="frameShape">
             <enum>QFrame::StyledPanel</enum>
@@ -318,7 +326,7 @@ QTreeView::branch:has-children:!has-siblings:closed,QTreeView::branch:closed:has
     </layout>
    </widget>
   </widget>
-  <widget class="QDockWidget" name="dockWidget_5">
+  <widget class="QDockWidget" name="dockWidget_Mini">
    <property name="minimumSize">
     <size>
      <width>100</width>
@@ -348,7 +356,7 @@ QTreeView::branch:has-children:!has-siblings:closed,QTreeView::branch:closed:has
     </layout>
    </widget>
   </widget>
-  <widget class="QDockWidget" name="dockWidget_6">
+  <widget class="QDockWidget" name="dockWidget_Info">
    <property name="features">
     <set>QDockWidget::DockWidgetFeatureMask</set>
    </property>
