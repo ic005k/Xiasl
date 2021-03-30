@@ -4,18 +4,18 @@
 <context>
     <name>FileSystemWatcher</name>
     <message>
-        <location filename="filesystemwatcher.cpp" line="114"/>
+        <location filename="filesystemwatcher.cpp" line="113"/>
         <source>The file has been modified by another program. Do you want to reload?</source>
         <oldsource>The content of the file has been updated. Reload it?</oldsource>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="filesystemwatcher.cpp" line="116"/>
+        <location filename="filesystemwatcher.cpp" line="115"/>
         <source>Yes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="filesystemwatcher.cpp" line="117"/>
+        <location filename="filesystemwatcher.cpp" line="116"/>
         <source>No</source>
         <translation type="unfinished"></translation>
     </message>
@@ -33,47 +33,48 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="602"/>
+        <location filename="mainwindow.ui" line="616"/>
         <source>FindPrevious</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="607"/>
+        <location filename="mainwindow.ui" line="621"/>
         <source>FindNext</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="87"/>
-        <location filename="mainwindow.ui" line="612"/>
+        <location filename="mainwindow.ui" line="626"/>
         <source>Replace</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="617"/>
+        <location filename="mainwindow.ui" line="631"/>
         <source>Replace &amp;&amp; Find</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="587"/>
+        <location filename="mainwindow.ui" line="601"/>
         <source>Go to previous error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="592"/>
+        <location filename="mainwindow.ui" line="606"/>
         <source>Go to the next error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="597"/>
+        <location filename="mainwindow.ui" line="611"/>
         <source>RefreshTree</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="70"/>
-        <location filename="mainwindow.ui" line="676"/>
-        <location filename="mainwindow.cpp" line="3873"/>
-        <location filename="mainwindow.cpp" line="5562"/>
-        <location filename="mainwindow.cpp" line="5640"/>
+        <location filename="mainwindow.ui" line="685"/>
+        <location filename="mainwindow.cpp" line="3901"/>
+        <location filename="mainwindow.cpp" line="5682"/>
+        <location filename="mainwindow.cpp" line="5762"/>
+        <location filename="mainwindow.cpp" line="6235"/>
         <source>Find</source>
         <translation type="unfinished"></translation>
     </message>
@@ -83,55 +84,56 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="285"/>
+        <location filename="mainwindow.ui" line="309"/>
+        <location filename="mainwindow.cpp" line="6208"/>
         <source>Filesystem Browser</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="291"/>
+        <location filename="mainwindow.ui" line="315"/>
         <source>Return</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="396"/>
-        <location filename="mainwindow.cpp" line="350"/>
-        <location filename="mainwindow.cpp" line="3770"/>
-        <location filename="mainwindow.cpp" line="4544"/>
+        <location filename="mainwindow.ui" line="420"/>
+        <location filename="mainwindow.cpp" line="360"/>
+        <location filename="mainwindow.cpp" line="3798"/>
+        <location filename="mainwindow.cpp" line="4590"/>
         <source>BasicInfo</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="418"/>
-        <location filename="mainwindow.cpp" line="343"/>
-        <location filename="mainwindow.cpp" line="1043"/>
-        <location filename="mainwindow.cpp" line="1079"/>
-        <location filename="mainwindow.cpp" line="3771"/>
-        <location filename="mainwindow.cpp" line="4529"/>
+        <location filename="mainwindow.ui" line="442"/>
+        <location filename="mainwindow.cpp" line="353"/>
+        <location filename="mainwindow.cpp" line="1068"/>
+        <location filename="mainwindow.cpp" line="1104"/>
+        <location filename="mainwindow.cpp" line="3799"/>
+        <location filename="mainwindow.cpp" line="4575"/>
         <source>Errors</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="440"/>
-        <location filename="mainwindow.cpp" line="344"/>
-        <location filename="mainwindow.cpp" line="1045"/>
-        <location filename="mainwindow.cpp" line="1080"/>
-        <location filename="mainwindow.cpp" line="3772"/>
-        <location filename="mainwindow.cpp" line="4533"/>
+        <location filename="mainwindow.ui" line="464"/>
+        <location filename="mainwindow.cpp" line="354"/>
+        <location filename="mainwindow.cpp" line="1070"/>
+        <location filename="mainwindow.cpp" line="1105"/>
+        <location filename="mainwindow.cpp" line="3800"/>
+        <location filename="mainwindow.cpp" line="4579"/>
         <source>Warnings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="462"/>
-        <location filename="mainwindow.cpp" line="345"/>
-        <location filename="mainwindow.cpp" line="1047"/>
-        <location filename="mainwindow.cpp" line="1081"/>
-        <location filename="mainwindow.cpp" line="3773"/>
-        <location filename="mainwindow.cpp" line="4537"/>
+        <location filename="mainwindow.ui" line="486"/>
+        <location filename="mainwindow.cpp" line="355"/>
+        <location filename="mainwindow.cpp" line="1072"/>
+        <location filename="mainwindow.cpp" line="1106"/>
+        <location filename="mainwindow.cpp" line="3801"/>
+        <location filename="mainwindow.cpp" line="4583"/>
         <source>Remarks</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="494"/>
+        <location filename="mainwindow.ui" line="518"/>
         <source>Optimizations</source>
         <translation type="unfinished"></translation>
     </message>
@@ -151,212 +153,210 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="138"/>
+        <location filename="mainwindow.ui" line="140"/>
         <source>Preferences</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="154"/>
+        <location filename="mainwindow.ui" line="156"/>
         <source>View</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="162"/>
+        <location filename="mainwindow.ui" line="164"/>
         <source>Help</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="182"/>
+        <location filename="mainwindow.ui" line="184"/>
         <source>toolBar</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="538"/>
-        <location filename="mainwindow.cpp" line="3843"/>
+        <location filename="mainwindow.ui" line="562"/>
+        <location filename="mainwindow.cpp" line="3871"/>
         <source>Generate ACPI tables</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="692"/>
+        <location filename="mainwindow.ui" line="701"/>
         <source>Minimap</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="523"/>
-        <location filename="mainwindow.cpp" line="3831"/>
+        <location filename="mainwindow.ui" line="547"/>
+        <location filename="mainwindow.cpp" line="3859"/>
         <source>Open</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="142"/>
+        <location filename="mainwindow.ui" line="144"/>
         <source>Set Encoding</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="343"/>
+        <location filename="mainwindow.ui" line="367"/>
         <source>Information</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="484"/>
-        <location filename="mainwindow.cpp" line="346"/>
-        <location filename="mainwindow.cpp" line="1049"/>
-        <location filename="mainwindow.cpp" line="3774"/>
-        <location filename="mainwindow.cpp" line="4541"/>
+        <location filename="mainwindow.ui" line="508"/>
+        <location filename="mainwindow.cpp" line="356"/>
+        <location filename="mainwindow.cpp" line="1074"/>
+        <location filename="mainwindow.cpp" line="3802"/>
+        <location filename="mainwindow.cpp" line="4587"/>
         <source>Scribble</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="528"/>
+        <location filename="mainwindow.ui" line="552"/>
         <source>Save</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="543"/>
+        <location filename="mainwindow.ui" line="567"/>
         <source>Compile</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="548"/>
-        <location filename="mainwindow.ui" line="651"/>
-        <location filename="mainwindow.ui" line="656"/>
+        <location filename="mainwindow.ui" line="665"/>
         <source>About</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="553"/>
+        <location filename="mainwindow.ui" line="572"/>
         <source>New</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="625"/>
+        <location filename="mainwindow.ui" line="639"/>
         <source>Information window</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="636"/>
+        <location filename="mainwindow.ui" line="650"/>
         <source>Members list window</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="641"/>
-        <location filename="mainwindow.cpp" line="5358"/>
+        <location filename="mainwindow.ui" line="655"/>
+        <location filename="mainwindow.cpp" line="5477"/>
         <source>DSDT + SSDT Decompile</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="646"/>
+        <location filename="mainwindow.ui" line="660"/>
         <source>iASL Usage</source>
         <oldsource>iasl Usage</oldsource>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="661"/>
+        <location filename="mainwindow.ui" line="670"/>
         <source>ACPICA Documentation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="666"/>
+        <location filename="mainwindow.ui" line="675"/>
         <source>Check Update</source>
         <oldsource>CheckUpdate</oldsource>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="671"/>
+        <location filename="mainwindow.ui" line="680"/>
         <source>Replace All</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="681"/>
+        <location filename="mainwindow.ui" line="690"/>
         <source>Clear search history</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="697"/>
+        <location filename="mainwindow.ui" line="706"/>
         <source>Open the directory of the current file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="708"/>
+        <location filename="mainwindow.ui" line="717"/>
         <source>UTF-8</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="713"/>
+        <location filename="mainwindow.ui" line="722"/>
         <source>GBK</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="533"/>
+        <location filename="mainwindow.ui" line="727"/>
+        <source>Quit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="557"/>
         <source>Save as...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="115"/>
+        <location filename="mainwindow.ui" line="117"/>
         <source>Edit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="558"/>
-        <source>字体-Font</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="mainwindow.ui" line="569"/>
+        <location filename="mainwindow.ui" line="583"/>
         <source>Font</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="577"/>
+        <location filename="mainwindow.ui" line="591"/>
         <source>WrapWord</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="582"/>
+        <location filename="mainwindow.ui" line="596"/>
         <source>Kextstat</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="304"/>
+        <location filename="mainwindow.cpp" line="312"/>
         <source>Last modified: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="475"/>
-        <location filename="mainwindow.cpp" line="643"/>
-        <location filename="mainwindow.cpp" line="734"/>
-        <location filename="mainwindow.cpp" line="3807"/>
-        <location filename="mainwindow.cpp" line="4695"/>
+        <location filename="mainwindow.cpp" line="488"/>
+        <location filename="mainwindow.cpp" line="658"/>
+        <location filename="mainwindow.cpp" line="750"/>
+        <location filename="mainwindow.cpp" line="3835"/>
+        <location filename="mainwindow.cpp" line="4741"/>
         <source>Application</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="476"/>
-        <location filename="mainwindow.cpp" line="3808"/>
+        <location filename="mainwindow.cpp" line="489"/>
+        <location filename="mainwindow.cpp" line="3836"/>
         <source>Cannot read file %1:
 %2.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="543"/>
+        <location filename="mainwindow.cpp" line="556"/>
         <source>File loaded</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="246"/>
-        <location filename="mainwindow.cpp" line="579"/>
-        <location filename="mainwindow.cpp" line="4685"/>
-        <location filename="mainwindow.cpp" line="4883"/>
-        <location filename="mainwindow.cpp" line="4887"/>
-        <location filename="mainwindow.cpp" line="4899"/>
-        <location filename="mainwindow.cpp" line="5221"/>
-        <location filename="mainwindow.cpp" line="5300"/>
+        <location filename="mainwindow.cpp" line="254"/>
+        <location filename="mainwindow.cpp" line="594"/>
+        <location filename="mainwindow.cpp" line="4731"/>
+        <location filename="mainwindow.cpp" line="4930"/>
+        <location filename="mainwindow.cpp" line="4934"/>
+        <location filename="mainwindow.cpp" line="4946"/>
+        <location filename="mainwindow.cpp" line="5355"/>
+        <location filename="mainwindow.cpp" line="5421"/>
         <source>untitled</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="644"/>
-        <location filename="mainwindow.cpp" line="4696"/>
+        <location filename="mainwindow.cpp" line="659"/>
+        <location filename="mainwindow.cpp" line="4742"/>
         <source>The document has been modified.
 Do you want to save your changes?
 
@@ -364,261 +364,261 @@ Do you want to save your changes?
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="724"/>
-        <location filename="mainwindow.cpp" line="4755"/>
+        <location filename="mainwindow.cpp" line="740"/>
+        <location filename="mainwindow.cpp" line="4801"/>
         <source>Cannot write file %1:
 %2.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="728"/>
+        <location filename="mainwindow.cpp" line="744"/>
         <source>Cannot open file %1 for writing:
 %2.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="768"/>
+        <location filename="mainwindow.cpp" line="771"/>
         <source>File saved</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="943"/>
+        <location filename="mainwindow.cpp" line="968"/>
         <source>Compiling...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="998"/>
+        <location filename="mainwindow.cpp" line="1023"/>
         <source>Empty search field</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="998"/>
+        <location filename="mainwindow.cpp" line="1023"/>
         <source>The search field is empty.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="1089"/>
-        <location filename="mainwindow.cpp" line="1201"/>
+        <location filename="mainwindow.cpp" line="1114"/>
+        <location filename="mainwindow.cpp" line="1226"/>
         <source>Compiled</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="1117"/>
-        <location filename="mainwindow.cpp" line="1214"/>
+        <location filename="mainwindow.cpp" line="1142"/>
+        <location filename="mainwindow.cpp" line="1239"/>
         <source>Compilation successful.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="1119"/>
-        <location filename="mainwindow.cpp" line="1216"/>
+        <location filename="mainwindow.cpp" line="1144"/>
+        <location filename="mainwindow.cpp" line="1241"/>
         <source>Ok</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="1265"/>
+        <location filename="mainwindow.cpp" line="1290"/>
         <source>Row</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="1265"/>
+        <location filename="mainwindow.cpp" line="1290"/>
         <source>Column</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="2206"/>
+        <location filename="mainwindow.cpp" line="2233"/>
         <source>Refresh completed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="2260"/>
+        <location filename="mainwindow.cpp" line="2288"/>
         <source>Refreshing...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="3801"/>
+        <location filename="mainwindow.cpp" line="3829"/>
         <source>This is a scribble board to temporarily record something, and the content will be saved and loaded automatically.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="3840"/>
+        <location filename="mainwindow.cpp" line="3868"/>
         <source>Current SSDT List</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="3873"/>
-        <location filename="mainwindow.cpp" line="5562"/>
-        <location filename="mainwindow.cpp" line="5640"/>
+        <location filename="mainwindow.cpp" line="3901"/>
+        <location filename="mainwindow.cpp" line="5682"/>
+        <location filename="mainwindow.cpp" line="5762"/>
+        <location filename="mainwindow.cpp" line="6235"/>
         <source>History entries</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="3927"/>
+        <location filename="mainwindow.cpp" line="3957"/>
         <source>ctrl+n</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="3930"/>
+        <location filename="mainwindow.cpp" line="3960"/>
         <source>ctrl+o</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="3933"/>
+        <location filename="mainwindow.cpp" line="3963"/>
         <source>ctrl+s</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="3936"/>
+        <location filename="mainwindow.cpp" line="3966"/>
         <source>ctrl+shift+s</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="3939"/>
+        <location filename="mainwindow.cpp" line="3969"/>
         <source>ctrl+0</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="3943"/>
+        <location filename="mainwindow.cpp" line="3973"/>
         <source>ctrl+g</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="3949"/>
+        <location filename="mainwindow.cpp" line="3979"/>
         <source>ctrl+m</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="3952"/>
+        <location filename="mainwindow.cpp" line="3982"/>
         <source>ctrl+r</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="3955"/>
+        <location filename="mainwindow.cpp" line="3985"/>
         <source>ctrl+p</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="3958"/>
+        <location filename="mainwindow.cpp" line="3988"/>
         <source>ctrl+f</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="3963"/>
+        <location filename="mainwindow.cpp" line="3993"/>
         <source>ctrl+k</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="3966"/>
+        <location filename="mainwindow.cpp" line="3996"/>
         <source>ctrl+j</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="3970"/>
+        <location filename="mainwindow.cpp" line="4000"/>
         <source>ctrl+alt+e</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="3973"/>
+        <location filename="mainwindow.cpp" line="4003"/>
         <source>ctrl+e</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="3979"/>
+        <location filename="mainwindow.cpp" line="4009"/>
         <source>ctrl+9</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="3982"/>
+        <location filename="mainwindow.cpp" line="4012"/>
         <source>ctrl+w</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="4006"/>
+        <location filename="mainwindow.cpp" line="4036"/>
         <source>ctrl+1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="4009"/>
+        <location filename="mainwindow.cpp" line="4039"/>
         <source>ctrl+2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="4012"/>
+        <location filename="mainwindow.cpp" line="4042"/>
         <source>ctrl+3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="4399"/>
+        <location filename="mainwindow.cpp" line="4453"/>
         <source>Expand all</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="4403"/>
+        <location filename="mainwindow.cpp" line="4457"/>
         <source>Collapse all</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="4424"/>
+        <location filename="mainwindow.cpp" line="4479"/>
         <source>Open directory</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="5618"/>
-        <location filename="mainwindow.cpp" line="5623"/>
-        <location filename="mainwindow.cpp" line="5633"/>
+        <location filename="mainwindow.cpp" line="5738"/>
+        <location filename="mainwindow.cpp" line="5743"/>
         <source>Clear history entries</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="5439"/>
+        <location filename="mainwindow.cpp" line="5558"/>
         <source>Network error!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="5474"/>
+        <location filename="mainwindow.cpp" line="5593"/>
         <source>New version detected!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="5474"/>
+        <location filename="mainwindow.cpp" line="5593"/>
         <source>Version: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="5474"/>
+        <location filename="mainwindow.cpp" line="5593"/>
         <source>Published at: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="5474"/>
+        <location filename="mainwindow.cpp" line="5593"/>
         <source>Release Notes: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="5475"/>
+        <location filename="mainwindow.cpp" line="5594"/>
         <source>Download</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="5475"/>
+        <location filename="mainwindow.cpp" line="5594"/>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="5480"/>
+        <location filename="mainwindow.cpp" line="5599"/>
         <source>It is currently the latest version!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="228"/>
-        <location filename="mainwindow.ui" line="234"/>
-        <location filename="mainwindow.cpp" line="2199"/>
-        <location filename="mainwindow.cpp" line="4383"/>
-        <location filename="mainwindow.cpp" line="4862"/>
+        <location filename="mainwindow.ui" line="230"/>
+        <location filename="mainwindow.ui" line="236"/>
+        <location filename="mainwindow.cpp" line="4421"/>
+        <location filename="mainwindow.cpp" line="4468"/>
+        <location filename="mainwindow.cpp" line="6206"/>
         <source>Members</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="4825"/>
+        <location filename="mainwindow.cpp" line="4871"/>
         <source> Layer </source>
         <translation type="unfinished"></translation>
     </message>
