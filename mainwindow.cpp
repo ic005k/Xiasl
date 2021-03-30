@@ -4864,8 +4864,11 @@ void MainWindow::init_statusBar()
 
     lblLayer = new QLabel(this);
     QPalette label_palette;
-    label_palette.setColor(QPalette::Background, QColor(30, 100, 255, 255));
-    label_palette.setColor(QPalette::WindowText, Qt::white);
+    label_palette.setColor(QPalette::Background, QColor(135, 206, 235, 255));
+    label_palette.setColor(QPalette::WindowText, Qt::black);
+    QFont lblFont;
+    lblFont.setFamily(ui->treeWidget->font().family());
+    lblLayer->setFont(lblFont);
     lblLayer->setAutoFillBackground(true);
     lblLayer->setPalette(label_palette);
     lblLayer->setText(tr(" Layer "));
@@ -5013,6 +5016,8 @@ void MainWindow::set_font()
         Reg.setValue("FontBold", font.bold());
         Reg.setValue("FontItalic", font.italic());
         Reg.setValue("FontUnderline", font.underline());
+
+        file.close();
     }
 }
 
@@ -5093,9 +5098,6 @@ void MainWindow::setVScrollBarStyle(int red)
                                                                "}"
 
             );
-
-            textEdit->verticalScrollBar()->setStyleSheet(ui->treeWidget->verticalScrollBar()->styleSheet());
-            miniEdit->verticalScrollBar()->setStyleSheet(ui->treeWidget->verticalScrollBar()->styleSheet());
 
         } else {
 
