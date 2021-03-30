@@ -97,7 +97,7 @@ MainWindow::MainWindow(QWidget* parent)
 
     loadLocal();
 
-    CurVerison = "1.0.51";
+    CurVerison = "1.0.52";
     ver = "QtiASL V" + CurVerison + "        ";
     setWindowTitle(ver);
 
@@ -4400,7 +4400,6 @@ void MainWindow::init_treeWidget()
 
     treeWidgetBak = new QTreeWidget;
 
-    //ui->treeWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
     //设置水平滚动条
     ui->treeWidget->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
     ui->treeWidget->header()->setStretchLastSection(true);
@@ -4416,11 +4415,11 @@ void MainWindow::init_treeWidget()
     ui->treeWidget->setColumnCount(2);
     ui->treeWidget->setColumnHidden(1, true);
 
-    //ui->treeWidget->setColumnWidth(0, ui->tab_misc1->width() - 230);
     ui->treeWidget->setColumnWidth(1, 100);
     ui->treeWidget->setHeaderItem(new QTreeWidgetItem(QStringList() << tr("Members") << "Lines"));
 
     //ui->treeWidget->setStyle(QStyleFactory::create("Windows")); //连接的虚线
+    ui->treeWidget->setFocusPolicy(Qt::NoFocus); // 去掉选中时的虚线
     //ui->editFind->addItems(QStyleFactory::keys());
     //QStyle* style = QStyleFactory::create("Windows");
     //qApp->setStyle(style);
@@ -4460,7 +4459,7 @@ void MainWindow::init_treeWidget()
 
     connect(ui->treeWidget, &QTreeWidget::customContextMenuRequested, [=](const QPoint& pos) {
         Q_UNUSED(pos);
-        //qDebug() << pos; //参数pos用来传递右键点击时的鼠标的坐标
+        
         menu->exec(QCursor::pos());
     });
 
@@ -4474,14 +4473,14 @@ void MainWindow::init_filesystem()
     ui->treeView->installEventFilter(this); //安装事件过滤器
     ui->treeView->setAlternatingRowColors(true); //不同的底色交替显示
 
-    ui->treeView->setContextMenuPolicy(Qt::CustomContextMenu); //给控件设置上下文菜单策略
+    ui->treeView->setContextMenuPolicy(Qt::CustomContextMenu);
     QMenu* menu = new QMenu(this);
     QAction* actionOpenDir = new QAction(tr("Open directory"), this);
     menu->addAction(actionOpenDir);
     connect(actionOpenDir, &QAction::triggered, this, &MainWindow::on_actionOpenDir);
     connect(ui->treeView, &QTreeView::customContextMenuRequested, [=](const QPoint& pos) {
         Q_UNUSED(pos);
-        //qDebug() << pos; //参数pos用来传递右键点击时的鼠标的坐标
+        
         menu->exec(QCursor::pos());
     });
 
@@ -4522,8 +4521,7 @@ void MainWindow::init_filesystem()
     QFileInfo fi(qfile);
 
     if (fi.exists()) {
-
-        QSettings Reg(qfile, QSettings::IniFormat); //全平台都采用ini格式
+        QSettings Reg(qfile, QSettings::IniFormat);
 
         QString dir = Reg.value("dir").toString().trimmed();
         QString btn = Reg.value("btn").toString().trimmed();
@@ -4684,7 +4682,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
     QString qfile = QDir::homePath() + "/.config/QtiASL/QtiASL.ini";
     QFile file(qfile);
     //QSettings Reg(qfile, QSettings::NativeFormat);
-    QSettings Reg(qfile, QSettings::IniFormat); //全平台都采用ini格式
+    QSettings Reg(qfile, QSettings::IniFormat);
     Reg.setValue("options", ui->cboxCompilationOptions->currentText().trimmed());
 
     //存储搜索历史文本
@@ -4920,12 +4918,10 @@ void MainWindow::newFile()
     ui->editRemarks->clear();
 
     textEdit = new QsciScintilla(this);
-    //textEdit = new MaxEditor;
 
     init_edit(textEdit);
 
-    //QWidget* page = new QWidget(this);
-    MyTabPage* page = new MyTabPage;
+    MyTabPage *page = new MyTabPage;
 
     QVBoxLayout* vboxLayout = new QVBoxLayout(page);
     vboxLayout->setMargin(0);
@@ -4935,7 +4931,6 @@ void MainWindow::newFile()
     lbl->setHidden(true);
 
     ui->tabWidget_textEdit->addTab(page, tr("untitled") + ".dsl");
-    //ui->tabWidget_textEdit->appendNormalPage(page);
 
     ui->tabWidget_textEdit->setCurrentIndex(ui->tabWidget_textEdit->tabBar()->count() - 1);
     ui->tabWidget_textEdit->setTabsClosable(true);
@@ -5314,11 +5309,8 @@ bool MainWindow::eventFilter(QObject* watched, QEvent* event)
     {
         if (event->type() == QEvent::FocusIn) //控件获得焦点事件)
         {
-            //ui->treeWidget->setStyleSheet( "QTreeWidget::item:hover{background-color:rgb(0,255,0,0)}" "QTreeWidget::item:selected{background-color:rgb(255,0,5)}" );
-
         } else if (event->type() == QEvent::FocusOut) //控件失去焦点事件
         {
-            //ui->treeWidget->setStyleSheet( "QTreeWidget::item:hover{background-color:rgb(0,255,0,0)}" "QTreeWidget::item:selected{background-color:rgb(255,0,0)}" );
         }
     }
 
@@ -5488,20 +5480,15 @@ void MainWindow::iaslUsage()
     QFileInfo appInfo(qApp->applicationDirPath());
 
 #ifdef Q_OS_WIN32
-    // win
     pk->start(appInfo.filePath() + "/iasl.exe", QStringList() << "-h");
 #endif
 
 #ifdef Q_OS_LINUX
-    // linux
     pk->start(appInfo.filePath() + "/iasl", QStringList() << "-h");
-
 #endif
 
 #ifdef Q_OS_MAC
-    // mac
     pk->start(appInfo.filePath() + "/iasl", QStringList() << "-h");
-
 #endif
 
     connect(pk, SIGNAL(finished(int)), this, SLOT(readHelpResult(int)));
@@ -5520,10 +5507,6 @@ void MainWindow::readHelpResult(int exitCode)
 
 void MainWindow::userGuide()
 {
-    //QFileInfo appInfo(qApp->applicationDirPath());
-    //QString qtManulFile = appInfo.filePath() + "/aslcompiler.pdf";
-    //QDesktopServices::openUrl(QUrl::fromLocalFile(qtManulFile));
-
     QUrl url(QString("https://acpica.org/documentation"));
     QDesktopServices::openUrl(url);
 }
@@ -5540,13 +5523,7 @@ void MainWindow::CheckUpdate()
 void MainWindow::replyFinished(QNetworkReply* reply)
 {
     QString str = reply->readAll();
-    QMessageBox box;
-    box.setText(str);
-    //box.exec();
-    //qDebug() << QSslSocket::supportsSsl() << QSslSocket::sslLibraryBuildVersionString() << QSslSocket::sslLibraryVersionString();
-
     parse_UpdateJSON(str);
-
     reply->deleteLater();
 }
 
@@ -5688,7 +5665,7 @@ void MainWindow::on_editFind_editTextChanged(const QString& arg1)
             QPalette palette;
             palette = ui->editFind->palette();
             palette.setColor(QPalette::Base, QColor(50, 50, 50));
-            palette.setColor(QPalette::Text, Qt::white); //字色
+            palette.setColor(QPalette::Text, Qt::white);
             ui->editFind->setPalette(palette);
 
         } else {
@@ -5696,7 +5673,7 @@ void MainWindow::on_editFind_editTextChanged(const QString& arg1)
             QPalette palette;
             palette = ui->editFind->palette();
             palette.setColor(QPalette::Base, Qt::white);
-            palette.setColor(QPalette::Text, Qt::black); //字色
+            palette.setColor(QPalette::Text, Qt::black);
             ui->editFind->setPalette(palette);
         }
     }
@@ -5753,9 +5730,6 @@ void MainWindow::init_findTextList()
 void MainWindow::on_editFind_currentIndexChanged(const QString& arg1)
 {
     Q_UNUSED(arg1);
-
-    //QStyle* style = QStyleFactory::create(arg1);
-    //qApp->setStyle(style);
 }
 
 void MainWindow::on_clearFindText()
@@ -6148,7 +6122,7 @@ int MainWindow::getTabWidgetEditX()
 
 int MainWindow::getTabWidgetEditW()
 {
-    return ui->tabWidget_textEdit->width(); // + textEdit->verticalScrollBar()->width();
+    return ui->tabWidget_textEdit->width();
 }
 
 void MainWindow::on_PreviousError()
@@ -6223,8 +6197,7 @@ void MainWindow::loadFindString()
     QFileInfo fi(iniFile);
 
     if (fi.exists()) {
-
-        QSettings Reg(iniFile, QSettings::IniFormat); //全平台都采用ini格式
+        QSettings Reg(iniFile, QSettings::IniFormat);
 
         //读取搜索文本
         int count = Reg.value("countFindText").toInt();
