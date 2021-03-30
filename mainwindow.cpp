@@ -66,7 +66,6 @@ thread_one::thread_one(QObject* parent)
 MiniEditor::MiniEditor(QWidget* parent)
     : QsciScintilla(parent)
 {
-    //setWindowFlags(Qt::FramelessWindowHint);
     setContextMenuPolicy(Qt::NoContextMenu);
     connect(this, &QsciScintilla::cursorPositionChanged, this, &MiniEditor::miniEdit_cursorPositionChanged);
 }
@@ -177,12 +176,6 @@ MainWindow::MainWindow(QWidget* parent)
     ui->gridLayout_10->setSpacing(0);
     ui->gridLayout_10->addWidget(miniEdit);
 
-    //splitterMain = new QSplitter(Qt::Horizontal, this);
-    //QSplitter* splitterRight = new QSplitter(Qt::Horizontal, splitterMain);
-    //splitterRight->setOpaqueResize(true);
-    //splitterRight->addWidget(ui->tabWidget_textEdit);
-    //splitterRight->addWidget(miniEdit);
-
     //设置鼠标追踪
     ui->centralwidget->setMouseTracking(true);
     this->setMouseTracking(true);
@@ -203,8 +196,6 @@ MainWindow::MainWindow(QWidget* parent)
     loadTabFiles();
 
     loadFindString();
-
-    //setVScrollBarStyle(red);
 
     One = false;
 }
@@ -434,7 +425,6 @@ QString MainWindow::openFile(QString fileName)
                 qDebug() << "error";
                 Decompile->terminate();
             }
-            //qDebug() << files.at(i);
 
         } //for
 
@@ -447,7 +437,6 @@ QString MainWindow::openFile(QString fileName)
     if (fi.suffix().toLower() == "dsl") {
         ui->actionWrapWord->setChecked(false); //取消自动换行，影响dsl文件开启速度
         textEdit->setWrapMode(QsciScintilla::WrapNone);
-        //miniEdit->setWrapMode(QsciScintilla::WrapNone);
     }
 
     return fileName;
@@ -462,7 +451,7 @@ void MainWindow::loadFile(const QString& fileName, int row, int col)
     for (int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i++) {
         QWidget* pWidget = ui->tabWidget_textEdit->widget(i);
 
-        lblCurrentFile = (QLabel*)pWidget->children().at(lblNumber); //2为QLabel,1为textEdit,0为VBoxLayout
+        lblCurrentFile = (QLabel *) pWidget->children().at(lblNumber);
 
         if (fileName == lblCurrentFile->text()) {
             ui->tabWidget_textEdit->setCurrentIndex(i);
@@ -500,15 +489,6 @@ void MainWindow::loadFile(const QString& fileName, int row, int col)
 #endif
 
     QString text;
-    //关于是否采用GBK编码的方式，再考虑
-    /*QTextCodec* gCodec = QTextCodec::codecForName("GBK");
-    if(gCodec)
-    {
-        text = gCodec->toUnicode(file.readAll());
-    }
-    else
-        text = QString::fromUtf8(file.readAll());*/
-
     int ColNum, RowNum;
     if (ReLoad) //记录重装前的行号
     {
@@ -516,7 +496,6 @@ void MainWindow::loadFile(const QString& fileName, int row, int col)
         textEdit->getCursorPosition(&RowNum, &ColNum);
     }
 
-    //text = QString::fromUtf8(file.readAll());
     if (ui->actionUTF_8->isChecked())
         in.setCodec("UTF-8");
     if (ui->actionGBK->isChecked())
@@ -651,7 +630,6 @@ bool MainWindow::maybeSave(QString info)
     if (!textEdit->isModified())
         return true;
 
-    //QMessageBox::StandardButton ret;
     int ret;
     if (!zh_cn) {
 
@@ -700,14 +678,6 @@ bool MainWindow::SaveAs()
     if (fn.isEmpty())
         return false;
 
-    //另存时，先移除当前的文件监控
-    if (curFile != "") {
-        QWidget* pWidget = ui->tabWidget_textEdit->widget(ui->tabWidget_textEdit->currentIndex());
-
-        lblCurrentFile = (QLabel*)pWidget->children().at(lblNumber); //2为QLabel,1为textEdit,0为VBoxLayout
-        FileSystemWatcher::removeWatchPath(lblCurrentFile->text());
-    }
-
     //去重
     for (int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i++) {
 
@@ -754,14 +724,13 @@ bool MainWindow::saveFile(const QString& fileName)
         return false;
     }
 
-    //ui->tabWidget_textEdit->tabBar()->setTabTextColor(textNumber, QColor(0, 0, 0));
     QIcon icon(":/icon/md0.png");
     ui->tabWidget_textEdit->tabBar()->setTabIcon(ui->tabWidget_textEdit->currentIndex(), icon);
     One = false;
 
     //刷新文件路径
     QWidget* pWidget = ui->tabWidget_textEdit->widget(ui->tabWidget_textEdit->currentIndex());
-    lblCurrentFile = (QLabel*)pWidget->children().at(lblNumber); //2为QLabel,1为textEdit,0为VBoxLayout
+    lblCurrentFile = (QLabel *) pWidget->children().at(lblNumber);
     lblCurrentFile->setText(fileName);
     QFileInfo ft(fileName);
     ui->tabWidget_textEdit->tabBar()->setTabToolTip(ui->tabWidget_textEdit->currentIndex(), ft.fileName());
@@ -788,7 +757,6 @@ void MainWindow::removeFilesWatch()
 
 void MainWindow::addFilesWatch()
 {
-    //添加文件的监控
     removeFilesWatch();
 
     openFileList.clear();
@@ -1004,11 +972,6 @@ void MainWindow::btnCompile_clicked()
 
         connect(co, SIGNAL(finished(int)), this, SLOT(readCppResult(int)));
     }
-
-    /*仅供测试*/
-    //connect(co , SIGNAL(readyReadStandardOutput()) , this , SLOT(readResult(int)));
-    //QByteArray res = co.readAllStandardOutput(); //获取标准输出
-    //qDebug() << "Out" << QString::fromLocal8Bit(res);
 }
 
 void MainWindow::setMark()
@@ -1060,8 +1023,6 @@ void MainWindow::readDecompileResult(int exitCode)
     ui->editShowMsg->append(result1);
 
     if (exitCode == 0) {
-        //成功
-
         //标记tab头
         int info_count = 0;
 
@@ -1173,18 +1134,6 @@ void MainWindow::readResult(int exitCode)
     textEditTemp->clear();
 
     QString result, result2;
-    /*QTextCodec* gCodec = QTextCodec::codecForName("GBK");
-
-    if(gCodec)
-    {
-        result = gCodec->toUnicode(co->readAll());
-        result2 = gCodec->toUnicode(co->readAllStandardError());
-    }
-    else
-    {
-        result = QString::fromUtf8(co->readAll());
-        result2 = QString::fromUtf8(co->readAllStandardError());
-    }*/
 
     result = QString::fromUtf8(co->readAll());
     result2 = QString::fromUtf8(co->readAllStandardError());
@@ -1327,10 +1276,6 @@ void MainWindow::timer_linkage()
 /*单击文本任意位置，当前代码块与成员树进行联动*/
 void MainWindow::mem_linkage(QTreeWidget* tw, int RowNum)
 {
-
-    //int RowNum, ColNum;
-    //textEdit->getCursorPosition(&RowNum , &ColNum);
-
     /*进行联动的条件：装载文件没有进行&成员树不为空&不是始终在同一行里面*/
     if (!loading && tw->topLevelItemCount() > 0 && preRow != RowNum) {
         int treeSn = 0;
@@ -1362,8 +1307,6 @@ void MainWindow::mem_linkage(QTreeWidget* tw, int RowNum)
                 break;
             }
         }
-
-        //qDebug() << ColNum << RowNum;
     }
 }
 
@@ -1376,8 +1319,6 @@ int CodeEditor::lineNumberAreaWidth()
         max /= 10;
         ++digits;
     }
-
-    //int space = 3 + fontMetrics().horizontalAdvance(QLatin1Char('9')) * digits;
 
     return 0;
 }
@@ -1463,24 +1404,6 @@ void MainWindow::on_btnReplace()
 
 void MainWindow::ReplaceAll()
 {
-    /*loading = true;
-
-    int total = 0;
-
-    QString str = ui->editFind->text().trimmed();
-    if (!textEdit->findFirst(str, true, CaseSensitive, false, true, true))
-        return;
-
-    for (int i = 0; i < 100; i++) {
-        on_btnReplaceFind();
-        total++;
-
-        if (!textEdit->findFirst(str, true, CaseSensitive, false, true, true))
-            break;
-    }
-    //qInfo() << total;
-    loading = false;*/
-
     if (ui->editReplace->text().trimmed() == "")
         return;
 
@@ -1609,8 +1532,6 @@ void MainWindow::on_btnFindPrevious()
     else
         hscrollbar->setSliderPosition(char_w); // + fm.horizontalAdvance(name));
 
-    //qDebug() << col << textEditList.at(textNumber)->horizontalScrollBar()->sliderPosition();
-
     find_down = false;
     find_up = true;
 
@@ -1684,7 +1605,7 @@ void MainWindow::goCppPreviousError()
 
             QList<QTextEdit::ExtraSelection> extraSelection;
             QTextEdit::ExtraSelection selection;
-            //QColor lineColor = QColor(Qt::gray).lighter(150);
+
             QColor lineColor = QColor(Qt::red);
             selection.format.setForeground(Qt::white);
             selection.format.setBackground(lineColor);
@@ -1829,7 +1750,7 @@ void MainWindow::on_btnPreviousError()
 
             QList<QTextEdit::ExtraSelection> extraSelection;
             QTextEdit::ExtraSelection selection;
-            //QColor lineColor = QColor(Qt::gray).lighter(150);
+
             QColor lineColor = QColor(Qt::red);
             selection.format.setForeground(Qt::white);
             selection.format.setBackground(lineColor);
@@ -1942,7 +1863,7 @@ void MainWindow::getCppErrorLine(int i)
 
             if (str1.mid(j, 1) == ":") {
                 str2 = str1.mid(j + 1, str1.count() - j);
-                //qDebug() << str2;
+
                 break;
             }
         }
@@ -1951,14 +1872,14 @@ void MainWindow::getCppErrorLine(int i)
             if (str2.mid(k, 1) == ":") {
                 str3 = str2.mid(0, k);
                 str4 = str2.mid(k + 1, str2.count() - k);
-                //qDebug() << str3 << str4;
+
                 int linenr = str3.toInt();
                 int col = 0;
 
                 for (int n = 0; n < str4.count(); n++) {
                     if (str4.mid(n, 1) == ":") {
                         str4 = str4.mid(0, n);
-                        //qDebug() << str4;
+
                         col = str4.toInt();
                         break;
                     }
@@ -2131,7 +2052,6 @@ QString findKey(QString str, QString str_sub, int f_null)
                 if (strs.mid(j, 1) == "\t") {
                     tab_count = tab_count + 1;
                 }
-                //qDebug() <<"\t个数：" << strs.mid(j, 1) << tab_count;
             }
 
             int str_space = strs.count() - tab_count;
@@ -2164,10 +2084,7 @@ void thread_one::run()
 
     thread_end = false;
 
-    //refreshTree();//之前预留，准备弃用
     getMemberTree(textEditBack);
-
-    //emit over();
 
     QMetaObject::invokeMethod(this, "over");
 }
@@ -2175,8 +2092,6 @@ void thread_one::run()
 /*线程结束后对成员树进行数据刷新*/
 void MainWindow::dealover()
 {
-
-    //update_ui_tw();//之前预留，准备弃用
     update_ui_tree();
 
     thread_end = true;
@@ -2196,16 +2111,8 @@ void MainWindow::update_member(bool show, QString str_void, QList<QTreeWidgetIte
             }
         }
     } else {
-        //if(tw_list.count() > 0)
-        //{
         ui->treeWidget->addTopLevelItems(tw_list);
         ui->treeWidget->sortItems(1, Qt::AscendingOrder);
-
-        //}
-        //else
-        //    on_btnRefreshTree();
-
-        qDebug() << tw_list.count();
     }
 }
 
@@ -2271,7 +2178,7 @@ void MainWindow::refresh_tree(QsciScintilla* textEdit)
 
     if (!thread_end) {
         break_run = true;
-        //lblMsg->setText("Refresh interrupted");
+
         mythread->quit();
         mythread->wait();
 
@@ -2309,9 +2216,7 @@ void MainWindow::syncMiniEdit()
 
 QString getMemberName(QString str_member, QsciScintilla* textEdit, int RowNum)
 {
-    //int RowNum, ColNum;
     QString sub;
-    //textEdit->getCursorPosition(&RowNum, &ColNum);
 
     sub = textEdit->text(RowNum).trimmed();
 
