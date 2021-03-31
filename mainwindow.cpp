@@ -451,7 +451,7 @@ void MainWindow::loadFile(const QString& fileName, int row, int col)
     for (int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i++) {
         QWidget* pWidget = ui->tabWidget_textEdit->widget(i);
 
-        lblCurrentFile = (QLabel *) pWidget->children().at(lblNumber);
+        lblCurrentFile = (QLabel*)pWidget->children().at(lblNumber);
 
         if (fileName == lblCurrentFile->text()) {
             ui->tabWidget_textEdit->setCurrentIndex(i);
@@ -730,7 +730,7 @@ bool MainWindow::saveFile(const QString& fileName)
 
     //刷新文件路径
     QWidget* pWidget = ui->tabWidget_textEdit->widget(ui->tabWidget_textEdit->currentIndex());
-    lblCurrentFile = (QLabel *) pWidget->children().at(lblNumber);
+    lblCurrentFile = (QLabel*)pWidget->children().at(lblNumber);
     lblCurrentFile->setText(fileName);
     QFileInfo ft(fileName);
     ui->tabWidget_textEdit->tabBar()->setTabToolTip(ui->tabWidget_textEdit->currentIndex(), ft.fileName());
@@ -3968,17 +3968,15 @@ void MainWindow::init_menu()
 
     if (fi.exists()) {
         //QSettings Reg(qfile, QSettings::NativeFormat);
-        QSettings Reg(qfile, QSettings::IniFormat); //全平台都采用ini格式
+        QSettings Reg(qfile, QSettings::IniFormat);
         QString op = Reg.value("options").toString().trimmed();
         if (op.count() > 0)
             ui->cboxCompilationOptions->setCurrentText(op);
 
         //编码
-        //ui->actionUTF_8->setChecked(Reg.value("utf-8").toBool());
         if (ui->actionUTF_8->isChecked())
             lblEncoding->setText("UTF-8");
 
-        //ui->actionGBK->setChecked(Reg.value("gbk").toBool());
         if (ui->actionGBK->isChecked())
             lblEncoding->setText("GBK");
     }
@@ -4282,7 +4280,7 @@ void MainWindow::init_edit(QsciScintilla* textEdit)
         QPalette palette;
         palette = ui->editFind->palette();
         palette.setColor(QPalette::Base, QColor(50, 50, 50));
-        palette.setColor(QPalette::Text, Qt::white); //字色
+        palette.setColor(QPalette::Text, Qt::white);
         ui->editFind->setPalette(palette);
 
     } else {
@@ -4290,7 +4288,7 @@ void MainWindow::init_edit(QsciScintilla* textEdit)
         QPalette palette;
         palette = ui->editFind->palette();
         palette.setColor(QPalette::Base, Qt::white);
-        palette.setColor(QPalette::Text, Qt::black); //字色
+        palette.setColor(QPalette::Text, Qt::black);
         ui->editFind->setPalette(palette);
     }
 }
@@ -4324,34 +4322,37 @@ void MainWindow::init_treeWidget()
     ui->treeWidget->setHeaderItem(new QTreeWidgetItem(QStringList() << tr("Members") << "Lines"));
 
     //ui->treeWidget->setStyle(QStyleFactory::create("Windows")); //连接的虚线
-    ui->treeWidget->setFocusPolicy(Qt::NoFocus); // 去掉选中时的虚线
-    //ui->editFind->addItems(QStyleFactory::keys());
-    //QStyle* style = QStyleFactory::create("Windows");
-    //qApp->setStyle(style);
+    ui->treeWidget->setFocusPolicy(Qt::NoFocus); // 去掉选中时的虚线,主要针对windows
 
     ui->treeWidget->installEventFilter(this);
     ui->treeWidget->setAlternatingRowColors(true); //底色交替显示
     /*ui->treeWidget->setStyleSheet(
         "QTreeView::branch:hover {background-color:rgba(127,255,0,50)}"
 
-        "QTreeView::branch:selected {background: rgba(30, 255, 25, "
-        "255);selection-background-color:rgba(30, 255, 25, 255);}"
+        "QTreeView::branch:selected {background: rgba(135, 206, 235, "
+        "255);selection-background-color:rgba(135, 206, 235, 255);}"
 
         "QTreeWidget::item:hover{background-color:rgba(127,255,0,50)}"
 
-        "QTreeWidget::item:selected{background-color:rgba(30, 255, 25, "
+        "QTreeWidget::item:selected{background-color:rgba(135, 206, 235, "
         "255); color:rgba(5,5,5,255);}"
 
         "QTreeView::branch:open:has-children:!has-siblings,QTreeView::branch:open:has-children:has-"
-        "siblings {image: url(:/icon/////sub.png);}"
+        "siblings {image: url(:/icon/sub.png);}"
 
         "QTreeView::branch:has-children:!has-siblings:closed,QTreeView::branch:closed:has-children:"
-        "has-siblings {image: url(:/icon///main.png);}");*/
+        "has-siblings {image: url(:/icon/main.png);}"
 
-    //connect(ui->treeWidget, &QTreeWidget::itemClicked, this, &MainWindow::treeWidgetBack_itemClicked);
+        "QTreeView::branch:has-siblings:!adjoins-item{border-image:url(:/icon/branch-line.png)0;}"
+
+        "QTreeView::branch:has-siblings:adjoins-item{border-image:url(:/icon/branch-more.png)0;}"
+
+        "QTreeView::branch:!has-children:!has-siblings:adjoins-item{border-image:url(:/icon//branch-end.png)0;}"
+
+    );*/
 
     //右键菜单
-    ui->treeWidget->setContextMenuPolicy(Qt::CustomContextMenu); //给控件设置上下文菜单策略
+    ui->treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
     QMenu* menu = new QMenu(this);
 
     QAction* actionExpandAll = new QAction(tr("Expand all"), this);
@@ -4364,7 +4365,7 @@ void MainWindow::init_treeWidget()
 
     connect(ui->treeWidget, &QTreeWidget::customContextMenuRequested, [=](const QPoint& pos) {
         Q_UNUSED(pos);
-        
+
         menu->exec(QCursor::pos());
     });
 
@@ -4385,7 +4386,6 @@ void MainWindow::init_filesystem()
     connect(actionOpenDir, &QAction::triggered, this, &MainWindow::on_actionOpenDir);
     connect(ui->treeView, &QTreeView::customContextMenuRequested, [=](const QPoint& pos) {
         Q_UNUSED(pos);
-        
         menu->exec(QCursor::pos());
     });
 
@@ -4393,17 +4393,14 @@ void MainWindow::init_filesystem()
 
 #ifdef Q_OS_WIN32
     model->setRootPath("");
-
 #endif
 
 #ifdef Q_OS_LINUX
     model->setRootPath("");
-
 #endif
 
 #ifdef Q_OS_MAC
     model->setRootPath("/Volumes");
-
 #endif
 
     ui->treeView->setModel(model);
@@ -4433,7 +4430,6 @@ void MainWindow::init_filesystem()
         ui->treeView->setRootIndex(model->index(dir));
         fsm_Index = model->index(dir);
         ui->btnReturn->setText(btn);
-        //set_return_text(dir);
 
         //读取成员列表窗口的宽度和信息显示窗口的高度
         int m_w = Reg.value("members_win", 375).toInt();
@@ -4652,7 +4648,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
                 message.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
                 message.setButtonText(QMessageBox::Save, QString("保 存"));
                 message.setButtonText(QMessageBox::Cancel, QString("取 消"));
-                message.setButtonText(QMessageBox::Discard, QString("放 弃"));
+                message.setButtonText(QMessageBox::Discard, QString("不保存"));
                 message.setDefaultButton(QMessageBox::Save);
                 choice = message.exec();
             }
@@ -4680,7 +4676,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
     for (int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i++) {
 
         pWidget = ui->tabWidget_textEdit->widget(i);
-        lblCurrentFile = (QLabel*)pWidget->children().at(lblNumber); //2为QLabel,1为textEdit,0为VBoxLayout
+        lblCurrentFile = (QLabel*)pWidget->children().at(lblNumber);
 
         getCurrentEditor(i)->getCursorPosition(&rowDrag, &colDrag);
         vs = getCurrentEditor(i)->verticalScrollBar()->sliderPosition();
@@ -4761,7 +4757,7 @@ void MainWindow::dropEvent(QDropEvent* e)
 
 void MainWindow::init_statusBar()
 {
-    //状态栏
+
     locationLabel = new QLabel(this);
     statusBar()->addWidget(locationLabel);
 
@@ -4790,7 +4786,6 @@ void MainWindow::init_statusBar()
     cboxEncoding->addItem("GBK");
     ui->statusbar->layout()->setMargin(0);
     ui->statusbar->layout()->setSpacing(0);
-    //ui->statusbar->addPermanentWidget(cboxEncoding);
 
     lblMsg = new QLabel(this);
     ui->statusbar->addPermanentWidget(lblMsg);
@@ -4826,7 +4821,7 @@ void MainWindow::newFile()
 
     init_edit(textEdit);
 
-    MyTabPage *page = new MyTabPage;
+    MyTabPage* page = new MyTabPage;
 
     QVBoxLayout* vboxLayout = new QVBoxLayout(page);
     vboxLayout->setMargin(0);
@@ -4964,71 +4959,6 @@ void MainWindow::paintEvent(QPaintEvent* event)
     if (ui->actionInfo_win->isChecked()) {
         if (ui->dockWidget_Info->isHidden())
             ui->actionInfo_win->setChecked(false);
-    }
-}
-
-void MainWindow::setVScrollBarStyle(int red)
-{
-    if (mac) {
-        if (red < 55) {
-
-            ui->treeWidget->verticalScrollBar()->setStyleSheet("QScrollBar:vertical"
-                                                               "{"
-                                                               "width:25px;"
-                                                               "background:rgba(255,255,255,0%);"
-                                                               "margin:0px,0px,0px,0px;"
-                                                               "padding-top:25px;"
-                                                               "padding-bottom:25px;"
-                                                               "}"
-
-                                                               "QScrollBar::handle:vertical"
-                                                               "{"
-                                                               "width:25px;"
-                                                               "background:rgba(150,150,150,50%);"
-                                                               " border-radius:4px;"
-                                                               "min-height:20;"
-                                                               "}"
-
-                                                               "QScrollBar::handle:vertical:hover"
-                                                               "{"
-                                                               "width:25px;"
-                                                               "background:rgba(150,150,150,50%);"
-                                                               " border-radius:4px;"
-                                                               "min-height:20;"
-                                                               "}"
-
-            );
-
-        } else {
-
-            ui->treeWidget->verticalScrollBar()->setStyleSheet("QScrollBar:vertical"
-                                                               "{"
-                                                               "width:22px;"
-                                                               "background:rgba(255,255,255,0%);"
-                                                               "margin:0px,0px,0px,0px;"
-                                                               "padding-top:22px;"
-                                                               "padding-bottom:22px;"
-
-                                                               "}"
-
-                                                               "QScrollBar::handle:vertical"
-                                                               "{"
-                                                               "width:22px;"
-                                                               "background:rgba(0,0,0,25%);"
-                                                               " border-radius:4px;"
-                                                               "min-height:20;"
-                                                               "}"
-
-                                                               "QScrollBar::handle:vertical:hover"
-                                                               "{"
-                                                               "width:22px;"
-                                                               "background:rgba(0,0,0,50%);"
-                                                               " border-radius:4px;"
-                                                               "min-height:20;"
-                                                               "}"
-
-            );
-        }
     }
 }
 
@@ -5513,18 +5443,6 @@ void MainWindow::highlighsearchtext(QString searchText)
 
     m_searchTextPosList.clear();
 
-    /*int end = document.lastIndexOf(searchText);
-    if (!searchText.isEmpty()) {
-        int curpos = -1;
-        if (end != -1) {
-            while (curpos != end) {
-                curpos = document.indexOf(search_string, curpos + 1);
-                textEdit->SendScintilla(QsciScintilla::SCI_INDICATORFILLRANGE, curpos, search_string.length());
-                m_searchTextPosList.append(curpos);
-            }
-        }
-    }*/
-
     //查找document中flag 出现的所有位置,采用标准字符串来计算，QString会有一些问题
     std::string flag = search_string.toStdString();
 
@@ -5532,7 +5450,6 @@ void MainWindow::highlighsearchtext(QString searchText)
 
     int i = 1;
     while ((position = document.find(flag, position)) != std::string::npos) {
-        //qDebug() << "position  " << i << " : " << position;
 
         textEdit->SendScintilla(QsciScintilla::SCI_INDICATORFILLRANGE, position, search_string.toStdString().length());
 
@@ -5674,23 +5591,6 @@ void MainWindow::on_miniMap()
     }
 }
 
-/*void MiniEditor::mousePressEvent(QMouseEvent* event)
-{
-
-    this->SendScintilla(QsciScintilla::SCI_SETMOUSEDOWNCAPTURES, 1);
-    if (Qt::LeftButton == event->button()) {
-
-        int x, y;
-        this->getCursorPosition(&x, &y);
-        qDebug() << x << y;
-    }
-}
-
-void MiniEditor::mouseDoubleClickEvent(QMouseEvent* event)
-{
-    Q_UNUSED(event);
-}*/
-
 void MiniEditor::mouseMoveEvent(QMouseEvent* event)
 {
     textEditScroll = false;
@@ -5706,7 +5606,6 @@ void MiniEditor::wheelEvent(QWheelEvent* event)
     int spos = this->verticalScrollBar()->sliderPosition();
     miniEditWheel = true;
 
-    //if (event->delta() > 0) {
     if (event->angleDelta().y() > 0) {
 
         this->verticalScrollBar()->setSliderPosition(spos - 3);
@@ -5923,8 +5822,6 @@ void MainWindow::setValue()
     textEdit->verticalScrollBar()->setSliderPosition(p);
 
     textEdit->verticalScrollBar()->setHidden(true);
-
-    //connect(miniEdit->verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(miniEdit_verticalScrollBarChanged()));
 }
 
 void MainWindow::setValue2()
@@ -5932,17 +5829,12 @@ void MainWindow::setValue2()
 
     textEditScroll = true;
 
-    //if (textEdit->geometry().contains(this->mapFromGlobal(QCursor::pos())))
-    //{
     int t = textEdit->verticalScrollBar()->maximum();
     int m = miniEdit->verticalScrollBar()->maximum();
     double b = (double)textEdit->verticalScrollBar()->sliderPosition() / (double)t;
     int p = b * m;
 
     miniEdit->verticalScrollBar()->setSliderPosition(p);
-
-    //textEdit->verticalScrollBar()->setHidden(true);
-    //}
 }
 
 #ifndef QT_NO_CONTEXTMENU
@@ -5974,11 +5866,9 @@ void MainWindow::mouseMoveEvent(QMouseEvent* e)
     e->accept();
 
     if (enterEdit(e->pos(), miniEdit)) {
-        //qDebug() << "miniEdit";
     }
 
     if (enterEdit(e->pos(), textEdit)) {
-        //qDebug() << "textEdit";
     }
 
     miniDlg->close();

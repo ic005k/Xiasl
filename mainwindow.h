@@ -127,10 +127,7 @@ public:
 
     QsciScintilla* textEdit;
     QsciScintilla* getCurrentEditor(int index);
-    //MaxEditor* textEdit;
-    //MaxEditor* getCurrentEditor(int index);
 
-    //QsciScintilla* miniEdit;
     MiniEditor* miniEdit;
 
     void setCurrentFile(const QString& fileName);
@@ -448,8 +445,6 @@ private:
     void setErrorMarkers(int linenr);
     bool InfoWinShow = false;
     void setEditFindCompleter();
-
-    void setVScrollBarStyle(int red);
 
     void loadFindString();
     const QString iniFile = QDir::homePath() + "/.config/QtiASL/QtiASL.ini";
