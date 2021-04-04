@@ -110,6 +110,8 @@
     <addaction name="separator"/>
     <addaction name="actionOpen_directory"/>
     <addaction name="separator"/>
+    <addaction name="actionClose_tab"/>
+    <addaction name="separator"/>
     <addaction name="actionQuit"/>
    </widget>
    <widget class="QMenu" name="menu_Edit">
@@ -725,6 +727,17 @@ QTreeView::branch:!has-children:!has-siblings:adjoins-item{border-image:url(:/ic
   <action name="actionQuit">
    <property name="text">
     <string>Quit</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="actionClose_tab">
+   <property name="text">
+    <string>Close tab</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+W</string>
    </property>
   </action>
  </widget>

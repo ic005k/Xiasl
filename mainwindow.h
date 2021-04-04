@@ -312,6 +312,8 @@ private slots:
 
     void on_actionQuit_triggered();
 
+    void on_actionClose_tab_triggered();
+
 private:
     Ui::MainWindow* ui;
 

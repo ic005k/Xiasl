@@ -96,7 +96,7 @@ MainWindow::MainWindow(QWidget* parent)
 
     loadLocal();
 
-    CurVerison = "1.0.53";
+    CurVerison = "1.0.54";
     ver = "QtiASL V" + CurVerison + "        ";
     setWindowTitle(ver);
 
@@ -3914,7 +3914,6 @@ void MainWindow::init_menu()
     ui->actionFont_2->setShortcut(tr("ctrl+9"));
     connect(ui->actionFont_2, &QAction::triggered, this, &MainWindow::set_font);
 
-    ui->actionWrapWord->setShortcut(tr("ctrl+w"));
     connect(ui->actionWrapWord, &QAction::triggered, this, &MainWindow::set_wrap);
 
     connect(ui->actionClear_search_history, &QAction::triggered, this, &MainWindow::on_clearFindText);
@@ -6014,4 +6013,14 @@ void MainWindow::on_editFind_currentTextChanged(const QString& arg1)
 void MainWindow::on_actionQuit_triggered()
 {
     this->close();
+}
+
+void MainWindow::on_actionClose_tab_triggered()
+{
+    int count = ui->tabWidget_textEdit->tabBar()->count();
+    int index = ui->tabWidget_textEdit->currentIndex();
+    if (count > 1)
+        ui->tabWidget_textEdit->tabBar()->tabCloseRequested(index);
+    else if (count == 1)
+        this->close();
 }
