@@ -96,7 +96,7 @@ MainWindow::MainWindow(QWidget* parent)
 
     loadLocal();
 
-    CurVerison = "1.0.54";
+    CurVerison = "1.0.55";
     ver = "QtiASL V" + CurVerison + "        ";
     setWindowTitle(ver);
 
@@ -139,7 +139,6 @@ MainWindow::MainWindow(QWidget* parent)
 #ifdef Q_OS_MAC
     font.setPointSize(13);
     ui->actionGenerate->setEnabled(true);
-    ui->actionQuit->setVisible(false);
     mac = true;
 #endif
 
@@ -3873,6 +3872,9 @@ void MainWindow::init_menu()
 
     ui->actionOpen_directory->setShortcut(tr("ctrl+0"));
     connect(ui->actionOpen_directory, &QAction::triggered, this, &MainWindow::on_actionOpenDir);
+
+    //Quit
+    ui->actionQuit->setMenuRole(QAction::QuitRole);
 
     //Edit
     ui->actionGenerate->setShortcut(tr("ctrl+g"));
