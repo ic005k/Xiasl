@@ -546,6 +546,15 @@ void MainWindow::loadFile(const QString& fileName, int row, int col)
     ui->tabWidget_textEdit->tabBar()->setTabIcon(ui->tabWidget_textEdit->currentIndex(), icon);
     One = false;
 
+    setRecentFiles(fileName);
+
+    addFilesWatch();
+
+    loading = false;
+}
+
+void MainWindow::setRecentFiles(QString fileName)
+{
     //最近打开的文件
     QSettings settings;
     QFileInfo fInfo(fileName);
@@ -554,11 +563,8 @@ void MainWindow::loadFile(const QString& fileName, int row, int col)
     QCoreApplication::setApplicationName("QtiASL");
     settings.setValue("currentDirectory", fInfo.absolutePath());
     //qDebug() << settings.fileName(); //最近打开的文件所保存的位置
+
     m_recentFiles->setMostRecentFile(fileName);
-
-    addFilesWatch();
-
-    loading = false;
 }
 
 void MainWindow::setCurrentFile(const QString& fileName)
@@ -689,6 +695,8 @@ bool MainWindow::SaveAs()
             ui->tabWidget_textEdit->removeTab(i);
         }
     }
+
+    setRecentFiles(fn);
 
     return saveFile(fn);
 }

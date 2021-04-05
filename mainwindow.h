@@ -103,6 +103,7 @@ public:
     MainWindow(QWidget* parent = nullptr);
     ~MainWindow();
 
+    void setRecentFiles(QString fileName);
     void addFilesWatch();
     void removeFilesWatch();
     QString getCurrentFileName(int index);
