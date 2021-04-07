@@ -2,6 +2,19 @@
 
 # QtiASL-- open source cross-platform DSDT&SSDT integrated development environment
 
+| [Release][release-link]|[Download][download-link]|[Issues][issues-link]|
+|-----------------|-----------------|-----------------|
+|[![release-badge](https://img.shields.io/github/release/ic005k/QtiASL.svg?style=flat-square "Release status")](https://github.com/ic005k/QtiASL/releases "Release status") | [![download-badge](https://img.shields.io/github/downloads/ic005k/QtiASL/total.svg?style=flat-square "Download status")](https://github.com/ic005k/QtiASL/releases/latest "Download status")|[![issues-badge](https://img.shields.io/badge/github-issues-red.svg?maxAge=60 "Issues")](https://github.com/ic005k/QtiASL/issues "Issues")|
+
+[download-link]: https://github.com/ic005k/QtiASL/releases/latest "Download status"
+[download-badge]: https://img.shields.io/github/downloads/ic005k/QtiASL/total.svg?style=flat-square "Download status"
+
+[release-link]: https://github.com/ic005k/QtiASL/releases "Release status"
+[release-badge]: https://img.shields.io/github/release/ic005k/QtiASL.svg?style=flat-square "Release status"
+
+[issues-link]: https://github.com/ic005k/QtiASL/issues "Issues"
+[issues-badge]: https://img.shields.io/badge/github-issues-red.svg?maxAge=60 "Issues"
+
 ## Basic features include but are not limited to:
 
 * Automatically load the list of currently used SSDTs (under Windows and Mac)
