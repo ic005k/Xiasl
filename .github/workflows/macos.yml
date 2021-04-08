@@ -37,9 +37,11 @@ jobs:
           make
           
       # 打包 拷贝依赖
+      # macdeployqt bin/release/${targetName}.app -qmldir=. -verbose=1 -dmg
       - name: package
         run: |
-          macdeployqt bin/release/${targetName}.app -qmldir=. -verbose=1 -dmg
+          macdeployqt bin/release/${targetName}.app
+          
           
       # 上传artifacts          
       - uses: actions/upload-artifact@v2
