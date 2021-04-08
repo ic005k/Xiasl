@@ -802,7 +802,7 @@ void MainWindow::getACPITables(bool ssdt)
     //设置文件过滤格式
     nameFilters << "ssdt*.dat";
     //将过滤后的文件名称存入到files列表中
-    QStringList ssdtFiles = dir.entryList(nameFilters, QDir::Files | QDir::Readable, QDir::Name);
+    ssdtFiles = dir.entryList(nameFilters, QDir::Files | QDir::Readable, QDir::Name);
 
     dir.setCurrent(acpiDir);
     if (!ssdt)
