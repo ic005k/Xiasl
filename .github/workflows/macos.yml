@@ -40,7 +40,7 @@ jobs:
       # macdeployqt bin/release/${targetName}.app -qmldir=. -verbose=1 -dmg
       - name: package
         run: |
-          macdeployqt bin/release/${targetName}.app
+          macdeployqt bin/release/${targetName}.app -dmg
           
           
       # 上传artifacts          
