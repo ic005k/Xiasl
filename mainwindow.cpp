@@ -812,7 +812,7 @@ void MainWindow::getACPITables(bool ssdt)
 #endif
 
 #ifdef Q_OS_LINUX
-    QStringList ssdtFiles;
+
     dump.execute(appInfo.filePath() + "/acpidump", QStringList() << "-b");
     //iasl.execute(appInfo.filePath() + "/iasl", QStringList() << "-d"
     //                                                         << "dsdt.dat");
