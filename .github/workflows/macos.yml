@@ -35,10 +35,9 @@ jobs:
         run: |
           qmake
           make
-      # 打包
+      # 打包 拷贝依赖
       - name: package
         run: |
-          # 拷贝依赖
           macdeployqt bin/release/${targetName}.app -qmldir=. -verbose=1 -dmg
           
       # 上传artifacts          
