@@ -778,10 +778,10 @@ void MainWindow::getACPITables(bool ssdt)
 {
 
     QFileInfo appInfo(qApp->applicationDirPath());
-    qDebug() << appInfo.filePath();
 
     QProcess dump;
     QProcess iasl;
+    QStringList ssdtFiles;
 
     QString acpiDir = QDir::homePath() + "/Desktop/ACPI Tables/";
 
@@ -820,21 +820,26 @@ void MainWindow::getACPITables(bool ssdt)
 #endif
 
 #ifdef Q_OS_MAC
-    dir.setCurrent(acpiDir);
-    dump.execute(appInfo.filePath() + "/patchmatic", QStringList() << "-extractall" << acpiDir);
+    QString strExtBin = appInfo.filePath() + "/patchmatic";
 
-    dir.setCurrent(acpiDir + "temp/");
-    dump.execute(appInfo.filePath() + "/patchmatic", QStringList() << "-extract" << acpiDir + "temp/");
+    if (QFileInfo(strExtBin).exists()) {
 
-    //设置文件过滤格式
-    nameFilters << "ssdt*.aml";
-    //将过滤后的文件名称存入到files列表中
-    QStringList ssdtFiles = dir.entryList(nameFilters, QDir::Files | QDir::Readable, QDir::Name);
+        dir.setCurrent(acpiDir);
+        dump.execute(strExtBin, QStringList() << "-extractall" << acpiDir);
 
-    dir.setCurrent(acpiDir);
-    if (!ssdt)
-        iasl.execute(appInfo.filePath() + "/iasl", QStringList() << "-e" << ssdtFiles << "-d"
-                                                                 << "dsdt.aml");
+        dir.setCurrent(acpiDir + "temp/");
+        dump.execute(strExtBin, QStringList() << "-extract" << acpiDir + "temp/");
+
+        //设置文件过滤格式
+        nameFilters << "ssdt*.aml";
+        //将过滤后的文件名称存入到files列表中
+        ssdtFiles = dir.entryList(nameFilters, QDir::Files | QDir::Readable, QDir::Name);
+
+        dir.setCurrent(acpiDir);
+        if (!ssdt)
+            iasl.execute(appInfo.filePath() + "/iasl", QStringList() << "-e" << ssdtFiles << "-d"
+                                                                     << "dsdt.aml");
+    }
 
 #endif
 
