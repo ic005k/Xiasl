@@ -195,7 +195,7 @@
     <bool>false</bool>
    </attribute>
   </widget>
-  <widget class="QDockWidget" name="dockWidget">
+  <widget class="QDockWidget" name="dockWidgetSymbols">
    <property name="minimumSize">
     <size>
      <width>201</width>

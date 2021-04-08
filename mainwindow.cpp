@@ -4379,7 +4379,7 @@ void MainWindow::init_treeWidget()
     });
 
     ui->lblMembers->setHidden(true);
-    ui->dockWidget->setWindowTitle(tr("Members"));
+    ui->dockWidgetSymbols->setWindowTitle(tr("Symbols"));
 }
 
 void MainWindow::init_filesystem()
@@ -4442,7 +4442,7 @@ void MainWindow::init_filesystem()
 
         //读取成员列表窗口的宽度和信息显示窗口的高度
         int m_w = Reg.value("members_win", 375).toInt();
-        resizeDocks({ ui->dockWidget }, { m_w }, Qt::Horizontal);
+        resizeDocks({ ui->dockWidgetSymbols }, { m_w }, Qt::Horizontal);
 
         int i_h = Reg.value("info_win", 150).toInt();
         resizeDocks({ ui->dockWidget_Info }, { i_h }, Qt::Vertical);
@@ -4613,7 +4613,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
     Reg.setValue("gbk", ui->actionGBK->isChecked());
 
     //存储成员列表的宽度和信息窗口高度
-    Reg.setValue("members_win", ui->dockWidget->width());
+    Reg.setValue("members_win", ui->dockWidgetSymbols->width());
     if (InfoWinShow) //不显示不存储
         Reg.setValue("info_win", ui->dockWidget_Info->height());
 
@@ -4961,7 +4961,7 @@ void MainWindow::paintEvent(QPaintEvent* event)
     }
 
     if (ui->actionMembers_win->isChecked()) {
-        if (ui->dockWidget->isHidden())
+        if (ui->dockWidgetSymbols->isHidden())
             ui->actionMembers_win->setChecked(false);
     }
 
@@ -5300,11 +5300,11 @@ void MainWindow::view_info()
 
 void MainWindow::view_mem_list()
 {
-    if (ui->dockWidget->isHidden()) {
-        ui->dockWidget->setHidden(false);
+    if (ui->dockWidgetSymbols->isHidden()) {
+        ui->dockWidgetSymbols->setHidden(false);
         ui->actionMembers_win->setChecked(true);
-    } else if (!ui->dockWidget->isHidden()) {
-        ui->dockWidget->setHidden(true);
+    } else if (!ui->dockWidgetSymbols->isHidden()) {
+        ui->dockWidgetSymbols->setHidden(true);
         ui->actionMembers_win->setChecked(false);
     }
 }
@@ -5900,11 +5900,11 @@ bool MainWindow::enterEdit(QPoint pp, QsciScintilla* btn)
 
 int MainWindow::getDockWidth()
 {
-    if (ui->dockWidget->x() != 0)
+    if (ui->dockWidgetSymbols->x() != 0)
         return 0;
 
-    if (ui->dockWidget->isVisible())
-        return ui->dockWidget->width();
+    if (ui->dockWidgetSymbols->isVisible())
+        return ui->dockWidgetSymbols->width();
     else
         return 0;
 }
@@ -5983,9 +5983,9 @@ void MainWindow::on_tabWidget_misc_currentChanged(int index)
 {
 
     if (index == 0)
-        ui->dockWidget->setWindowTitle(tr("Members"));
+        ui->dockWidgetSymbols->setWindowTitle(tr("Symbols"));
     if (index == 1)
-        ui->dockWidget->setWindowTitle(tr("Filesystem Browser"));
+        ui->dockWidgetSymbols->setWindowTitle(tr("Filesystem Browser"));
 }
 
 void MainWindow::mousePressEvent(QMouseEvent* e)
