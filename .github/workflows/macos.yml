@@ -35,6 +35,7 @@ jobs:
         run: |
           qmake
           make
+          
       # 打包 拷贝依赖
       - name: package
         run: |
