@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=QtiASL
+Exec=AppRun %F
+Icon=icon
+Comment=QtiASL
+Categories=Application;
+Terminal=true
