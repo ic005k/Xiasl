@@ -42,8 +42,9 @@ jobs:
       - name: package
         run: |
           cp -r ExtBin/mac/. bin/release/${targetName}.app/Contents/MacOS/
-          cp libqscintilla2_qt5.15.dylib bin/release/${targetName}.app/Contents/Frameworks/libqscintilla2_qt5.15.dylib
+          
           macdeployqt bin/release/${targetName}.app -dmg
+          cp libqscintilla2_qt5.15.dylib bin/release/${targetName}.app/Contents/Frameworks/libqscintilla2_qt5.15.dylib
           
           
       # 上传artifacts          
