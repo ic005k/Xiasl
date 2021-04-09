@@ -40,6 +40,7 @@ jobs:
       # macdeployqt bin/release/${targetName}.app -qmldir=. -verbose=1 -dmg
       - name: package
         run: |
+          cp ExtBin/mac/. bin/release/${targetName}.app/Contents/MacOS/
           macdeployqt bin/release/${targetName}.app -dmg
           
           
