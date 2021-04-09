@@ -21,6 +21,7 @@ function Main() {
     
     # 拷贝第三方文件
     Copy-Item ExtBin\win\*.* $archiveName\
+    Copy-Item qscintilla2_qt5.dll $archiveName\
     
     # 拷贝依赖
     windeployqt --qmldir . --plugindir $archiveName\plugins --no-translations --compiler-runtime $archiveName\$targetName
