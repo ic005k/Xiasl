@@ -22,6 +22,12 @@ jobs:
         # qt_ver: [5.9.9,5.12.10,5.15.2]
         qt_ver: [5.15.2]
         qt_arch: [gcc_64]
+        
+    env:
+         targetName: OCAuxiliaryTools
+         VERSION: Linux
+      
+        
     steps:
       - name: Install Qt
         uses: jurplel/install-qt-action@v2.13.0
@@ -37,3 +43,42 @@ jobs:
         run: |
           qmake
           make
+          
+          
+      - name: install linuxdeployqt 
+        run: |
+          wget -c -nv "https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage"
+          chmod a+x linuxdeployqt-continuous-x86_64.AppImage            
+          
+      # 打包
+      - name: package
+        run: |
+         cp icon.png bin/release/icon.png
+         cp default.desktop bin/release/default.desktop
+         cp ExtBin/linux/iasl bin/release/iasl
+         chmod +x bin/release/iasl
+         
+         export VERSION # linuxdeployqt uses this for naming the file
+         ./linuxdeployqt-continuous-x86_64.AppImage bin/release/${targetName} -unsupported-allow-new-glibc -appimage
+         chmod +x ${{ env.targetName }}-${{ env.VERSION }}-x86_64.AppImage
+          
+      # 上传artifacts          
+      - uses: actions/upload-artifact@v2
+        with:
+          #name: ${{ env.targetName }} # .zip
+          #path: bin/release/${{ env.targetName }}.Appimage
+          name: ${{ env.targetName }}-${{ env.VERSION }}-x86_64.AppImage
+          #path: bin/release/${{ env.targetName }}-${{ env.VERSION }}-x86_64.AppImage
+          path: ${{ env.targetName }}-${{ env.VERSION }}-x86_64.AppImage
+          
+     # tag 上传Release
+      - name: uploadRelease
+        if: startsWith(github.event.ref, 'refs/tags/')
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: bin/release/${{ env.targetName }}-${{ env.VERSION }}-x86_64.AppImage
+          asset_name: ${{ env.targetName }}-${{ env.VERSION }}-x86_64.AppImage
+          tag: ${{ github.ref }}
+          overwrite: true         
+          
