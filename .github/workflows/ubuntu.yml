@@ -24,7 +24,7 @@ jobs:
         qt_arch: [gcc_64]
         
     env:
-         targetName: OCAuxiliaryTools
+         targetName: QtiASL
          VERSION: Linux
       
         
