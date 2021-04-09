@@ -22,6 +22,7 @@ jobs:
         qt_arch: [clang_64]
     env:
       targetName: QtiASL
+      
     steps:
       - name: Install Qt
         uses: jurplel/install-qt-action@v2.13.0
