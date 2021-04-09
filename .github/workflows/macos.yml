@@ -43,7 +43,7 @@ jobs:
         run: |
           cp -r ExtBin/mac/. bin/release/${targetName}.app/Contents/MacOS/
           
-          cp libqscintilla2_qt5.15.dylib bin/release/${targetName}.app/Contents/MacOS/
+          cp libqscintilla2_qt5.15.0.0.dylib bin/release/${targetName}.app/Contents/MacOS/
           
           macdeployqt bin/release/${targetName}.app -dmg
           
