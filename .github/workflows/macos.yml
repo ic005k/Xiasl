@@ -42,8 +42,10 @@ jobs:
       - name: package
         run: |
           cp -r ExtBin/mac/. bin/release/${targetName}.app/Contents/MacOS/
-          
-          cp libqscintilla2_qt5.15.0.0.dylib bin/release/${targetName}.app/Contents/MacOS/
+          chmod +x bin/release/${targetName}.app/Contents/MacOS/iasl
+          chmod +x bin/release/${targetName}.app/Contents/MacOS/patchmatic
+          chmod +x bin/release/${targetName}.app/Contents/MacOS/patchmatic-legacy
+          cp libqscintilla2_qt5.15.0.0.dylib bin/release/${targetName}.app/Contents/MacOS/libqscintilla2_qt5.15.dylib
           
           macdeployqt bin/release/${targetName}.app -dmg
           
