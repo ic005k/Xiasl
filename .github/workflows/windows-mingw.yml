@@ -29,6 +29,9 @@ jobs:
           
     env:
       targetName: QtiASL.exe
+      VERSION: Win64
+      orgName: QtiASL
+      
     steps:
       - name: Install Qt
         uses: jurplel/install-qt-action@v2.13.0
@@ -68,7 +71,9 @@ jobs:
       - name: package
         id: package      
         env:
-          archiveName: ${{ matrix.qt_ver }}-${{ matrix.qt_target }}-${{ matrix.qt_arch }}
+          #archiveName: ${{ matrix.qt_ver }}-${{ matrix.qt_target }}-${{ matrix.qt_arch }}
+          archiveName: ${{ env.orgName }}-${{ env.VERSION }}
+          
         shell: pwsh
         run: |
           & scripts\windows-mingw-publish.ps1 ${env:archiveName} ${env:targetName}
@@ -80,12 +85,12 @@ jobs:
           name: ${{ steps.package.outputs.packageName }}
           path: ${{ steps.package.outputs.packageName }}.zip
           
-      #- name: uploadRelease
-      #  if: startsWith(github.event.ref, 'refs/tags/')
-      #  uses: svenstaro/upload-release-action@v2
-      #  with:
-      #    repo_token: ${{ secrets.GITHUB_TOKEN }}
-      #    file: ${{ steps.package.outputs.packageName }}.zip
-      #    asset_name: ${{ steps.package.outputs.packageName }}.zip
-      #    tag: ${{ github.ref }}
-      #    overwrite: true 
+      - name: uploadRelease
+        if: startsWith(github.event.ref, 'refs/tags/')
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ${{ steps.package.outputs.packageName }}.zip
+          asset_name: ${{ steps.package.outputs.packageName }}.zip
+          tag: ${{ github.ref }}
+          overwrite: true 
