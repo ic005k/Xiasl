@@ -22,7 +22,7 @@ jobs:
         qt_arch: [clang_64]
     env:
       targetName: QtiASL
-      VERSION: MacOSX10.12 and below
+      VERSION: Mac10.12 and below
       
     steps:
       - name: Install Qt
