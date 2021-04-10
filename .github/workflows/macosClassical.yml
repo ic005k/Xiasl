@@ -4,12 +4,12 @@ on:
     paths:
       - '*.pro'
       - '**'
-      - '.github/workflows/macos.yml'
+      - '.github/workflows/macosClassical.yml'
   pull_request:
     paths:
       - '*.pro'
       - '**'
-      - '.github/workflows/macos.yml' 
+      - '.github/workflows/macosClassical.yml' 
 jobs:
   build:
     name: Build
