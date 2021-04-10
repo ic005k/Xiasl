@@ -57,7 +57,8 @@ jobs:
          cp default.desktop bin/release/default.desktop
          cp ExtBin/linux/iasl bin/release/iasl
          chmod +x bin/release/iasl
-         cp libqscintilla2_qt5.so bin/release/libqscintilla2_qt5.so.15
+         mkdir bin/release/lib
+         cp libqscintilla2_qt5.so bin/release/lib/libqscintilla2_qt5.so.15
          
          export VERSION # linuxdeployqt uses this for naming the file
          ./linuxdeployqt-continuous-x86_64.AppImage bin/release/${targetName} -unsupported-allow-new-glibc -appimage
