@@ -1,4 +1,4 @@
-name: MacOS
+name: MacOSClassical
 on: 
   push:
     paths:
@@ -18,7 +18,7 @@ jobs:
       matrix:
         os: [macos-10.15]
         # qt_ver: [5.9.9,5.12.10,5.15.2]
-        qt_ver: [5.9.9,5.15.2]
+        qt_ver: [5.9.9]
         qt_arch: [clang_64]
     env:
       targetName: QtiASL
@@ -46,7 +46,7 @@ jobs:
           chmod +x bin/release/${targetName}.app/Contents/MacOS/patchmatic
           chmod +x bin/release/${targetName}.app/Contents/MacOS/patchmatic-legacy
           mkdir bin/release/${targetName}.app/Contents/Frameworks
-          cp libqscintilla2_qt5.15.0.0.dylib bin/release/${targetName}.app/Contents/Frameworks/libqscintilla2_qt5.15.dylib
+          cp ExtBin/5.9.9/libqscintilla2_qt5.15.0.0.dylib bin/release/${targetName}.app/Contents/Frameworks/libqscintilla2_qt5.15.dylib
           rm -rf bin/release/${targetName}.app/Contents/PlugIns/bearer          
           macdeployqt bin/release/${targetName}.app -dmg
               
