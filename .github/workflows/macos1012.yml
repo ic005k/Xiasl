@@ -25,7 +25,7 @@ jobs:
         
     env:
       targetName: QtiASL
-      VERSION: Mac10.12 And Below
+      VERSION: Mac10.12 and below
       
     steps:
       - name: Install Qt
