@@ -10,6 +10,7 @@ on:
       - '*.pro'
       - '**'
       - '.github/workflows/macosClassical.yml' 
+      
 jobs:
   build:
     name: Build
