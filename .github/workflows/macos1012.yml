@@ -1,4 +1,4 @@
-name: MacOSClassical
+name: MacOS1012
 
 on: 
   push:
@@ -25,7 +25,7 @@ jobs:
         
     env:
       targetName: QtiASL
-      VERSION: Mac10.12 and below
+      VERSION: Mac10.12 And Below
       
     steps:
       - name: Install Qt
