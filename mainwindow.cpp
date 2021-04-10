@@ -3815,9 +3815,9 @@ void MainWindow::init_toolbar()
     ui->toolBar->addWidget(ui->editFind);
     ui->editFind->setFixedWidth(320);
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+    //#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
     ui->editFind->lineEdit()->setPlaceholderText(tr("Find") + "  (" + tr("History entries") + ": " + QString::number(ui->editFind->count()) + ")");
-#endif
+    //#endif
     ui->editFind->lineEdit()->setClearButtonEnabled(true);
     //ui->editFind->setAutoCompletionCaseSensitivity(Qt::CaseSensitive);
 
@@ -5496,9 +5496,9 @@ void MainWindow::on_editFind_editTextChanged(const QString& arg1)
 
         clearSearchHighlight(textEdit);
         lblCount->setText("0");
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+        //#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
         ui->editFind->lineEdit()->setPlaceholderText(tr("Find") + "  (" + tr("History entries") + ": " + QString::number(ui->editFind->count()) + ")");
-#endif
+        //#endif
         if (red < 55) {
 
             QPalette palette;
@@ -5574,9 +5574,9 @@ void MainWindow::on_editFind_currentIndexChanged(const QString& arg1)
 void MainWindow::on_clearFindText()
 {
     ui->editFind->clear();
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+    //#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
     ui->editFind->lineEdit()->setPlaceholderText(tr("Find") + "  (" + tr("History entries") + ": " + QString::number(ui->editFind->count()) + ")");
-#endif
+    //#endif
 }
 
 QString MainWindow::getTabTitle()
@@ -6021,9 +6021,10 @@ void MainWindow::loadFindString()
             findTextList.append(item);
         }
         ui->editFind->addItems(findTextList);
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+        //#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
         ui->editFind->lineEdit()->setPlaceholderText(tr("Find") + "  (" + tr("History entries") + ": " + QString::number(ui->editFind->count()) + ")");
-#endif
+        ui->editFind->setCurrentText("");
+        //#endif
     }
 }
 
