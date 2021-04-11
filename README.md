@@ -6,6 +6,8 @@
 |-----------------|-----------------|-----------------|-----------------|
 |[![release-badge](https://img.shields.io/github/release/ic005k/QtiASL.svg?style=flat-square "Release status")](https://github.com/ic005k/QtiASL/releases "Release status") | [![download-badge](https://img.shields.io/github/downloads/ic005k/QtiASL/total.svg?style=flat-square "Download status")](https://github.com/ic005k/QtiASL/releases/latest "Download status")|[![issues-badge](https://img.shields.io/badge/github-issues-red.svg?maxAge=60 "Issues")](https://github.com/ic005k/QtiASL/issues "Issues")|[![discourse](https://img.shields.io/badge/forum-discourse-orange.svg)](https://www.insanelymac.com/forum/topic/344860-open-source-cross-platform-dsdtssdt-ide/)|
 
+[![MacOS](https://github.com/ic005k/QtiASL/actions/workflows/macos.yml/badge.svg)](https://github.com/ic005k/QtiASL/actions/workflows/macos.yml)    [![MacOS1012](https://github.com/ic005k/QtiASL/actions/workflows/macos1012.yml/badge.svg)](https://github.com/ic005k/QtiASL/actions/workflows/macos1012.yml)    [![Windows MinGW](https://github.com/ic005k/QtiASL/actions/workflows/windows-mingw.yml/badge.svg)](https://github.com/ic005k/QtiASL/actions/workflows/windows-mingw.yml)    [![Linux](https://github.com/ic005k/QtiASL/actions/workflows/ubuntu.yml/badge.svg)](https://github.com/ic005k/QtiASL/actions/workflows/ubuntu.yml)
+
 [download-link]: https://github.com/ic005k/QtiASL/releases/latest "Download status"
 [download-badge]: https://img.shields.io/github/downloads/ic005k/QtiASL/total.svg?style=flat-square "Download status"
 
