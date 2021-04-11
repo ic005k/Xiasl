@@ -46,7 +46,7 @@ jobs:
       - name: package
         run: |
           cp -r ExtBin/mac/. bin/release/${targetName}.app/Contents/MacOS/
-          
+                    
           cp ExtBin/5.9.9/iasl1012 bin/release/${targetName}.app/Contents/MacOS/iasl
           chmod +x bin/release/${targetName}.app/Contents/MacOS/iasl
           
