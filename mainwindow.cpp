@@ -96,7 +96,7 @@ MainWindow::MainWindow(QWidget* parent)
 
     loadLocal();
 
-    CurVerison = "1.0.55";
+    CurVerison = "1.0.56";
     ver = "QtiASL V" + CurVerison + "        ";
     setWindowTitle(ver);
 
@@ -3695,6 +3695,7 @@ void MainWindow::init_info_edit()
     ui->dockWidgetContents_6->layout()->setMargin(0);
     ui->dockWidgetContents_6->layout()->setSpacing(0);
     ui->gridLayout_2->setMargin(0);
+    ui->gridLayout_2->setSpacing(0);
     ui->gridLayout_3->setMargin(0);
     ui->gridLayout_4->setMargin(0);
     ui->gridLayout_5->setMargin(0);
@@ -3815,9 +3816,8 @@ void MainWindow::init_toolbar()
     ui->toolBar->addWidget(ui->editFind);
     ui->editFind->setFixedWidth(320);
 
-    //#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
     ui->editFind->lineEdit()->setPlaceholderText(tr("Find") + "  (" + tr("History entries") + ": " + QString::number(ui->editFind->count()) + ")");
-    //#endif
+
     ui->editFind->lineEdit()->setClearButtonEnabled(true);
     //ui->editFind->setAutoCompletionCaseSensitivity(Qt::CaseSensitive);
 
@@ -5423,6 +5423,7 @@ int MainWindow::parse_UpdateJSON(QString str)
             QString warningStr = tr("New version detected!") + "\n" + tr("Version: ") + "V" + Verison + "\n" + tr("Published at: ") + UpdateTime + "\n" + tr("Release Notes: ") + "\n" + ReleaseNote;
             int ret = QMessageBox::warning(this, "", warningStr, tr("Download"), tr("Cancel"));
             if (ret == 0) {
+                Url = "https://github.com/ic005k/QtiASL/releases/latest";
                 QDesktopServices::openUrl(QUrl(Url));
             }
         } else
@@ -5496,9 +5497,9 @@ void MainWindow::on_editFind_editTextChanged(const QString& arg1)
 
         clearSearchHighlight(textEdit);
         lblCount->setText("0");
-        //#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+
         ui->editFind->lineEdit()->setPlaceholderText(tr("Find") + "  (" + tr("History entries") + ": " + QString::number(ui->editFind->count()) + ")");
-        //#endif
+
         if (red < 55) {
 
             QPalette palette;
@@ -5574,9 +5575,8 @@ void MainWindow::on_editFind_currentIndexChanged(const QString& arg1)
 void MainWindow::on_clearFindText()
 {
     ui->editFind->clear();
-    //#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+
     ui->editFind->lineEdit()->setPlaceholderText(tr("Find") + "  (" + tr("History entries") + ": " + QString::number(ui->editFind->count()) + ")");
-    //#endif
 }
 
 QString MainWindow::getTabTitle()
@@ -6021,10 +6021,9 @@ void MainWindow::loadFindString()
             findTextList.append(item);
         }
         ui->editFind->addItems(findTextList);
-        //#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+
         ui->editFind->lineEdit()->setPlaceholderText(tr("Find") + "  (" + tr("History entries") + ": " + QString::number(ui->editFind->count()) + ")");
         ui->editFind->setCurrentText("");
-        //#endif
     }
 }
 
