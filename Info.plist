@@ -36,7 +36,7 @@
         <key>CFBundleExecutable</key>
         <string>QtiASL</string>
         <key>CFBundleIconFile</key>
-        <string>Icon.icns</string>
+        <string>my.icns</string>
         <key>CFBundleIdentifier</key>
         <string>z.QtiASL</string>
         <key>CFBundlePackageType</key>
