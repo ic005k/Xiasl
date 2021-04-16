@@ -5,7 +5,7 @@ QT       += network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-ICON =
+ICON = icon.icns
 RC_FILE += myapp.rc
 
 CONFIG += c++11
