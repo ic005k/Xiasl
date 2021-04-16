@@ -20,7 +20,7 @@
             </dict>
             <dict>
                 <key>CFBundleTypeIconFile</key>
-                <string>Icon.icns</string>
+                <string>my.icns</string>
                 <key>CFBundleTypeName</key>
                 <string>ACPI Machine Language Binary</string>
                 <key>CFBundleTypeRole</key>
