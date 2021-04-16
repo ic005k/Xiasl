@@ -5,40 +5,48 @@
         <key>CFBundleDocumentTypes</key>
         <array>
             <dict>
-                <key>CFBundleTypeExtensions</key>
+                <key>CFBundleTypeIconFile</key>
+                <string>dsl.icns</string>
+                <key>CFBundleTypeName</key>
+                <string>Disassembled ASL File</string>
+                <key>CFBundleTypeRole</key>
+                <string>Editor</string>
+                <key>LSItemContentTypes</key>
                 <array>
-                    <string>plist</string>
+                    <string>org.acpica.dsl</string>
                 </array>
+                <key>NSDocumentClass</key>
+                <string>Document</string>
+            </dict>
+            <dict>
                 <key>CFBundleTypeIconFile</key>
                 <string>Icon.icns</string>
                 <key>CFBundleTypeName</key>
-                <string>OCAT Document</string>
+                <string>ACPI Machine Language Binary</string>
                 <key>CFBundleTypeRole</key>
                 <string>Editor</string>
-                <key>LSHandlerRank</key>
-                <string>Owner</string>
                 <key>LSItemContentTypes</key>
                 <array>
-                    <string>com.apple.property-list</string>
+                    <string>org.acpica.aml</string>
                 </array>
                 <key>NSDocumentClass</key>
                 <string>Document</string>
             </dict>
         </array>
         <key>CFBundleExecutable</key>
-        <string>OCAuxiliaryTools</string>
+        <string>QtiASL</string>
         <key>CFBundleIconFile</key>
         <string>Icon.icns</string>
         <key>CFBundleIdentifier</key>
-        <string>z.OC-Auxiliary-Tools</string>
+        <string>z.QtiASL</string>
         <key>CFBundlePackageType</key>
         <string>APPL</string>
         <key>CFBundleShortVersionString</key>
-        <string>0.6.9 - 20210419</string>
+        <string>1.0.57</string>
         <key>CFBundleSignature</key>
         <string>????</string>
         <key>CFBundleVersion</key>
-        <string>0.6.9 - 20210419</string>
+        <string>1.0.57</string>
         <key>LSMinimumSystemVersion</key>
         <string>10.13</string>
         <key>NOTE</key>
