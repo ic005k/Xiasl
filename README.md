@@ -71,9 +71,6 @@
 
 [ACPI](https://acpica.org/source)&nbsp; &nbsp; &nbsp; &nbsp; [QSci](https://riverbankcomputing.com/software/qscintilla/download) &nbsp; &nbsp; &nbsp; [patchmatic](https://github.com/RehabMan/OS-X-MaciASL-patchmatic)
 
-## Discussion area:
-
-[insanelymac](https://www.insanelymac.com/forum/topic/344860-open-source-cross-platform-dsdtssdt-analysis-editor/)
 
 ![screenshot](https://github.com/ic005k/qtiasl/blob/master/qtiasl.png)
 
