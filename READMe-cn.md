@@ -69,18 +69,11 @@
 
 ......
 
-### [国内github下载文件推荐](https://toolwa.com/github/)
-
+![截图](https://github.com/ic005k/QtiASL/blob/master/qtiasl.png)
 
 ## 感谢以下开源软件的支持！
 
 [ACPI](https://acpica.org/source)&nbsp; &nbsp; &nbsp; &nbsp; [QSci](https://riverbankcomputing.com/software/qscintilla/download) &nbsp; &nbsp; &nbsp; [patchmatic](https://github.com/RehabMan/OS-X-MaciASL-patchmatic)
 
-## 讨论区：
-
-[insanelymac](https://www.insanelymac.com/forum/topic/344860-open-source-cross-platform-dsdtssdt-analysis-editor/)
-
-
-![截图](https://github.com/ic005k/QtiASL/blob/master/qtiasl.png)
 
 ### 备注：此项目开始于2020年8月
