@@ -67,11 +67,11 @@
 
 ......
 
+![screenshot](https://github.com/ic005k/qtiasl/blob/master/qtiasl.png)
+
+
 ## Thanks for the support of the following open source software!
 
 [ACPI](https://acpica.org/source)&nbsp; &nbsp; &nbsp; &nbsp; [QSci](https://riverbankcomputing.com/software/qscintilla/download) &nbsp; &nbsp; &nbsp; [patchmatic](https://github.com/RehabMan/OS-X-MaciASL-patchmatic)
-
-
-![screenshot](https://github.com/ic005k/qtiasl/blob/master/qtiasl.png)
 
 ### Note: This project started in August 2020
