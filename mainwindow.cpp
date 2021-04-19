@@ -1307,7 +1307,6 @@ void MainWindow::mem_linkage(QTreeWidget* tw, int RowNum)
                         tw->setCurrentItem((*it));
                         //状态栏上显示层次结构
                         lblLayer->setText(getLayerName((*it)));
-                        //editLayer->setText(getLayerName((*it)));
 
                         break;
                     }
@@ -1476,7 +1475,6 @@ void MainWindow::on_btnFindNext()
     } else {
         if (str.count() > 0) {
 
-            //字色
             QPalette palette;
             palette.setColor(QPalette::Text, Qt::white);
             ui->editFind->setPalette(palette);
@@ -1535,13 +1533,13 @@ void MainWindow::on_btnFindPrevious()
     QFontMetrics fm = p.fontMetrics();
     QString t = textEdit->text(row).mid(0, col);
     int char_w;
-    //char_w = fm.horizontalAdvance(t); //一个字符的宽度
+
     char_w = fm.averageCharWidth();
     qDebug() << col;
     if (char_w < textEdit->viewport()->width())
         hscrollbar->setSliderPosition(0);
     else
-        hscrollbar->setSliderPosition(char_w); // + fm.horizontalAdvance(name));
+        hscrollbar->setSliderPosition(char_w);
 
     find_down = false;
     find_up = true;
@@ -1582,7 +1580,6 @@ void MainWindow::set_cursor_line_color(QTextEdit* edit)
     selection.format.setBackground(lineColor);
     selection.format.setProperty(QTextFormat::FullWidthSelection, true);
     selection.cursor = edit->textCursor();
-    //selection.cursor.clearSelection();
     extraSelection.append(selection);
     edit->setExtraSelections(extraSelection);
 }
@@ -1982,8 +1979,6 @@ void MainWindow::editFind_returnPressed()
 
 const char* QscilexerCppAttach::keywords(int set) const
 {
-    //if(set == 1 || set == 3)
-    //    return QsciLexerCPP::keywords(set);
 
     if (set == 1)
         return "and and_eq asm auto bitand bitor bool break case "
@@ -3703,13 +3698,8 @@ void MainWindow::init_info_edit()
     ui->gridLayout_13->setMargin(0);
 
     ui->listWidget->setFrameShape(QListWidget::NoFrame);
-    //ui->listWidget->setGeometry(ui->listWidget->x(), 20, ui->listWidget->width(), ui->listWidget->height());
     ui->listWidget->setSpacing(0);
-
     ui->listWidget->setIconSize(QSize(20, 20));
-
-    //ui->listWidget->setViewMode(QListView::IconMode);
-    //ui->listWidget->setViewMode(QListWidget::IconMode);
     ui->listWidget->setViewMode(QListView::ListMode);
 
     ui->listWidget->addItem(new QListWidgetItem(QIcon(":/icon/i1.png"), tr("BasicInfo")));
@@ -4342,30 +4332,26 @@ void MainWindow::init_treeWidget()
 
     ui->treeWidget->installEventFilter(this);
     ui->treeWidget->setAlternatingRowColors(true); //底色交替显示
-    /*ui->treeWidget->setStyleSheet(
-        "QTreeView::branch:hover {background-color:rgba(127,255,0,50)}"
 
-        "QTreeView::branch:selected {background: rgba(135, 206, 235, "
-        "255);selection-background-color:rgba(135, 206, 235, 255);}"
+    QString strStyle = "QTreeView::branch:hover {background-color:rgba(127,255,0,50)}"
 
-        "QTreeWidget::item:hover{background-color:rgba(127,255,0,50)}"
+                       "QTreeView::branch:selected {background: rgba(135 206 235, 255);selection-background-color:rgba(135 206 235, 255);}"
 
-        "QTreeWidget::item:selected{background-color:rgba(135, 206, 235, "
-        "255); color:rgba(5,5,5,255);}"
+                       "QTreeWidget::item:hover{background-color:rgba(127,255,0,50)}"
 
-        "QTreeView::branch:open:has-children:!has-siblings,QTreeView::branch:open:has-children:has-"
-        "siblings {image: url(:/icon/sub.png);}"
+                       "QTreeWidget::item:selected{background-color:rgba(135 206 235, 255); color:rgba(5,5,5,255);} "
 
-        "QTreeView::branch:has-children:!has-siblings:closed,QTreeView::branch:closed:has-children:"
-        "has-siblings {image: url(:/icon/main.png);}"
+                       "QTreeView::branch:open:has-children:!has-siblings,QTreeView::branch:open:has-children:has-siblings {image: url(:/icon/sub.png);}"
 
-        "QTreeView::branch:has-siblings:!adjoins-item{border-image:url(:/icon/branch-line.png)0;}"
+                       "QTreeView::branch:has-children:!has-siblings:closed,QTreeView::branch:closed:has-children:has-siblings {image: url(:/icon/main.png);}"
 
-        "QTreeView::branch:has-siblings:adjoins-item{border-image:url(:/icon/branch-more.png)0;}"
+                       "QTreeView::branch:has-siblings:!adjoins-item{border-image:url(:/icon/branch-line.png)0;}"
 
-        "QTreeView::branch:!has-children:!has-siblings:adjoins-item{border-image:url(:/icon//branch-end.png)0;}"
+                       "QTreeView::branch:has-siblings:adjoins-item{border-image:url(:/icon/branch-more.png)0;}"
 
-    );*/
+                       "QTreeView::branch:!has-children:!has-siblings:adjoins-item{border-image:url(:/icon//branch-end.png)0;}";
+
+    ui->treeWidget->setStyleSheet(strStyle);
 
     //右键菜单
     ui->treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);

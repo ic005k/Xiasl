@@ -262,8 +262,7 @@ QTreeView::branch:has-siblings:!adjoins-item{border-image:url(:/icon/branch-line
 
 QTreeView::branch:has-siblings:adjoins-item{border-image:url(:/icon/branch-more.png)0;}
  
-QTreeView::branch:!has-children:!has-siblings:adjoins-item{border-image:url(:/icon//branch-end.png)0;}
-</string>
+QTreeView::branch:!has-children:!has-siblings:adjoins-item{border-image:url(:/icon//branch-end.png)0;}</string>
            </property>
            <property name="frameShape">
             <enum>QFrame::StyledPanel</enum>
@@ -400,6 +399,12 @@ QTreeView::branch:!has-children:!has-siblings:adjoins-item{border-image:url(:/ic
          </property>
          <property name="sizeAdjustPolicy">
           <enum>QAbstractScrollArea::AdjustToContents</enum>
+         </property>
+         <property name="layoutMode">
+          <enum>QListView::SinglePass</enum>
+         </property>
+         <property name="viewMode">
+          <enum>QListView::ListMode</enum>
          </property>
         </widget>
        </item>

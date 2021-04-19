@@ -71,7 +71,7 @@ void MyTabWidget::removeNormalIndex(int index)
         //removeTab只是从tabbar移除了，并没有释放
         removeTab(index);
         //可以自己调用delete，或者设置tab页为WA_DeleteOnClose,关闭时释放
-        //delete page;
+
         page->close();
     }
 }
@@ -171,15 +171,12 @@ void MyTabWidget::initTabBar()
         //固定tab就不让拖出
         if (!drag_tab || fixedPage.contains(drag_tab))
             return;
-        //把当前页作为快照拖拽
-        //尺寸加了标题栏和边框
+
         QPixmap pixmap(drag_tab->size() + QSize(2, 31));
         pixmap.fill(Qt::transparent);
         QPainter painter(&pixmap);
         if (painter.isActive()) {
-            //这里想做标题栏贴在内容之上
-            //但是没法获取默认标题栏的图像啊，就随便画一个矩形框
-            //如果设置了外部主题颜色，需要改下
+
             QRect title_rect { 0, 0, pixmap.width(), 30 };
             painter.fillRect(title_rect, Qt::white);
             painter.drawText(title_rect, Qt::AlignLeft | Qt::AlignVCenter, "  " + drag_tab->windowTitle());
@@ -228,15 +225,10 @@ void MyTabWidget::popPage(QWidget* page)
             QWidget* content = pop->getContentWidget();
             this->appendNormalPage(content);
             pop->disconnect();
-            //关闭的时候会在原来的位置闪一下？
+
             pop->close();
-            //this->activateWindow();
         }
     });
-    //pop->show();
-    //page->show();
-    //pop->activateWindow();
-    //pop->setFocus();
 
     QString qfile = QDir::homePath() + "/.config/QtiASL/QtiASL.ini";
     QFile file(qfile);
@@ -249,6 +241,8 @@ void MyTabWidget::popPage(QWidget* page)
     Reg.setValue(QString::number(0) + "/" + "col", colDrag);
     Reg.setValue(QString::number(0) + "/" + "vs", vs);
     Reg.setValue(QString::number(0) + "/" + "hs", hs);
+
+    file.close();
 
     FileSystemWatcher::removeWatchPath(dragFileName);
     for (int i = 0; i < openFileList.count(); i++) {

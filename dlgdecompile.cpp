@@ -36,7 +36,6 @@ void dlgDecompile::on_btnAddSSDT_clicked()
         this, tr("Select files to open"),
         "", "aml list (*.aml);;dat list(*.dat);;All files(*.*)");
 
-    //ui->listSSDT->clear();
     ui->listSSDT->addItems(list);
 }
 
