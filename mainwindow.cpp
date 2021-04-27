@@ -96,7 +96,7 @@ MainWindow::MainWindow(QWidget* parent)
 
     loadLocal();
 
-    CurVerison = "1.0.57";
+    CurVerison = "1.0.58";
     ver = "QtiASL V" + CurVerison + "        ";
     setWindowTitle(ver);
 
@@ -114,12 +114,6 @@ MainWindow::MainWindow(QWidget* parent)
     connect(mythread, &thread_one::over, this, &MainWindow::dealover);
 
     dlg = new dlgDecompile(this);
-
-    init_statusBar();
-
-    init_menu();
-
-    init_recentFiles();
 
     font.setFamily("SauceCodePro Nerd Font");
 #ifdef Q_OS_WIN32
@@ -141,6 +135,12 @@ MainWindow::MainWindow(QWidget* parent)
     ui->actionGenerate->setEnabled(true);
     mac = true;
 #endif
+
+    init_statusBar();
+
+    init_menu();
+
+    init_recentFiles();
 
     init_info_edit();
 
@@ -3865,15 +3865,23 @@ void MainWindow::init_menu()
     //File
     ui->actionNew->setShortcut(tr("ctrl+n"));
     connect(ui->actionNew, &QAction::triggered, this, &MainWindow::newFile);
+    if (mac)
+        ui->actionNew->setIconVisibleInMenu(false);
 
     ui->actionOpen->setShortcut(tr("ctrl+o"));
     connect(ui->actionOpen, &QAction::triggered, this, &MainWindow::Open);
+    if (mac)
+        ui->actionOpen->setIconVisibleInMenu(false);
 
     ui->actionSave->setShortcut(tr("ctrl+s"));
     connect(ui->actionSave, &QAction::triggered, this, &MainWindow::Save);
+    if (mac)
+        ui->actionSave->setIconVisibleInMenu(false);
 
     ui->actionSaveAs->setShortcut(tr("ctrl+shift+s"));
     connect(ui->actionSaveAs, &QAction::triggered, this, &MainWindow::SaveAs);
+    if (mac)
+        ui->actionSaveAs->setIconVisibleInMenu(false);
 
     ui->actionOpen_directory->setShortcut(tr("ctrl+0"));
     connect(ui->actionOpen_directory, &QAction::triggered, this, &MainWindow::on_actionOpenDir);
@@ -3887,33 +3895,55 @@ void MainWindow::init_menu()
 
     //ui->actionDSDecompile->setShortcut(tr("ctrl+l"));
     connect(ui->actionDSDecompile, &QAction::triggered, this, &MainWindow::ds_Decompile);
+    if (mac)
+        ui->actionDSDecompile->setIconVisibleInMenu(false);
 
     ui->actionCompiling->setShortcut(tr("ctrl+m"));
     connect(ui->actionCompiling, &QAction::triggered, this, &MainWindow::btnCompile_clicked);
+    if (mac)
+        ui->actionCompiling->setIconVisibleInMenu(false);
 
     ui->actionRefreshTree->setShortcut(tr("ctrl+r"));
     connect(ui->actionRefreshTree, &QAction::triggered, this, &MainWindow::on_btnRefreshTree);
+    if (mac)
+        ui->actionRefreshTree->setIconVisibleInMenu(false);
 
     ui->actionFindPrevious->setShortcut(tr("ctrl+p"));
     connect(ui->actionFindPrevious, &QAction::triggered, this, &MainWindow::on_btnFindPrevious);
+    if (mac)
+        ui->actionFindPrevious->setIconVisibleInMenu(false);
 
     ui->actionFindNext->setShortcut(tr("ctrl+f"));
     connect(ui->actionFindNext, &QAction::triggered, this, &MainWindow::on_btnFindNext);
+    if (mac)
+        ui->actionFindNext->setIconVisibleInMenu(false);
     //ui->actionFind->setShortcut(tr("ctrl+f")); //注意：win下不起作用
     connect(ui->actionFind, &QAction::triggered, this, &MainWindow::on_btnFindNext);
+    if (mac)
+        ui->actionFind->setIconVisibleInMenu(false);
 
     ui->actionReplace->setShortcut(tr("ctrl+k"));
     connect(ui->actionReplace, &QAction::triggered, this, &MainWindow::on_btnReplace);
+    if (mac)
+        ui->actionReplace->setIconVisibleInMenu(false);
 
     ui->actionReplace_Find->setShortcut(tr("ctrl+j"));
     connect(ui->actionReplace_Find, &QAction::triggered, this, &MainWindow::on_btnReplaceFind);
+    if (mac)
+        ui->actionReplace_Find->setIconVisibleInMenu(false);
     connect(ui->actionReplaceAll, &QAction::triggered, this, &MainWindow::ReplaceAll);
+    if (mac)
+        ui->actionReplaceAll->setIconVisibleInMenu(false);
 
     ui->actionGo_to_previous_error->setShortcut(tr("ctrl+alt+e"));
     connect(ui->actionGo_to_previous_error, &QAction::triggered, this, &MainWindow::on_PreviousError);
+    if (mac)
+        ui->actionGo_to_previous_error->setIconVisibleInMenu(false);
 
     ui->actionGo_to_the_next_error->setShortcut(tr("ctrl+e"));
     connect(ui->actionGo_to_the_next_error, &QAction::triggered, this, &MainWindow::on_NextError);
+    if (mac)
+        ui->actionGo_to_the_next_error->setIconVisibleInMenu(false);
 
     connect(ui->actionKextstat, &QAction::triggered, this, &MainWindow::kextstat);
 
