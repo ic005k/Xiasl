@@ -96,7 +96,7 @@ MainWindow::MainWindow(QWidget* parent)
 
     loadLocal();
 
-    CurVerison = "1.0.58";
+    CurVerison = "1.0.59";
     ver = "QtiASL V" + CurVerison + "        ";
     setWindowTitle(ver);
 
