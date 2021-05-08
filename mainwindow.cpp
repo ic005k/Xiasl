@@ -96,7 +96,7 @@ MainWindow::MainWindow(QWidget* parent)
 
     loadLocal();
 
-    CurVerison = "1.0.59";
+    CurVerison = "1.0.60";
     ver = "QtiASL V" + CurVerison + "        ";
     setWindowTitle(ver);
 
@@ -115,23 +115,22 @@ MainWindow::MainWindow(QWidget* parent)
 
     dlg = new dlgDecompile(this);
 
-    font.setFamily("SauceCodePro Nerd Font");
 #ifdef Q_OS_WIN32
-    font.setPointSize(9);
+
     regACPI_win();
     ui->actionKextstat->setEnabled(false);
     win = true;
 #endif
 
 #ifdef Q_OS_LINUX
-    font.setPointSize(11);
+
     ui->actionKextstat->setEnabled(false);
     ui->actionGenerate->setEnabled(false);
     linuxOS = true;
 #endif
 
 #ifdef Q_OS_MAC
-    font.setPointSize(13);
+
     ui->actionGenerate->setEnabled(true);
     mac = true;
 #endif
@@ -794,6 +793,7 @@ void MainWindow::getACPITables(bool ssdt)
 
 #ifdef Q_OS_WIN32
     dir.setCurrent(acpiDir);
+
     dump.execute(appInfo.filePath() + "/acpidump.exe", QStringList() << "-b");
 
     dir.setCurrent(acpiDir + "temp/");
@@ -4357,7 +4357,6 @@ void MainWindow::init_treeWidget()
     ui->treeWidget->setColumnWidth(1, 100);
     ui->treeWidget->setHeaderItem(new QTreeWidgetItem(QStringList() << tr("Members") << "Lines"));
 
-    //ui->treeWidget->setStyle(QStyleFactory::create("Windows")); //连接的虚线
     ui->treeWidget->setFocusPolicy(Qt::NoFocus); // 去掉选中时的虚线,主要针对windows
 
     ui->treeWidget->installEventFilter(this);
@@ -4918,19 +4917,9 @@ void MainWindow::set_font()
     if (ok) {
 
         for (int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i++) {
-
             textLexer->setFont(font);
             getCurrentEditor(i)->setLexer(textLexer);
             setLexer(textLexer, getCurrentEditor(i));
-
-            QFont m_font;
-            m_font.setFamily(font.family());
-            getCurrentEditor(i)->setMarginsFont(m_font);
-        }
-
-        if (!linuxOS) {
-            ui->treeWidget->setFont(font.family());
-            miniDlgEdit->setFont(ui->treeWidget->font());
         }
 
         //存储字体信息
