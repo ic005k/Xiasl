@@ -4467,7 +4467,25 @@ void MainWindow::init_filesystem()
         resizeDocks({ ui->dockWidgetSymbols }, { m_w }, Qt::Horizontal);
 
         int i_h = Reg.value("info_win", 150).toInt();
-        resizeDocks({ ui->dockWidget_Info }, { i_h }, Qt::Vertical);
+        resizeDocks({ui->dockWidget_Info}, {i_h}, Qt::Vertical);
+
+        // 主窗口位置和大小
+        int x, y, width, height;
+        x = Reg.value("x", 0).toInt();
+        y = Reg.value("y", 0).toInt();
+        width = Reg.value("width", 1200).toInt();
+        height = Reg.value("height", 600).toInt();
+        if (x < 0) {
+            width = width + x;
+            x = 0;
+        }
+        if (y < 0) {
+            height = height + y;
+            y = 0;
+        }
+        QRect rect(x, y, width, height);
+        move(rect.topLeft());
+        resize(rect.size());
     }
 }
 
@@ -4613,7 +4631,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
     //存储编译选项
     QString qfile = QDir::homePath() + "/.config/QtiASL/QtiASL.ini";
     QFile file(qfile);
-    //QSettings Reg(qfile, QSettings::NativeFormat);
+
     QSettings Reg(qfile, QSettings::IniFormat);
     Reg.setValue("options", ui->cboxCompilationOptions->currentText().trimmed());
 
@@ -4626,6 +4644,12 @@ void MainWindow::closeEvent(QCloseEvent* event)
         Reg.setValue("FindText" + QString::number(i + 1), ui->editFind->itemText(i));
     }
     Reg.setValue("countFindText", count);
+
+    // 存储窗口大小和位置
+    Reg.setValue("x", this->x());
+    Reg.setValue("y", this->y());
+    Reg.setValue("width", this->width());
+    Reg.setValue("height", this->height());
 
     //存储minimap
     Reg.setValue("minimap", ui->actionMinimap->isChecked());
