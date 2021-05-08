@@ -436,7 +436,7 @@ QTreeView::branch:!has-children:!has-siblings:adjoins-item{border-image:url(:/ic
           <enum>QTabWidget::North</enum>
          </property>
          <property name="currentIndex">
-          <number>4</number>
+          <number>5</number>
          </property>
          <property name="documentMode">
           <bool>true</bool>

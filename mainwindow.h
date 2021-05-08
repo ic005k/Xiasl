@@ -102,7 +102,7 @@ class MainWindow : public QMainWindow {
 public:
     MainWindow(QWidget* parent = nullptr);
     ~MainWindow();
-
+    Ui::MainWindow *ui;
     void setRecentFiles(QString fileName);
     void addFilesWatch();
     void removeFilesWatch();
@@ -316,8 +316,6 @@ private slots:
     void on_actionClose_tab_triggered();
 
 private:
-    Ui::MainWindow* ui;
-
     int lblNumber = 2;
     int editNumber = 1;
 

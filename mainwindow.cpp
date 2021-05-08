@@ -5833,6 +5833,7 @@ void MiniEditor::showZoomWin(int x, int y)
     miniDlg->setGeometry(mw_one->getDockWidth() + miniEditX - w, y1, w, h);
 
     if (miniDlg->isHidden()) {
+        miniDlgEdit->setFont(mw_one->font);
         miniDlg->show();
     }
 }
