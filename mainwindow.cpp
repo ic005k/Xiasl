@@ -96,7 +96,7 @@ MainWindow::MainWindow(QWidget* parent)
 
     loadLocal();
 
-    CurVerison = "1.0.60";
+    CurVerison = "1.0.61";
     ver = "QtiASL V" + CurVerison + "        ";
     setWindowTitle(ver);
 
@@ -4467,7 +4467,7 @@ void MainWindow::init_filesystem()
         resizeDocks({ ui->dockWidgetSymbols }, { m_w }, Qt::Horizontal);
 
         int i_h = Reg.value("info_win", 150).toInt();
-        resizeDocks({ui->dockWidget_Info}, {i_h}, Qt::Vertical);
+        resizeDocks({ ui->dockWidget_Info }, { i_h }, Qt::Vertical);
 
         // 主窗口位置和大小
         int x, y, width, height;
