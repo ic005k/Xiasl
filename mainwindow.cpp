@@ -4183,7 +4183,7 @@ void MainWindow::init_miniEdit()
     miniEdit = new MiniEditor(this);
 
 #ifdef Q_OS_WIN32
-    ui->dockWidget_Mini->setFixedWidth(155);
+    ui->dockWidget_Mini->setFixedWidth(135);
 #endif
 
 #ifdef Q_OS_LINUX
