@@ -3804,7 +3804,7 @@ void MainWindow::init_toolbar()
     ui->toolBar->addSeparator();
     ui->toolBar->addWidget(ui->chkCaseSensitive);
     ui->toolBar->addWidget(ui->editFind);
-    ui->editFind->setFixedWidth(320);
+    ui->editFind->setFixedWidth(350);
 
     ui->editFind->lineEdit()->setPlaceholderText(tr("Find") + "  (" + tr("History entries") + ": " + QString::number(ui->editFind->count()) + ")");
 
@@ -3859,8 +3859,7 @@ void MainWindow::init_toolbar()
 
 void MainWindow::init_menu()
 {
-
-    ui->toolBar->setIconSize(QSize(24, 24));
+    ui->toolBar->setIconSize(QSize(32, 32));
 
     //File
     ui->actionNew->setShortcut(tr("ctrl+n"));
@@ -4183,7 +4182,7 @@ void MainWindow::init_miniEdit()
     miniEdit = new MiniEditor(this);
 
 #ifdef Q_OS_WIN32
-    ui->dockWidget_Mini->setFixedWidth(120);
+    ui->dockWidget_Mini->setFixedWidth(150);
 #endif
 
 #ifdef Q_OS_LINUX

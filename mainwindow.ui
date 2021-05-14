@@ -60,6 +60,12 @@
     </item>
     <item row="1" column="0">
      <widget class="QComboBox" name="editFind">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>0</height>
+       </size>
+      </property>
       <property name="toolTip">
        <string/>
       </property>
@@ -93,7 +99,7 @@
      <x>0</x>
      <y>0</y>
      <width>1221</width>
-     <height>24</height>
+     <height>30</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -195,8 +201,8 @@
   <widget class="QDockWidget" name="dockWidgetSymbols">
    <property name="minimumSize">
     <size>
-     <width>163</width>
-     <height>189</height>
+     <width>201</width>
+     <height>234</height>
     </size>
    </property>
    <property name="features">
