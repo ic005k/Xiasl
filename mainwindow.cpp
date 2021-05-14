@@ -3859,7 +3859,9 @@ void MainWindow::init_toolbar()
 
 void MainWindow::init_menu()
 {
-    ui->toolBar->setIconSize(QSize(25, 25));
+    ui->toolBar->setIconSize(QSize(22, 22));
+    ui->toolBar->layout()->setMargin(1);
+    ui->toolBar->layout()->setSpacing(1);
 
     //File
     ui->actionNew->setShortcut(tr("ctrl+n"));
