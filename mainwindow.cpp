@@ -5824,7 +5824,7 @@ void MiniEditor::showZoomWin(int x, int y)
     }
 
     int miniEditX = mw_one->getTabWidgetEditX() + mw_one->getTabWidgetEditW();
-    int w = 850;
+    int w = 800;
     int h = miniDlgEdit->textHeight(y) * 9;
     int y1 = y;
 
