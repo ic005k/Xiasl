@@ -3783,6 +3783,9 @@ void MainWindow::init_recentFiles()
 
 void MainWindow::init_toolbar()
 {
+    ui->toolBar->layout()->setMargin(1);
+    ui->toolBar->layout()->setSpacing(1);
+
     ui->actionNew->setIcon(QIcon(":/icon/new.png"));
     ui->toolBar->addAction(ui->actionNew);
 
@@ -3804,7 +3807,7 @@ void MainWindow::init_toolbar()
     ui->toolBar->addSeparator();
     ui->toolBar->addWidget(ui->chkCaseSensitive);
     ui->toolBar->addWidget(ui->editFind);
-    ui->editFind->setFixedWidth(350);
+    ui->editFind->setFixedWidth(300);
 
     ui->editFind->lineEdit()->setPlaceholderText(tr("Find") + "  (" + tr("History entries") + ": " + QString::number(ui->editFind->count()) + ")");
 
@@ -3859,10 +3862,6 @@ void MainWindow::init_toolbar()
 
 void MainWindow::init_menu()
 {
-    ui->toolBar->setIconSize(QSize(22, 22));
-    ui->toolBar->layout()->setMargin(1);
-    ui->toolBar->layout()->setSpacing(1);
-
     //File
     ui->actionNew->setShortcut(tr("ctrl+n"));
     connect(ui->actionNew, &QAction::triggered, this, &MainWindow::newFile);
@@ -4188,7 +4187,7 @@ void MainWindow::init_miniEdit()
 #endif
 
 #ifdef Q_OS_LINUX
-    ui->dockWidget_Mini->setFixedWidth(120);
+    ui->dockWidget_Mini->setFixedWidth(150);
 #endif
 
 #ifdef Q_OS_MAC
