@@ -3782,7 +3782,7 @@ void MainWindow::init_recentFiles()
 
 void MainWindow::init_toolbar()
 {
-    ui->toolBar->setIconSize(QSize(25, 25));
+    ui->toolBar->setIconSize(QSize(20, 20));
 
     ui->toolBar->layout()->setMargin(1);
     ui->toolBar->layout()->setSpacing(1);
@@ -4184,11 +4184,11 @@ void MainWindow::init_miniEdit()
     miniEdit = new MiniEditor(this);
 
 #ifdef Q_OS_WIN32
-    ui->dockWidget_Mini->setFixedWidth(150);
+    ui->dockWidget_Mini->setFixedWidth(115);
 #endif
 
 #ifdef Q_OS_LINUX
-    ui->dockWidget_Mini->setFixedWidth(150);
+    ui->dockWidget_Mini->setFixedWidth(115);
 #endif
 
 #ifdef Q_OS_MAC
