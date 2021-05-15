@@ -3782,9 +3782,7 @@ void MainWindow::init_recentFiles()
 
 void MainWindow::init_toolbar()
 {
-#ifdef Q_OS_MAC
     ui->toolBar->setIconSize(QSize(25, 25));
-#endif
 
     ui->toolBar->layout()->setMargin(1);
     ui->toolBar->layout()->setSpacing(1);
