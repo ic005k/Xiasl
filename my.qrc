@@ -36,5 +36,6 @@
         <file>icon/md1.svg</file>
         <file>icon/main.svg</file>
         <file>icon/sub.svg</file>
+        <file>icon/save.png</file>
     </qresource>
 </RCC>
