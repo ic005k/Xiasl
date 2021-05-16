@@ -540,7 +540,7 @@ void MainWindow::loadFile(const QString& fileName, int row, int col)
 
     ReLoad = false;
 
-    QIcon icon(":/icon/md0.png");
+    QIcon icon(":/icon/md0.svg");
     ui->tabWidget_textEdit->tabBar()->setTabIcon(ui->tabWidget_textEdit->currentIndex(), icon);
     One = false;
 
@@ -729,7 +729,7 @@ bool MainWindow::saveFile(const QString& fileName)
         return false;
     }
 
-    QIcon icon(":/icon/md0.png");
+    QIcon icon(":/icon/md0.svg");
     ui->tabWidget_textEdit->tabBar()->setTabIcon(ui->tabWidget_textEdit->currentIndex(), icon);
     One = false;
 
@@ -1227,13 +1227,13 @@ void MainWindow::textEdit_cursorPositionChanged()
         int i = ui->tabWidget_textEdit->currentIndex();
 
         if (!textEdit->isModified()) {
-            QIcon icon(":/icon/md0.png");
+            QIcon icon(":/icon/md0.svg");
             ui->tabWidget_textEdit->tabBar()->setTabIcon(i, icon);
             ui->actionSave->setEnabled(false);
         }
 
         if (textEdit->isModified()) {
-            QIcon icon(":/icon/md1.png");
+            QIcon icon(":/icon/md1.svg");
             ui->tabWidget_textEdit->tabBar()->setTabIcon(i, icon);
             ui->actionSave->setEnabled(true);
         }
@@ -2320,15 +2320,15 @@ void addSubItem(int start, int end, QsciScintilla* textEdit, QString Name, QTree
             QTreeWidgetItem* iSub = new QTreeWidgetItem(QStringList() << getMemberName(Name, textEdit, sdds1) << QString("%1").arg(sdds1, 7, 10, QChar('0')));
 
             if (Name == "Device") {
-                iSub->setIcon(0, QIcon(":/icon/d.png"));
+                iSub->setIcon(0, QIcon(":/icon/d.svg"));
                 d_count++;
             }
             if (Name == "Scope") {
-                iSub->setIcon(0, QIcon(":/icon/s.png"));
+                iSub->setIcon(0, QIcon(":/icon/s.svg"));
                 s_count++;
             }
             if (Name == "Method") {
-                iSub->setIcon(0, QIcon(":/icon/m.png"));
+                iSub->setIcon(0, QIcon(":/icon/m.svg"));
                 m_count++;
             }
 
@@ -2341,15 +2341,15 @@ QTreeWidgetItem* addChildItem(int row, QsciScintilla* textEdit, QString Name, QT
 {
     QTreeWidgetItem* iSub = new QTreeWidgetItem(QStringList() << getMemberName(Name, textEdit, row) << QString("%1").arg(row, 7, 10, QChar('0')));
     if (Name == "Device") {
-        iSub->setIcon(0, QIcon(":/icon/d.png"));
+        iSub->setIcon(0, QIcon(":/icon/d.svg"));
         d_count++;
     }
     if (Name == "Scope") {
-        iSub->setIcon(0, QIcon(":/icon/s.png"));
+        iSub->setIcon(0, QIcon(":/icon/s.svg"));
         s_count++;
     }
     if (Name == "Method") {
-        iSub->setIcon(0, QIcon(":/icon/m.png"));
+        iSub->setIcon(0, QIcon(":/icon/m.svg"));
         m_count++;
     }
 
@@ -2391,7 +2391,7 @@ void getMemberTree(QsciScintilla* textEdit)
         if (chkMemberName(str_member, "Scope")) {
 
             twItem0 = new QTreeWidgetItem(QStringList() << getMemberName(str_member, textEdit, j) << QString("%1").arg(j, 7, 10, QChar('0')));
-            twItem0->setIcon(0, QIcon(":/icon/s.png"));
+            twItem0->setIcon(0, QIcon(":/icon/s.svg"));
             //tw->addTopLevelItem(twItem0);
             tw_list.append(twItem0);
 
@@ -3118,7 +3118,7 @@ void getMemberTree(QsciScintilla* textEdit)
         if (chkMemberName(str_member, "Method")) {
 
             QTreeWidgetItem* twItem0 = new QTreeWidgetItem(QStringList() << getMemberName(str_member, textEdit, j) << QString("%1").arg(j, 7, 10, QChar('0')));
-            twItem0->setIcon(0, QIcon(":/icon/m.png"));
+            twItem0->setIcon(0, QIcon(":/icon/m.svg"));
             //tw->addTopLevelItem(twItem0);
             tw_list.append(twItem0);
 
@@ -3129,7 +3129,7 @@ void getMemberTree(QsciScintilla* textEdit)
         if (chkMemberName(str_member, "Device")) {
 
             QTreeWidgetItem* twItem0 = new QTreeWidgetItem(QStringList() << getMemberName(str_member, textEdit, j) << QString("%1").arg(j, 7, 10, QChar('0')));
-            twItem0->setIcon(0, QIcon(":/icon/d.png"));
+            twItem0->setIcon(0, QIcon(":/icon/d.svg"));
             //tw->addTopLevelItem(twItem0);
             tw_list.append(twItem0);
 
@@ -3636,7 +3636,7 @@ void getMembers(QString str_member, QsciScintilla* textEdit)
 
                         if (str_member == "Scope" && show_s) {
 
-                            twItem0->setIcon(0, QIcon(":/icon/s.png"));
+                            twItem0->setIcon(0, QIcon(":/icon/s.svg"));
                             QFont f;
                             f.setBold(true);
                             twItem0->setFont(0, f);
@@ -3647,7 +3647,7 @@ void getMembers(QString str_member, QsciScintilla* textEdit)
                         }
                         if (str_member == "Method" && show_m) {
 
-                            twItem0->setIcon(0, QIcon(":/icon/m.png"));
+                            twItem0->setIcon(0, QIcon(":/icon/m.svg"));
 
                             twitems.append(twItem0);
 
@@ -3655,7 +3655,7 @@ void getMembers(QString str_member, QsciScintilla* textEdit)
                         }
                         if (str_member == "Name" && show_n) {
 
-                            twItem0->setIcon(0, QIcon(":/icon/n.png"));
+                            twItem0->setIcon(0, QIcon(":/icon/n.svg"));
 
                             twitems.append(twItem0);
 
@@ -3663,7 +3663,7 @@ void getMembers(QString str_member, QsciScintilla* textEdit)
                         }
                         if (str_member == "Device" && show_d) {
 
-                            twItem0->setIcon(0, QIcon(":/icon/d.png"));
+                            twItem0->setIcon(0, QIcon(":/icon/d.svg"));
 
                             twitems.append(twItem0);
 
@@ -4891,7 +4891,7 @@ void MainWindow::newFile()
     ui->tabWidget_textEdit->setCurrentIndex(ui->tabWidget_textEdit->tabBar()->count() - 1);
     ui->tabWidget_textEdit->setTabsClosable(true);
 
-    QIcon icon(":/icon/md0.png");
+    QIcon icon(":/icon/md0.svg");
     ui->tabWidget_textEdit->tabBar()->setTabIcon(ui->tabWidget_textEdit->tabBar()->count() - 1, icon);
     One = false;
 

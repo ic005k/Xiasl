@@ -1,9 +1,6 @@
 <RCC>
     <qresource prefix="/">
-        <file>icon/d.png</file>
-        <file>icon/m.png</file>
         <file>icon/n.png</file>
-        <file>icon/s.png</file>
         <file>data/apis.txt</file>
         <file>icon/icon.png</file>
         <file>tr/cn.qm</file>
@@ -35,7 +32,10 @@
         <file>icon/branch-end.png</file>
         <file>icon/branch-line.png</file>
         <file>icon/branch-more.png</file>
-        <file>icon/md0.png</file>
-        <file>icon/md1.png</file>
+        <file>icon/d.svg</file>
+        <file>icon/m.svg</file>
+        <file>icon/s.svg</file>
+        <file>icon/md0.svg</file>
+        <file>icon/md1.svg</file>
     </qresource>
 </RCC>
