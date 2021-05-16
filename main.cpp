@@ -73,6 +73,7 @@ int main(int argc, char* argv[])
         mw_one->show();
     }
 
+    f.setPixelSize(12);
     a->setFont(f);
     return a->exec();
 }
