@@ -13,7 +13,6 @@
         <file>icon/return.png</file>
         <file>icon/new.png</file>
         <file>icon/open.png</file>
-        <file>icon/save.png</file>
         <file>icon/saveas.png</file>
         <file>icon/r.png</file>
         <file>icon/fn.png</file>
@@ -27,8 +26,6 @@
         <file>icon/i3.png</file>
         <file>icon/i4.png</file>
         <file>icon/i5.png</file>
-        <file>icon/main.png</file>
-        <file>icon/sub.png</file>
         <file>icon/branch-end.png</file>
         <file>icon/branch-line.png</file>
         <file>icon/branch-more.png</file>
@@ -37,5 +34,7 @@
         <file>icon/s.svg</file>
         <file>icon/md0.svg</file>
         <file>icon/md1.svg</file>
+        <file>icon/main.svg</file>
+        <file>icon/sub.svg</file>
     </qresource>
 </RCC>

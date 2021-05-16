@@ -4371,9 +4371,9 @@ void MainWindow::init_treeWidget()
 
                        "QTreeWidget::item:selected{background-color:rgba(135 206 235, 255); color:rgba(5,5,5,255);} "
 
-                       "QTreeView::branch:open:has-children:!has-siblings,QTreeView::branch:open:has-children:has-siblings {image: url(:/icon/sub.png);}"
+                       "QTreeView::branch:open:has-children:!has-siblings,QTreeView::branch:open:has-children:has-siblings {image: url(:/icon/sub.svg);}"
 
-                       "QTreeView::branch:has-children:!has-siblings:closed,QTreeView::branch:closed:has-children:has-siblings {image: url(:/icon/main.png);}"
+                       "QTreeView::branch:has-children:!has-siblings:closed,QTreeView::branch:closed:has-children:has-siblings {image: url(:/icon/main.svg);}"
 
                        "QTreeView::branch:has-siblings:!adjoins-item{border-image:url(:/icon/branch-line.png)0;}"
 
