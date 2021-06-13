@@ -116,14 +116,12 @@ MainWindow::MainWindow(QWidget* parent)
     dlg = new dlgDecompile(this);
 
 #ifdef Q_OS_WIN32
-
     regACPI_win();
     ui->actionKextstat->setEnabled(false);
     win = true;
 #endif
 
 #ifdef Q_OS_LINUX
-
     ui->actionKextstat->setEnabled(false);
     ui->actionGenerate->setEnabled(false);
     linuxOS = true;
@@ -4361,7 +4359,8 @@ void MainWindow::init_treeWidget()
     ui->treeWidget->setFocusPolicy(Qt::NoFocus); // 去掉选中时的虚线,主要针对windows
 
     ui->treeWidget->installEventFilter(this);
-    ui->treeWidget->setAlternatingRowColors(true); //底色交替显示
+    if (!win)
+        ui->treeWidget->setAlternatingRowColors(true); //底色交替显示
 
     QString strStyle = "QTreeView::branch:hover {background-color:rgba(127,255,0,50)}"
 
