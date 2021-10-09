@@ -18,15 +18,109 @@
     <normaloff>:/icon/icon.png</normaloff>:/icon/icon.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout_7">
-    <item row="1" column="4" rowspan="3">
+   <layout class="QGridLayout" name="gridLayout_9">
+    <item row="0" column="0" colspan="5">
+     <widget class="QFrame" name="frameTip">
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_14">
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item row="0" column="0">
+        <widget class="QLabel" name="lblFileName">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QPushButton" name="btnNo">
+         <property name="maximumSize">
+          <size>
+           <width>75</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>No</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QPushButton" name="btnYes">
+         <property name="maximumSize">
+          <size>
+           <width>75</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Yes</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QCheckBox" name="chkAll">
+      <property name="toolTip">
+       <string>Decompile all AML files in the directory where the opened file is located</string>
+      </property>
+      <property name="text">
+       <string>Batch decompilation</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="1">
+     <widget class="QLineEdit" name="editReplace">
+      <property name="placeholderText">
+       <string>Replace</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="2">
+     <widget class="QComboBox" name="editFind">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="toolTip">
+       <string/>
+      </property>
+      <property name="editable">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="3">
+     <widget class="QCheckBox" name="chkCaseSensitive">
+      <property name="text">
+       <string>CaseSensitive</string>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="4">
      <widget class="QComboBox" name="cboxCompilationOptions">
       <property name="toolTip">
        <string>Compilation options</string>
       </property>
      </widget>
     </item>
-    <item row="0" column="3" rowspan="4" colspan="2">
+    <item row="2" column="0" colspan="5">
      <widget class="MyTabWidget" name="tabWidget_textEdit" native="true">
       <property name="currentIndex" stdset="0">
        <number>-1</number>
@@ -45,49 +139,6 @@
       </property>
       <property name="tabBarAutoHide" stdset="0">
        <bool>true</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="1">
-     <widget class="QCheckBox" name="chkAll">
-      <property name="toolTip">
-       <string>Decompile all AML files in the directory where the opened file is located</string>
-      </property>
-      <property name="text">
-       <string>Batch decompilation</string>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="0">
-     <widget class="QComboBox" name="editFind">
-      <property name="minimumSize">
-       <size>
-        <width>0</width>
-        <height>0</height>
-       </size>
-      </property>
-      <property name="toolTip">
-       <string/>
-      </property>
-      <property name="editable">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="0">
-     <widget class="QCheckBox" name="chkCaseSensitive">
-      <property name="text">
-       <string>CaseSensitive</string>
-      </property>
-      <property name="checked">
-       <bool>false</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="2" rowspan="2">
-     <widget class="QLineEdit" name="editReplace">
-      <property name="placeholderText">
-       <string>Replace</string>
       </property>
      </widget>
     </item>
@@ -218,7 +269,7 @@
     <number>1</number>
    </attribute>
    <widget class="QWidget" name="dockWidgetContents">
-    <layout class="QGridLayout" name="gridLayout_9">
+    <layout class="QGridLayout" name="gridLayout_7">
      <item row="0" column="0">
       <widget class="QTabWidget" name="tabWidget_misc">
        <property name="tabPosition">

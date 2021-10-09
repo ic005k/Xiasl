@@ -1,10 +1,6 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "dlgdecompile.h"
-#include "minidialog.h"
-#include "recentfiles.h"
-
 #include <Qsci/qsciapis.h>
 #include <Qsci/qscilexercoffeescript.h>
 #include <Qsci/qscilexercpp.h>
@@ -56,11 +52,15 @@
 #include <QTreeWidgetItem>
 #include <QWidget>
 
+#include "dlgdecompile.h"
+#include "minidialog.h"
+#include "recentfiles.h"
+
 //网络相关头文件
 #include <QtNetwork/QNetworkAccessManager>
 #include <QtNetwork/QNetworkReply>
 #include <QtNetwork/QNetworkRequest>
-//JSON相关头文件
+// JSON相关头文件
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -97,466 +97,465 @@ int getBraceScope(int start, int count, QsciScintilla* textEdit);
 bool chkMemberName(QString str, QString name);
 
 class MainWindow : public QMainWindow {
-    Q_OBJECT
+  Q_OBJECT
 
-public:
-    MainWindow(QWidget* parent = nullptr);
-    ~MainWindow();
-    Ui::MainWindow *ui;
-    void setRecentFiles(QString fileName);
-    void addFilesWatch();
-    void removeFilesWatch();
-    QString getCurrentFileName(int index);
+ public:
+  MainWindow(QWidget* parent = nullptr);
+  ~MainWindow();
+  Ui::MainWindow* ui;
+  void setRecentFiles(QString fileName);
+  void addFilesWatch();
+  void removeFilesWatch();
+  QString getCurrentFileName(int index);
+  QString strModiFile;
 
-    int getDockWidth();
+  int getDockWidth();
 
-    int getMiniDockX();
+  int getMiniDockX();
 
-    int getTabWidgetEditX();
+  int getTabWidgetEditX();
 
-    int getTabWidgetEditW();
+  int getTabWidgetEditW();
 
-    int getMainWindowHeight();
+  int getMainWindowHeight();
 
-    QString getTabTitle();
+  QString getTabTitle();
 
-    void setMark();
-    void about();
-    void getErrorLine(int i);
+  void setMark();
+  void about();
+  void getErrorLine(int i);
 
-    void loadFile(const QString& fileName, int row, int col);
+  void loadFile(const QString& fileName, int row, int col);
 
-    QsciScintilla* textEdit;
-    QsciScintilla* getCurrentEditor(int index);
+  QsciScintilla* textEdit;
+  QsciScintilla* getCurrentEditor(int index);
 
-    MiniEditor* miniEdit;
+  MiniEditor* miniEdit;
 
-    void setCurrentFile(const QString& fileName);
+  void setCurrentFile(const QString& fileName);
 
-    void update_ui_tree();
+  void update_ui_tree();
 
-    void loadLocal();
+  void loadLocal();
 
-    QString curFile;
+  QString curFile;
 
-    QProcess* co;
+  QProcess* co;
 
-    QProcess* Decompile;
+  QProcess* Decompile;
 
-    QProcess* pk;
+  QProcess* pk;
 
-    RecentFiles* m_recentFiles;
+  RecentFiles* m_recentFiles;
 
-    QFont font;
+  QFont font;
 
-    RecentFiles* m_ssdtFiles;
+  RecentFiles* m_ssdtFiles;
 
-    int current_line = 0;
+  int current_line = 0;
 
-    thread_one* mythread; //线程对象
+  thread_one* mythread;  //线程对象
 
-    QSplitter* splitterMain;
+  QSplitter* splitterMain;
 
-    void getACPITables(bool ssdt);
+  void getACPITables(bool ssdt);
 
-    void msg(int value);
-    void msgstr(QString str);
+  void msg(int value);
+  void msgstr(QString str);
 
-protected:
-    void closeEvent(QCloseEvent* event) override;
-    void dragEnterEvent(QDragEnterEvent* e) override;
-    void dropEvent(QDropEvent* e) override;
-    void paintEvent(QPaintEvent* event) override;
-    void keyPressEvent(QKeyEvent* event) override;
-    void keyReleaseEvent(QKeyEvent* event) override;
-    void mouseMoveEvent(QMouseEvent* e) override;
-    void mousePressEvent(QMouseEvent* e) override;
+ protected:
+  void closeEvent(QCloseEvent* event) override;
+  void dragEnterEvent(QDragEnterEvent* e) override;
+  void dropEvent(QDropEvent* e) override;
+  void paintEvent(QPaintEvent* event) override;
+  void keyPressEvent(QKeyEvent* event) override;
+  void keyReleaseEvent(QKeyEvent* event) override;
+  void mouseMoveEvent(QMouseEvent* e) override;
+  void mousePressEvent(QMouseEvent* e) override;
 
-public slots:
-    void Open();
-    QString openFile(QString fileName);
-    void dealover(); //处理线程返回的结束信号
+ public slots:
+  void Open();
+  QString openFile(QString fileName);
+  void dealover();  //处理线程返回的结束信号
 
-    bool eventFilter(QObject*, QEvent*) override;
+  bool eventFilter(QObject*, QEvent*) override;
 
-    void on_NewWindow();
+  void on_NewWindow();
 
-    void on_tabWidget_textEdit_currentChanged(int index);
-    void on_tabWidget_textEdit_tabBarClicked(int index);
+  void on_tabWidget_textEdit_currentChanged(int index);
+  void on_tabWidget_textEdit_tabBarClicked(int index);
 
-    void miniEdit_cursorPositionChanged();
+  void miniEdit_cursorPositionChanged();
 
-    void setValue();
-    void setValue2();
+  void setValue();
+  void setValue2();
 
-private slots:
-    void on_actionExpandAll();
+ private slots:
+  void on_actionExpandAll();
 
-    void on_actionCollapseAll();
+  void on_actionCollapseAll();
 
-    void on_actionOpenDir();
+  void on_actionOpenDir();
 
-    void treeWidgetBack_itemClicked(QTreeWidgetItem* item, int column);
+  void treeWidgetBack_itemClicked(QTreeWidgetItem* item, int column);
 
-    void on_miniMap();
+  void on_miniMap();
 
-    void on_clearFindText();
+  void on_clearFindText();
 
-    void userGuide();
+  void userGuide();
 
-    void ds_Decompile();
+  void ds_Decompile();
 
-    void view_info();
+  void view_info();
 
-    void view_mem_list();
+  void view_mem_list();
 
-    void closeTab(int index);
+  void closeTab(int index);
 
-    void kextstat();
+  void kextstat();
 
-    void set_font();
+  void set_font();
 
-    void set_wrap();
+  void set_wrap();
 
-    void on_btnRefreshTree();
+  void on_btnRefreshTree();
 
-    void refresh_tree(QsciScintilla* textEdit);
+  void refresh_tree(QsciScintilla* textEdit);
 
-    void timer_linkage();
+  void timer_linkage();
 
-    void readResult(int exitCode);
-    void readCppResult(int exitCode);
-    void readCppRunResult(int exitCode);
-    void readDecompileResult(int exitCode);
-    void readHelpResult(int exitCode);
+  void readResult(int exitCode);
+  void readCppResult(int exitCode);
+  void readCppRunResult(int exitCode);
+  void readDecompileResult(int exitCode);
+  void readHelpResult(int exitCode);
 
-    void readKextstat();
+  void readKextstat();
 
-    void recentOpen(QString filename);
-    void ssdtOpen(QString filename);
+  void recentOpen(QString filename);
+  void ssdtOpen(QString filename);
 
-    void newFile();
+  void newFile();
 
-    bool Save();
+  bool Save();
 
-    bool SaveAs();
+  bool SaveAs();
 
-    void btnGenerate_clicked();
+  void btnGenerate_clicked();
 
-    void btnCompile_clicked();
+  void btnCompile_clicked();
 
-    void textEdit_cursorPositionChanged();
+  void textEdit_cursorPositionChanged();
 
-    void textEdit_linesChanged();
+  void textEdit_linesChanged();
 
-    void textEdit_textChanged();
+  void textEdit_textChanged();
 
-    void on_btnReplace();
+  void on_btnReplace();
 
-    void on_btnFindNext();
+  void on_btnFindNext();
 
-    void on_btnFindPrevious();
+  void on_btnFindPrevious();
 
-    void on_treeWidget_itemClicked(QTreeWidgetItem* item, int column);
+  void on_treeWidget_itemClicked(QTreeWidgetItem* item, int column);
 
-    void on_editShowMsg_cursorPositionChanged();
+  void on_editShowMsg_cursorPositionChanged();
 
-    void on_PreviousError();
-    void on_NextError();
+  void on_PreviousError();
+  void on_NextError();
 
-    void on_editShowMsg_selectionChanged();
+  void on_editShowMsg_selectionChanged();
 
-    void editFind_returnPressed();
+  void editFind_returnPressed();
 
-    void on_MainWindow_destroyed();
+  void on_MainWindow_destroyed();
 
-    void on_editErrors_cursorPositionChanged();
+  void on_editErrors_cursorPositionChanged();
 
-    void on_editWarnings_cursorPositionChanged();
+  void on_editWarnings_cursorPositionChanged();
 
-    void on_editRemarks_cursorPositionChanged();
+  void on_editRemarks_cursorPositionChanged();
 
-    void on_editOptimizations_cursorPositionChanged();
+  void on_editOptimizations_cursorPositionChanged();
 
-    void on_btnReplaceFind();
+  void on_btnReplaceFind();
 
-    void on_chkCaseSensitive_clicked();
+  void on_chkCaseSensitive_clicked();
 
-    void on_chkCaseSensitive_clicked(bool checked);
+  void on_chkCaseSensitive_clicked(bool checked);
 
-    void on_btnCompile();
+  void on_btnCompile();
 
-    void on_treeView_doubleClicked(const QModelIndex& index);
+  void on_treeView_doubleClicked(const QModelIndex& index);
 
-    void on_btnReturn_clicked();
+  void on_btnReturn_clicked();
 
-    void on_treeView_expanded(const QModelIndex& index);
+  void on_treeView_expanded(const QModelIndex& index);
 
-    void on_treeView_collapsed(const QModelIndex& index);
+  void on_treeView_collapsed(const QModelIndex& index);
 
-    void iaslUsage();
+  void iaslUsage();
 
-    void replyFinished(QNetworkReply* reply);
-    void CheckUpdate();
+  void replyFinished(QNetworkReply* reply);
+  void CheckUpdate();
 
-    void ReplaceAll();
+  void ReplaceAll();
 
-    void on_editFind_editTextChanged(const QString& arg1);
+  void on_editFind_editTextChanged(const QString& arg1);
 
-    void on_editFind_currentIndexChanged(const QString& arg1);
+  void on_editFind_currentIndexChanged(const QString& arg1);
 
-    void on_listWidget_itemSelectionChanged();
+  void on_listWidget_itemSelectionChanged();
 
-    void on_tabWidget_misc_currentChanged(int index);
+  void on_tabWidget_misc_currentChanged(int index);
 
-    void on_editFind_currentTextChanged(const QString& arg1);
+  void on_editFind_currentTextChanged(const QString& arg1);
 
-    void on_actionQuit_triggered();
+  void on_actionQuit_triggered();
 
-    void on_actionClose_tab_triggered();
+  void on_actionClose_tab_triggered();
 
-private:
-    int lblNumber = 2;
-    int editNumber = 1;
+  void on_btnNo_clicked();
 
-    dlgDecompile* dlg;
+  void on_btnYes_clicked();
 
-    void highlighsearchtext(QString searchText);
-    void clearSearchHighlight(QsciScintilla* textEdit);
-    QList<int> m_searchTextPosList;
-    QString search_string;
-    QLabel* lblCount;
+ private:
+  int lblNumber = 2;
+  int editNumber = 1;
 
-    QStringList findTextList;
-    void init_findTextList();
+  dlgDecompile* dlg;
 
-    void forEach(QString str, QString strReplace);
+  void highlighsearchtext(QString searchText);
+  void clearSearchHighlight(QsciScintilla* textEdit);
+  QList<int> m_searchTextPosList;
+  QString search_string;
+  QLabel* lblCount;
 
-    QNetworkAccessManager* manager;
-    int parse_UpdateJSON(QString str);
-    bool mac = false;
-    bool win = false;
-    bool linuxOS = false;
-    QString CurVerison = "V1.0";
+  QStringList findTextList;
+  void init_findTextList();
 
-    void loadTabFiles();
+  void forEach(QString str, QString strReplace);
 
-    bool One = false;
+  QNetworkAccessManager* manager;
+  int parse_UpdateJSON(QString str);
+  bool mac = false;
+  bool win = false;
+  bool linuxOS = false;
+  QString CurVerison = "V1.0";
 
-    QString shownName;
+  void loadTabFiles();
 
-    void set_return_text(QString text);
+  bool One = false;
 
-    QString fsm_Filepath;
+  QString shownName;
 
-    QModelIndex fsm_Index;
+  void set_return_text(QString text);
 
-    QString getLayerName(QTreeWidgetItem* hItem);
+  QString fsm_Filepath;
 
-    int treeCount(QTreeWidget* tree, QTreeWidgetItem* parent);
+  QModelIndex fsm_Index;
 
-    int treeCount(QTreeWidget* tree);
+  QString getLayerName(QTreeWidgetItem* hItem);
 
-    bool maybeSave(QString info);
+  int treeCount(QTreeWidget* tree, QTreeWidgetItem* parent);
 
-    bool find_up;
+  int treeCount(QTreeWidget* tree);
 
-    bool find_down;
+  bool maybeSave(QString info);
 
-    bool CaseSensitive = false;
+  bool find_up;
 
-    QString ver;
+  bool find_down;
 
-    QTimer* timer;
+  bool CaseSensitive = false;
 
-    QTextEdit* textEditTemp;
+  QString ver;
 
-    QLabel* lblMsg;
+  QTimer* timer;
 
-    QLabel* lblLayer;
+  QTextEdit* textEditTemp;
 
-    QLabel* lblEncoding;
+  QLabel* lblMsg;
 
-    QLabel* lblCurrentFile = new QLabel;
+  QLabel* lblLayer;
 
-    QLineEdit* editLayer;
+  QLabel* lblEncoding;
 
-    QElapsedTimer qTime;
+  QLabel* lblCurrentFile = new QLabel;
 
-    int row = 0;
+  QLineEdit* editLayer;
 
-    int row_current = 0;
+  QElapsedTimer qTime;
 
-    bool linkage = false;
+  int row = 0;
 
-    int preRow = 0;
+  int row_current = 0;
 
-    bool saveFile(const QString& fileName);
+  bool linkage = false;
 
-    void mem_linkage(QTreeWidget* tw, int RowNum);
+  int preRow = 0;
 
-    void init_menu();
+  bool saveFile(const QString& fileName);
 
-    void init_toolbar();
+  void mem_linkage(QTreeWidget* tw, int RowNum);
 
-    void init_recentFiles();
+  void init_menu();
 
-    void init_info_edit();
+  void init_toolbar();
 
-    void init_edit(QsciScintilla* textEdit);
+  void init_recentFiles();
 
-    void init_miniEdit();
+  void init_info_edit();
 
-    void init_treeWidget();
+  void init_edit(QsciScintilla* textEdit);
 
-    void init_statusBar();
-    QLabel* locationLabel;
+  void init_miniEdit();
 
-    void init_filesystem();
-    QFileSystemModel* model;
+  void init_treeWidget();
 
-    void update_ui_tw();
+  void init_statusBar();
+  QLabel* locationLabel;
 
-    void set_currsor_position(QsciScintilla* textEdit);
+  void init_filesystem();
+  QFileSystemModel* model;
 
-    void separ_info(QString str_key, QTextEdit* editInfo);
+  void update_ui_tw();
 
-    void set_cursor_line_color(QTextEdit* edit);
+  void set_currsor_position(QsciScintilla* textEdit);
 
-    void gotoLine(QTextEdit* edit);
+  void separ_info(QString str_key, QTextEdit* editInfo);
 
-    void fileAndprog_Linux();
+  void set_cursor_line_color(QTextEdit* edit);
 
-    void regACPI_win();
+  void gotoLine(QTextEdit* edit);
 
-    void setLexer(QsciLexer* textLexer, QsciScintilla* textEdit);
+  void fileAndprog_Linux();
 
-    void update_member(bool show, QString str_void, QList<QTreeWidgetItem*> tw_list);
+  void regACPI_win();
 
-    void set_mark(int linenr);
-    void syncMiniEdit();
-    int deleteDirfile(QString dirName);
-    bool DeleteDirectory(const QString& path);
-    bool enterEdit(QPoint pp, QsciScintilla* btn);
-    void on_btnNextError();
-    void on_btnPreviousError();
-    void goCppPreviousError();
-    void goCppNextError();
-    void getCppErrorLine(int i);
-    void setErrorMarkers(int linenr);
-    bool InfoWinShow = false;
-    void setEditFindCompleter();
+  void setLexer(QsciLexer* textLexer, QsciScintilla* textEdit);
 
-    void loadFindString();
-    const QString iniFile = QDir::homePath() + "/.config/QtiASL/QtiASL.ini";
+  void update_member(bool show, QString str_void,
+                     QList<QTreeWidgetItem*> tw_list);
+
+  void set_mark(int linenr);
+  void syncMiniEdit();
+  int deleteDirfile(QString dirName);
+  bool DeleteDirectory(const QString& path);
+  bool enterEdit(QPoint pp, QsciScintilla* btn);
+  void on_btnNextError();
+  void on_btnPreviousError();
+  void goCppPreviousError();
+  void goCppNextError();
+  void getCppErrorLine(int i);
+  void setErrorMarkers(int linenr);
+  bool InfoWinShow = false;
+  void setEditFindCompleter();
+
+  void loadFindString();
+  const QString iniFile = QDir::homePath() + "/.config/QtiASL/QtiASL.ini";
 
 #ifndef QT_NO_CONTEXTMENU
-    void contextMenuEvent(QContextMenuEvent* event) override;
-#endif // QT_NO_CONTEXTMENU
+  void contextMenuEvent(QContextMenuEvent* event) override;
+#endif  // QT_NO_CONTEXTMENU
 };
 
 class MiniEditor : public QsciScintilla {
-    Q_OBJECT
+  Q_OBJECT
 
-public:
-    MiniEditor(QWidget* parent = nullptr);
-    void mouseMoveEvent(QMouseEvent* event) override;
-    void wheelEvent(QWheelEvent* event) override;
-    void showZoomWin(int x, int y);
+ public:
+  MiniEditor(QWidget* parent = nullptr);
+  void mouseMoveEvent(QMouseEvent* event) override;
+  void wheelEvent(QWheelEvent* event) override;
+  void showZoomWin(int x, int y);
 
-protected:
-    //void mousePressEvent(QMouseEvent* event) override;
-    //void mouseDoubleClickEvent(QMouseEvent* event) override;
-    //void mouseMoveEvent(QMouseEvent* event) override;
-private slots:
-    void miniEdit_cursorPositionChanged();
-    void miniEdit_verticalScrollBarChanged();
+ protected:
+  // void mousePressEvent(QMouseEvent* event) override;
+  // void mouseDoubleClickEvent(QMouseEvent* event) override;
+  // void mouseMoveEvent(QMouseEvent* event) override;
+ private slots:
+  void miniEdit_cursorPositionChanged();
+  void miniEdit_verticalScrollBarChanged();
 
-private:
-    int curY = 0;
+ private:
+  int curY = 0;
 };
 
 class MaxEditor : public QsciScintilla {
-    Q_OBJECT
+  Q_OBJECT
 
-public:
-    MaxEditor(QWidget* parent = nullptr);
+ public:
+  MaxEditor(QWidget* parent = nullptr);
 
-protected:
-    void mouseMoveEvent(QMouseEvent* event) override;
-private slots:
+ protected:
+  void mouseMoveEvent(QMouseEvent* event) override;
+ private slots:
 
-private:
+ private:
 };
 
 class CodeEditor : public QPlainTextEdit {
-    Q_OBJECT
+  Q_OBJECT
 
-public:
-    CodeEditor(QWidget* parent = nullptr);
+ public:
+  CodeEditor(QWidget* parent = nullptr);
 
-    void lineNumberAreaPaintEvent(QPaintEvent* event);
-    int lineNumberAreaWidth();
+  void lineNumberAreaPaintEvent(QPaintEvent* event);
+  int lineNumberAreaWidth();
 
-protected:
-    void resizeEvent(QResizeEvent* event) override;
+ protected:
+  void resizeEvent(QResizeEvent* event) override;
 
-private slots:
-    void updateLineNumberAreaWidth(int newBlockCount);
-    void highlightCurrentLine();
-    void updateLineNumberArea(const QRect& rect, int dy);
+ private slots:
+  void updateLineNumberAreaWidth(int newBlockCount);
+  void highlightCurrentLine();
+  void updateLineNumberArea(const QRect& rect, int dy);
 
-private:
-    QWidget* lineNumberArea;
+ private:
+  QWidget* lineNumberArea;
 };
 
 class LineNumberArea : public QWidget {
-public:
-    LineNumberArea(CodeEditor* editor)
-        : QWidget(editor)
-        , codeEditor(editor)
-    {
-    }
+ public:
+  LineNumberArea(CodeEditor* editor) : QWidget(editor), codeEditor(editor) {}
 
-    QSize sizeHint() const override
-    {
-        return QSize(codeEditor->lineNumberAreaWidth(), 0);
-    }
+  QSize sizeHint() const override {
+    return QSize(codeEditor->lineNumberAreaWidth(), 0);
+  }
 
-protected:
-    void paintEvent(QPaintEvent* event) override
-    {
-        codeEditor->lineNumberAreaPaintEvent(event);
-    }
+ protected:
+  void paintEvent(QPaintEvent* event) override {
+    codeEditor->lineNumberAreaPaintEvent(event);
+  }
 
-private:
-    CodeEditor* codeEditor;
+ private:
+  CodeEditor* codeEditor;
 };
 
 class thread_one : public QThread {
-    Q_OBJECT
-public:
-    explicit thread_one(QObject* parent = nullptr);
+  Q_OBJECT
+ public:
+  explicit thread_one(QObject* parent = nullptr);
 
-protected:
-    void run();
-signals:
-    void over();
-public slots:
+ protected:
+  void run();
+ signals:
+  void over();
+ public slots:
 };
 
 class QscilexerCppAttach : public QsciLexerCPP {
-    Q_OBJECT
-public:
-    const char* keywords(int set) const;
+  Q_OBJECT
+ public:
+  const char* keywords(int set) const;
 };
 
 class MyWidget : public QGridLayout {
-public:
-    QSize sizeHint() const
-    {
-        return QSize(600, 180); /* 在这里定义dock的初始大小 */
-    }
+ public:
+  QSize sizeHint() const {
+    return QSize(600, 180); /* 在这里定义dock的初始大小 */
+  }
 };
 
-#endif // MAINWINDOW_H
+#endif  // MAINWINDOW_H
