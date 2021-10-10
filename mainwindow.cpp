@@ -89,7 +89,7 @@ MainWindow::MainWindow(QWidget* parent)
 
   loadLocal();
 
-  CurVerison = "1.0.65";
+  CurVerison = "1.0.66";
   ver = "QtiASL V" + CurVerison + "        ";
   setWindowTitle(ver);
 
@@ -6203,9 +6203,27 @@ void MainWindow::on_actionClose_tab_triggered() {
     this->close();
 }
 
-void MainWindow::on_btnNo_clicked() { ui->frameTip->setHidden(true); }
+void MainWindow::on_btnNo_clicked() {
+  ui->frameTip->setHidden(true);
+  reLoadByModiList.removeOne(strModiFile);
+
+  checkReloadFilesByModi();
+}
 
 void MainWindow::on_btnYes_clicked() {
   loadFile(strModiFile, -1, -1);
   ui->frameTip->setHidden(true);
+  reLoadByModiList.removeOne(strModiFile);
+
+  checkReloadFilesByModi();
+}
+
+void MainWindow::checkReloadFilesByModi() {
+  if (reLoadByModiList.count() > 0) {
+    strModiFile = reLoadByModiList.at(0);
+    ui->lblFileName->setText(tr("The file has been modified by another "
+                                "program. Do you want to reload?") +
+                             "\n\n" + QString("%1").arg(strModiFile));
+    ui->frameTip->setHidden(false);
+  }
 }

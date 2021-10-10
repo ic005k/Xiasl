@@ -109,6 +109,7 @@ class MainWindow : public QMainWindow {
   QString getCurrentFileName(int index);
   QString strModiFile;
   bool blAutoCheckUpdate = false;
+  QStringList reLoadByModiList;
 
   int getDockWidth();
 
@@ -163,6 +164,8 @@ class MainWindow : public QMainWindow {
 
   void msg(int value);
   void msgstr(QString str);
+
+  void checkReloadFilesByModi();
 
  protected:
   void closeEvent(QCloseEvent* event) override;

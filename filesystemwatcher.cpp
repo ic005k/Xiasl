@@ -120,6 +120,12 @@ void FileSystemWatcher::fileUpdated(const QString& path) {
     mw_one->ui->frameTip->setHidden(false);
     ReLoad = true;
     mw_one->strModiFile = path;
+
+    bool re = false;
+    for (int i = 0; i < mw_one->reLoadByModiList.count(); i++) {
+      if (mw_one->reLoadByModiList.at(i) == path) re = true;
+    }
+    if (!re) mw_one->reLoadByModiList.append(path);
   }
   mw_one->addFilesWatch();
 }
