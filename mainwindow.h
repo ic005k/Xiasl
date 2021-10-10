@@ -108,6 +108,7 @@ class MainWindow : public QMainWindow {
   void removeFilesWatch();
   QString getCurrentFileName(int index);
   QString strModiFile;
+  bool blAutoCheckUpdate = false;
 
   int getDockWidth();
 

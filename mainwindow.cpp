@@ -89,7 +89,7 @@ MainWindow::MainWindow(QWidget* parent)
 
   loadLocal();
 
-  CurVerison = "1.0.64";
+  CurVerison = "1.0.65";
   ver = "QtiASL V" + CurVerison + "        ";
   setWindowTitle(ver);
 
@@ -185,6 +185,8 @@ MainWindow::MainWindow(QWidget* parent)
   manager = new QNetworkAccessManager(this);
   connect(manager, SIGNAL(finished(QNetworkReply*)), this,
           SLOT(replyFinished(QNetworkReply*)));
+  blAutoCheckUpdate = true;
+  CheckUpdate();
 
   init_filesystem();
 
@@ -5573,6 +5575,7 @@ void MainWindow::CheckUpdate() {
   manager->get(quest);
 }
 
+// manager的槽函数
 void MainWindow::replyFinished(QNetworkReply* reply) {
   QString str = reply->readAll();
   parse_UpdateJSON(str);
@@ -5584,7 +5587,9 @@ int MainWindow::parse_UpdateJSON(QString str) {
   QJsonDocument root_Doc = QJsonDocument::fromJson(str.toUtf8(), &err_rpt);
 
   if (err_rpt.error != QJsonParseError::NoError) {
-    QMessageBox::critical(this, "", tr("Network error!"));
+    if (!blAutoCheckUpdate)
+      QMessageBox::critical(this, "", tr("Network error!"));
+    blAutoCheckUpdate = false;
     return -1;
   }
   if (root_Doc.isObject()) {
@@ -5626,10 +5631,13 @@ int MainWindow::parse_UpdateJSON(QString str) {
         Url = "https://github.com/ic005k/QtiASL/releases/latest";
         QDesktopServices::openUrl(QUrl(Url));
       }
-    } else
-      QMessageBox::information(this, "",
-                               tr("It is currently the latest version!"));
+    } else {
+      if (!blAutoCheckUpdate)
+        QMessageBox::information(this, "",
+                                 tr("It is currently the latest version!"));
+    }
   }
+  blAutoCheckUpdate = false;
   return 0;
 }
 
