@@ -6253,6 +6253,7 @@ void MainWindow::on_actionDownload_Upgrade_Packages_triggered() {
 }
 
 void MainWindow::ShowAutoUpdateDlg(bool Database) {
+  if (dlgAutoUpdate->strUrl == "") return;
   if (dlgAutoUpdate->isVisible()) return;
 
   dlgAutoUpdate->setWindowFlags(dlgAutoUpdate->windowFlags() |
