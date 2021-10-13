@@ -89,7 +89,7 @@ MainWindow::MainWindow(QWidget* parent)
 
   loadLocal();
 
-  CurVerison = "1.0.66";
+  CurVerison = "1.0.67";
   ver = "QtiASL V" + CurVerison + "        ";
   setWindowTitle(ver);
 
@@ -113,6 +113,7 @@ MainWindow::MainWindow(QWidget* parent)
   connect(mythread, &thread_one::over, this, &MainWindow::dealover);
 
   dlg = new dlgDecompile(this);
+  dlgAutoUpdate = new AutoUpdateDialog(this);
 
 #ifdef Q_OS_WIN32
   regACPI_win();
@@ -129,6 +130,12 @@ MainWindow::MainWindow(QWidget* parent)
 #ifdef Q_OS_MAC
   ui->actionGenerate->setEnabled(true);
   mac = true;
+
+#if (QT_VERSION <= QT_VERSION_CHECK(5, 9, 9))
+  osx1012 = true;
+  mac = false;
+#endif
+
 #endif
 
   init_statusBar();
@@ -5582,6 +5589,35 @@ void MainWindow::replyFinished(QNetworkReply* reply) {
   reply->deleteLater();
 }
 
+QString MainWindow::getUrl(QVariantList list) {
+  QString macUrl, winUrl, linuxUrl, osx1012Url;
+  for (int i = 0; i < list.count(); i++) {
+    QVariantMap map = list[i].toMap();
+    QString fName = map["name"].toString();
+
+    if (fName.contains("QtiASL_Mac.dmg"))
+      macUrl = map["browser_download_url"].toString();
+
+    if (fName.contains("Win")) winUrl = map["browser_download_url"].toString();
+
+    if (fName.contains("Linux"))
+      linuxUrl = map["browser_download_url"].toString();
+
+    if (fName.contains("below"))
+      osx1012Url = map["browser_download_url"].toString();
+  }
+
+  QString Url;
+  if (mac) Url = macUrl;
+  if (win) Url = winUrl;
+  if (linuxOS) Url = linuxUrl;
+  if (osx1012) Url = osx1012Url;
+  // if (Url == "") Url = "https://github.com/ic005k/QtiASL/releases/latest";
+  // //让其返回""，后面判断会用到
+
+  return Url;
+}
+
 int MainWindow::parse_UpdateJSON(QString str) {
   QJsonParseError err_rpt;
   QJsonDocument root_Doc = QJsonDocument::fromJson(str.toUtf8(), &err_rpt);
@@ -5595,32 +5631,15 @@ int MainWindow::parse_UpdateJSON(QString str) {
   if (root_Doc.isObject()) {
     QJsonObject root_Obj = root_Doc.object();
 
-    QString macUrl, winUrl, linuxUrl;
     QVariantList list = root_Obj.value("assets").toArray().toVariantList();
-    for (int i = 0; i < list.count(); i++) {
-      QVariantMap map = list[i].toMap();
-      QFileInfo file(map["name"].toString());
-      if (file.suffix().toLower() == "zip")
-        macUrl = map["browser_download_url"].toString();
-
-      if (file.suffix().toLower() == "7z")
-        winUrl = map["browser_download_url"].toString();
-
-      if (file.suffix() == "AppImage")
-        linuxUrl = map["browser_download_url"].toString();
-    }
-
+    QString Url = getUrl(list);
+    dlgAutoUpdate->strUrl = Url;
     QJsonObject PulseValue = root_Obj.value("assets").toObject();
     QString Verison = root_Obj.value("tag_name").toString();
-    QString Url;
-    if (mac) Url = macUrl;
-    if (win) Url = winUrl;
-    if (linuxOS) Url = linuxUrl;
-
     QString UpdateTime = root_Obj.value("published_at").toString();
     QString ReleaseNote = root_Obj.value("body").toString();
 
-    if (Verison > CurVerison) {
+    if (Verison > CurVerison && Url != "") {
       QString warningStr = tr("New version detected!") + "\n" +
                            tr("Version: ") + "V" + Verison + "\n" +
                            tr("Published at: ") + UpdateTime + "\n" +
@@ -5628,8 +5647,9 @@ int MainWindow::parse_UpdateJSON(QString str) {
       int ret = QMessageBox::warning(this, "", warningStr, tr("Download"),
                                      tr("Cancel"));
       if (ret == 0) {
-        Url = "https://github.com/ic005k/QtiASL/releases/latest";
-        QDesktopServices::openUrl(QUrl(Url));
+        // Url = "https://github.com/ic005k/QtiASL/releases/latest";
+        // QDesktopServices::openUrl(QUrl(Url));
+        ShowAutoUpdateDlg(false);
       }
     } else {
       if (!blAutoCheckUpdate)
@@ -6226,4 +6246,17 @@ void MainWindow::checkReloadFilesByModi() {
                              "\n\n" + QString("%1").arg(strModiFile));
     ui->frameTip->setHidden(false);
   }
+}
+
+void MainWindow::on_actionDownload_Upgrade_Packages_triggered() {
+  ShowAutoUpdateDlg(false);
+}
+
+void MainWindow::ShowAutoUpdateDlg(bool Database) {
+  if (dlgAutoUpdate->isVisible()) return;
+
+  dlgAutoUpdate->setWindowFlags(dlgAutoUpdate->windowFlags() |
+                                Qt::WindowStaysOnTopHint);
+  dlgAutoUpdate->show();
+  dlgAutoUpdate->startDownload(Database);
 }

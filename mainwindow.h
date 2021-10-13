@@ -52,6 +52,7 @@
 #include <QTreeWidgetItem>
 #include <QWidget>
 
+#include "autoupdatedialog.h"
 #include "dlgdecompile.h"
 #include "minidialog.h"
 #include "recentfiles.h"
@@ -166,6 +167,16 @@ class MainWindow : public QMainWindow {
   void msgstr(QString str);
 
   void checkReloadFilesByModi();
+
+  void ShowAutoUpdateDlg(bool Database);
+
+  AutoUpdateDialog* dlgAutoUpdate;
+  int deleteDirfile(QString dirName);
+  QString getUrl(QVariantList list);
+  bool mac = false;
+  bool win = false;
+  bool linuxOS = false;
+  bool osx1012 = false;
 
  protected:
   void closeEvent(QCloseEvent* event) override;
@@ -324,6 +335,8 @@ class MainWindow : public QMainWindow {
 
   void on_btnYes_clicked();
 
+  void on_actionDownload_Upgrade_Packages_triggered();
+
  private:
   int lblNumber = 2;
   int editNumber = 1;
@@ -343,9 +356,7 @@ class MainWindow : public QMainWindow {
 
   QNetworkAccessManager* manager;
   int parse_UpdateJSON(QString str);
-  bool mac = false;
-  bool win = false;
-  bool linuxOS = false;
+
   QString CurVerison = "V1.0";
 
   void loadTabFiles();
@@ -445,7 +456,7 @@ class MainWindow : public QMainWindow {
 
   void set_mark(int linenr);
   void syncMiniEdit();
-  int deleteDirfile(QString dirName);
+
   bool DeleteDirectory(const QString& path);
   bool enterEdit(QPoint pp, QsciScintilla* btn);
   void on_btnNextError();

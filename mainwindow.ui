@@ -220,6 +220,8 @@
      <string>Help</string>
     </property>
     <addaction name="actionCheckUpdate"/>
+    <addaction name="actionDownload_Upgrade_Packages"/>
+    <addaction name="separator"/>
     <addaction name="actioniasl_usage"/>
     <addaction name="actionUser_Guide"/>
     <addaction name="actionAbout_1"/>
@@ -819,6 +821,11 @@ QTreeView::branch:!has-children:!has-siblings:adjoins-item{border-image:url(:/ic
    </property>
    <property name="shortcut">
     <string>Ctrl+W</string>
+   </property>
+  </action>
+  <action name="actionDownload_Upgrade_Packages">
+   <property name="text">
+    <string>Download Upgrade Packages</string>
    </property>
   </action>
  </widget>

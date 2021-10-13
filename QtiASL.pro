@@ -51,6 +51,7 @@ SOURCES += \
     MyTabPage.cpp \
     MyTabPopup.cpp \
     MyTabWidget.cpp \
+    autoupdatedialog.cpp \
     dlgdecompile.cpp \
     filesystemwatcher.cpp \
     main.cpp \
@@ -116,6 +117,7 @@ HEADERS += \
     Qsci/qsciscintillabase.h \
     Qsci/qscistyle.h \
     Qsci/qscistyledtext.h \
+    autoupdatedialog.h \
     dlgdecompile.h \
     filesystemwatcher.h \
     mainwindow.h \
@@ -125,6 +127,7 @@ HEADERS += \
     recentfiles.h
 
 FORMS += \
+    autoupdatedialog.ui \
     dlgdecompile.ui \
     mainwindow.ui \
     minidialog.ui
