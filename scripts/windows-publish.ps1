@@ -48,5 +48,3 @@ if ($null -eq $archiveName || $null -eq $targetName) {
     return
 }
 Main
-
-
