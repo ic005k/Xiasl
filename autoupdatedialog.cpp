@@ -63,8 +63,8 @@ void AutoUpdateDialog::doProcessDownloadProgress(qint64 recv_total,
 {
   ui->progressBar->setMaximum(all_total);
   ui->progressBar->setValue(recv_total);
-  setWindowTitle(tr("Download Progress") + " : " + GetFileSize(recv_total) +
-                 " -> " + GetFileSize(all_total));
+  setWindowTitle(tr("Download Progress") + " : " + GetFileSize(recv_total, 2) +
+                 " -> " + GetFileSize(all_total, 2));
 
   if (recv_total == all_total) {
     if (recv_total < 10000) {
@@ -196,13 +196,13 @@ void AutoUpdateDialog::startDownload(bool Database) {
     ui->btnStartUpdate->setVisible(false);
   }
 
-  QString str0, str1, str2;
-
+  QString str0, str1;
   str0 = "https://download.fastgit.org/";            // 日本东京
   str1 = "https://ghproxy.com/https://github.com/";  // 韩国首尔
-  str2 = strUrl.replace("https://github.com/", str0);
-  strUrl = str2;
-  // qDebug() << strUrl;
+  QLocale locale;
+  if (locale.language() == QLocale::Chinese) {
+    strUrl.replace("https://github.com/", str0);
+  }
 
   QNetworkRequest request;
   request.setUrl(QUrl(strUrl));
@@ -241,6 +241,7 @@ void AutoUpdateDialog::closeEvent(QCloseEvent* event) {
 }
 
 QString AutoUpdateDialog::GetFileSize(qint64 size) {
+  if (size < 0) return "0";
   if (!size) {
     return "0 Bytes";
   }
@@ -260,6 +261,30 @@ QString AutoUpdateDialog::GetFileSize(qint64 size) {
   return QString::number(size * 1.0 / qPow(1000, qFloor(i)), 'f',
                          (i > 1) ? 2 : 0) +
          SizeNames.at(i);
+}
+
+QString AutoUpdateDialog::GetFileSize(const qint64& size, int precision) {
+  double sizeAsDouble = size;
+  static QStringList measures;
+  if (measures.isEmpty())
+    measures << QCoreApplication::translate("QInstaller", "bytes")
+             << QCoreApplication::translate("QInstaller", "KiB")
+             << QCoreApplication::translate("QInstaller", "MiB")
+             << QCoreApplication::translate("QInstaller", "GiB")
+             << QCoreApplication::translate("QInstaller", "TiB")
+             << QCoreApplication::translate("QInstaller", "PiB")
+             << QCoreApplication::translate("QInstaller", "EiB")
+             << QCoreApplication::translate("QInstaller", "ZiB")
+             << QCoreApplication::translate("QInstaller", "YiB");
+  QStringListIterator it(measures);
+  QString measure(it.next());
+  while (sizeAsDouble >= 1024.0 && it.hasNext()) {
+    measure = it.next();
+    sizeAsDouble /= 1024.0;
+  }
+  return QString::fromLatin1("%1 %2")
+      .arg(sizeAsDouble, 0, 'f', precision)
+      .arg(measure);
 }
 
 void AutoUpdateDialog::TextEditToFile(QTextEdit* txtEdit, QString fileName) {
