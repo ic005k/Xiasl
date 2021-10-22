@@ -28,11 +28,10 @@ miniDialog* miniDlg;
 
 bool textEditScroll = false;
 bool miniEditWheel = false;
+bool ReLoad = false;
 
 // QVector<QsciScintilla*> textEditList;
 QVector<QString> openFileList;
-
-bool ReLoad = false;
 
 QList<QTreeWidgetItem*> twitems;
 QList<QTreeWidgetItem*> tw_scope;
