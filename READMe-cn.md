@@ -24,7 +24,7 @@
 * QtiASL是一个现代的、轻量的、功能丰富的跨平台的DSDT集成开发环境。
 
 
-## 感谢以下开源软件的支持！
+## 感谢
 
 [ACPI](https://acpica.org/source)&nbsp; &nbsp; &nbsp; &nbsp; [QSci](https://riverbankcomputing.com/software/qscintilla/download) &nbsp; &nbsp; &nbsp; [patchmatic](https://github.com/RehabMan/OS-X-MaciASL-patchmatic)
 
