@@ -88,7 +88,7 @@ MainWindow::MainWindow(QWidget* parent)
 
   loadLocal();
 
-  CurVerison = "1.0.69";
+  CurVerison = "1.0.70";
   ver = "QtiASL V" + CurVerison + "        ";
   setWindowTitle(ver);
 
@@ -4039,14 +4039,9 @@ void MainWindow::init_toolbar() {
   ui->actionSave->setIcon(QIcon(":/icon/save.png"));
   ui->toolBar->addAction(ui->actionSave);
 
-  ui->actionSaveAs->setIcon(QIcon(":/icon/saveas.png"));
-  ui->toolBar->addAction(ui->actionSaveAs);
-
   ui->toolBar->addSeparator();
 
   ui->toolBar->addWidget(ui->chkAll);
-  ui->actionDSDecompile->setIcon(QIcon(":/icon/bat.png"));
-  ui->toolBar->addAction(ui->actionDSDecompile);
 
   ui->toolBar->addSeparator();
   ui->toolBar->addWidget(ui->chkCaseSensitive);
