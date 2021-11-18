@@ -4557,6 +4557,9 @@ void MainWindow::init_edit(QsciScintilla* textEdit) {
     miniDlgEdit->setFont(ui->treeWidget->font());
   }
 
+  ui->treeView->setFont(font);
+  ui->treeWidget->setFont(font);
+
   //接受文件拖放打开
   textEdit->setAcceptDrops(false);
   this->setAcceptDrops(true);
@@ -5202,6 +5205,9 @@ void MainWindow::set_font() {
       getCurrentEditor(i)->setLexer(textLexer);
       setLexer(textLexer, getCurrentEditor(i));
     }
+
+    ui->treeView->setFont(font);
+    ui->treeWidget->setFont(font);
 
     //存储字体信息
     QString qfile = QDir::homePath() + "/.config/QtiASL/QtiASL.ini";
