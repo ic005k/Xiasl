@@ -254,8 +254,8 @@
   <widget class="QDockWidget" name="dockWidgetSymbols">
    <property name="minimumSize">
     <size>
-     <width>201</width>
-     <height>234</height>
+     <width>163</width>
+     <height>189</height>
     </size>
    </property>
    <property name="features">

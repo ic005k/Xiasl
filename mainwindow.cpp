@@ -88,7 +88,7 @@ MainWindow::MainWindow(QWidget* parent)
 
   loadLocal();
 
-  CurVerison = "1.0.70";
+  CurVerison = "1.0.71";
   ver = "QtiASL V" + CurVerison + "        ";
   setWindowTitle(ver);
 
@@ -137,31 +137,6 @@ MainWindow::MainWindow(QWidget* parent)
 
 #endif
 
-  ui->toolBar->setStyleSheet(
-
-      "QToolButton:hover{ "
-      "color:rgb(255, 255, 255); "
-      "border-style:solid; "
-      "border-top-left-radius:2px;  "
-      "border-top-right-radius:2px; "
-      "background:#bfbfbf; "
-      "border:1px;"
-      "border-radius:5px;padding:2px 4px; }"
-
-      "QToolButton:pressed{ "
-      "color:rgb(255, 255, 255); "
-      "border-style:solid; "
-      "border-top-left-radius:2px;  "
-      "border-top-right-radius:2px; "
-      "background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop:0 "
-      "rgb(226,236,241),"
-      "stop: 0.3 rgb(190,190,190),"
-      "stop: 1 rgb(160,160,160));"
-      "border:1px;"
-      "border-radius:5px;padding:2px 4px; }"
-
-  );
-
   init_statusBar();
 
   init_menu();
@@ -175,15 +150,12 @@ MainWindow::MainWindow(QWidget* parent)
   init_treeWidget();
 
   ui->tabWidget_textEdit->setDocumentMode(true);
-
   ui->tabWidget_textEdit->tabBar()->installEventFilter(
       this);  //安装事件过滤器以禁用鼠标滚轮切换标签页
   connect(ui->tabWidget_textEdit, SIGNAL(tabCloseRequested(int)), this,
           SLOT(closeTab(int)));
   ui->tabWidget_textEdit->setIconSize(QSize(8, 8));
-
   textEdit = new QsciScintilla;
-
   init_edit(textEdit);
 
   ui->dockWidgetContents->layout()->setMargin(0);  //成员列表
@@ -561,7 +533,7 @@ void MainWindow::loadFile(const QString& fileName, int row, int col) {
 
   QFileInfo ft(fileName);
   ui->tabWidget_textEdit->tabBar()->setTabToolTip(
-      ui->tabWidget_textEdit->currentIndex(), ft.fileName());
+      ui->tabWidget_textEdit->currentIndex(), ft.filePath());
 
   //为拖拽tab准备拖动后的标题名
   ui->tabWidget_textEdit->currentWidget()->setWindowTitle("        " +
@@ -774,7 +746,7 @@ bool MainWindow::saveFile(const QString& fileName) {
   lblCurrentFile->setText(fileName);
   QFileInfo ft(fileName);
   ui->tabWidget_textEdit->tabBar()->setTabToolTip(
-      ui->tabWidget_textEdit->currentIndex(), ft.fileName());
+      ui->tabWidget_textEdit->currentIndex(), ft.filePath());
 
   setCurrentFile(fileName);
 
@@ -4025,6 +3997,30 @@ void MainWindow::init_recentFiles() {
 }
 
 void MainWindow::init_toolbar() {
+  ui->toolBar->setStyleSheet(
+
+      "QToolButton:hover{ "
+      "color:rgb(255, 255, 255); "
+      "border-style:solid; "
+      "border-top-left-radius:2px;  "
+      "border-top-right-radius:2px; "
+      "background:#bfbfbf; "
+      "border:1px;"
+      "border-radius:5px;padding:2px 4px; }"
+
+      "QToolButton:pressed{ "
+      "color:rgb(255, 255, 255); "
+      "border-style:solid; "
+      "border-top-left-radius:2px;  "
+      "border-top-right-radius:2px; "
+      "background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop:0 "
+      "rgb(226,236,241),"
+      "stop: 0.3 rgb(190,190,190),"
+      "stop: 1 rgb(160,160,160));"
+      "border:1px;"
+      "border-radius:5px;padding:2px 4px; }"
+
+  );
   ui->toolBar->setIconSize(QSize(20, 20));
 
   ui->toolBar->layout()->setMargin(1);

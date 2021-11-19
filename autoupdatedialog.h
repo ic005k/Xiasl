@@ -35,7 +35,6 @@ class AutoUpdateDialog : public QDialog {
   void doProcessReadyRead();
   void doProcessFinished();
   void doProcessDownloadProgress(qint64, qint64);
-  void doProcessError(QNetworkReply::NetworkError code);
 
   void startUpdate();
   void startDownload(bool Database);

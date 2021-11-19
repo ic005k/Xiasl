@@ -84,10 +84,6 @@ void AutoUpdateDialog::doProcessDownloadProgress(qint64 recv_total,
   }
 }
 
-void AutoUpdateDialog::doProcessError(QNetworkReply::NetworkError code) {
-  qDebug() << code;
-}
-
 void AutoUpdateDialog::on_btnStartUpdate_clicked() {
   ui->btnStartUpdate->setEnabled(false);
   startUpdate();
@@ -214,9 +210,7 @@ void AutoUpdateDialog::startDownload(bool Database) {
           &AutoUpdateDialog::doProcessFinished);  //结束
   connect(reply, &QNetworkReply::downloadProgress, this,
           &AutoUpdateDialog::doProcessDownloadProgress);  //大小
-  connect(reply,
-          QOverload<QNetworkReply::NetworkError>::of(&QNetworkReply::error),
-          this, &AutoUpdateDialog::doProcessError);  //异常
+
   QStringList list = strUrl.split("/");
   filename = list.at(list.length() - 1);
   QDir dir;
