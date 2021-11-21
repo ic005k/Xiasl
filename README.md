@@ -26,3 +26,4 @@
 [ACPI](https://acpica.org/source)&nbsp; &nbsp; &nbsp; &nbsp; [QSci](https://riverbankcomputing.com/software/qscintilla/download) &nbsp; &nbsp; &nbsp; [patchmatic](https://github.com/RehabMan/OS-X-MaciASL-patchmatic)
 
 ### Note: This project started in August 2020
+API: https://api.github.com/repos/ic005k/QtiASL/releases/latest
