@@ -30,3 +30,4 @@
 
 
 ### 备注：此项目开始于2020年8月
+API: https://api.github.com/repos/ic005k/QtiASL/releases/latest
