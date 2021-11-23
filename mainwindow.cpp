@@ -88,7 +88,7 @@ MainWindow::MainWindow(QWidget* parent)
 
   loadLocal();
 
-  CurVerison = "1.0.71";
+  CurVerison = "1.0.72";
   ver = "QtiASL V" + CurVerison + "        ";
   setWindowTitle(ver);
 
@@ -829,7 +829,7 @@ void MainWindow::getACPITables(bool ssdt) {
 #ifdef Q_OS_MAC
   QString strExtBin = appInfo.filePath() + "/patchmatic";
 
-  if (QFileInfo(strExtBin).exists()) {
+  if (QFile(strExtBin).exists()) {
     dir.setCurrent(acpiDir);
     dump.execute(strExtBin, QStringList() << "-extractall" << acpiDir);
 
@@ -1921,7 +1921,26 @@ void MainWindow::textEdit_textChanged() {
   }
 }
 
-void MainWindow::editFind_returnPressed() { on_btnFindNext(); }
+void MainWindow::on_editFind_returnPressed() {
+  on_btnFindNext();
+
+  QString findText = ui->editFind->lineEdit()->text().trimmed();
+  QStringList strList;
+  for (int i = 0; i < ui->editFind->count(); i++) {
+    strList.append(ui->editFind->itemText(i));
+  }
+
+  for (int i = 0; i < strList.count(); i++) {
+    if (findText == strList.at(i)) {
+      strList.removeAt(i);
+    }
+  }
+  strList.insert(0, findText);
+  AddCboxFindItem = true;
+  ui->editFind->clear();
+  ui->editFind->addItems(strList);
+  AddCboxFindItem = false;
+}
 
 const char* QscilexerCppAttach::keywords(int set) const {
   if (set == 1)
@@ -4054,7 +4073,7 @@ void MainWindow::init_toolbar() {
   setEditFindCompleter();
 
   connect(ui->editFind->lineEdit(), &QLineEdit::returnPressed, this,
-          &MainWindow::editFind_returnPressed);
+          &MainWindow::on_editFind_returnPressed);
 
   lblCount = new QLabel(this);
   lblCount->setText("0");
@@ -5704,7 +5723,8 @@ void MainWindow::highlighsearchtext(QString searchText) {
     document = textEdit->text().toLower().toStdString();
   }
 
-  textEdit->SendScintilla(QsciScintillaBase::SCI_INDICSETSTYLE, 0, 8);
+  textEdit->SendScintilla(QsciScintillaBase::SCI_INDICSETSTYLE, 0,
+                          QsciScintillaBase::INDIC_BOX);
   if (red < 55) {
     textEdit->SendScintilla(QsciScintillaBase::SCI_INDICSETOUTLINEALPHA, 0,
                             255);
@@ -5750,6 +5770,8 @@ void MainWindow::clearSearchHighlight(QsciScintilla* textEdit) {
 }
 
 void MainWindow::on_editFind_editTextChanged(const QString& arg1) {
+  if (AddCboxFindItem) return;
+
   if (arg1.count() > 0) {
     on_btnFindNext();
   } else {

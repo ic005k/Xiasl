@@ -282,7 +282,7 @@ class MainWindow : public QMainWindow {
 
   void on_editShowMsg_selectionChanged();
 
-  void editFind_returnPressed();
+  void on_editFind_returnPressed();
 
   void on_MainWindow_destroyed();
 
@@ -340,7 +340,7 @@ class MainWindow : public QMainWindow {
  private:
   int lblNumber = 2;
   int editNumber = 1;
-
+  bool AddCboxFindItem = false;
   dlgDecompile* dlg;
 
   void highlighsearchtext(QString searchText);
