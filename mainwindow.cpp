@@ -88,7 +88,7 @@ MainWindow::MainWindow(QWidget* parent)
 
   loadLocal();
 
-  CurVerison = "1.0.72";
+  CurVerison = "1.0.73";
   ver = "QtiASL V" + CurVerison + "        ";
   setWindowTitle(ver);
 
@@ -4551,18 +4551,13 @@ void MainWindow::init_edit(QsciScintilla* textEdit) {
 
   //读取字体
   QString qfile = QDir::homePath() + "/.config/QtiASL/QtiASL.ini";
-  QFileInfo fi(qfile);
-
-  if (fi.exists()) {
-    QSettings Reg(qfile, QSettings::IniFormat);
-    if (Reg.value("FontName").toString() != "") {
-      font.setFamily(Reg.value("FontName").toString());
-      font.setPointSize(Reg.value("FontSize").toInt());
-      font.setBold(Reg.value("FontBold").toBool());
-      font.setItalic(Reg.value("FontItalic").toBool());
-      font.setUnderline(Reg.value("FontUnderline").toBool());
-    }
-  }
+  QSettings Reg(qfile, QSettings::IniFormat);
+  if (mac || osx1012) font.setFamily(Reg.value("FontName", "Menlo").toString());
+  if (win) font.setFamily(Reg.value("FontName", "consolas").toString());
+  font.setPointSize(Reg.value("FontSize").toInt());
+  font.setBold(Reg.value("FontBold").toBool());
+  font.setItalic(Reg.value("FontItalic").toBool());
+  font.setUnderline(Reg.value("FontUnderline").toBool());
 
   textLexer->setFont(font);
   setLexer(textLexer, textEdit);
