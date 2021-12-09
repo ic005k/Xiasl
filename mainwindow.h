@@ -177,6 +177,7 @@ class MainWindow : public QMainWindow {
   bool win = false;
   bool linuxOS = false;
   bool osx1012 = false;
+  QString getProxy();
 
  protected:
   void closeEvent(QCloseEvent* event) override;
@@ -336,6 +337,15 @@ class MainWindow : public QMainWindow {
   void on_btnYes_clicked();
 
   void on_actionDownload_Upgrade_Packages_triggered();
+  void on_actProxy1_triggered();
+
+  void on_actProxy2_triggered();
+
+  void on_actProxy3_triggered();
+
+  void on_actProxy4_triggered();
+
+  void on_actProxy5_triggered();
 
  private:
   int lblNumber = 2;
@@ -474,6 +484,8 @@ class MainWindow : public QMainWindow {
 #ifndef QT_NO_CONTEXTMENU
   void contextMenuEvent(QContextMenuEvent* event) override;
 #endif  // QT_NO_CONTEXTMENU
+  void writeINIProxy();
+  void readINIProxy();
 };
 
 class MiniEditor : public QsciScintilla {

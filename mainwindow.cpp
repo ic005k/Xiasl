@@ -88,7 +88,7 @@ MainWindow::MainWindow(QWidget* parent)
 
   loadLocal();
 
-  CurVerison = "1.0.74";
+  CurVerison = "1.0.75";
   ver = "QtiASL V" + CurVerison + "        ";
   setWindowTitle(ver);
 
@@ -198,6 +198,8 @@ MainWindow::MainWindow(QWidget* parent)
   loadTabFiles();
 
   loadFindString();
+
+  readINIProxy();
 
   One = false;
 }
@@ -6309,4 +6311,96 @@ void MainWindow::ShowAutoUpdateDlg(bool Database) {
                                 Qt::WindowStaysOnTopHint);
   dlgAutoUpdate->show();
   dlgAutoUpdate->startDownload(Database);
+}
+
+void MainWindow::on_actProxy1_triggered() {
+  ui->actProxy1->setChecked(true);
+  ui->actProxy2->setChecked(false);
+  ui->actProxy3->setChecked(false);
+  ui->actProxy4->setChecked(false);
+  ui->actProxy5->setChecked(false);
+  writeINIProxy();
+}
+
+void MainWindow::on_actProxy2_triggered() {
+  ui->actProxy1->setChecked(false);
+  ui->actProxy2->setChecked(true);
+  ui->actProxy3->setChecked(false);
+  ui->actProxy4->setChecked(false);
+  ui->actProxy5->setChecked(false);
+  writeINIProxy();
+}
+
+void MainWindow::on_actProxy3_triggered() {
+  ui->actProxy1->setChecked(false);
+  ui->actProxy2->setChecked(false);
+  ui->actProxy3->setChecked(true);
+  ui->actProxy4->setChecked(false);
+  ui->actProxy5->setChecked(false);
+  writeINIProxy();
+}
+
+void MainWindow::on_actProxy4_triggered() {
+  ui->actProxy1->setChecked(false);
+  ui->actProxy2->setChecked(false);
+  ui->actProxy3->setChecked(false);
+  ui->actProxy4->setChecked(true);
+  ui->actProxy5->setChecked(false);
+  writeINIProxy();
+}
+
+void MainWindow::on_actProxy5_triggered() {
+  ui->actProxy1->setChecked(false);
+  ui->actProxy2->setChecked(false);
+  ui->actProxy3->setChecked(false);
+  ui->actProxy4->setChecked(false);
+  ui->actProxy5->setChecked(true);
+  writeINIProxy();
+}
+
+void MainWindow::writeINIProxy() {
+  QString qfile = QDir::homePath() + "/.config/QtiASL/QtiASL.ini";
+  QSettings Reg(qfile, QSettings::IniFormat);
+  Reg.setValue("proxy1", ui->actProxy1->isChecked());
+  Reg.setValue("proxy2", ui->actProxy2->isChecked());
+  Reg.setValue("proxy3", ui->actProxy3->isChecked());
+  Reg.setValue("proxy4", ui->actProxy4->isChecked());
+  Reg.setValue("proxy5", ui->actProxy5->isChecked());
+}
+
+void MainWindow::readINIProxy() {
+  QString qfile = QDir::homePath() + "/.config/QtiASL/QtiASL.ini";
+  QSettings Reg(qfile, QSettings::IniFormat);
+
+  if (!Reg.allKeys().contains("proxy1")) {
+    QLocale locale;
+    if (locale.language() != QLocale::Chinese) {
+      ui->actProxy1->setChecked(Reg.value("proxy1", true).toBool());
+      on_actProxy1_triggered();
+    }
+  } else
+    ui->actProxy1->setChecked(Reg.value("proxy1").toBool());
+
+  if (!Reg.allKeys().contains("proxy3")) {
+    QLocale locale;
+    if (locale.language() == QLocale::Chinese) {
+      ui->actProxy3->setChecked(Reg.value("proxy3", true).toBool());
+      on_actProxy3_triggered();
+    }
+  } else
+    ui->actProxy3->setChecked(Reg.value("proxy3").toBool());
+
+  ui->actProxy2->setChecked(Reg.value("proxy2").toBool());
+  ui->actProxy4->setChecked(Reg.value("proxy4").toBool());
+  ui->actProxy5->setChecked(Reg.value("proxy5").toBool());
+}
+
+QString MainWindow::getProxy() {
+  if (ui->actProxy1->isChecked()) return ui->actProxy1->text();
+  if (ui->actProxy2->isChecked()) return ui->actProxy2->text();
+  if (ui->actProxy3->isChecked()) return ui->actProxy3->text();
+  if (ui->actProxy4->isChecked()) return ui->actProxy4->text();
+  if (ui->actProxy5->isChecked()) return ui->actProxy5->text();
+
+  return "";
 }
