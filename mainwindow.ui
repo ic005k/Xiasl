@@ -14,7 +14,7 @@
    <string>MainWindow</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="my.qrc">
+   <iconset>
     <normaloff>:/icon/icon.png</normaloff>:/icon/icon.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -1113,8 +1113,6 @@ QTreeView::branch:!has-children:!has-siblings:adjoins-item{border-image:url(:/ic
    <header>mytabwidget.h</header>
   </customwidget>
  </customwidgets>
- <resources>
-  <include location="my.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

@@ -171,7 +171,7 @@ MainWindow::MainWindow(QWidget* parent)
   QWidget* lEmptyWidget = new QWidget();
   ui->dockWidget_Mini->setTitleBarWidget(lEmptyWidget);
   delete lTitleBar;
-  ui->dockWidgetContents_5->layout()->setMargin(0);
+  ui->dockWidgetContents_5->layout()->setMargin(1);
   ui->gridLayout_10->setMargin(0);
   ui->gridLayout_10->setSpacing(0);
   ui->gridLayout_10->addWidget(miniEdit);
@@ -3919,12 +3919,13 @@ void MainWindow::init_info_edit() {
   ui->gridLayout_6->setMargin(0);
   ui->gridLayout_13->setMargin(0);
 
+  /*"QListWidget::item:hover{background-color:#e6e6e6;margin:1px,1px,1px,"
+  "1px;border-radius:0;"
+  "color:black}"*/
   QString listStyleMain =
-      "QListWidget::item:hover{background-color:#e6e6e6;margin:1px,1px,1px,"
-      "1px;border-radius:6;"
-      "color:black}"
+
       "QListWidget::item:selected{background:#e6e6e6; border:0px "
-      "blue;margin:1px,1px,1px,1px;border-radius:6;"
+      "blue;margin:1px,1px,1px,1px;border-radius:0;"
       "color:blue}";
   ui->listWidget->setStyleSheet(listStyleMain);
 
