@@ -3923,7 +3923,6 @@ void MainWindow::init_info_edit() {
   "1px;border-radius:0;"
   "color:black}"*/
   QString listStyleMain =
-
       "QListWidget::item:selected{background:#e6e6e6; border:0px "
       "blue;margin:1px,1px,1px,1px;border-radius:0;"
       "color:blue}";
