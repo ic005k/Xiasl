@@ -353,15 +353,15 @@ QString MainWindow::openFile(QString fileName) {
 
     ui->listWidget->clear();
     ui->listWidget->addItem(
-        new QListWidgetItem(QIcon(":/icon/i1.png"), tr("BasicInfo")));
+        new QListWidgetItem(QIcon(":/icon/i10.png"), tr("BasicInfo")));
     ui->listWidget->addItem(new QListWidgetItem(
-        QIcon(":/icon/i2.png"), ui->tabWidget->tabBar()->tabText(1)));
+        QIcon(":/icon/i20.png"), ui->tabWidget->tabBar()->tabText(1)));
     ui->listWidget->addItem(new QListWidgetItem(
-        QIcon(":/icon/i3.png"), ui->tabWidget->tabBar()->tabText(2)));
+        QIcon(":/icon/i30.png"), ui->tabWidget->tabBar()->tabText(2)));
     ui->listWidget->addItem(new QListWidgetItem(
-        QIcon(":/icon/i4.png"), ui->tabWidget->tabBar()->tabText(3)));
+        QIcon(":/icon/i40.png"), ui->tabWidget->tabBar()->tabText(3)));
     ui->listWidget->addItem(new QListWidgetItem(
-        QIcon(":/icon/i5.png"), ui->tabWidget->tabBar()->tabText(4)));
+        QIcon(":/icon/i50.png"), ui->tabWidget->tabBar()->tabText(4)));
 
     QString name;
     //设置文件过滤器
@@ -3934,15 +3934,15 @@ void MainWindow::init_info_edit() {
   ui->listWidget->setViewMode(QListView::ListMode);
 
   ui->listWidget->addItem(
-      new QListWidgetItem(QIcon(":/icon/i1.png"), tr("BasicInfo")));
+      new QListWidgetItem(QIcon(":/icon/1i1.png"), tr("BasicInfo")));
   ui->listWidget->addItem(
-      new QListWidgetItem(QIcon(":/icon/i2.png"), tr("Errors")));
+      new QListWidgetItem(QIcon(":/icon/1i2.png"), tr("Errors")));
   ui->listWidget->addItem(
-      new QListWidgetItem(QIcon(":/icon/i3.png"), tr("Warnings")));
+      new QListWidgetItem(QIcon(":/icon/1i3.png"), tr("Warnings")));
   ui->listWidget->addItem(
-      new QListWidgetItem(QIcon(":/icon/i4.png"), tr("Remarks")));
+      new QListWidgetItem(QIcon(":/icon/1i4.png"), tr("Remarks")));
   ui->listWidget->addItem(
-      new QListWidgetItem(QIcon(":/icon/i5.png"), tr("Scribble")));
+      new QListWidgetItem(QIcon(":/icon/1i50.png"), tr("Scribble")));
 
   ui->tabWidget->tabBar()->setHidden(true);
   ui->tabWidget->setCurrentIndex(0);
@@ -4024,6 +4024,10 @@ void MainWindow::init_toolbar() {
   ui->toolBar->setHidden(true);
   ui->hlFind->setHidden(true);
   ui->chkCaseSensitive->setHidden(true);
+  // ui->btnFind->setIcon(QIcon(":/icon/find.png"));
+  // ui->btnCompile->setIcon(QIcon(":/icon/2.png"));
+  // ui->btnErrorP->setIcon(QIcon(":/icon/1.png"));
+  // ui->btnErrorN->setIcon(QIcon(":/icon/3.png"));
 
   ui->toolBar->setStyleSheet(
 
@@ -4807,15 +4811,15 @@ void MainWindow::separ_info(QString str_key, QTextEdit* editInfo) {
 
   ui->listWidget->clear();
   ui->listWidget->addItem(
-      new QListWidgetItem(QIcon(":/icon/i1.png"), tr("BasicInfo")));
+      new QListWidgetItem(QIcon(":/icon/i10.png"), tr("BasicInfo")));
   ui->listWidget->addItem(new QListWidgetItem(
-      QIcon(":/icon/i2.png"), ui->tabWidget->tabBar()->tabText(1)));
+      QIcon(":/icon/i20.png"), ui->tabWidget->tabBar()->tabText(1)));
   ui->listWidget->addItem(new QListWidgetItem(
-      QIcon(":/icon/i3.png"), ui->tabWidget->tabBar()->tabText(2)));
+      QIcon(":/icon/i30.png"), ui->tabWidget->tabBar()->tabText(2)));
   ui->listWidget->addItem(new QListWidgetItem(
-      QIcon(":/icon/i4.png"), ui->tabWidget->tabBar()->tabText(3)));
+      QIcon(":/icon/i40.png"), ui->tabWidget->tabBar()->tabText(3)));
   ui->listWidget->addItem(new QListWidgetItem(
-      QIcon(":/icon/i5.png"), ui->tabWidget->tabBar()->tabText(4)));
+      QIcon(":/icon/i50.png"), ui->tabWidget->tabBar()->tabText(4)));
 }
 
 void MainWindow::on_editErrors_cursorPositionChanged() {
