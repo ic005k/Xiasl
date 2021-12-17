@@ -4023,6 +4023,8 @@ void MainWindow::init_recentFiles() {
 void MainWindow::init_toolbar() {
   ui->toolBar->setHidden(true);
   ui->hlFind->setHidden(true);
+  ui->chkCaseSensitive->setHidden(true);
+
   ui->toolBar->setStyleSheet(
 
       "QToolButton:hover{ "
@@ -4068,7 +4070,7 @@ void MainWindow::init_toolbar() {
   ui->toolBar->addSeparator();
   // ui->toolBar->addWidget(ui->chkCaseSensitive);
   // ui->toolBar->addWidget(ui->editFind);
-  ui->editFind->setMinimumWidth(260);
+  ui->editFind->setMinimumWidth(200);
 
   ui->editFind->lineEdit()->setPlaceholderText(
       tr("Find") + "  (" + tr("History entries") + ": " +
@@ -6420,3 +6422,19 @@ void MainWindow::on_btnCompile_clicked() { on_btnCompile(); }
 void MainWindow::on_btnErrorP_clicked() { on_btnPreviousError(); }
 
 void MainWindow::on_btnErrorN_clicked() { on_btnNextError(); }
+
+void MainWindow::on_btnCaseSensitive_clicked() {
+  QFont font;
+
+  if (!ui->chkCaseSensitive->isChecked()) {
+    ui->chkCaseSensitive->setChecked(true);
+    font.setBold(true);
+    ui->btnCaseSensitive->setFont(font);
+  } else {
+    ui->chkCaseSensitive->setChecked(false);
+    font.setBold(false);
+    ui->btnCaseSensitive->setFont(font);
+  }
+
+  on_chkCaseSensitive_clicked(ui->chkCaseSensitive->isChecked());
+}

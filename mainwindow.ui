@@ -14,7 +14,7 @@
    <string>MainWindow</string>
   </property>
   <property name="windowIcon">
-   <iconset>
+   <iconset resource="my.qrc">
     <normaloff>:/icon/icon.png</normaloff>:/icon/icon.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -126,6 +126,22 @@
         </widget>
        </item>
        <item>
+        <widget class="QToolButton" name="btnCaseSensitive">
+         <property name="maximumSize">
+          <size>
+           <width>20</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>Case sensitive</string>
+         </property>
+         <property name="text">
+          <string>Aa</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QComboBox" name="editFind">
          <property name="minimumSize">
           <size>
@@ -145,7 +161,7 @@
         <widget class="QToolButton" name="btnPrevious">
          <property name="maximumSize">
           <size>
-           <width>16777215</width>
+           <width>20</width>
            <height>20</height>
           </size>
          </property>
@@ -158,7 +174,7 @@
         <widget class="QToolButton" name="btnNext">
          <property name="maximumSize">
           <size>
-           <width>16777215</width>
+           <width>20</width>
            <height>20</height>
           </size>
          </property>
@@ -1097,6 +1113,8 @@ QTreeView::branch:!has-children:!has-siblings:adjoins-item{border-image:url(:/ic
    <header>mytabwidget.h</header>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="my.qrc"/>
+ </resources>
  <connections/>
 </ui>
