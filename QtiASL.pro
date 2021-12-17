@@ -53,6 +53,7 @@ SOURCES += \
     MyTabWidget.cpp \
     autoupdatedialog.cpp \
     dlgdecompile.cpp \
+    dlgpreferences.cpp \
     filesystemwatcher.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -119,6 +120,7 @@ HEADERS += \
     Qsci/qscistyledtext.h \
     autoupdatedialog.h \
     dlgdecompile.h \
+    dlgpreferences.h \
     filesystemwatcher.h \
     mainwindow.h \
     minidialog.h \
@@ -129,6 +131,7 @@ HEADERS += \
 FORMS += \
     autoupdatedialog.ui \
     dlgdecompile.ui \
+    dlgpreferences.ui \
     mainwindow.ui \
     minidialog.ui
 

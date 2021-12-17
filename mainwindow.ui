@@ -14,12 +14,22 @@
    <string>MainWindow</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="my.qrc">
+   <iconset>
     <normaloff>:/icon/icon.png</normaloff>:/icon/icon.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_9">
-    <item row="0" column="0" colspan="5">
+    <item row="3" column="0">
+     <widget class="QCheckBox" name="chkAll">
+      <property name="toolTip">
+       <string>Decompile all AML files in the directory where the opened file is located</string>
+      </property>
+      <property name="text">
+       <string>Batch decompilation</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
      <widget class="QFrame" name="frameTip">
       <property name="frameShape">
        <enum>QFrame::StyledPanel</enum>
@@ -70,57 +80,156 @@
       </layout>
      </widget>
     </item>
-    <item row="1" column="0">
-     <widget class="QCheckBox" name="chkAll">
-      <property name="toolTip">
-       <string>Decompile all AML files in the directory where the opened file is located</string>
-      </property>
-      <property name="text">
-       <string>Batch decompilation</string>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="1">
-     <widget class="QLineEdit" name="editReplace">
-      <property name="placeholderText">
-       <string>Replace</string>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="2">
-     <widget class="QComboBox" name="editFind">
-      <property name="minimumSize">
-       <size>
-        <width>0</width>
-        <height>0</height>
-       </size>
-      </property>
-      <property name="toolTip">
-       <string/>
-      </property>
-      <property name="editable">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="3">
-     <widget class="QCheckBox" name="chkCaseSensitive">
-      <property name="text">
-       <string>CaseSensitive</string>
-      </property>
-      <property name="checked">
-       <bool>false</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="4">
+    <item row="2" column="0">
      <widget class="QComboBox" name="cboxCompilationOptions">
       <property name="toolTip">
        <string>Compilation options</string>
       </property>
      </widget>
     </item>
-    <item row="2" column="0" colspan="5">
+    <item row="0" column="0">
+     <widget class="QFrame" name="hlFind">
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>25</height>
+       </size>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="QLabel" name="lblCount">
+         <property name="text">
+          <string>Count</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="chkCaseSensitive">
+         <property name="text">
+          <string>CaseSensitive</string>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="editFind">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="editable">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QToolButton" name="btnPrevious">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>&lt;</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QToolButton" name="btnNext">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>&gt;</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="editReplace">
+         <property name="placeholderText">
+          <string>Replace</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QToolButton" name="btnReplace">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Replace</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QToolButton" name="btnReplaceFind">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Replace &amp;&amp; Find</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QToolButton" name="btnReplaceAll">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>All</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QToolButton" name="btnDone">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Done</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="4" column="0">
      <widget class="MyTabWidget" name="tabWidget_textEdit" native="true">
       <property name="currentIndex" stdset="0">
        <number>-1</number>
@@ -140,6 +249,118 @@
       <property name="tabBarAutoHide" stdset="0">
        <bool>true</bool>
       </property>
+     </widget>
+    </item>
+    <item row="5" column="0">
+     <widget class="QFrame" name="frameFun">
+      <property name="frameShape">
+       <enum>QFrame::NoFrame</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Plain</enum>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_15">
+       <property name="leftMargin">
+        <number>2</number>
+       </property>
+       <property name="topMargin">
+        <number>2</number>
+       </property>
+       <property name="rightMargin">
+        <number>2</number>
+       </property>
+       <property name="bottomMargin">
+        <number>1</number>
+       </property>
+       <item row="0" column="0">
+        <widget class="QToolButton" name="btnFind">
+         <property name="minimumSize">
+          <size>
+           <width>20</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>20</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>Find</string>
+         </property>
+         <property name="text">
+          <string>F</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QToolButton" name="btnCompile">
+         <property name="minimumSize">
+          <size>
+           <width>20</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>20</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>Compile</string>
+         </property>
+         <property name="text">
+          <string>C</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QToolButton" name="btnErrorP">
+         <property name="minimumSize">
+          <size>
+           <width>20</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>20</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>Go to previous error</string>
+         </property>
+         <property name="text">
+          <string>&lt;</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="3">
+        <widget class="QToolButton" name="btnErrorN">
+         <property name="minimumSize">
+          <size>
+           <width>20</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>20</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>Go to the next error</string>
+         </property>
+         <property name="text">
+          <string>&gt;</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </widget>
     </item>
    </layout>
@@ -166,6 +387,7 @@
     <addaction name="separator"/>
     <addaction name="actionClose_tab"/>
     <addaction name="separator"/>
+    <addaction name="actionPreferences"/>
     <addaction name="actionQuit"/>
    </widget>
    <widget class="QMenu" name="menu_Edit">
@@ -190,22 +412,6 @@
     <addaction name="actionReplaceAll"/>
     <addaction name="separator"/>
     <addaction name="actionKextstat"/>
-   </widget>
-   <widget class="QMenu" name="menu_Preferences">
-    <property name="title">
-     <string>Preferences</string>
-    </property>
-    <widget class="QMenu" name="menuSet_Encoding">
-     <property name="title">
-      <string>Set Encoding</string>
-     </property>
-     <addaction name="actionUTF_8"/>
-     <addaction name="actionGBK"/>
-    </widget>
-    <addaction name="actionFont_2"/>
-    <addaction name="menuSet_Encoding"/>
-    <addaction name="actionWrapWord"/>
-    <addaction name="actionClear_search_history"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -240,7 +446,6 @@
    <addaction name="menu_File"/>
    <addaction name="menu_Edit"/>
    <addaction name="menuView"/>
-   <addaction name="menu_Preferences"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar">
@@ -289,7 +494,7 @@
         <enum>QTabWidget::North</enum>
        </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>1</number>
        </property>
        <property name="documentMode">
         <bool>true</bool>
@@ -879,6 +1084,11 @@ QTreeView::branch:!has-children:!has-siblings:adjoins-item{border-image:url(:/ic
     <string>https://gh.xiu2.xyz/https://github.com/</string>
    </property>
   </action>
+  <action name="actionPreferences">
+   <property name="text">
+    <string>Preferences</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -887,8 +1097,6 @@ QTreeView::branch:!has-children:!has-siblings:adjoins-item{border-image:url(:/ic
    <header>mytabwidget.h</header>
   </customwidget>
  </customwidgets>
- <resources>
-  <include location="my.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

@@ -47,6 +47,7 @@
 #include <QTextStream>
 #include <QThread>
 #include <QTimer>
+#include <QToolButton>
 #include <QTranslator>
 #include <QTreeWidget>
 #include <QTreeWidgetItem>
@@ -54,8 +55,11 @@
 
 #include "autoupdatedialog.h"
 #include "dlgdecompile.h"
+#include "dlgpreferences.h"
 #include "minidialog.h"
 #include "recentfiles.h"
+#include "ui_dlgdecompile.h"
+#include "ui_dlgpreferences.h"
 
 //网络相关头文件
 #include <QtNetwork/QNetworkAccessManager>
@@ -111,7 +115,11 @@ class MainWindow : public QMainWindow {
   QString strModiFile;
   bool blAutoCheckUpdate = false;
   QStringList reLoadByModiList;
-
+  dlgPreferences* dlgset;
+  void set_font();
+  void set_wrap();
+  QLabel* lblEncoding;
+  bool blInit = false;
   int getDockWidth();
 
   int getMiniDockX();
@@ -231,10 +239,6 @@ class MainWindow : public QMainWindow {
 
   void kextstat();
 
-  void set_font();
-
-  void set_wrap();
-
   void on_btnRefreshTree();
 
   void refresh_tree(QsciScintilla* textEdit);
@@ -347,6 +351,28 @@ class MainWindow : public QMainWindow {
 
   void on_actProxy5_triggered();
 
+  void on_actionPreferences_triggered();
+
+  void on_btnNext_clicked();
+
+  void on_btnPrevious_clicked();
+
+  void on_btnDone_clicked();
+
+  void on_btnReplace_clicked();
+
+  void on_btnReplaceFind_clicked();
+
+  void on_btnReplaceAll_clicked();
+
+  void on_btnFind_clicked();
+
+  void on_btnCompile_clicked();
+
+  void on_btnErrorP_clicked();
+
+  void on_btnErrorN_clicked();
+
  private:
   int lblNumber = 2;
   int editNumber = 1;
@@ -357,7 +383,6 @@ class MainWindow : public QMainWindow {
   void clearSearchHighlight(QsciScintilla* textEdit);
   QList<int> m_searchTextPosList;
   QString search_string;
-  QLabel* lblCount;
 
   QStringList findTextList;
   void init_findTextList();
@@ -404,8 +429,6 @@ class MainWindow : public QMainWindow {
   QLabel* lblMsg;
 
   QLabel* lblLayer;
-
-  QLabel* lblEncoding;
 
   QLabel* lblCurrentFile = new QLabel;
 

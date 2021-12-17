@@ -85,10 +85,10 @@ CodeEditor::CodeEditor(QWidget* parent) : QPlainTextEdit(parent) {
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
   ui->setupUi(this);
-
+  blInit = true;
   loadLocal();
 
-  CurVerison = "1.0.75";
+  CurVerison = "1.0.76";
   ver = "QtiASL V" + CurVerison + "        ";
   setWindowTitle(ver);
 
@@ -113,6 +113,7 @@ MainWindow::MainWindow(QWidget* parent)
 
   dlg = new dlgDecompile(this);
   dlgAutoUpdate = new AutoUpdateDialog(this);
+  dlgset = new dlgPreferences(this);
 
 #ifdef Q_OS_WIN32
   regACPI_win();
@@ -202,6 +203,7 @@ MainWindow::MainWindow(QWidget* parent)
   readINIProxy();
 
   One = false;
+  blInit = false;
 }
 
 MainWindow::~MainWindow() {
@@ -305,7 +307,7 @@ void MainWindow::about() {
       "<a style='color:blue;' href = https://github.com/ic005k/QtiASL>QtiASL "
       "IDE</a><br><br>";
 
-  QMessageBox::about(this, "About", str1 + last);
+  QMessageBox::about(this, "About", "V" + CurVerison + "  " + str1 + last);
 }
 
 QString MainWindow::openFile(QString fileName) {
@@ -384,7 +386,7 @@ QString MainWindow::openFile(QString fileName) {
 
     int count = files.count();
 
-    if (!ui->chkAll->isChecked()) {
+    if (!dlgset->ui->chkAll->isChecked()) {
       count = 1;
       files.clear();
       files.append(fInfo.fileName());
@@ -953,7 +955,7 @@ void MainWindow::btnCompile_clicked() {
   qTime.start();
 
   if (cf_info.suffix().toLower() == "dsl") {
-    QString op = ui->cboxCompilationOptions->currentText().trimmed();
+    QString op = dlgset->ui->cboxCompilationOptions->currentText().trimmed();
 
 #ifdef Q_OS_WIN32
     co->start(appInfo.filePath() + "/iasl.exe", QStringList() << op << curFile);
@@ -1427,6 +1429,7 @@ void MainWindow::forEach(QString str, QString strReplace) {
 }
 
 void MainWindow::on_btnFindNext() {
+  if (!blInit) ui->hlFind->setHidden(false);
   clearSearchHighlight(textEdit);
 
   QString str = ui->editFind->currentText().trimmed();
@@ -4018,6 +4021,8 @@ void MainWindow::init_recentFiles() {
 }
 
 void MainWindow::init_toolbar() {
+  ui->toolBar->setHidden(true);
+  ui->hlFind->setHidden(true);
   ui->toolBar->setStyleSheet(
 
       "QToolButton:hover{ "
@@ -4061,9 +4066,9 @@ void MainWindow::init_toolbar() {
   ui->toolBar->addWidget(ui->chkAll);
 
   ui->toolBar->addSeparator();
-  ui->toolBar->addWidget(ui->chkCaseSensitive);
-  ui->toolBar->addWidget(ui->editFind);
-  ui->editFind->setFixedWidth(300);
+  // ui->toolBar->addWidget(ui->chkCaseSensitive);
+  // ui->toolBar->addWidget(ui->editFind);
+  ui->editFind->setMinimumWidth(260);
 
   ui->editFind->lineEdit()->setPlaceholderText(
       tr("Find") + "  (" + tr("History entries") + ": " +
@@ -4077,9 +4082,8 @@ void MainWindow::init_toolbar() {
   connect(ui->editFind->lineEdit(), &QLineEdit::returnPressed, this,
           &MainWindow::on_editFind_returnPressed);
 
-  lblCount = new QLabel(this);
-  lblCount->setText("0");
-  ui->toolBar->addWidget(lblCount);
+  ui->lblCount->setText("0");
+  // ui->toolBar->addWidget(ui->lblCount);
 
   ui->actionFindPrevious->setIcon(QIcon(":/icon/fp.png"));
   ui->toolBar->addAction(ui->actionFindPrevious);
@@ -4088,8 +4092,9 @@ void MainWindow::init_toolbar() {
   ui->toolBar->addAction(ui->actionFindNext);
 
   ui->toolBar->addSeparator();
-  ui->toolBar->addWidget(ui->editReplace);
+  // ui->toolBar->addWidget(ui->editReplace);
   // ui->editReplace->setFixedWidth(ui->editFind->width());
+  ui->editReplace->setMinimumWidth(160);
 
   ui->actionReplace->setIcon(QIcon(":/icon/re.png"));
   ui->toolBar->addAction(ui->actionReplace);
@@ -4117,6 +4122,14 @@ void MainWindow::init_toolbar() {
   ui->toolBar->addSeparator();
   ui->actionRefreshTree->setIcon(QIcon(":/icon/r.png"));
   ui->toolBar->addAction(ui->actionRefreshTree);
+
+  // hlFind
+  ui->hlFind->setFixedHeight(ui->editFind->height() + 2);
+  ui->lblCount->setFixedWidth(50);
+  ui->lblCount->setAlignment(Qt::AlignCenter);
+
+  // Corner Buttons
+  ui->tabWidget_misc->setCornerWidget(ui->frameFun);
 }
 
 void MainWindow::init_menu() {
@@ -4140,7 +4153,7 @@ void MainWindow::init_menu() {
   ui->actionOpen_directory->setShortcut(tr("ctrl+0"));
   connect(ui->actionOpen_directory, &QAction::triggered, this,
           &MainWindow::on_actionOpenDir);
-
+  ui->actionPreferences->setMenuRole(QAction::PreferencesRole);
   // Quit
   ui->actionQuit->setMenuRole(QAction::QuitRole);
 
@@ -4168,6 +4181,8 @@ void MainWindow::init_menu() {
   connect(ui->actionFindPrevious, &QAction::triggered, this,
           &MainWindow::on_btnFindPrevious);
   if (mac) ui->actionFindPrevious->setIconVisibleInMenu(false);
+
+  // Find & Replace
 
   ui->actionFindNext->setShortcut(tr("ctrl+f"));
   connect(ui->actionFindNext, &QAction::triggered, this,
@@ -4203,31 +4218,6 @@ void MainWindow::init_menu() {
 
   connect(ui->actionKextstat, &QAction::triggered, this, &MainWindow::kextstat);
 
-  // Preference
-  ui->actionFont_2->setShortcut(tr("ctrl+9"));
-  connect(ui->actionFont_2, &QAction::triggered, this, &MainWindow::set_font);
-
-  connect(ui->actionWrapWord, &QAction::triggered, this, &MainWindow::set_wrap);
-
-  connect(ui->actionClear_search_history, &QAction::triggered, this,
-          &MainWindow::on_clearFindText);
-
-  QActionGroup* AG = new QActionGroup(this);
-  AG->addAction(ui->actionUTF_8);
-  AG->addAction(ui->actionGBK);
-
-  ui->actionUTF_8->setCheckable(true);
-  ui->actionGBK->setCheckable(true);
-
-  connect(AG, &QActionGroup::triggered, [=]() mutable {
-    if (ui->actionUTF_8->isChecked() == true) {
-      lblEncoding->setText("UTF-8");
-
-    } else if (ui->actionGBK->isChecked() == true) {
-      lblEncoding->setText("GBK");
-    }
-  });
-
   // View
   connect(ui->actionMembers_win, &QAction::triggered, this,
           &MainWindow::view_mem_list);
@@ -4256,9 +4246,9 @@ void MainWindow::init_menu() {
   icon.addFile(":/icon/return.png");
   ui->btnReturn->setIcon(icon);
 
-  ui->cboxCompilationOptions->addItem("-f");
-  ui->cboxCompilationOptions->addItem("-tp");
-  ui->cboxCompilationOptions->setEditable(true);
+  dlgset->ui->cboxCompilationOptions->addItem("-f");
+  dlgset->ui->cboxCompilationOptions->addItem("-tp");
+  dlgset->ui->cboxCompilationOptions->setEditable(true);
 
   //读取编译参数
   QString qfile = QDir::homePath() + "/.config/QtiASL/QtiASL.ini";
@@ -4268,12 +4258,12 @@ void MainWindow::init_menu() {
     // QSettings Reg(qfile, QSettings::NativeFormat);
     QSettings Reg(qfile, QSettings::IniFormat);
     QString op = Reg.value("options").toString().trimmed();
-    if (op.count() > 0) ui->cboxCompilationOptions->setCurrentText(op);
+    if (op.count() > 0) dlgset->ui->cboxCompilationOptions->setCurrentText(op);
 
     //编码
-    if (ui->actionUTF_8->isChecked()) lblEncoding->setText("UTF-8");
+    if (dlgset->ui->rbtnUTF8->isChecked()) lblEncoding->setText("UTF-8");
 
-    if (ui->actionGBK->isChecked()) lblEncoding->setText("GBK");
+    if (dlgset->ui->rbtnGBK->isChecked()) lblEncoding->setText("GBK");
   }
 
   //设置编译功能屏蔽
@@ -4918,7 +4908,8 @@ void MainWindow::closeEvent(QCloseEvent* event) {
   QFile file(qfile);
 
   QSettings Reg(qfile, QSettings::IniFormat);
-  Reg.setValue("options", ui->cboxCompilationOptions->currentText().trimmed());
+  Reg.setValue("options",
+               dlgset->ui->cboxCompilationOptions->currentText().trimmed());
 
   //存储搜索历史文本
   int count = ui->editFind->count();
@@ -5240,7 +5231,7 @@ void MainWindow::set_font() {
 
 /*菜单：是否自动换行*/
 void MainWindow::set_wrap() {
-  if (ui->actionWrapWord->isChecked()) {
+  if (dlgset->ui->cboxWrapWord->isChecked()) {
     textEdit->setWrapMode(QsciScintilla::WrapWord);
     miniEdit->setWrapMode(QsciScintilla::WrapWord);
     miniDlgEdit->setWrapMode(QsciScintilla::WrapWord);
@@ -5757,7 +5748,7 @@ void MainWindow::highlighsearchtext(QString searchText) {
   }
 
   int count = m_searchTextPosList.count();
-  lblCount->setText(QString::number(count));
+  ui->lblCount->setText(QString::number(count));
 }
 
 void MainWindow::clearSearchHighlight(QsciScintilla* textEdit) {
@@ -5775,7 +5766,7 @@ void MainWindow::on_editFind_editTextChanged(const QString& arg1) {
     on_btnFindNext();
   } else {
     clearSearchHighlight(textEdit);
-    lblCount->setText("0");
+    ui->lblCount->setText("0");
 
     ui->editFind->lineEdit()->setPlaceholderText(
         tr("Find") + "  (" + tr("History entries") + ": " +
@@ -6404,3 +6395,28 @@ QString MainWindow::getProxy() {
 
   return "";
 }
+
+void MainWindow::on_actionPreferences_triggered() {
+  dlgset->setModal(true);
+  dlgset->show();
+}
+
+void MainWindow::on_btnNext_clicked() { on_btnFindNext(); }
+
+void MainWindow::on_btnPrevious_clicked() { on_btnFindPrevious(); }
+
+void MainWindow::on_btnDone_clicked() { ui->hlFind->setHidden(true); }
+
+void MainWindow::on_btnReplace_clicked() { on_btnReplace(); }
+
+void MainWindow::on_btnReplaceFind_clicked() { on_btnReplaceFind(); }
+
+void MainWindow::on_btnReplaceAll_clicked() { ReplaceAll(); }
+
+void MainWindow::on_btnFind_clicked() { on_btnFindNext(); }
+
+void MainWindow::on_btnCompile_clicked() { on_btnCompile(); }
+
+void MainWindow::on_btnErrorP_clicked() { on_btnPreviousError(); }
+
+void MainWindow::on_btnErrorN_clicked() { on_btnNextError(); }
