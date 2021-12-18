@@ -4020,12 +4020,12 @@ void MainWindow::init_toolbar() {
   ui->toolBar->setHidden(true);
   ui->hlFind->setHidden(true);
   ui->chkCaseSensitive->setHidden(true);
-  // ui->btnFind->setIcon(QIcon(":/icon/find.png"));
-  // ui->btnCompile->setIcon(QIcon(":/icon/2.png"));
-  // ui->btnErrorP->setIcon(QIcon(":/icon/1.png"));
-  // ui->btnErrorN->setIcon(QIcon(":/icon/3.png"));
+  ui->btnFind->setIcon(QIcon(":/icon/find.png"));
+  ui->btnCompile->setIcon(QIcon(":/icon/2.png"));
+  ui->btnErrorP->setIcon(QIcon(":/icon/1.png"));
+  ui->btnErrorN->setIcon(QIcon(":/icon/3.png"));
   QToolButton* btnSave = new QToolButton(this);
-  // btnSave->setIcon(QIcon(":/icon/save.png"));
+  btnSave->setIcon(QIcon(":/icon/save.png"));
   btnSave->setText("S");
   btnSave->setToolTip(tr("Save"));
   ui->tabWidget_textEdit->setCornerWidget(btnSave);
