@@ -91,6 +91,7 @@ MainWindow::MainWindow(QWidget* parent)
   CurVerison = "1.0.76";
   ver = "QtiASL V" + CurVerison + "        ";
   setWindowTitle(ver);
+  ver = "";
 
   //获取背景色
   QPalette pal = this->palette();
