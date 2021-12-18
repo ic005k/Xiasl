@@ -210,7 +210,7 @@
     <message>
         <location filename="mainwindow.ui" line="1105"/>
         <source>Preferences</source>
-        <translation>选项</translation>
+        <translation>偏好设置</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="434"/>
