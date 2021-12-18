@@ -3923,6 +3923,7 @@ void MainWindow::init_info_edit() {
   ui->listWidget->setSpacing(0);
   ui->listWidget->setIconSize(QSize(20, 20));
   ui->listWidget->setViewMode(QListView::ListMode);
+  ui->listWidget->setFocusPolicy(Qt::NoFocus);
 
   ui->listWidget->addItem(
       new QListWidgetItem(QIcon(":/icon/1i1.png"), tr("BasicInfo")));
@@ -4055,13 +4056,13 @@ void MainWindow::init_toolbar() {
   ui->toolBar->layout()->setMargin(1);
   ui->toolBar->layout()->setSpacing(1);
 
-  ui->actionNew->setIcon(QIcon(":/icon/new.png"));
+  // ui->actionNew->setIcon(QIcon(":/icon/new.png"));
   ui->toolBar->addAction(ui->actionNew);
 
-  ui->actionOpen->setIcon(QIcon(":/icon/open.png"));
+  // ui->actionOpen->setIcon(QIcon(":/icon/open.png"));
   ui->toolBar->addAction(ui->actionOpen);
 
-  ui->actionSave->setIcon(QIcon(":/icon/save.png"));
+  // ui->actionSave->setIcon(QIcon(":/icon/save.png"));
   ui->toolBar->addAction(ui->actionSave);
 
   ui->toolBar->addSeparator();
@@ -4088,10 +4089,10 @@ void MainWindow::init_toolbar() {
   ui->lblCount->setText("0");
   // ui->toolBar->addWidget(ui->lblCount);
 
-  ui->actionFindPrevious->setIcon(QIcon(":/icon/fp.png"));
+  // ui->actionFindPrevious->setIcon(QIcon(":/icon/fp.png"));
   ui->toolBar->addAction(ui->actionFindPrevious);
 
-  ui->actionFindNext->setIcon(QIcon(":/icon/fn.png"));
+  // ui->actionFindNext->setIcon(QIcon(":/icon/fn.png"));
   ui->toolBar->addAction(ui->actionFindNext);
 
   ui->toolBar->addSeparator();
@@ -4099,31 +4100,31 @@ void MainWindow::init_toolbar() {
   // ui->editReplace->setFixedWidth(ui->editFind->width());
   ui->editReplace->setMinimumWidth(160);
 
-  ui->actionReplace->setIcon(QIcon(":/icon/re.png"));
+  // ui->actionReplace->setIcon(QIcon(":/icon/re.png"));
   ui->toolBar->addAction(ui->actionReplace);
 
-  ui->actionReplace_Find->setIcon(QIcon(":/icon/rf.png"));
+  // ui->actionReplace_Find->setIcon(QIcon(":/icon/rf.png"));
   ui->toolBar->addAction(ui->actionReplace_Find);
 
-  ui->actionFind->setIcon(QIcon(":/icon/fn.png"));
+  // ui->actionFind->setIcon(QIcon(":/icon/fn.png"));
   ui->toolBar->addAction(ui->actionFind);
 
-  ui->actionReplaceAll->setIcon(QIcon(":/icon/ra.png"));
+  // ui->actionReplaceAll->setIcon(QIcon(":/icon/ra.png"));
   ui->toolBar->addAction(ui->actionReplaceAll);
 
   ui->toolBar->addSeparator();
   ui->toolBar->addWidget(ui->cboxCompilationOptions);
-  ui->actionGo_to_previous_error->setIcon(QIcon(":/icon/1.png"));
+  // ui->actionGo_to_previous_error->setIcon(QIcon(":/icon/1.png"));
   ui->toolBar->addAction(ui->actionGo_to_previous_error);
 
-  ui->actionCompiling->setIcon(QIcon(":/icon/2.png"));
+  // ui->actionCompiling->setIcon(QIcon(":/icon/2.png"));
   ui->toolBar->addAction(ui->actionCompiling);
 
-  ui->actionGo_to_the_next_error->setIcon(QIcon(":/icon/3.png"));
+  // ui->actionGo_to_the_next_error->setIcon(QIcon(":/icon/3.png"));
   ui->toolBar->addAction(ui->actionGo_to_the_next_error);
 
   ui->toolBar->addSeparator();
-  ui->actionRefreshTree->setIcon(QIcon(":/icon/r.png"));
+  // ui->actionRefreshTree->setIcon(QIcon(":/icon/r.png"));
   ui->toolBar->addAction(ui->actionRefreshTree);
 
   // hlFind
