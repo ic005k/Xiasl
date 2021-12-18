@@ -10,7 +10,7 @@
 #include "mytabwidget.h"
 #include "ui_mainwindow.h"
 
-QString CurVerison = "1.0.78";
+QString CurVerison = "1.0.79";
 bool loading = false;
 bool thread_end = true;
 bool break_run = false;
@@ -4020,9 +4020,16 @@ void MainWindow::init_toolbar() {
   ui->btnErrorN->setIcon(QIcon(":/icon/3.png"));
 
   ui->btnSave->setIcon(QIcon(":/icon/save.png"));
-  ui->btnSave->setText("S");
-  ui->btnSave->setToolTip(tr("Save"));
-  ui->tabWidget_textEdit->setCornerWidget(ui->btnSave);
+  ui->btnNew->setIcon(QIcon(":/icon/new.png"));
+  ui->tabWidget_textEdit->setCornerWidget(ui->frameMainFun);
+
+  // hlFind
+  ui->hlFind->setFixedHeight(ui->editFind->height() + 2);
+  ui->lblCount->setFixedWidth(50);
+  ui->lblCount->setAlignment(Qt::AlignCenter);
+
+  // Corner Buttons
+  ui->tabWidget_misc->setCornerWidget(ui->frameFun);
 
   ui->toolBar->setStyleSheet(
 
@@ -4123,14 +4130,6 @@ void MainWindow::init_toolbar() {
   ui->toolBar->addSeparator();
   // ui->actionRefreshTree->setIcon(QIcon(":/icon/r.png"));
   ui->toolBar->addAction(ui->actionRefreshTree);
-
-  // hlFind
-  ui->hlFind->setFixedHeight(ui->editFind->height() + 2);
-  ui->lblCount->setFixedWidth(50);
-  ui->lblCount->setAlignment(Qt::AlignCenter);
-
-  // Corner Buttons
-  ui->tabWidget_misc->setCornerWidget(ui->frameFun);
 }
 
 void MainWindow::init_menu() {
@@ -6439,3 +6438,5 @@ void MainWindow::on_btnCaseSensitive_clicked() {
 }
 
 void MainWindow::on_btnSave_clicked() { Save(); }
+
+void MainWindow::on_btnNew_clicked() { newFile(); }

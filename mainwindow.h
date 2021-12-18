@@ -377,6 +377,8 @@ class MainWindow : public QMainWindow {
 
   void on_btnSave_clicked();
 
+  void on_btnNew_clicked();
+
  private:
   int lblNumber = 2;
   int editNumber = 1;
