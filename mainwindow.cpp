@@ -1430,7 +1430,10 @@ void MainWindow::forEach(QString str, QString strReplace) {
 }
 
 void MainWindow::on_btnFindNext() {
-  if (!blInit) ui->hlFind->setHidden(false);
+  if (!blInit) {
+    ui->hlFind->setHidden(false);
+    ui->editFind->setFocus();
+  }
   clearSearchHighlight(textEdit);
 
   QString str = ui->editFind->currentText().trimmed();
