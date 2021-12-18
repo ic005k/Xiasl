@@ -375,6 +375,8 @@ class MainWindow : public QMainWindow {
 
   void on_btnCaseSensitive_clicked();
 
+  void on_btnSave_clicked();
+
  private:
   int lblNumber = 2;
   int editNumber = 1;

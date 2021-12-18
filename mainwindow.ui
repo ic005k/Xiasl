@@ -263,7 +263,7 @@
        <bool>true</bool>
       </property>
       <property name="tabBarAutoHide" stdset="0">
-       <bool>true</bool>
+       <bool>false</bool>
       </property>
      </widget>
     </item>
@@ -288,8 +288,8 @@
        <property name="bottomMargin">
         <number>1</number>
        </property>
-       <item row="0" column="0">
-        <widget class="QToolButton" name="btnFind">
+       <item row="0" column="4">
+        <widget class="QToolButton" name="btnErrorN">
          <property name="minimumSize">
           <size>
            <width>20</width>
@@ -303,14 +303,14 @@
           </size>
          </property>
          <property name="toolTip">
-          <string>Find</string>
+          <string>Go to the next error</string>
          </property>
          <property name="text">
-          <string>F</string>
+          <string>&gt;</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="1">
+       <item row="0" column="2">
         <widget class="QToolButton" name="btnCompile">
          <property name="minimumSize">
           <size>
@@ -332,7 +332,29 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="2">
+       <item row="0" column="1">
+        <widget class="QToolButton" name="btnFind">
+         <property name="minimumSize">
+          <size>
+           <width>20</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>20</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>Find</string>
+         </property>
+         <property name="text">
+          <string>F</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="3">
         <widget class="QToolButton" name="btnErrorP">
          <property name="minimumSize">
           <size>
@@ -354,25 +376,16 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="3">
-        <widget class="QToolButton" name="btnErrorN">
-         <property name="minimumSize">
-          <size>
-           <width>20</width>
-           <height>20</height>
-          </size>
-         </property>
+       <item row="0" column="5">
+        <widget class="QToolButton" name="btnSave">
          <property name="maximumSize">
           <size>
-           <width>20</width>
-           <height>20</height>
+           <width>30</width>
+           <height>50</height>
           </size>
          </property>
-         <property name="toolTip">
-          <string>Go to the next error</string>
-         </property>
          <property name="text">
-          <string>&gt;</string>
+          <string>S</string>
          </property>
         </widget>
        </item>

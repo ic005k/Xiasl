@@ -4018,12 +4018,11 @@ void MainWindow::init_toolbar() {
   ui->btnCompile->setIcon(QIcon(":/icon/2.png"));
   ui->btnErrorP->setIcon(QIcon(":/icon/1.png"));
   ui->btnErrorN->setIcon(QIcon(":/icon/3.png"));
-  QToolButton* btnSave = new QToolButton(this);
-  btnSave->setIcon(QIcon(":/icon/save.png"));
-  btnSave->setText("S");
-  btnSave->setToolTip(tr("Save"));
-  ui->tabWidget_textEdit->setCornerWidget(btnSave);
-  connect(btnSave, &QToolButton::clicked, this, &MainWindow::Save);
+
+  ui->btnSave->setIcon(QIcon(":/icon/save.png"));
+  ui->btnSave->setText("S");
+  ui->btnSave->setToolTip(tr("Save"));
+  ui->tabWidget_textEdit->setCornerWidget(ui->btnSave);
 
   ui->toolBar->setStyleSheet(
 
@@ -6438,3 +6437,5 @@ void MainWindow::on_btnCaseSensitive_clicked() {
 
   on_chkCaseSensitive_clicked(ui->chkCaseSensitive->isChecked());
 }
+
+void MainWindow::on_btnSave_clicked() { Save(); }
