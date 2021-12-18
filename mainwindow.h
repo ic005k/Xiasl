@@ -394,8 +394,6 @@ class MainWindow : public QMainWindow {
   QNetworkAccessManager* manager;
   int parse_UpdateJSON(QString str);
 
-  QString CurVerison = "V1.0";
-
   void loadTabFiles();
 
   bool One = false;

@@ -10,6 +10,7 @@
 #include "mytabwidget.h"
 #include "ui_mainwindow.h"
 
+QString CurVerison = "1.0.77";
 bool loading = false;
 bool thread_end = true;
 bool break_run = false;
@@ -22,7 +23,6 @@ int m_count = 0;
 int d_count = 0;
 int n_count = 0;
 QsciScintilla* textEditBack;
-
 QsciScintilla* miniDlgEdit;
 miniDialog* miniDlg;
 
@@ -49,14 +49,9 @@ QscilexerCppAttach* textLexer;
 bool zh_cn = false;
 
 QString dragFileName;
-int rowDrag;
-int colDrag;
-int vs;
-int hs;
+int vs, hs, red, rowDrag, colDrag;
 
 extern MainWindow* mw_one;
-
-int red;
 
 thread_one::thread_one(QObject* parent) : QThread(parent) {}
 
@@ -88,7 +83,6 @@ MainWindow::MainWindow(QWidget* parent)
   blInit = true;
   loadLocal();
 
-  CurVerison = "1.0.76";
   ver = "QtiASL V" + CurVerison + "        ";
   setWindowTitle(ver);
   ver = "";
