@@ -3919,15 +3919,6 @@ void MainWindow::init_info_edit() {
   ui->gridLayout_6->setMargin(0);
   ui->gridLayout_13->setMargin(0);
 
-  /*"QListWidget::item:hover{background-color:#e6e6e6;margin:1px,1px,1px,"
-  "1px;border-radius:0;"
-  "color:black}"*/
-  QString listStyleMain =
-      "QListWidget::item:selected{background:#e6e6e6; border:0px "
-      "blue;margin:1px,1px,1px,1px;border-radius:0;"
-      "color:blue}";
-  ui->listWidget->setStyleSheet(listStyleMain);
-
   ui->listWidget->setFrameShape(QListWidget::NoFrame);
   ui->listWidget->setSpacing(0);
   ui->listWidget->setIconSize(QSize(20, 20));
@@ -4028,6 +4019,12 @@ void MainWindow::init_toolbar() {
   // ui->btnCompile->setIcon(QIcon(":/icon/2.png"));
   // ui->btnErrorP->setIcon(QIcon(":/icon/1.png"));
   // ui->btnErrorN->setIcon(QIcon(":/icon/3.png"));
+  QToolButton* btnSave = new QToolButton(this);
+  // btnSave->setIcon(QIcon(":/icon/save.png"));
+  btnSave->setText("S");
+  btnSave->setToolTip(tr("Save"));
+  ui->tabWidget_textEdit->setCornerWidget(btnSave);
+  connect(btnSave, &QToolButton::clicked, this, &MainWindow::Save);
 
   ui->toolBar->setStyleSheet(
 

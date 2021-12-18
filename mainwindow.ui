@@ -14,7 +14,7 @@
    <string>MainWindow</string>
   </property>
   <property name="windowIcon">
-   <iconset>
+   <iconset resource="my.qrc">
     <normaloff>:/icon/icon.png</normaloff>:/icon/icon.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -695,6 +695,22 @@ QTreeView::branch:!has-children:!has-siblings:adjoins-item{border-image:url(:/ic
          <property name="layoutDirection">
           <enum>Qt::LeftToRight</enum>
          </property>
+         <property name="styleSheet">
+          <string notr="true">/**列表项选中*/
+QListWidget::item::selected:active
+{ 
+    color:black;
+    border-width:0;
+   background:#00ccff;
+}
+QListWidget::item:selected
+{
+    color:black;
+    border-width:0;
+   background:#00ccff;
+}
+</string>
+         </property>
          <property name="frameShape">
           <enum>QFrame::StyledPanel</enum>
          </property>
@@ -1113,6 +1129,8 @@ QTreeView::branch:!has-children:!has-siblings:adjoins-item{border-image:url(:/ic
    <header>mytabwidget.h</header>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="my.qrc"/>
+ </resources>
  <connections/>
 </ui>
