@@ -38,5 +38,6 @@
         <file>icon/sub.svg</file>
         <file>icon/save.png</file>
         <file>icon/find.png</file>
+        <file>icon/clear.png</file>
     </qresource>
 </RCC>

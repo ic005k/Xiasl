@@ -4027,6 +4027,11 @@ void MainWindow::init_toolbar() {
   ui->hlFind->setFixedHeight(ui->editFind->height() + 2);
   ui->lblCount->setFixedWidth(50);
   ui->lblCount->setAlignment(Qt::AlignCenter);
+  QAction* actClear = new QAction(this);
+  actClear->setToolTip(tr("Clear search history"));
+  actClear->setIcon(QIcon(":/icon/clear.png"));
+  ui->editFind->lineEdit()->addAction(actClear, QLineEdit::LeadingPosition);
+  connect(actClear, &QAction::triggered, this, &MainWindow::on_clearFindText);
 
   // Corner Buttons
   ui->tabWidget_misc->setCornerWidget(ui->frameFun);

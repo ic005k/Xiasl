@@ -36,29 +36,29 @@
       </property>
       <layout class="QGridLayout" name="gridLayout_15">
        <property name="leftMargin">
-        <number>2</number>
+        <number>0</number>
        </property>
        <property name="topMargin">
-        <number>2</number>
+        <number>0</number>
        </property>
        <property name="rightMargin">
-        <number>2</number>
+        <number>0</number>
        </property>
        <property name="bottomMargin">
-        <number>1</number>
+        <number>0</number>
        </property>
        <item row="0" column="4">
         <widget class="QToolButton" name="btnErrorN">
          <property name="minimumSize">
           <size>
-           <width>20</width>
-           <height>20</height>
+           <width>0</width>
+           <height>0</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>20</width>
-           <height>20</height>
+           <width>50</width>
+           <height>200</height>
           </size>
          </property>
          <property name="toolTip">
@@ -73,14 +73,14 @@
         <widget class="QToolButton" name="btnCompile">
          <property name="minimumSize">
           <size>
-           <width>20</width>
-           <height>20</height>
+           <width>0</width>
+           <height>0</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>20</width>
-           <height>20</height>
+           <width>50</width>
+           <height>200</height>
           </size>
          </property>
          <property name="toolTip">
@@ -95,14 +95,14 @@
         <widget class="QToolButton" name="btnFind">
          <property name="minimumSize">
           <size>
-           <width>20</width>
-           <height>20</height>
+           <width>0</width>
+           <height>0</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>20</width>
-           <height>20</height>
+           <width>50</width>
+           <height>200</height>
           </size>
          </property>
          <property name="toolTip">
@@ -117,14 +117,14 @@
         <widget class="QToolButton" name="btnErrorP">
          <property name="minimumSize">
           <size>
-           <width>20</width>
-           <height>20</height>
+           <width>0</width>
+           <height>0</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>20</width>
-           <height>20</height>
+           <width>50</width>
+           <height>200</height>
           </size>
          </property>
          <property name="toolTip">
