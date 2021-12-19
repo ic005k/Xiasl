@@ -10,7 +10,7 @@
 #include "mytabwidget.h"
 #include "ui_mainwindow.h"
 
-QString CurVerison = "1.0.83";
+QString CurVerison = "1.0.84";
 bool loading = false;
 bool thread_end = true;
 bool break_run = false;
@@ -4032,11 +4032,7 @@ void MainWindow::init_toolbar() {
   ui->tabWidget_misc->setCornerWidget(ui->frameFun);
 
   // hlFind
-  ui->editReplace->setHidden(true);
-  ui->btnReplace->setHidden(true);
-  ui->btnReplaceFind->setHidden(true);
-  ui->btnReplaceAll->setHidden(true);
-  ui->btnShowRepace->setText(tr("Show Replace"));
+  ui->wReplace->setHidden(true);
   ui->hlFind->layout()->setSpacing(2);
   // ui->hlFind->setFixedHeight(ui->editFind->height() * 2 + 4);
   ui->lblCount->setFixedWidth(50);
@@ -6499,17 +6495,11 @@ QString MainWindow::getMD5FromList(QString file) {
 
 void MainWindow::on_btnShowRepace_clicked() {
   if (ui->btnShowRepace->text() == tr("Show Replace")) {
-    ui->editReplace->setHidden(false);
-    ui->btnReplace->setHidden(false);
-    ui->btnReplaceFind->setHidden(false);
-    ui->btnReplaceAll->setHidden(false);
+    ui->wReplace->setHidden(false);
     ui->btnShowRepace->setText(tr("Hide Replace"));
 
   } else if (ui->btnShowRepace->text() == tr("Hide Replace")) {
-    ui->editReplace->setHidden(true);
-    ui->btnReplace->setHidden(true);
-    ui->btnReplaceFind->setHidden(true);
-    ui->btnReplaceAll->setHidden(true);
+    ui->wReplace->setHidden(true);
     ui->btnShowRepace->setText(tr("Show Replace"));
   }
 }
