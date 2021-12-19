@@ -127,12 +127,15 @@ void FileSystemWatcher::directoryUpdated(const QString& path) {
 void FileSystemWatcher::fileUpdated(const QString& path) {
   // qDebug() << QString("The file %1 at path %2 is
   // updated").arg(strName).arg(strPath);
+  if (mw_one->getMD5(path) == mw_one->getMD5FromList(path)) return;
 
   QFileInfo fi(path);
   if (fi.exists()) {
     mw_one->ui->lblFileName->setText(tr("The file has been modified by another "
                                         "program. Do you want to reload?") +
-                                     "\n\n" + path);
+                                     "\n\n" + path +
+                                     "\nMD5: " + mw_one->getMD5FromList(path) +
+                                     " -> " + mw_one->getMD5(path));
     mw_one->ui->frameTip->setHidden(false);
     ReLoad = true;
     mw_one->strModiFile = path;

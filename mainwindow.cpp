@@ -10,7 +10,7 @@
 #include "mytabwidget.h"
 #include "ui_mainwindow.h"
 
-QString CurVerison = "1.0.79";
+QString CurVerison = "1.0.80";
 bool loading = false;
 bool thread_end = true;
 bool break_run = false;
@@ -82,6 +82,7 @@ MainWindow::MainWindow(QWidget* parent)
   ui->setupUi(this);
   blInit = true;
   loadLocal();
+  listMd5.clear();
 
   ver = "QtiASL V" + CurVerison + "        ";
   setWindowTitle(ver);
@@ -558,7 +559,7 @@ void MainWindow::loadFile(const QString& fileName, int row, int col) {
   One = false;
 
   setRecentFiles(fileName);
-
+  updateMd5(fileName);
   addFilesWatch();
 
   loading = false;
@@ -755,6 +756,7 @@ bool MainWindow::saveFile(const QString& fileName) {
 
   textEdit->setFocus();
 
+  updateMd5(fileName);
   addFilesWatch();
 
   return true;
@@ -4021,7 +4023,12 @@ void MainWindow::init_toolbar() {
 
   ui->btnSave->setIcon(QIcon(":/icon/save.png"));
   ui->btnNew->setIcon(QIcon(":/icon/new.png"));
+
+  // Corner Buttons
+  ui->frameMainFun->layout()->setSpacing(2);
   ui->tabWidget_textEdit->setCornerWidget(ui->frameMainFun);
+  ui->frameFun->layout()->setSpacing(2);
+  ui->tabWidget_misc->setCornerWidget(ui->frameFun);
 
   // hlFind
   ui->hlFind->setFixedHeight(ui->editFind->height() + 2);
@@ -4032,9 +4039,6 @@ void MainWindow::init_toolbar() {
   actClear->setIcon(QIcon(":/icon/clear.png"));
   ui->editFind->lineEdit()->addAction(actClear, QLineEdit::LeadingPosition);
   connect(actClear, &QAction::triggered, this, &MainWindow::on_clearFindText);
-
-  // Corner Buttons
-  ui->tabWidget_misc->setCornerWidget(ui->frameFun);
 
   ui->toolBar->setStyleSheet(
 
@@ -4285,7 +4289,7 @@ void MainWindow::setLexer(QsciLexer* textLexer, QsciScintilla* textEdit) {
   QFont m_font;
 
 #ifdef Q_OS_WIN32
-  textEdit->setMarginWidth(0, 80);
+  textEdit->setMarginWidth(0, 50);
   m_font.setPointSize(9);
 #endif
 
@@ -4295,8 +4299,8 @@ void MainWindow::setLexer(QsciLexer* textLexer, QsciScintilla* textEdit) {
 #endif
 
 #ifdef Q_OS_MAC
-  textEdit->setMarginWidth(0, 60);
-  m_font.setPointSize(13);
+  textEdit->setMarginWidth(0, 55);
+  m_font.setPointSize(12);
 #endif
 
   textEdit->setMarginType(0, QsciScintilla::NumberMargin);
@@ -4400,8 +4404,9 @@ void MainWindow::setLexer(QsciLexer* textLexer, QsciScintilla* textEdit) {
   textEdit->setMarginWidth(3, 15);
   textEdit->setMarginSensitivity(3, true);
   textEdit->setFolding(QsciScintilla::BoxedTreeFoldStyle);  //折叠样式
-  if (red < 55)  //暗模式，mac下为50
-  {
+
+  //暗模式，mac下为50
+  if (red < 55) {
     textEdit->setFoldMarginColors(Qt::gray, Qt::black);
     // textEdit->setMarginsForegroundColor(Qt::red);  //行号颜色
     textEdit->SendScintilla(QsciScintilla::SCI_SETFOLDFLAGS,
@@ -6445,3 +6450,42 @@ void MainWindow::on_btnCaseSensitive_clicked() {
 void MainWindow::on_btnSave_clicked() { Save(); }
 
 void MainWindow::on_btnNew_clicked() { newFile(); }
+
+QString MainWindow::getMD5(QString targetFile) {
+  QCryptographicHash hashTest(QCryptographicHash::Md5);
+  QFile f2(targetFile);
+  f2.open(QFile::ReadOnly);
+  hashTest.reset();  // 重置（很重要）
+  hashTest.addData(&f2);
+  QString targetHash = hashTest.result().toHex();
+  f2.close();
+  return targetHash;
+}
+
+void MainWindow::updateMd5(QString file) {
+  for (int i = 0; i < listMd5.count(); i++) {
+    QString str = listMd5.at(i);
+    QStringList list = str.split("|");
+    if (list.count() == 2) {
+      if (file == list.at(0)) {
+        listMd5.removeAt(i);
+      }
+    }
+  }
+
+  listMd5.append(file + "|" + getMD5(file));
+}
+
+QString MainWindow::getMD5FromList(QString file) {
+  for (int i = 0; i < listMd5.count(); i++) {
+    QString str = listMd5.at(i);
+    QStringList list = str.split("|");
+    if (list.count() == 2) {
+      if (file == list.at(0)) {
+        return list.at(1);
+      }
+    }
+  }
+
+  return "";
+}

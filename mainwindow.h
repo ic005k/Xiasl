@@ -186,6 +186,9 @@ class MainWindow : public QMainWindow {
   bool linuxOS = false;
   bool osx1012 = false;
   QString getProxy();
+  QStringList listMd5;
+  QString getMD5(QString targetFile);
+  QString getMD5FromList(QString file);
 
  protected:
   void closeEvent(QCloseEvent* event) override;
@@ -513,6 +516,7 @@ class MainWindow : public QMainWindow {
 #endif  // QT_NO_CONTEXTMENU
   void writeINIProxy();
   void readINIProxy();
+  void updateMd5(QString file);
 };
 
 class MiniEditor : public QsciScintilla {

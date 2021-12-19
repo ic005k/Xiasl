@@ -91,28 +91,6 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="1">
-        <widget class="QToolButton" name="btnFind">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>50</width>
-           <height>200</height>
-          </size>
-         </property>
-         <property name="toolTip">
-          <string>Find</string>
-         </property>
-         <property name="text">
-          <string>F</string>
-         </property>
-        </widget>
-       </item>
        <item row="0" column="3">
         <widget class="QToolButton" name="btnErrorP">
          <property name="minimumSize">
@@ -145,28 +123,6 @@
       </property>
       <property name="text">
        <string>Batch decompilation</string>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="0">
-     <widget class="MyTabWidget" name="tabWidget_textEdit" native="true">
-      <property name="currentIndex" stdset="0">
-       <number>-1</number>
-      </property>
-      <property name="usesScrollButtons" stdset="0">
-       <bool>true</bool>
-      </property>
-      <property name="documentMode" stdset="0">
-       <bool>true</bool>
-      </property>
-      <property name="tabsClosable" stdset="0">
-       <bool>false</bool>
-      </property>
-      <property name="movable" stdset="0">
-       <bool>true</bool>
-      </property>
-      <property name="tabBarAutoHide" stdset="0">
-       <bool>false</bool>
       </property>
      </widget>
     </item>
@@ -215,6 +171,124 @@
          </property>
          <property name="text">
           <string>Yes</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="4" column="0">
+     <widget class="QFrame" name="frame">
+      <property name="frameShape">
+       <enum>QFrame::NoFrame</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Plain</enum>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_18">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item row="0" column="0">
+        <widget class="MyTabWidget" name="tabWidget_textEdit" native="true">
+         <property name="currentIndex" stdset="0">
+          <number>-1</number>
+         </property>
+         <property name="usesScrollButtons" stdset="0">
+          <bool>true</bool>
+         </property>
+         <property name="documentMode" stdset="0">
+          <bool>true</bool>
+         </property>
+         <property name="tabsClosable" stdset="0">
+          <bool>false</bool>
+         </property>
+         <property name="movable" stdset="0">
+          <bool>true</bool>
+         </property>
+         <property name="tabBarAutoHide" stdset="0">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="5" column="0">
+     <widget class="QFrame" name="frameMainFun">
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_16">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item row="0" column="1">
+        <widget class="QToolButton" name="btnNew">
+         <property name="toolTip">
+          <string>New</string>
+         </property>
+         <property name="text">
+          <string>N</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QToolButton" name="btnSave">
+         <property name="maximumSize">
+          <size>
+           <width>30</width>
+           <height>50</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>Save</string>
+         </property>
+         <property name="text">
+          <string>S</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QToolButton" name="btnFind">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>50</width>
+           <height>200</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>Find</string>
+         </property>
+         <property name="text">
+          <string>F</string>
          </property>
         </widget>
        </item>
@@ -373,56 +447,6 @@
          </property>
          <property name="text">
           <string>Done</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item row="5" column="0">
-     <widget class="QFrame" name="frameMainFun">
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
-      </property>
-      <layout class="QGridLayout" name="gridLayout_16">
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
-        <number>0</number>
-       </property>
-       <item row="0" column="0">
-        <widget class="QToolButton" name="btnNew">
-         <property name="toolTip">
-          <string>New</string>
-         </property>
-         <property name="text">
-          <string>N</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QToolButton" name="btnSave">
-         <property name="maximumSize">
-          <size>
-           <width>30</width>
-           <height>50</height>
-          </size>
-         </property>
-         <property name="toolTip">
-          <string>Save</string>
-         </property>
-         <property name="text">
-          <string>S</string>
          </property>
         </widget>
        </item>
