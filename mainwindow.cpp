@@ -10,7 +10,7 @@
 #include "mytabwidget.h"
 #include "ui_mainwindow.h"
 
-QString CurVerison = "1.0.80";
+QString CurVerison = "1.0.81";
 bool loading = false;
 bool thread_end = true;
 bool break_run = false;
@@ -4031,7 +4031,8 @@ void MainWindow::init_toolbar() {
   ui->tabWidget_misc->setCornerWidget(ui->frameFun);
 
   // hlFind
-  ui->hlFind->setFixedHeight(ui->editFind->height() + 2);
+  ui->hlFind->layout()->setSpacing(2);
+  // ui->hlFind->setFixedHeight(ui->editFind->height() * 2 + 4);
   ui->lblCount->setFixedWidth(50);
   ui->lblCount->setAlignment(Qt::AlignCenter);
   QAction* actClear = new QAction(this);
@@ -4080,12 +4081,12 @@ void MainWindow::init_toolbar() {
 
   ui->toolBar->addSeparator();
 
-  ui->toolBar->addWidget(ui->chkAll);
+  // ui->toolBar->addWidget(ui->chkAll);
 
   ui->toolBar->addSeparator();
   // ui->toolBar->addWidget(ui->chkCaseSensitive);
   // ui->toolBar->addWidget(ui->editFind);
-  ui->editFind->setMinimumWidth(200);
+  ui->editFind->setMinimumWidth(240);
 
   ui->editFind->lineEdit()->setPlaceholderText(
       tr("Find") + "  (" + tr("History entries") + ": " +
@@ -4126,7 +4127,7 @@ void MainWindow::init_toolbar() {
   ui->toolBar->addAction(ui->actionReplaceAll);
 
   ui->toolBar->addSeparator();
-  ui->toolBar->addWidget(ui->cboxCompilationOptions);
+  // ui->toolBar->addWidget(ui->cboxCompilationOptions);
   // ui->actionGo_to_previous_error->setIcon(QIcon(":/icon/1.png"));
   ui->toolBar->addAction(ui->actionGo_to_previous_error);
 
