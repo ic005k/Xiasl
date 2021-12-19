@@ -118,6 +118,13 @@
           </widget>
          </item>
          <item>
+          <widget class="QToolButton" name="btnShowRepace">
+           <property name="text">
+            <string>Show Replace</string>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="QToolButton" name="btnDone">
            <property name="maximumSize">
             <size>
@@ -133,7 +140,7 @@
         </layout>
        </item>
        <item row="3" column="0">
-        <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <layout class="QHBoxLayout" name="hlReplace">
          <item>
           <widget class="QLineEdit" name="editReplace">
            <property name="placeholderText">
