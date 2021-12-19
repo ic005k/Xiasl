@@ -10,7 +10,7 @@
 #include "mytabwidget.h"
 #include "ui_mainwindow.h"
 
-QString CurVerison = "1.0.81";
+QString CurVerison = "1.0.82";
 bool loading = false;
 bool thread_end = true;
 bool break_run = false;
@@ -1945,6 +1945,7 @@ void MainWindow::on_editFind_returnPressed() {
   ui->editFind->clear();
   ui->editFind->addItems(strList);
   AddCboxFindItem = false;
+  ui->editFind->lineEdit()->selectAll();
 }
 
 const char* QscilexerCppAttach::keywords(int set) const {
