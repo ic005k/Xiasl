@@ -10,7 +10,7 @@
 #include "mytabwidget.h"
 #include "ui_mainwindow.h"
 
-QString CurVerison = "1.0.84";
+QString CurVerison = "1.0.85";
 bool loading = false;
 bool thread_end = true;
 bool break_run = false;
@@ -5705,8 +5705,8 @@ int MainWindow::parse_UpdateJSON(QString str) {
       }
     } else {
       if (!blAutoCheckUpdate)
-        QMessageBox::information(this, "",
-                                 tr("It is currently the latest version!"));
+        QMessageBox::information(
+            this, "", tr("You are currently using the latest version!"));
     }
   }
   blAutoCheckUpdate = false;

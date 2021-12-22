@@ -539,7 +539,7 @@
     </property>
     <widget class="QMenu" name="menuProxy_selection_for_download">
      <property name="title">
-      <string>Proxy selection for download</string>
+      <string>Select the mirror server for upgrade download</string>
      </property>
      <addaction name="actProxy1"/>
      <addaction name="actProxy2"/>
@@ -1101,7 +1101,7 @@ QListWidget::item:selected
   </action>
   <action name="actionCheckUpdate">
    <property name="text">
-    <string>Check Update</string>
+    <string>Update Check</string>
    </property>
   </action>
   <action name="actionReplaceAll">
