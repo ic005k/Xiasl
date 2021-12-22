@@ -47,52 +47,52 @@
         <translation>区分大小写</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1021"/>
+        <location filename="mainwindow.ui" line="1045"/>
         <source>FindPrevious</source>
         <translation>查找上一个</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1026"/>
+        <location filename="mainwindow.ui" line="1050"/>
         <source>FindNext</source>
         <translation>查找下一个</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="147"/>
-        <location filename="mainwindow.ui" line="160"/>
-        <location filename="mainwindow.ui" line="1031"/>
+        <location filename="mainwindow.ui" line="168"/>
+        <location filename="mainwindow.ui" line="181"/>
+        <location filename="mainwindow.ui" line="1055"/>
         <source>Replace</source>
         <translation>替换</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="173"/>
-        <location filename="mainwindow.ui" line="1036"/>
+        <location filename="mainwindow.ui" line="194"/>
+        <location filename="mainwindow.ui" line="1060"/>
         <source>Replace &amp;&amp; Find</source>
         <translation>替换并查找</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="444"/>
-        <location filename="mainwindow.ui" line="1006"/>
+        <location filename="mainwindow.ui" line="468"/>
+        <location filename="mainwindow.ui" line="1030"/>
         <source>Go to previous error</source>
         <translation>跳转到上一个错误</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="400"/>
-        <location filename="mainwindow.ui" line="1011"/>
+        <location filename="mainwindow.ui" line="424"/>
+        <location filename="mainwindow.ui" line="1035"/>
         <source>Go to the next error</source>
         <translation>跳转到下一个错误</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1016"/>
+        <location filename="mainwindow.ui" line="1040"/>
         <source>RefreshTree</source>
         <translation>刷新树图</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="354"/>
-        <location filename="mainwindow.ui" line="1090"/>
-        <location filename="mainwindow.cpp" line="4098"/>
-        <location filename="mainwindow.cpp" line="5789"/>
-        <location filename="mainwindow.cpp" line="5857"/>
-        <location filename="mainwindow.cpp" line="6264"/>
+        <location filename="mainwindow.ui" line="378"/>
+        <location filename="mainwindow.ui" line="1114"/>
+        <location filename="mainwindow.cpp" line="4094"/>
+        <location filename="mainwindow.cpp" line="5785"/>
+        <location filename="mainwindow.cpp" line="5853"/>
+        <location filename="mainwindow.cpp" line="6260"/>
         <source>Find</source>
         <translation>查找</translation>
     </message>
@@ -103,138 +103,148 @@
     </message>
     <message>
         <location filename="mainwindow.ui" line="103"/>
-        <location filename="mainwindow.ui" line="447"/>
+        <location filename="mainwindow.ui" line="471"/>
         <source>&lt;</source>
         <translation></translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="116"/>
-        <location filename="mainwindow.ui" line="403"/>
+        <location filename="mainwindow.ui" line="427"/>
         <source>&gt;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="186"/>
+        <location filename="mainwindow.ui" line="207"/>
         <source>All</source>
         <translation>全部替换</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="136"/>
+        <location filename="mainwindow.ui" line="142"/>
         <source>Done</source>
         <translation>隐藏</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="357"/>
+        <location filename="mainwindow.ui" line="381"/>
         <source>F</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="425"/>
+        <location filename="mainwindow.ui" line="449"/>
         <source>C</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="670"/>
-        <location filename="mainwindow.cpp" line="6241"/>
+        <location filename="mainwindow.ui" line="542"/>
+        <source>Select the mirror server for upgrade download</source>
+        <translation>选择升级下载的镜像服务器</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="694"/>
+        <location filename="mainwindow.cpp" line="6237"/>
         <source>Filesystem Browser</source>
         <translation>文件浏览器</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="676"/>
+        <location filename="mainwindow.ui" line="700"/>
         <source>Return</source>
         <translation>返回上一级</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="825"/>
+        <location filename="mainwindow.ui" line="849"/>
         <location filename="mainwindow.cpp" line="352"/>
         <location filename="mainwindow.cpp" line="3930"/>
-        <location filename="mainwindow.cpp" line="4825"/>
+        <location filename="mainwindow.cpp" line="4821"/>
         <source>BasicInfo</source>
         <translation>基本信息</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="847"/>
+        <location filename="mainwindow.ui" line="871"/>
         <location filename="mainwindow.cpp" line="342"/>
         <location filename="mainwindow.cpp" line="1045"/>
         <location filename="mainwindow.cpp" line="1080"/>
         <location filename="mainwindow.cpp" line="3932"/>
-        <location filename="mainwindow.cpp" line="4808"/>
+        <location filename="mainwindow.cpp" line="4804"/>
         <source>Errors</source>
         <translation>错误</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="869"/>
+        <location filename="mainwindow.ui" line="893"/>
         <location filename="mainwindow.cpp" line="344"/>
         <location filename="mainwindow.cpp" line="1048"/>
         <location filename="mainwindow.cpp" line="1081"/>
         <location filename="mainwindow.cpp" line="3934"/>
-        <location filename="mainwindow.cpp" line="4813"/>
+        <location filename="mainwindow.cpp" line="4809"/>
         <source>Warnings</source>
         <translation>警告</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="891"/>
+        <location filename="mainwindow.ui" line="915"/>
         <location filename="mainwindow.cpp" line="346"/>
         <location filename="mainwindow.cpp" line="1051"/>
         <location filename="mainwindow.cpp" line="1082"/>
         <location filename="mainwindow.cpp" line="3936"/>
-        <location filename="mainwindow.cpp" line="4818"/>
+        <location filename="mainwindow.cpp" line="4814"/>
         <source>Remarks</source>
         <translation>批注</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="923"/>
+        <location filename="mainwindow.ui" line="947"/>
         <source>Optimizations</source>
         <translation>优化</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="467"/>
+        <location filename="mainwindow.ui" line="491"/>
         <source>File</source>
         <translation>文件</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1193"/>
+        <location filename="mainwindow.ui" line="1217"/>
         <source>Preferences</source>
         <translation>偏好设置</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="506"/>
+        <location filename="mainwindow.ui" line="530"/>
         <source>View</source>
         <translation>查看</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="514"/>
+        <location filename="mainwindow.ui" line="538"/>
         <source>Help</source>
         <translation>帮助</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="546"/>
+        <location filename="mainwindow.ui" line="570"/>
         <source>toolBar</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1106"/>
+        <location filename="mainwindow.ui" line="1104"/>
+        <source>Update Check</source>
+        <translation>升级检查</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="1130"/>
         <source>Minimap</source>
         <translation>迷你视图</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="952"/>
+        <location filename="mainwindow.ui" line="976"/>
         <location filename="mainwindow.cpp" line="3996"/>
         <source>Open</source>
         <translation>打开</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="213"/>
+        <location filename="mainwindow.ui" line="237"/>
         <source>TextLabel</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="226"/>
+        <location filename="mainwindow.ui" line="250"/>
         <source>No</source>
         <translation>否</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="239"/>
+        <location filename="mainwindow.ui" line="263"/>
         <source>Yes</source>
         <translation>是</translation>
     </message>
@@ -249,202 +259,190 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="518"/>
-        <source>Proxy selection for download</source>
-        <translation>下载的代理选择</translation>
-    </message>
-    <message>
-        <location filename="mainwindow.ui" line="750"/>
+        <location filename="mainwindow.ui" line="774"/>
         <source>Information</source>
         <translation>信息显示</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="913"/>
+        <location filename="mainwindow.ui" line="937"/>
         <location filename="mainwindow.cpp" line="347"/>
         <location filename="mainwindow.cpp" line="1053"/>
         <location filename="mainwindow.cpp" line="3938"/>
-        <location filename="mainwindow.cpp" line="4821"/>
+        <location filename="mainwindow.cpp" line="4817"/>
         <source>Scribble</source>
         <translation>潦草板</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="332"/>
-        <location filename="mainwindow.ui" line="957"/>
+        <location filename="mainwindow.ui" line="356"/>
+        <location filename="mainwindow.ui" line="981"/>
         <source>Save</source>
         <translation>保存</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="123"/>
-        <location filename="mainwindow.cpp" line="4039"/>
-        <location filename="mainwindow.cpp" line="6501"/>
-        <location filename="mainwindow.cpp" line="6513"/>
+        <location filename="mainwindow.ui" line="129"/>
+        <location filename="mainwindow.cpp" line="6497"/>
+        <location filename="mainwindow.cpp" line="6503"/>
         <source>Show Replace</source>
         <translation>显示替换</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="319"/>
+        <location filename="mainwindow.ui" line="343"/>
         <source>N</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="335"/>
+        <location filename="mainwindow.ui" line="359"/>
         <source>S</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="967"/>
+        <location filename="mainwindow.ui" line="991"/>
         <location filename="mainwindow.cpp" line="4010"/>
         <source>Generate ACPI tables</source>
         <translation>获取ACPI表</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1044"/>
+        <location filename="mainwindow.ui" line="1068"/>
         <source>Information window</source>
         <translation>信息显示窗口</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1055"/>
+        <location filename="mainwindow.ui" line="1079"/>
         <source>Members list window</source>
         <translation>成员列表窗口</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1060"/>
-        <location filename="mainwindow.cpp" line="5593"/>
+        <location filename="mainwindow.ui" line="1084"/>
+        <location filename="mainwindow.cpp" line="5589"/>
         <source>DSDT + SSDT Decompile</source>
         <translation>DSDT + SSDT 反编译</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1065"/>
+        <location filename="mainwindow.ui" line="1089"/>
         <source>iASL Usage</source>
         <oldsource>iasl Usage</oldsource>
         <translation>iASL用法说明</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1075"/>
+        <location filename="mainwindow.ui" line="1099"/>
         <source>ACPICA Documentation</source>
         <translation>ACPICA相关文档</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1080"/>
-        <source>Check Update</source>
-        <oldsource>CheckUpdate</oldsource>
-        <translation>检查更新</translation>
-    </message>
-    <message>
-        <location filename="mainwindow.ui" line="1085"/>
+        <location filename="mainwindow.ui" line="1109"/>
         <source>Replace All</source>
         <translation>全部替换</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1095"/>
-        <location filename="mainwindow.cpp" line="4045"/>
+        <location filename="mainwindow.ui" line="1119"/>
+        <location filename="mainwindow.cpp" line="4041"/>
         <source>Clear search history</source>
         <translation>清除搜索历史记录</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1111"/>
+        <location filename="mainwindow.ui" line="1135"/>
         <source>Open the directory of the current file</source>
         <translation>打开当前文件所在的目录</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1122"/>
+        <location filename="mainwindow.ui" line="1146"/>
         <source>UTF-8</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1127"/>
+        <location filename="mainwindow.ui" line="1151"/>
         <source>GBK</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1132"/>
+        <location filename="mainwindow.ui" line="1156"/>
         <source>Quit</source>
         <translation>退出</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1135"/>
+        <location filename="mainwindow.ui" line="1159"/>
         <source>Ctrl+Q</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1140"/>
+        <location filename="mainwindow.ui" line="1164"/>
         <source>Close tab</source>
         <translation>关闭标签页</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1143"/>
+        <location filename="mainwindow.ui" line="1167"/>
         <source>Ctrl+W</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1148"/>
+        <location filename="mainwindow.ui" line="1172"/>
         <source>Download Upgrade Packages</source>
         <translation>下载升级包</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1156"/>
+        <location filename="mainwindow.ui" line="1180"/>
         <source>https://github.com/</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1164"/>
+        <location filename="mainwindow.ui" line="1188"/>
         <source>https://ghproxy.com/https://github.com/</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1172"/>
+        <location filename="mainwindow.ui" line="1196"/>
         <source>https://download.fastgit.org/</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1180"/>
+        <location filename="mainwindow.ui" line="1204"/>
         <source>https://gh.api.99988866.xyz/https://github.com/</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1188"/>
+        <location filename="mainwindow.ui" line="1212"/>
         <source>https://gh.xiu2.xyz/https://github.com/</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="422"/>
-        <location filename="mainwindow.ui" line="972"/>
+        <location filename="mainwindow.ui" line="446"/>
+        <location filename="mainwindow.ui" line="996"/>
         <source>Compile</source>
         <translation>编译</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1070"/>
+        <location filename="mainwindow.ui" line="1094"/>
         <source>About</source>
         <translation>关于</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="316"/>
-        <location filename="mainwindow.ui" line="977"/>
+        <location filename="mainwindow.ui" line="340"/>
+        <location filename="mainwindow.ui" line="1001"/>
         <source>New</source>
         <translation>新建</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="962"/>
+        <location filename="mainwindow.ui" line="986"/>
         <source>Save as...</source>
         <translation>另存...</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="483"/>
+        <location filename="mainwindow.ui" line="507"/>
         <source>Edit</source>
         <translation>编辑</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="988"/>
+        <location filename="mainwindow.ui" line="1012"/>
         <source>Font</source>
         <translation>字体</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="996"/>
+        <location filename="mainwindow.ui" line="1020"/>
         <source>WrapWord</source>
         <translation>自动换行</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1001"/>
+        <location filename="mainwindow.ui" line="1025"/>
         <source>Kextstat</source>
         <translation>查看Kext加载状态</translation>
     </message>
@@ -458,7 +456,7 @@
         <location filename="mainwindow.cpp" line="648"/>
         <location filename="mainwindow.cpp" line="730"/>
         <location filename="mainwindow.cpp" line="3974"/>
-        <location filename="mainwindow.cpp" line="4989"/>
+        <location filename="mainwindow.cpp" line="4985"/>
         <source>Application</source>
         <translation></translation>
     </message>
@@ -476,7 +474,7 @@
     </message>
     <message>
         <location filename="mainwindow.cpp" line="719"/>
-        <location filename="mainwindow.cpp" line="5052"/>
+        <location filename="mainwindow.cpp" line="5048"/>
         <source>Cannot write file %1:
 %2.</source>
         <translation></translation>
@@ -530,14 +528,14 @@
         <translation>列</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="592"/>
-        <location filename="mainwindow.ui" line="598"/>
-        <location filename="mainwindow.cpp" line="4631"/>
+        <location filename="mainwindow.ui" line="616"/>
+        <location filename="mainwindow.ui" line="622"/>
+        <location filename="mainwindow.cpp" line="4627"/>
         <source>Members</source>
         <translation>成员</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="5116"/>
+        <location filename="mainwindow.cpp" line="5112"/>
         <source> Layer </source>
         <translation>层级</translation>
     </message>
@@ -550,18 +548,18 @@
     <message>
         <location filename="mainwindow.cpp" line="243"/>
         <location filename="mainwindow.cpp" line="587"/>
-        <location filename="mainwindow.cpp" line="4980"/>
+        <location filename="mainwindow.cpp" line="4976"/>
+        <location filename="mainwindow.cpp" line="5169"/>
         <location filename="mainwindow.cpp" line="5173"/>
-        <location filename="mainwindow.cpp" line="5177"/>
-        <location filename="mainwindow.cpp" line="5190"/>
-        <location filename="mainwindow.cpp" line="5485"/>
-        <location filename="mainwindow.cpp" line="5546"/>
+        <location filename="mainwindow.cpp" line="5186"/>
+        <location filename="mainwindow.cpp" line="5481"/>
+        <location filename="mainwindow.cpp" line="5542"/>
         <source>untitled</source>
         <translation>未命名</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="649"/>
-        <location filename="mainwindow.cpp" line="4990"/>
+        <location filename="mainwindow.cpp" line="4986"/>
         <source>The document has been modified.
 Do you want to save your changes?
 
@@ -589,175 +587,175 @@ Do you want to save your changes?
         <translation>当前SSDT列表</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="4098"/>
-        <location filename="mainwindow.cpp" line="5789"/>
-        <location filename="mainwindow.cpp" line="5857"/>
-        <location filename="mainwindow.cpp" line="6264"/>
+        <location filename="mainwindow.cpp" line="4094"/>
+        <location filename="mainwindow.cpp" line="5785"/>
+        <location filename="mainwindow.cpp" line="5853"/>
+        <location filename="mainwindow.cpp" line="6260"/>
         <source>History entries</source>
         <translation>历史条目</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="4153"/>
+        <location filename="mainwindow.cpp" line="4149"/>
         <source>ctrl+n</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="4157"/>
+        <location filename="mainwindow.cpp" line="4153"/>
         <source>ctrl+o</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="4161"/>
+        <location filename="mainwindow.cpp" line="4157"/>
         <source>ctrl+s</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="4165"/>
+        <location filename="mainwindow.cpp" line="4161"/>
         <source>ctrl+shift+s</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="4169"/>
+        <location filename="mainwindow.cpp" line="4165"/>
         <source>ctrl+0</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="4177"/>
+        <location filename="mainwindow.cpp" line="4173"/>
         <source>ctrl+g</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="4186"/>
+        <location filename="mainwindow.cpp" line="4182"/>
         <source>ctrl+m</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="4191"/>
+        <location filename="mainwindow.cpp" line="4187"/>
         <source>ctrl+r</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="4196"/>
+        <location filename="mainwindow.cpp" line="4192"/>
         <source>ctrl+p</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="4203"/>
+        <location filename="mainwindow.cpp" line="4199"/>
         <source>ctrl+f</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="4212"/>
+        <location filename="mainwindow.cpp" line="4208"/>
         <source>ctrl+k</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="4217"/>
+        <location filename="mainwindow.cpp" line="4213"/>
         <source>ctrl+j</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="4225"/>
+        <location filename="mainwindow.cpp" line="4221"/>
         <source>ctrl+alt+e</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="4230"/>
+        <location filename="mainwindow.cpp" line="4226"/>
         <source>ctrl+e</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="4240"/>
+        <location filename="mainwindow.cpp" line="4236"/>
         <source>ctrl+1</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="4244"/>
+        <location filename="mainwindow.cpp" line="4240"/>
         <source>ctrl+2</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="4248"/>
+        <location filename="mainwindow.cpp" line="4244"/>
         <source>ctrl+3</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="4671"/>
+        <location filename="mainwindow.cpp" line="4667"/>
         <source>Expand all</source>
         <translation>全部展开</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="4676"/>
+        <location filename="mainwindow.cpp" line="4672"/>
         <source>Collapse all</source>
         <translation>全部折叠</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="4689"/>
-        <location filename="mainwindow.cpp" line="6239"/>
+        <location filename="mainwindow.cpp" line="4685"/>
+        <location filename="mainwindow.cpp" line="6235"/>
         <source>Symbols</source>
         <translation>成员</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="4698"/>
+        <location filename="mainwindow.cpp" line="4694"/>
         <source>Open directory</source>
         <translation>打开目录</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="5836"/>
-        <location filename="mainwindow.cpp" line="5841"/>
+        <location filename="mainwindow.cpp" line="5709"/>
+        <source>You are currently using the latest version!</source>
+        <translation>您当前使用的是最新版！</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="5832"/>
+        <location filename="mainwindow.cpp" line="5837"/>
         <source>Clear history entries</source>
         <translation>清除历史条目</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="6303"/>
+        <location filename="mainwindow.cpp" line="6299"/>
         <source>The file has been modified by another program. Do you want to reload?</source>
         <translation>文件已被其他程序修改，是否重新装入该文件？</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="6506"/>
-        <location filename="mainwindow.cpp" line="6508"/>
+        <location filename="mainwindow.cpp" line="6499"/>
+        <location filename="mainwindow.cpp" line="6501"/>
         <source>Hide Replace</source>
         <translation>隐藏替换</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="5683"/>
+        <location filename="mainwindow.cpp" line="5679"/>
         <source>Network error!</source>
         <translation>网络错误！</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="5699"/>
+        <location filename="mainwindow.cpp" line="5695"/>
         <source>New version detected!</source>
         <translation>检测到新版本！</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="5700"/>
+        <location filename="mainwindow.cpp" line="5696"/>
         <source>Version: </source>
         <translation>版本：</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="5701"/>
+        <location filename="mainwindow.cpp" line="5697"/>
         <source>Published at: </source>
         <translation>更新时间：</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="5702"/>
+        <location filename="mainwindow.cpp" line="5698"/>
         <source>Release Notes: </source>
         <translation>更新说明：</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="5703"/>
+        <location filename="mainwindow.cpp" line="5699"/>
         <source>Download</source>
         <translation>下载</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="5704"/>
+        <location filename="mainwindow.cpp" line="5700"/>
         <source>Cancel</source>
         <translation>取消</translation>
-    </message>
-    <message>
-        <location filename="mainwindow.cpp" line="5713"/>
-        <source>It is currently the latest version!</source>
-        <translation>当前为最新版本！</translation>
     </message>
 </context>
 <context>
