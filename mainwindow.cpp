@@ -10,7 +10,7 @@
 #include "mytabwidget.h"
 #include "ui_mainwindow.h"
 
-QString CurVerison = "1.0.86";
+QString CurVerison = "1.0.87";
 bool loading = false;
 bool thread_end = true;
 bool break_run = false;
@@ -305,10 +305,11 @@ void MainWindow::about() {
 
   QString last = str + appInfo.lastModified().toString("yyyy-MM-dd hh:mm:ss");
   QString str1 =
-      "<a style='color:blue;' href = https://github.com/ic005k/QtiASL>QtiASL "
-      "IDE</a><br><br>";
+      "<a style='color:blue;' href = "
+      "https://github.com/ic005k/QtiASL>QtiASL"
+      "</a><br><br>";
 
-  QMessageBox::about(this, "About", "V" + CurVerison + "  " + str1 + last);
+  QMessageBox::about(this, "About", str1 + "V" + CurVerison + "<br>" + last);
 }
 
 QString MainWindow::openFile(QString fileName) {
@@ -6316,8 +6317,9 @@ void MainWindow::ShowAutoUpdateDlg(bool Database) {
   if (dlgAutoUpdate->strUrl == "") return;
   if (dlgAutoUpdate->isVisible()) return;
 
-  dlgAutoUpdate->setWindowFlags(dlgAutoUpdate->windowFlags() |
-                                Qt::WindowStaysOnTopHint);
+  // dlgAutoUpdate->setWindowFlags(dlgAutoUpdate->windowFlags() |
+  //                              Qt::WindowStaysOnTopHint);
+  dlgAutoUpdate->setModal(true);
   dlgAutoUpdate->show();
   dlgAutoUpdate->startDownload(Database);
 }
