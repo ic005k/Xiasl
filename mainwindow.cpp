@@ -10,7 +10,7 @@
 #include "mytabwidget.h"
 #include "ui_mainwindow.h"
 
-QString CurVerison = "1.0.85";
+QString CurVerison = "1.0.86";
 bool loading = false;
 bool thread_end = true;
 bool break_run = false;
@@ -146,6 +146,11 @@ MainWindow::MainWindow(QWidget* parent)
 
   init_treeWidget();
 
+  QString tabBarStyle2 = "QTabBar::tab{min-height:35px;}";
+  ui->tabWidget_textEdit->setStyleSheet(tabBarStyle2);
+  ui->tabWidget_misc->setStyleSheet(tabBarStyle2);
+  ui->frameFun->layout()->setContentsMargins(1, 5, 1, 5);
+  ui->frameMainFun->layout()->setContentsMargins(1, 5, 1, 5);
   ui->tabWidget_textEdit->setDocumentMode(true);
   ui->tabWidget_textEdit->tabBar()->installEventFilter(
       this);  //安装事件过滤器以禁用鼠标滚轮切换标签页

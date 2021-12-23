@@ -348,7 +348,7 @@
         <widget class="QToolButton" name="btnSave">
          <property name="maximumSize">
           <size>
-           <width>30</width>
+           <width>50</width>
            <height>50</height>
           </size>
          </property>
@@ -371,7 +371,7 @@
          <property name="maximumSize">
           <size>
            <width>50</width>
-           <height>200</height>
+           <height>50</height>
           </size>
          </property>
          <property name="toolTip">
