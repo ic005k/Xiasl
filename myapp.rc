@@ -21,8 +21,8 @@ IDI_ICON1 ICON DISCARDABLE "my.ico"
         FILEOS VOS__WINDOWS32 FILETYPE VFT_DLL FILESUBTYPE 0x0L BEGIN BLOCK
     "StringFileInfo" BEGIN BLOCK "080404b0" BEGIN VALUE "CompanyName",
     "" VALUE "FileDescription", "" VALUE "FileVersion",
-    "QtiASL-2021\0" VALUE "ProductVersion",
-    "QtiASL-2021\0" VALUE "LegalCopyright", "\0" VALUE "LegalTrademarks",
+    "QtiASL-2022\0" VALUE "ProductVersion",
+    "QtiASL-2022\0" VALUE "LegalCopyright", "\0" VALUE "LegalTrademarks",
     "" VALUE "OriginalFilename", "QtiASL\0" VALUE "ProductName",
     "QtiASL" VALUE "InternalName",
     "QtiASL\0" END END

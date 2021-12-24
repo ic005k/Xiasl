@@ -85,13 +85,13 @@
    <item row="3" column="0">
     <widget class="QGroupBox" name="groupBox_3">
      <property name="title">
-      <string>Misc</string>
+      <string>Additional Options</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_3">
       <item row="0" column="0">
        <widget class="QCheckBox" name="cboxWrapWord">
         <property name="text">
-         <string>WrapWord</string>
+         <string>Automatic line feed</string>
         </property>
        </widget>
       </item>
