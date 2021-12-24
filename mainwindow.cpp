@@ -4254,8 +4254,6 @@ void MainWindow::init_menu() {
           &MainWindow::CheckUpdate);
   connect(ui->actioniasl_usage, &QAction::triggered, this,
           &MainWindow::iaslUsage);
-  connect(ui->actionUser_Guide, &QAction::triggered, this,
-          &MainWindow::userGuide);
   connect(ui->actionAbout_1, &QAction::triggered, this, &MainWindow::about);
   ui->actionAbout_1->setMenuRole(QAction::AboutRole);
 
@@ -5627,11 +5625,6 @@ void MainWindow::readHelpResult(int exitCode) {
   textEdit->setModified(false);
 }
 
-void MainWindow::userGuide() {
-  QUrl url(QString("https://acpica.org/documentation"));
-  QDesktopServices::openUrl(url);
-}
-
 void MainWindow::CheckUpdate() {
   QNetworkRequest quest;
   quest.setUrl(
@@ -6509,4 +6502,19 @@ void MainWindow::on_btnShowRepace_clicked() {
     ui->wReplace->setHidden(true);
     ui->btnShowRepace->setText(tr("Show Replace"));
   }
+}
+
+void MainWindow::on_actionReporting_Issues_triggered() {
+  QUrl url(QString("https://github.com/ic005k/QtiASL/issues"));
+  QDesktopServices::openUrl(url);
+}
+
+void MainWindow::on_actionUser_Guide_triggered() {
+  QUrl url(QString("https://acpica.org/documentation"));
+  QDesktopServices::openUrl(url);
+}
+
+void MainWindow::on_actionLatest_Release_triggered() {
+  QUrl url(QString("https://github.com/ic005k/QtiASL/releases/latest"));
+  QDesktopServices::openUrl(url);
 }

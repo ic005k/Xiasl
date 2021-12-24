@@ -230,8 +230,6 @@ class MainWindow : public QMainWindow {
 
   void on_clearFindText();
 
-  void userGuide();
-
   void ds_Decompile();
 
   void view_info();
@@ -383,6 +381,12 @@ class MainWindow : public QMainWindow {
   void on_btnNew_clicked();
 
   void on_btnShowRepace_clicked();
+
+  void on_actionReporting_Issues_triggered();
+
+  void on_actionUser_Guide_triggered();
+
+  void on_actionLatest_Release_triggered();
 
  private:
   int lblNumber = 2;

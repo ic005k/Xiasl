@@ -550,9 +550,12 @@
     <addaction name="actionCheckUpdate"/>
     <addaction name="menuProxy_selection_for_download"/>
     <addaction name="actionDownload_Upgrade_Packages"/>
+    <addaction name="actionLatest_Release"/>
     <addaction name="separator"/>
     <addaction name="actioniasl_usage"/>
     <addaction name="actionUser_Guide"/>
+    <addaction name="separator"/>
+    <addaction name="actionReporting_Issues"/>
     <addaction name="actionAbout_1"/>
    </widget>
    <addaction name="menu_File"/>
@@ -1215,6 +1218,16 @@ QListWidget::item:selected
   <action name="actionPreferences">
    <property name="text">
     <string>Preferences</string>
+   </property>
+  </action>
+  <action name="actionReporting_Issues">
+   <property name="text">
+    <string>Reporting Issues</string>
+   </property>
+  </action>
+  <action name="actionLatest_Release">
+   <property name="text">
+    <string>Latest Release</string>
    </property>
   </action>
  </widget>
