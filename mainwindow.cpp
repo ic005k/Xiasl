@@ -10,7 +10,7 @@
 #include "mytabwidget.h"
 #include "ui_mainwindow.h"
 
-QString CurVerison = "1.0.89";
+QString CurVerison = "1.0.90";
 bool loading = false;
 bool thread_end = true;
 bool break_run = false;
