@@ -190,6 +190,213 @@ class MainWindow : public QMainWindow {
   QString getMD5(QString targetFile);
   QString getMD5FromList(QString file);
 
+  QString tabStyleLight =
+      "QTabWidget::pane {\
+              border: 1px solid gray;\
+              background: rgb(236, 236, 236);\
+        }\
+        QTabBar::close-button:hover {\
+        image: url(:/icon/c0.png);\
+        subcontrol-origin: padding;\
+        subcontrol-position: bottom right;\
+        }\
+        QTabBar::close-button {\
+        image: url(:/icon/c.png);\
+        subcontrol-origin: padding;\
+        subcontrol-position: bottom right;\
+        } \
+        QTabWidget::tab-bar:top {\
+          top: 1px;\
+        }\
+        \
+        QTabWidget::tab-bar:bottom {\
+          bottom: 1px;\
+        }\
+        \
+        QTabWidget::tab-bar:left {\
+          right: 1px;\
+        }\
+        \
+        QTabWidget::tab-bar:right {\
+          left: 1px;\
+        }\
+        \
+        QTabBar::tab {\
+          border: 1px solid gray;\
+        }\
+        \
+        QTabBar::tab:selected {\
+          background: rgb(236, 236, 236);\
+        }\
+        \
+        QTabBar::tab:!selected {\
+          background: lightgray; \
+        }\
+        \
+        QTabBar::tab:!selected:hover {\
+          background: silver;\
+        }\
+        \
+        QTabBar::tab:top:!selected {\
+          margin-top: 3px;\
+        }\
+        \
+        QTabBar::tab:bottom:!selected {\
+          margin-bottom: 3px;\
+        }\
+        \
+        QTabBar::tab:top, QTabBar::tab:bottom {\
+          min-width: 8ex;\
+          margin-right: -1px;\
+          padding: 8px 20px 8px 20px;\
+        }\
+        \
+        QTabBar::tab:top:selected {\
+          border-bottom-color: none;\
+        }\
+        \
+        QTabBar::tab:bottom:selected {\
+          border-top-color: none;\
+        }\
+        \
+        QTabBar::tab:top:last, QTabBar::tab:bottom:last,\
+        QTabBar::tab:top:only-one, QTabBar::tab:bottom:only-one {\
+          margin-right: 0;\
+        }\
+        \
+        QTabBar::tab:left:!selected {\
+          margin-right: 3px;\
+        }\
+        \
+        QTabBar::tab:right:!selected {\
+          margin-left: 3px;\
+        }\
+        \
+        QTabBar::tab:left, QTabBar::tab:right {\
+          min-height: 8ex;\
+          margin-bottom: -1px;\
+          padding: 10px 5px 10px 5px;\
+        }\
+        \
+        QTabBar::tab:left:selected {\
+          border-left-color: none;\
+        }\
+        \
+        QTabBar::tab:right:selected {\
+          border-right-color: none;\
+        }\
+        \
+        QTabBar::tab:left:last, QTabBar::tab:right:last,\
+        QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {\
+          margin-bottom: 0;\
+        }";
+
+  QString tabStyleDark =
+      "QTabWidget::pane {\
+        border: 1px solid gray;\
+        background: rgb(60, 60, 60);\
+        }\
+        \
+        QTabBar::close-button:hover {\
+        image: url(:/icon/c0.png);\
+        subcontrol-origin: padding;\
+        subcontrol-position: bottom right;\
+        }\
+        \
+        QTabBar::close-button {\
+        image: url(:/icon/c.png);\
+        subcontrol-origin: padding;\
+        subcontrol-position: bottom right;\
+        } \
+        \
+        QTabWidget::tab-bar:top {\
+            top: 1px;\
+        }\
+        \
+        QTabWidget::tab-bar:bottom {\
+            bottom: 1px;\
+        }\
+        \
+        QTabWidget::tab-bar:left {\
+            right: 1px;\
+        }\
+        \
+        QTabWidget::tab-bar:right {\
+            left: 1px;\
+        }\
+        \
+        QTabBar::tab {\
+            border: 1px solid gray;\
+        }\
+        \
+        QTabBar::tab:selected {\
+            background: rgb(60, 60, 60);\
+        }\
+        \
+        QTabBar::tab:!selected {\
+            background: rgb(26.26,26); \
+        }\
+        \
+        QTabBar::tab:!selected:hover {\
+            /*background:  silver;\
+            color: black;*/\
+            \
+        }\
+        \
+        QTabBar::tab:top:!selected {\
+            margin-top: 3px;\
+        }\
+        \
+        QTabBar::tab:bottom:!selected {\
+            margin-bottom: 3px;\
+        }\
+        \
+        QTabBar::tab:top, QTabBar::tab:bottom {\
+            min-width: 8ex;\
+            margin-right: -1px;\
+            padding: 8px 20px 8px 20px;\
+        }\
+        \
+        QTabBar::tab:top:selected {\
+            border-bottom-color: none;\
+        }\
+        \
+        QTabBar::tab:bottom:selected {\
+            border-top-color: none;\
+        }\
+        \
+        QTabBar::tab:top:last, QTabBar::tab:bottom:last,\
+        QTabBar::tab:top:only-one, QTabBar::tab:bottom:only-one {\
+            margin-right: 0;\
+        }\
+        \
+        QTabBar::tab:left:!selected {\
+            margin-right: 3px;\
+        }\
+        \
+        QTabBar::tab:right:!selected {\
+            margin-left: 3px;\
+        }\
+        \
+        QTabBar::tab:left, QTabBar::tab:right {\
+            min-height: 8ex;\
+            margin-bottom: -1px;\
+            padding: 10px 5px 10px 5px;\
+        }\
+        \
+        QTabBar::tab:left:selected {\
+            border-left-color: none;\
+        }\
+        \
+        QTabBar::tab:right:selected {\
+            border-right-color: none;\
+        }\
+        \
+        QTabBar::tab:left:last, QTabBar::tab:right:last,\
+        QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {\
+            margin-bottom: 0;\
+        }";
+
  protected:
   void closeEvent(QCloseEvent* event) override;
   void dragEnterEvent(QDragEnterEvent* e) override;
@@ -523,6 +730,7 @@ class MainWindow : public QMainWindow {
   void writeINIProxy();
   void readINIProxy();
   void updateMd5(QString file);
+  void init_tabWidgetStyle();
 };
 
 class MiniEditor : public QsciScintilla {

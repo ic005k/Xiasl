@@ -39,5 +39,7 @@
         <file>icon/save.png</file>
         <file>icon/find.png</file>
         <file>icon/clear.png</file>
+        <file>icon/c.png</file>
+        <file>icon/c0.png</file>
     </qresource>
 </RCC>

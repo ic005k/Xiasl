@@ -10,7 +10,7 @@
 #include "mytabwidget.h"
 #include "ui_mainwindow.h"
 
-QString CurVerison = "1.0.88";
+QString CurVerison = "1.0.89";
 bool loading = false;
 bool thread_end = true;
 bool break_run = false;
@@ -146,23 +146,24 @@ MainWindow::MainWindow(QWidget* parent)
 
   init_treeWidget();
 
-  QString tabBarStyle2 = "QTabBar::tab{min-height:35px;}";
-  ui->tabWidget_textEdit->setStyleSheet(tabBarStyle2);
-  ui->tabWidget_misc->setStyleSheet(tabBarStyle2);
+  // QString tabBarStyle2 = "QTabBar::tab{min-height:35px;}";
+  init_tabWidgetStyle();
+
   ui->frameFun->layout()->setContentsMargins(1, 5, 1, 5);
   ui->frameMainFun->layout()->setContentsMargins(1, 5, 1, 5);
-  ui->tabWidget_textEdit->setDocumentMode(true);
+  ui->tabWidget_textEdit->setDocumentMode(false);
   ui->tabWidget_textEdit->tabBar()->installEventFilter(
       this);  //安装事件过滤器以禁用鼠标滚轮切换标签页
   connect(ui->tabWidget_textEdit, SIGNAL(tabCloseRequested(int)), this,
           SLOT(closeTab(int)));
   ui->tabWidget_textEdit->setIconSize(QSize(8, 8));
+
   textEdit = new QsciScintilla;
   init_edit(textEdit);
 
-  ui->dockWidgetContents->layout()->setMargin(0);  //成员列表
-  ui->gridLayout->setMargin(0);
-  ui->gridLayout_8->setMargin(0);
+  ui->dockWidgetContents->layout()->setMargin(2);  //成员列表
+  ui->gridLayout->setMargin(2);
+  ui->gridLayout_8->setMargin(2);
 
   ui->centralwidget->layout()->setMargin(0);
   ui->centralwidget->layout()->setSpacing(0);
@@ -5162,13 +5163,14 @@ void MainWindow::newFile() {
   ui->editRemarks->clear();
 
   textEdit = new QsciScintilla(this);
+  textEdit->setFrameShape(QFrame::NoFrame);
 
   init_edit(textEdit);
 
   MyTabPage* page = new MyTabPage;
 
   QVBoxLayout* vboxLayout = new QVBoxLayout(page);
-  vboxLayout->setMargin(0);
+  vboxLayout->setMargin(2);
   vboxLayout->addWidget(textEdit);
   QLabel* lbl = new QLabel(tr("untitled") + ".dsl");
   vboxLayout->addWidget(lbl);
@@ -5269,6 +5271,7 @@ void MainWindow::paintEvent(QPaintEvent* event) {
   int c_red = brush.color().red();
   if (c_red != red) {
     red = c_red;
+    init_tabWidgetStyle();
     //注意：1.代码折叠线的颜色 2.双引号输入时的背景色
     for (int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i++) {
       init_edit(getCurrentEditor(i));
@@ -6517,4 +6520,17 @@ void MainWindow::on_actionUser_Guide_triggered() {
 void MainWindow::on_actionLatest_Release_triggered() {
   QUrl url(QString("https://github.com/ic005k/QtiASL/releases/latest"));
   QDesktopServices::openUrl(url);
+}
+
+void MainWindow::init_tabWidgetStyle() {
+  if (red < 55) {
+    ui->tabWidget_misc->setStyleSheet(tabStyleDark);
+    ui->tabWidget_textEdit->setStyleSheet(tabStyleDark);
+
+  } else {
+    ui->tabWidget_misc->setStyleSheet(tabStyleLight);
+    ui->tabWidget_textEdit->setStyleSheet(tabStyleLight);
+  }
+
+  qDebug() << red;
 }
