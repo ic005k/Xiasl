@@ -190,6 +190,17 @@ class MainWindow : public QMainWindow {
   QString getMD5(QString targetFile);
   QString getMD5FromList(QString file);
 
+  QString sbarStyleLight =
+      "QStatusBar { background: rgb(236, 236, 236);}\
+          QStatusBar::item {\
+                   border: 0px solid blue;\
+                   border-radius: 3px;}";
+  QString sbarStyleDark =
+      "QStatusBar { background: rgb(64, 65, 66);}\
+          QStatusBar::item {\
+                   border: 0px solid red;\
+                   border-radius: 3px;}";
+
   QString tabStyleLight =
       "QTabWidget::pane {\
               border: 1px solid gray;\

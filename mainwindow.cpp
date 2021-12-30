@@ -10,7 +10,7 @@
 #include "mytabwidget.h"
 #include "ui_mainwindow.h"
 
-QString CurVerison = "1.0.90";
+QString CurVerison = "1.0.91";
 bool loading = false;
 bool thread_end = true;
 bool break_run = false;
@@ -87,6 +87,9 @@ MainWindow::MainWindow(QWidget* parent)
   ver = "QtiASL V" + CurVerison + "        ";
   setWindowTitle(ver);
   ver = "";
+
+  QString qfile = QDir::homePath() + "/.config/QtiASL/QtiASL.ini";
+  QSettings Reg(qfile, QSettings::IniFormat);
 
   //获取背景色
   QPalette pal = this->palette();
@@ -165,8 +168,8 @@ MainWindow::MainWindow(QWidget* parent)
   ui->gridLayout->setMargin(2);
   ui->gridLayout_8->setMargin(2);
 
-  ui->centralwidget->layout()->setMargin(0);
-  ui->centralwidget->layout()->setSpacing(0);
+  ui->centralwidget->layout()->setMargin(2);
+  ui->centralwidget->layout()->setSpacing(2);
 
   //删除titleba
   QWidget* lTitleBar = ui->dockWidget_Mini->titleBarWidget();
@@ -178,11 +181,44 @@ MainWindow::MainWindow(QWidget* parent)
   ui->gridLayout_10->setSpacing(0);
   ui->gridLayout_10->addWidget(miniEdit);
 
+  // 分割窗口
+  QSplitter* splitterH = new QSplitter(Qt::Horizontal, this);
+  ui->frame->layout()->addWidget(ui->frameTip);
+  ui->frame->layout()->addWidget(ui->hlFind);
+  ui->frame->layout()->addWidget(ui->tabWidget_textEdit);
+  ui->dockWidgetSymbols->setHidden(true);
+  splitterH->addWidget(ui->tabWidget_misc);
+  splitterH->addWidget(ui->frame);
+  ui->centralwidget->layout()->addWidget(splitterH);
+  int w0 = Reg.value("w0", 200).toInt();
+  int w1 = Reg.value("w1", 450).toInt();
+  if (w0 < 150) w0 = 150;
+  if (w1 < 150) w1 = 150;
+  QList<int> list;
+  list.append(w0);
+  list.append(w1);
+  splitterH->setSizes(list);
+
+  QSplitter* splitterV = new QSplitter(Qt::Vertical, this);
+  ui->frameInfo->layout()->addWidget(ui->listWidget);
+  ui->frameInfo->layout()->addWidget(ui->tabWidget);
+  splitterV->addWidget(splitterH);
+  splitterV->addWidget(ui->frameInfo);
+  ui->centralwidget->layout()->addWidget(splitterV);
+  int h0 = Reg.value("h0", 500).toInt();
+  int h1 = Reg.value("h1", 100).toInt();
+  if (h0 < 150) h0 = 150;
+  if (h1 < 100) h1 = 100;
+  list.clear();
+  list.append(h0);
+  list.append(h1);
+  splitterV->setSizes(list);
+
   //设置鼠标追踪
   ui->centralwidget->setMouseTracking(true);
   this->setMouseTracking(true);
   ui->toolBar->setMouseTracking(true);
-  ui->dockWidget_Info->setMouseTracking(true);
+  ui->frameInfo->setMouseTracking(true);
   ui->statusbar->setMouseTracking(true);
 
   timer = new QTimer(this);
@@ -340,7 +376,6 @@ QString MainWindow::openFile(QString fileName) {
     Decompile = new QProcess;
 
     //显示信息窗口并初始化表头
-    ui->dockWidget_Info->setHidden(false);
     InfoWinShow = true;
     //标记tab头
     int info_count = 0;
@@ -621,7 +656,7 @@ void MainWindow::setCurrentFile(const QString& fileName) {
     //设置编译功能屏蔽
     ui->actionCompiling->setEnabled(false);
 
-    ui->dockWidget_Info->setHidden(true);
+    ui->frameInfo->setHidden(true);
   }
 
   ui->tabWidget_textEdit->setTabText(ui->tabWidget_textEdit->currentIndex(),
@@ -1144,7 +1179,7 @@ void MainWindow::readCppResult(int exitCode) {
     goCppNextError();
   }
 
-  ui->dockWidget_Info->setHidden(false);
+  ui->frameInfo->setHidden(false);
   InfoWinShow = true;
   ui->actionInfo_win->setChecked(true);
 }
@@ -1224,7 +1259,7 @@ void MainWindow::readResult(int exitCode) {
     on_btnNextError();
   }
 
-  ui->dockWidget_Info->setHidden(false);
+  ui->frameInfo->setHidden(false);
   InfoWinShow = true;
   ui->actionInfo_win->setChecked(true);
 
@@ -1262,9 +1297,9 @@ void MainWindow::set_currsor_position(QsciScintilla* textEdit) {
 
   locationLabel->setAlignment(Qt::AlignCenter);
   locationLabel->setMinimumSize(locationLabel->sizeHint());
-  statusBar()->setStyleSheet(
-      QString("QStatusBar::item{border: 0px}"));  // 设置不显示label的边框
-  statusBar()->setSizeGripEnabled(false);  //设置是否显示右边的大小控制点
+  // statusBar()->setStyleSheet(
+  //    QString("QStatusBar::item{border: 0px}"));  // 设置不显示label的边框
+  statusBar()->setSizeGripEnabled(true);  //设置是否显示右边的大小控制点
 
   //联动treeWidget
   mem_linkage(ui->treeWidget, RowNum);
@@ -3917,17 +3952,13 @@ void getMembers(QString str_member, QsciScintilla* textEdit) {
 void MainWindow::on_MainWindow_destroyed() {}
 
 void MainWindow::init_info_edit() {
-  ui->dockWidgetContents_6->layout()->setMargin(0);
-  ui->dockWidgetContents_6->layout()->setSpacing(0);
-  ui->gridLayout_2->setMargin(0);
-  ui->gridLayout_2->setSpacing(0);
   ui->gridLayout_3->setMargin(0);
   ui->gridLayout_4->setMargin(0);
   ui->gridLayout_5->setMargin(0);
   ui->gridLayout_6->setMargin(0);
   ui->gridLayout_13->setMargin(0);
 
-  ui->listWidget->setFrameShape(QListWidget::NoFrame);
+  ui->listWidget->setFrameShape(QFrame::NoFrame);
   ui->listWidget->setSpacing(0);
   ui->listWidget->setIconSize(QSize(20, 20));
   ui->listWidget->setViewMode(QListView::ListMode);
@@ -3966,7 +3997,7 @@ void MainWindow::init_info_edit() {
   ui->editOptimizations->setReadOnly(true);
   ui->tabWidget->removeTab(5);  // No need to "optimize" this for now
 
-  ui->dockWidget_Info->setHidden(true);
+  ui->frameInfo->setHidden(true);
 
   // Loading scribble board files
   ui->editScribble->setPlaceholderText(
@@ -4450,6 +4481,7 @@ void MainWindow::setLexer(QsciLexer* textLexer, QsciScintilla* textEdit) {
 
 void MainWindow::init_miniEdit() {
   miniEdit = new MiniEditor(this);
+  miniEdit->setFrameShape(QFrame::NoFrame);
 
 #ifdef Q_OS_WIN32
   ui->dockWidget_Mini->setFixedWidth(115);
@@ -4754,9 +4786,6 @@ void MainWindow::init_filesystem() {
     int m_w = Reg.value("members_win", 375).toInt();
     resizeDocks({ui->dockWidgetSymbols}, {m_w}, Qt::Horizontal);
 
-    int i_h = Reg.value("info_win", 150).toInt();
-    resizeDocks({ui->dockWidget_Info}, {i_h}, Qt::Vertical);
-
     // 主窗口位置和大小
     int x, y, width, height;
     x = Reg.value("x", 0).toInt();
@@ -4952,10 +4981,14 @@ void MainWindow::closeEvent(QCloseEvent* event) {
   Reg.setValue("utf-8", ui->actionUTF_8->isChecked());
   Reg.setValue("gbk", ui->actionGBK->isChecked());
 
-  //存储成员列表的宽度和信息窗口高度
-  Reg.setValue("members_win", ui->dockWidgetSymbols->width());
+  //存储分割窗口的宽度和高度
+  Reg.setValue("w0", ui->tabWidget_misc->width());
+  Reg.setValue("w1", ui->frame->width());
   if (InfoWinShow)  //不显示不存储
-    Reg.setValue("info_win", ui->dockWidget_Info->height());
+  {
+    Reg.setValue("h0", ui->frame->height());
+    Reg.setValue("h1", ui->frameInfo->height());
+  }
 
   //存储当前的目录结构
   QWidget* pWidget =
@@ -5134,6 +5167,11 @@ void MainWindow::init_statusBar() {
 
   lblMsg = new QLabel(this);
   ui->statusbar->addPermanentWidget(lblMsg);
+
+  if (red > 55)
+    ui->statusbar->setStyleSheet(sbarStyleLight);
+  else
+    ui->statusbar->setStyleSheet(sbarStyleDark);
 }
 
 void MainWindow::newFile() {
@@ -5277,15 +5315,6 @@ void MainWindow::paintEvent(QPaintEvent* event) {
       init_edit(getCurrentEditor(i));
     }
   }
-
-  if (ui->actionMembers_win->isChecked()) {
-    if (ui->dockWidgetSymbols->isHidden())
-      ui->actionMembers_win->setChecked(false);
-  }
-
-  if (ui->actionInfo_win->isChecked()) {
-    if (ui->dockWidget_Info->isHidden()) ui->actionInfo_win->setChecked(false);
-  }
 }
 
 int MainWindow::treeCount(QTreeWidget* tree, QTreeWidgetItem* parent) {
@@ -5377,7 +5406,7 @@ void MainWindow::readKextstat() {
   textEdit->append(result);
   textEdit->setModified(false);
 
-  ui->dockWidget_Info->setHidden(true);
+  ui->frameInfo->setHidden(true);
   ui->actionInfo_win->setChecked(false);
 }
 
@@ -5572,22 +5601,22 @@ void MainWindow::on_tabWidget_textEdit_currentChanged(int index) {
 }
 
 void MainWindow::view_info() {
-  if (ui->dockWidget_Info->isHidden()) {
-    ui->dockWidget_Info->setHidden(false);
+  if (ui->frameInfo->isHidden()) {
+    ui->frameInfo->setHidden(false);
     InfoWinShow = true;
     ui->actionInfo_win->setChecked(true);
-  } else if (!ui->dockWidget_Info->isHidden()) {
-    ui->dockWidget_Info->setHidden(true);
+  } else if (!ui->frameInfo->isHidden()) {
+    ui->frameInfo->setHidden(true);
     ui->actionInfo_win->setChecked(false);
   }
 }
 
 void MainWindow::view_mem_list() {
-  if (ui->dockWidgetSymbols->isHidden()) {
-    ui->dockWidgetSymbols->setHidden(false);
+  if (ui->tabWidget_misc->isHidden()) {
+    ui->tabWidget_misc->setHidden(false);
     ui->actionMembers_win->setChecked(true);
-  } else if (!ui->dockWidgetSymbols->isHidden()) {
-    ui->dockWidgetSymbols->setHidden(true);
+  } else if (!ui->tabWidget_misc->isHidden()) {
+    ui->tabWidget_misc->setHidden(true);
     ui->actionMembers_win->setChecked(false);
   }
 }
@@ -6187,7 +6216,9 @@ int MainWindow::getMiniDockX() { return ui->dockWidget_Mini->x(); }
 
 int MainWindow::getTabWidgetEditX() { return ui->tabWidget_textEdit->x(); }
 
-int MainWindow::getTabWidgetEditW() { return ui->tabWidget_textEdit->width(); }
+int MainWindow::getTabWidgetEditW() {
+  return ui->tabWidget_textEdit->width() + ui->tabWidget_misc->width() + 6;
+}
 
 void MainWindow::on_PreviousError() {
   if (QFileInfo(curFile).suffix().toLower() == "dsl") on_btnPreviousError();
@@ -6526,11 +6557,11 @@ void MainWindow::init_tabWidgetStyle() {
   if (red < 55) {
     ui->tabWidget_misc->setStyleSheet(tabStyleDark);
     ui->tabWidget_textEdit->setStyleSheet(tabStyleDark);
+    ui->statusbar->setStyleSheet(sbarStyleDark);
 
   } else {
     ui->tabWidget_misc->setStyleSheet(tabStyleLight);
     ui->tabWidget_textEdit->setStyleSheet(tabStyleLight);
+    ui->statusbar->setStyleSheet(sbarStyleLight);
   }
-
-  qDebug() << red;
 }
