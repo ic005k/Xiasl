@@ -742,6 +742,7 @@ class MainWindow : public QMainWindow {
   void readINIProxy();
   void updateMd5(QString file);
   void init_tabWidgetStyle();
+  void setTextModifyMark();
 };
 
 class MiniEditor : public QsciScintilla {

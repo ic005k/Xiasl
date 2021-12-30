@@ -10,7 +10,7 @@
 #include "mytabwidget.h"
 #include "ui_mainwindow.h"
 
-QString CurVerison = "1.0.91";
+QString CurVerison = "1.0.92";
 bool loading = false;
 bool thread_end = true;
 bool break_run = false;
@@ -794,8 +794,6 @@ bool MainWindow::saveFile(const QString& fileName) {
 
   statusBar()->showMessage(tr("File saved"), 2000);
 
-  ui->actionSave->setEnabled(false);
-
   textEdit->setFocus();
 
   updateMd5(fileName);
@@ -1268,20 +1266,20 @@ void MainWindow::readResult(int exitCode) {
 
 void MainWindow::textEdit_cursorPositionChanged() {
   set_currsor_position(textEdit);
+  setTextModifyMark();
+}
 
+void MainWindow::setTextModifyMark() {
   if (!loading) {
     int i = ui->tabWidget_textEdit->currentIndex();
-
+    textEdit = getCurrentEditor(i);
     if (!textEdit->isModified()) {
       QIcon icon(":/icon/md0.svg");
       ui->tabWidget_textEdit->tabBar()->setTabIcon(i, icon);
-      ui->actionSave->setEnabled(false);
-    }
 
-    if (textEdit->isModified()) {
+    } else {
       QIcon icon(":/icon/md1.svg");
       ui->tabWidget_textEdit->tabBar()->setTabIcon(i, icon);
-      ui->actionSave->setEnabled(true);
     }
   }
 }
@@ -5551,12 +5549,6 @@ void MainWindow::on_tabWidget_textEdit_tabBarClicked(int index) {
   hs = getCurrentEditor(index)->horizontalScrollBar()->sliderPosition();
 
   One = false;
-
-  if (!textEdit->isModified()) {
-    ui->actionSave->setEnabled(false);
-  } else {
-    ui->actionSave->setEnabled(true);
-  }
 }
 
 QsciScintilla* MainWindow::getCurrentEditor(int index) {
