@@ -10,7 +10,7 @@
 #include "mytabwidget.h"
 #include "ui_mainwindow.h"
 
-QString CurVerison = "1.0.95";
+QString CurVerison = "1.0.96";
 bool loading = false;
 bool thread_end = true;
 bool break_run = false;
@@ -163,6 +163,7 @@ MainWindow::MainWindow(QWidget* parent)
   ui->tabWidget_textEdit->setIconSize(QSize(8, 8));
 
   textEdit = new QsciScintilla;
+  textEdit->setFrameShape(QFrame::NoFrame);
   init_edit(textEdit);
 
   ui->dockWidgetContents->layout()->setMargin(2);  //成员列表
@@ -5492,20 +5493,26 @@ bool MainWindow::eventFilter(QObject* watched, QEvent* event) {
     }
   }
 
-  if (event->type() == QEvent::ActivationChange) {
-    if (QApplication::activeWindow() != this) {
-      if (red > 55) {
-        this->setStyleSheet(
-            "QMainWindow { background-color: rgb(246,246,246);}");
-      } else {
-        this->setStyleSheet("QMainWindow { background-color: rgb(45,45,45);}");
+  if (watched == this) {
+    return QWidget::eventFilter(watched, event);
+    if (event->type() == QEvent::ActivationChange) {
+      if (QApplication::activeWindow() != this) {
+        if (red > 55) {
+          this->setStyleSheet(
+              "QMainWindow { background-color: rgb(246,246,246);}");
+        } else {
+          this->setStyleSheet(
+              "QMainWindow { background-color: rgb(45,45,45);}");
+        }
       }
-    } else {
-      if (red > 55) {
-        this->setStyleSheet(
-            "QMainWindow { background-color: rgb(212,212,212);}");
-      } else {
-        this->setStyleSheet("QMainWindow { background-color: rgb(42,42,42);}");
+      if (QApplication::activeWindow() == this) {
+        if (red > 55) {
+          this->setStyleSheet(
+              "QMainWindow { background-color: rgb(212,212,212);}");
+        } else {
+          this->setStyleSheet(
+              "QMainWindow { background-color: rgb(42,42,42);}");
+        }
       }
     }
   }
