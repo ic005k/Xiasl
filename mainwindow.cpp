@@ -10,7 +10,7 @@
 #include "mytabwidget.h"
 #include "ui_mainwindow.h"
 
-QString CurVerison = "1.0.94";
+QString CurVerison = "1.0.95";
 bool loading = false;
 bool thread_end = true;
 bool break_run = false;
@@ -80,6 +80,7 @@ CodeEditor::CodeEditor(QWidget* parent) : QPlainTextEdit(parent) {
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
   ui->setupUi(this);
+  installEventFilter(this);
   blInit = true;
   loadLocal();
   listMd5.clear();
@@ -5488,6 +5489,24 @@ bool MainWindow::eventFilter(QObject* watched, QEvent* event) {
   if (watched == ui->tabWidget_textEdit->tabBar()) {
     if (event->type() == QEvent::Wheel) {
       return true;
+    }
+  }
+
+  if (event->type() == QEvent::ActivationChange) {
+    if (QApplication::activeWindow() != this) {
+      if (red > 55) {
+        this->setStyleSheet(
+            "QMainWindow { background-color: rgb(246,246,246);}");
+      } else {
+        this->setStyleSheet("QMainWindow { background-color: rgb(45,45,45);}");
+      }
+    } else {
+      if (red > 55) {
+        this->setStyleSheet(
+            "QMainWindow { background-color: rgb(212,212,212);}");
+      } else {
+        this->setStyleSheet("QMainWindow { background-color: rgb(42,42,42);}");
+      }
     }
   }
 
