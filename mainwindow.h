@@ -415,8 +415,9 @@ class MainWindow : public QMainWindow {
   void paintEvent(QPaintEvent* event) override;
   void keyPressEvent(QKeyEvent* event) override;
   void keyReleaseEvent(QKeyEvent* event) override;
-  void mouseMoveEvent(QMouseEvent* e) override;
-  void mousePressEvent(QMouseEvent* e) override;
+  void mousePressEvent(QMouseEvent*) override;
+  void mouseReleaseEvent(QMouseEvent*) override;
+  void mouseMoveEvent(QMouseEvent*) override;
 
  public slots:
   void Open();
@@ -607,6 +608,8 @@ class MainWindow : public QMainWindow {
   void on_actionLatest_Release_triggered();
 
  private:
+  bool isDrag;
+  QPoint m_position;
   int lblNumber = 2;
   int editNumber = 1;
   bool AddCboxFindItem = false;

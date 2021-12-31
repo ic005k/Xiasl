@@ -10,7 +10,7 @@
 #include "mytabwidget.h"
 #include "ui_mainwindow.h"
 
-QString CurVerison = "1.0.92";
+QString CurVerison = "1.0.93";
 bool loading = false;
 bool thread_end = true;
 bool break_run = false;
@@ -92,7 +92,7 @@ MainWindow::MainWindow(QWidget* parent)
   QSettings Reg(qfile, QSettings::IniFormat);
 
   //获取背景色
-  QPalette pal = this->palette();
+  QPalette pal = ui->treeWidget->palette();
   QBrush brush = pal.window();
   red = brush.color().red();
 
@@ -4181,6 +4181,7 @@ void MainWindow::init_toolbar() {
 }
 
 void MainWindow::init_menu() {
+  this->setUnifiedTitleAndToolBarOnMac(true);
   // File
   ui->actionNew->setShortcut(tr("ctrl+n"));
   connect(ui->actionNew, &QAction::triggered, this, &MainWindow::newFile);
@@ -4318,7 +4319,7 @@ void MainWindow::init_menu() {
 
 void MainWindow::setLexer(QsciLexer* textLexer, QsciScintilla* textEdit) {
   //获取背景色
-  QPalette pal = this->palette();
+  QPalette pal = ui->treeWidget->palette();
   QBrush brush = pal.window();
   red = brush.color().red();
 
@@ -5302,7 +5303,7 @@ void MainWindow::paintEvent(QPaintEvent* event) {
   Q_UNUSED(event);
 
   //获取背景色,用来刷新软件使用中，系统切换亮、暗模式
-  QPalette pal = this->palette();
+  QPalette pal = ui->treeWidget->palette();
   QBrush brush = pal.window();
   int c_red = brush.color().red();
   if (c_red != red) {
@@ -6177,7 +6178,22 @@ void MainWindow::mouseMoveEvent(QMouseEvent* e) {
   }
 
   miniDlg->close();
+
+  if (isDrag & (e->buttons() & Qt::LeftButton)) {
+    move(e->globalPos() - m_position);
+    e->accept();
+  }
 }
+
+void MainWindow::mousePressEvent(QMouseEvent* e) {
+  if (e->button() == Qt::LeftButton) {
+    isDrag = true;
+    m_position = e->globalPos() - this->pos();
+    e->accept();
+  }
+}
+
+void MainWindow::mouseReleaseEvent(QMouseEvent*) { isDrag = false; }
 
 bool MainWindow::enterEdit(QPoint pp, QsciScintilla* btn) {
   int height = btn->height();
@@ -6261,8 +6277,6 @@ void MainWindow::on_tabWidget_misc_currentChanged(int index) {
   if (index == 1)
     ui->dockWidgetSymbols->setWindowTitle(tr("Filesystem Browser"));
 }
-
-void MainWindow::mousePressEvent(QMouseEvent* e) { Q_UNUSED(e); }
 
 void MainWindow::loadFindString() {
   //读取之前的目录
@@ -6547,11 +6561,13 @@ void MainWindow::on_actionLatest_Release_triggered() {
 
 void MainWindow::init_tabWidgetStyle() {
   if (red < 55) {
+    this->setStyleSheet("QMainWindow { background-color: rgb(42,42,42);}");
     ui->tabWidget_misc->setStyleSheet(tabStyleDark);
     ui->tabWidget_textEdit->setStyleSheet(tabStyleDark);
     ui->statusbar->setStyleSheet(sbarStyleDark);
 
   } else {
+    this->setStyleSheet("QMainWindow { background-color: rgb(212,212,212);}");
     ui->tabWidget_misc->setStyleSheet(tabStyleLight);
     ui->tabWidget_textEdit->setStyleSheet(tabStyleLight);
     ui->statusbar->setStyleSheet(sbarStyleLight);
