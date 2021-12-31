@@ -307,7 +307,6 @@ class MainWindow : public QMainWindow {
         border: 1px solid gray;\
         background: rgb(60, 60, 60);\
         }\
-        \
         QTabBar::close-button:hover {\
         image: url(:/icon/c0.png);\
         subcontrol-origin: padding;\

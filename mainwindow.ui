@@ -513,6 +513,9 @@
            <height>16777215</height>
           </size>
          </property>
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
          <property name="layoutDirection">
           <enum>Qt::LeftToRight</enum>
          </property>
@@ -523,13 +526,13 @@ QListWidget::item::selected:active
 { 
     color:black;
     border-width:0;
-   background:#00ccff;
+   background: rgb(135, 235, 255);
 }
 QListWidget::item:selected
 {
     color:black;
     border-width:0;
-   background:#00ccff;
+   background: rgb(135, 235, 255);
 }
 </string>
          </property>
@@ -866,7 +869,7 @@ QListWidget::item:selected
         <enum>QTabWidget::North</enum>
        </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>1</number>
        </property>
        <property name="documentMode">
         <bool>false</bool>
@@ -987,6 +990,9 @@ QTreeView::branch:!has-children:!has-siblings:adjoins-item{border-image:url(:/ic
          </item>
          <item row="1" column="0">
           <widget class="QTreeView" name="treeView">
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
            <property name="styleSheet">
             <string notr="true">/* 之前的底色为绿色：30, 255, 25, 255 */
 

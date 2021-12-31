@@ -10,7 +10,7 @@
 #include "mytabwidget.h"
 #include "ui_mainwindow.h"
 
-QString CurVerison = "1.0.93";
+QString CurVerison = "1.0.94";
 bool loading = false;
 bool thread_end = true;
 bool break_run = false;
@@ -5139,7 +5139,7 @@ void MainWindow::init_statusBar() {
 
   lblLayer = new QLabel(this);
   QPalette label_palette;
-  label_palette.setColor(QPalette::Background, QColor(135, 206, 235, 255));
+  label_palette.setColor(QPalette::Background, QColor(135, 235, 255));
   label_palette.setColor(QPalette::WindowText, Qt::black);
   QFont lblFont;
   lblFont.setFamily(ui->treeWidget->font().family());
