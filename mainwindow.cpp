@@ -10,7 +10,7 @@
 #include "mytabwidget.h"
 #include "ui_mainwindow.h"
 
-QString CurVerison = "1.0.98";
+QString CurVerison = "1.0.99";
 bool loading = false;
 bool thread_end = true;
 bool break_run = false;
@@ -152,8 +152,6 @@ MainWindow::MainWindow(QWidget* parent)
 
   init_UIStyle();
 
-  ui->frameFun->layout()->setContentsMargins(1, 5, 1, 5);
-  ui->frameMainFun->layout()->setContentsMargins(1, 5, 1, 5);
   ui->tabWidget_textEdit->setDocumentMode(false);
   ui->tabWidget_textEdit->tabBar()->installEventFilter(
       this);  //安装事件过滤器以禁用鼠标滚轮切换标签页
@@ -604,6 +602,7 @@ void MainWindow::loadFile(const QString& fileName, int row, int col) {
   setRecentFiles(fileName);
   updateMd5(fileName);
   addFilesWatch();
+  init_TabList();
 
   loading = false;
 }
@@ -4051,6 +4050,7 @@ void MainWindow::init_recentFiles() {
 }
 
 void MainWindow::init_toolbar() {
+  if (mac || osx1012) this->setUnifiedTitleAndToolBarOnMac(true);
   ui->toolBar->setHidden(true);
   ui->hlFind->setHidden(true);
   ui->chkCaseSensitive->setHidden(true);
@@ -4062,10 +4062,19 @@ void MainWindow::init_toolbar() {
   ui->btnSave->setIcon(QIcon(":/icon/save.png"));
   ui->btnNew->setIcon(QIcon(":/icon/new.png"));
 
+  // TAB List
+  ui->btnTabList->setToolTip(tr("TAB List"));
+  ui->btnTabList->setIcon(QIcon(":/icon/list.png"));
+  ui->btnTabList->setPopupMode(QToolButton::InstantPopup);
+  menuTabList = new QMenu(this);
+  ui->btnTabList->setMenu(menuTabList);
+
   // Corner Buttons
-  ui->frameMainFun->layout()->setSpacing(2);
+  ui->frameFun->layout()->setContentsMargins(5, 5, 1, 5);
+  ui->frameMainFun->layout()->setContentsMargins(5, 5, 1, 5);
+  ui->frameMainFun->layout()->setSpacing(3);
   ui->tabWidget_textEdit->setCornerWidget(ui->frameMainFun);
-  ui->frameFun->layout()->setSpacing(2);
+  ui->frameFun->layout()->setSpacing(3);
   ui->tabWidget_misc->setCornerWidget(ui->frameFun);
 
   // hlFind
@@ -4182,7 +4191,6 @@ void MainWindow::init_toolbar() {
 }
 
 void MainWindow::init_menu() {
-  if (mac || osx1012) this->setUnifiedTitleAndToolBarOnMac(true);
   // File
   ui->actionNew->setShortcut(tr("ctrl+n"));
   connect(ui->actionNew, &QAction::triggered, this, &MainWindow::newFile);
@@ -5604,6 +5612,8 @@ void MainWindow::closeTab(int index) {
 }
 
 void MainWindow::on_tabWidget_textEdit_currentChanged(int index) {
+  if (index < 0) return;
+
   if (index >= 0 && m_searchTextPosList.count() > 0) {
     for (int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i++) {
       clearSearchHighlight(getCurrentEditor(i));
@@ -5611,6 +5621,8 @@ void MainWindow::on_tabWidget_textEdit_currentChanged(int index) {
 
     m_searchTextPosList.clear();
   }
+
+  init_TabList();
 }
 
 void MainWindow::view_info() {
@@ -6596,8 +6608,30 @@ void MainWindow::init_UIStyle() {
   }
 
   if (win || linuxOS) {
-      QString tabBarStyle = "QTabBar::tab{min-height:35px;}";
-      ui->tabWidget_misc->setStyleSheet(tabBarStyle);
-      ui->tabWidget_textEdit->setStyleSheet(tabBarStyle);
+    QString tabBarStyle = "QTabBar::tab{min-height:35px;}";
+    ui->tabWidget_misc->setStyleSheet(tabBarStyle);
+    ui->tabWidget_textEdit->setStyleSheet(tabBarStyle);
+  }
+}
+
+void MainWindow::on_btnTabList_clicked() {}
+
+void MainWindow::init_TabList() {
+  QList<QAction*> actList;
+  for (int i = 0; i < ui->tabWidget_textEdit->count(); i++) {
+    QString txt = ui->tabWidget_textEdit->tabText(i);
+    QAction* act = new QAction(this);
+    act->setText(QString::number(i + 1) + " . " + txt);
+    connect(act, &QAction::triggered, [=]() {
+      ui->tabWidget_textEdit->setCurrentIndex(i);
+      on_tabWidget_textEdit_tabBarClicked(i);
+    });
+
+    actList.append(act);
+  }
+
+  if (actList.count() > 0) {
+    menuTabList->clear();
+    menuTabList->addActions(actList);
   }
 }

@@ -292,32 +292,6 @@
         <number>0</number>
        </property>
        <item row="0" column="1">
-        <widget class="QToolButton" name="btnNew">
-         <property name="toolTip">
-          <string>New</string>
-         </property>
-         <property name="text">
-          <string>N</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="2">
-        <widget class="QToolButton" name="btnSave">
-         <property name="maximumSize">
-          <size>
-           <width>50</width>
-           <height>50</height>
-          </size>
-         </property>
-         <property name="toolTip">
-          <string>Save</string>
-         </property>
-         <property name="text">
-          <string>S</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="0">
         <widget class="QToolButton" name="btnFind">
          <property name="minimumSize">
           <size>
@@ -339,6 +313,39 @@
          </property>
         </widget>
        </item>
+       <item row="0" column="2">
+        <widget class="QToolButton" name="btnNew">
+         <property name="toolTip">
+          <string>New</string>
+         </property>
+         <property name="text">
+          <string>N</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="3">
+        <widget class="QToolButton" name="btnSave">
+         <property name="maximumSize">
+          <size>
+           <width>50</width>
+           <height>50</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>Save</string>
+         </property>
+         <property name="text">
+          <string>S</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QToolButton" name="btnTabList">
+         <property name="text">
+          <string>L</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </widget>
     </item>
@@ -352,7 +359,7 @@
       </property>
       <layout class="QGridLayout" name="gridLayout_15">
        <property name="leftMargin">
-        <number>0</number>
+        <number>2</number>
        </property>
        <property name="topMargin">
         <number>0</number>
@@ -465,7 +472,7 @@
           <bool>true</bool>
          </property>
          <property name="documentMode" stdset="0">
-          <bool>true</bool>
+          <bool>false</bool>
          </property>
          <property name="tabsClosable" stdset="0">
           <bool>false</bool>
@@ -584,9 +591,7 @@ QListWidget::item:selected
         <item row="0" column="0">
          <widget class="QTextEdit" name="editShowMsg">
           <property name="font">
-           <font>
-            <family>SauceCodePro Nerd Font</family>
-           </font>
+           <font/>
           </property>
           <property name="frameShape">
            <enum>QFrame::NoFrame</enum>
@@ -612,9 +617,7 @@ QListWidget::item:selected
         <item row="0" column="0">
          <widget class="QTextEdit" name="editErrors">
           <property name="font">
-           <font>
-            <family>SauceCodePro Nerd Font</family>
-           </font>
+           <font/>
           </property>
           <property name="frameShape">
            <enum>QFrame::NoFrame</enum>
@@ -640,9 +643,7 @@ QListWidget::item:selected
         <item row="0" column="0">
          <widget class="QTextEdit" name="editWarnings">
           <property name="font">
-           <font>
-            <family>SauceCodePro Nerd Font</family>
-           </font>
+           <font/>
           </property>
           <property name="frameShape">
            <enum>QFrame::NoFrame</enum>
@@ -668,9 +669,7 @@ QListWidget::item:selected
         <item row="0" column="0">
          <widget class="QTextEdit" name="editRemarks">
           <property name="font">
-           <font>
-            <family>SauceCodePro Nerd Font</family>
-           </font>
+           <font/>
           </property>
           <property name="frameShape">
            <enum>QFrame::NoFrame</enum>
@@ -713,9 +712,7 @@ QListWidget::item:selected
         <item row="0" column="0">
          <widget class="QTextEdit" name="editOptimizations">
           <property name="font">
-           <font>
-            <family>SauceCodePro Nerd Font</family>
-           </font>
+           <font/>
           </property>
           <property name="frameShape">
            <enum>QFrame::NoFrame</enum>
@@ -743,7 +740,7 @@ QListWidget::item:selected
      <x>0</x>
      <y>0</y>
      <width>1221</width>
-     <height>30</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -901,9 +898,7 @@ QListWidget::item:selected
          <item row="1" column="0">
           <widget class="QTreeWidget" name="treeWidget">
            <property name="font">
-            <font>
-             <family>SauceCodePro Nerd Font</family>
-            </font>
+            <font/>
            </property>
            <property name="styleSheet">
             <string notr="true">/* 之前的底色为绿色：30, 255, 25, 255 */

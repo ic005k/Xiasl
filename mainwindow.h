@@ -206,6 +206,7 @@ class MainWindow : public QMainWindow {
               border: 1px solid gray;\
               background: rgb(236, 236, 236);\
         }\
+        QTabBar::scroller {width:0}\
         QTabBar::close-button:hover {\
         image: url(:/icon/c0.png);\
         subcontrol-origin: padding;\
@@ -307,6 +308,7 @@ class MainWindow : public QMainWindow {
         border: 1px solid gray;\
         background: rgb(60, 60, 60);\
         }\
+        QTabBar::scroller {width:0}\
         QTabBar::close-button:hover {\
         image: url(:/icon/c0.png);\
         subcontrol-origin: padding;\
@@ -606,7 +608,10 @@ class MainWindow : public QMainWindow {
 
   void on_actionLatest_Release_triggered();
 
+  void on_btnTabList_clicked();
+
  private:
+  QMenu* menuTabList;
   bool isDrag;
   QPoint m_position;
   int lblNumber = 2;
@@ -745,7 +750,8 @@ class MainWindow : public QMainWindow {
   void updateMd5(QString file);
   void init_UIStyle();
   void setTextModifyMark();
-};
+  void init_TabList();
+  };
 
 class MiniEditor : public QsciScintilla {
   Q_OBJECT

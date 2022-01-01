@@ -41,5 +41,6 @@
         <file>icon/clear.png</file>
         <file>icon/c.png</file>
         <file>icon/c0.png</file>
+        <file>icon/list.png</file>
     </qresource>
 </RCC>
