@@ -743,7 +743,7 @@ class MainWindow : public QMainWindow {
   void writeINIProxy();
   void readINIProxy();
   void updateMd5(QString file);
-  void init_tabWidgetStyle();
+  void init_UIStyle();
   void setTextModifyMark();
 };
 

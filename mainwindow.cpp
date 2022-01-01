@@ -10,7 +10,7 @@
 #include "mytabwidget.h"
 #include "ui_mainwindow.h"
 
-QString CurVerison = "1.0.97";
+QString CurVerison = "1.0.98";
 bool loading = false;
 bool thread_end = true;
 bool break_run = false;
@@ -150,8 +150,7 @@ MainWindow::MainWindow(QWidget* parent)
 
   init_treeWidget();
 
-  // QString tabBarStyle2 = "QTabBar::tab{min-height:35px;}";
-  init_tabWidgetStyle();
+  init_UIStyle();
 
   ui->frameFun->layout()->setContentsMargins(1, 5, 1, 5);
   ui->frameMainFun->layout()->setContentsMargins(1, 5, 1, 5);
@@ -4183,7 +4182,7 @@ void MainWindow::init_toolbar() {
 }
 
 void MainWindow::init_menu() {
-  this->setUnifiedTitleAndToolBarOnMac(true);
+  if (mac || osx1012) this->setUnifiedTitleAndToolBarOnMac(true);
   // File
   ui->actionNew->setShortcut(tr("ctrl+n"));
   connect(ui->actionNew, &QAction::triggered, this, &MainWindow::newFile);
@@ -5168,11 +5167,6 @@ void MainWindow::init_statusBar() {
 
   lblMsg = new QLabel(this);
   ui->statusbar->addPermanentWidget(lblMsg);
-
-  if (red > 55)
-    ui->statusbar->setStyleSheet(sbarStyleLight);
-  else
-    ui->statusbar->setStyleSheet(sbarStyleDark);
 }
 
 void MainWindow::newFile() {
@@ -5310,7 +5304,7 @@ void MainWindow::paintEvent(QPaintEvent* event) {
   int c_red = brush.color().red();
   if (c_red != red) {
     red = c_red;
-    init_tabWidgetStyle();
+    init_UIStyle();
     //注意：1.代码折叠线的颜色 2.双引号输入时的背景色
     for (int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i++) {
       init_edit(getCurrentEditor(i));
@@ -6585,17 +6579,25 @@ void MainWindow::on_actionLatest_Release_triggered() {
   QDesktopServices::openUrl(url);
 }
 
-void MainWindow::init_tabWidgetStyle() {
-  if (red < 55) {
-    this->setStyleSheet("QMainWindow { background-color: rgb(42,42,42);}");
-    ui->tabWidget_misc->setStyleSheet(tabStyleDark);
-    ui->tabWidget_textEdit->setStyleSheet(tabStyleDark);
-    ui->statusbar->setStyleSheet(sbarStyleDark);
+void MainWindow::init_UIStyle() {
+  if (mac || osx1012) {
+    if (red < 55) {
+      this->setStyleSheet("QMainWindow { background-color: rgb(42,42,42);}");
+      ui->tabWidget_misc->setStyleSheet(tabStyleDark);
+      ui->tabWidget_textEdit->setStyleSheet(tabStyleDark);
+      ui->statusbar->setStyleSheet(sbarStyleDark);
 
-  } else {
-    this->setStyleSheet("QMainWindow { background-color: rgb(212,212,212);}");
-    ui->tabWidget_misc->setStyleSheet(tabStyleLight);
-    ui->tabWidget_textEdit->setStyleSheet(tabStyleLight);
-    ui->statusbar->setStyleSheet(sbarStyleLight);
+    } else {
+      this->setStyleSheet("QMainWindow { background-color: rgb(212,212,212);}");
+      ui->tabWidget_misc->setStyleSheet(tabStyleLight);
+      ui->tabWidget_textEdit->setStyleSheet(tabStyleLight);
+      ui->statusbar->setStyleSheet(sbarStyleLight);
+    }
+  }
+
+  if (win || linuxOS) {
+      QString tabBarStyle = "QTabBar::tab{min-height:35px;}";
+      ui->tabWidget_misc->setStyleSheet(tabBarStyle);
+      ui->tabWidget_textEdit->setStyleSheet(tabBarStyle);
   }
 }

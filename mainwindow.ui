@@ -41,7 +41,7 @@
         <number>2</number>
        </property>
        <property name="verticalSpacing">
-        <number>-1</number>
+        <number>9</number>
        </property>
        <item row="0" column="0">
         <layout class="QHBoxLayout" name="horizontalLayout">
@@ -743,7 +743,7 @@ QListWidget::item:selected
      <x>0</x>
      <y>0</y>
      <width>1221</width>
-     <height>24</height>
+     <height>30</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -845,8 +845,8 @@ QListWidget::item:selected
   <widget class="QDockWidget" name="dockWidgetSymbols">
    <property name="minimumSize">
     <size>
-     <width>163</width>
-     <height>189</height>
+     <width>200</width>
+     <height>218</height>
     </size>
    </property>
    <property name="features">
