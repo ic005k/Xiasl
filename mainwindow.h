@@ -191,12 +191,12 @@ class MainWindow : public QMainWindow {
   QString getMD5FromList(QString file);
 
   QString sbarStyleLight =
-      "QStatusBar { background: rgb(236, 236, 236);}\
+      "QStatusBar { background: rgb(212, 212, 212);}\
           QStatusBar::item {\
                    border: 0px solid blue;\
                    border-radius: 3px;}";
   QString sbarStyleDark =
-      "QStatusBar { background: rgb(64, 65, 66);}\
+      "QStatusBar { background: rgb(42, 42, 42);}\
           QStatusBar::item {\
                    border: 0px solid red;\
                    border-radius: 3px;}";
