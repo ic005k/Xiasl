@@ -10,7 +10,7 @@
 #include "mytabwidget.h"
 #include "ui_mainwindow.h"
 
-QString CurVerison = "1.1.01";
+QString CurVerison = "1.1.02";
 bool loading = false;
 bool thread_end = true;
 bool break_run = false;
@@ -85,7 +85,7 @@ MainWindow::MainWindow(QWidget* parent)
   loadLocal();
   listMd5.clear();
 
-  ver = "QtiASL V" + CurVerison + "        ";
+  ver = "Xiasl V" + CurVerison + "        ";
   setWindowTitle(ver);
   ver = "";
 
@@ -334,7 +334,7 @@ void MainWindow::about() {
   QString last = str + appInfo.lastModified().toString("yyyy-MM-dd hh:mm:ss");
   QString str1 =
       "<a style='color:blue;' href = "
-      "https://github.com/ic005k/QtiASL>QtiASL"
+      "https://github.com/ic005k/QtiASL>Xiasl"
       "</a><br><br>";
 
   QMessageBox::about(this, "About",
