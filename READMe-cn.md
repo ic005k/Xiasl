@@ -1,5 +1,5 @@
 [简体中文](https://github.com/ic005k/QtiASL/blob/master/README-cn.md) | [English](https://github.com/ic005k/QtiASL/blob/master/README.md)
-# QtiASL--开源跨平台的DSDT&SSDT集成开发环境
+# Xiasl--开源跨平台的DSDT&SSDT集成开发环境
 
 | [最新发布][release-link]|[下载][download-link]|[问题反馈][issues-link]|[讨论区][discourse-link]|
 |-----------------|-----------------|-----------------|-----------------|
@@ -21,7 +21,7 @@
 [discourse-link]: https://www.insanelymac.com/forum/topic/344860-open-source-cross-platform-dsdtssdt-ide/
 
 
-* QtiASL是一个现代的、轻量的、功能丰富的跨平台的DSDT集成开发环境。
+* Xiasl是一个现代的、轻量的、功能丰富的跨平台的DSDT集成开发环境。
 
 
 ## 感谢
