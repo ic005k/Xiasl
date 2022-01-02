@@ -5686,7 +5686,7 @@ QString MainWindow::getUrl(QVariantList list) {
     QVariantMap map = list[i].toMap();
     QString fName = map["name"].toString();
 
-    if (fName.contains("QtiASL_Mac.dmg"))
+    if (fName.contains("Xiasl_Mac.dmg"))
       macUrl = map["browser_download_url"].toString();
 
     if (fName.contains("Win")) winUrl = map["browser_download_url"].toString();

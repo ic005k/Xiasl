@@ -15,7 +15,7 @@ AutoUpdateDialog::AutoUpdateDialog(QWidget* parent)
   setWindowTitle("");
   ui->progressBar->setTextVisible(false);
   Init();
-  tempDir = QDir::homePath() + "/tempqtiasl/";
+  tempDir = QDir::homePath() + "/tempxiasl/";
   mw_one->deleteDirfile(tempDir);
   ui->label->setVisible(false);
 }
@@ -109,23 +109,22 @@ void AutoUpdateDialog::startUpdate() {
     strTarget = strTarget + ".";
     strTarget = "\"" + strTarget + "\"";
     if (mw_one->mac) {
-      txtEdit->append("hdiutil mount -mountpoint /Volumes/qtiasl " + strZip);
+      txtEdit->append("hdiutil mount -mountpoint /Volumes/xiasl " + strZip);
       txtEdit->append(
           "cp -R -p -f "
-          "/Volumes/qtiasl/QtiASL.app/. " +
+          "/Volumes/xiasl/Xiasl.app/. " +
           strTarget);
 
-      txtEdit->append("hdiutil eject /Volumes/qtiasl");
+      txtEdit->append("hdiutil eject /Volumes/xiasl");
     }
     if (mw_one->osx1012) {
-      txtEdit->append("hdiutil mount -mountpoint /Volumes/qtiasl1012 " +
-                      strZip);
+      txtEdit->append("hdiutil mount -mountpoint /Volumes/xiasl1012 " + strZip);
       txtEdit->append(
           "cp -R -p -f "
-          "/Volumes/qtiasl1012/QtiASL.app/. " +
+          "/Volumes/xiasl1012/Xiasl.app/. " +
           strTarget);
 
-      txtEdit->append("hdiutil eject /Volumes/qtiasl1012");
+      txtEdit->append("hdiutil eject /Volumes/xiasl1012");
     }
 
     strPath = appInfo.path().replace("Contents", "");
