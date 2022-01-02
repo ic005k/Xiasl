@@ -751,6 +751,7 @@ class MainWindow : public QMainWindow {
   void init_UIStyle();
   void setTextModifyMark();
   void init_TabList();
+  void init_fsmSyncOpenedFile(QString OpenedFile);
   };
 
 class MiniEditor : public QsciScintilla {

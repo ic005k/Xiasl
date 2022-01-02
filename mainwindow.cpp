@@ -10,7 +10,7 @@
 #include "mytabwidget.h"
 #include "ui_mainwindow.h"
 
-QString CurVerison = "1.1.00";
+QString CurVerison = "1.1.01";
 bool loading = false;
 bool thread_end = true;
 bool break_run = false;
@@ -629,14 +629,9 @@ void MainWindow::setCurrentFile(const QString& fileName) {
   ui->actionGo_to_the_next_error->setEnabled(false);
 
   //初始化fsm
-  QFileInfo f(shownName);
-  ui->treeView->setRootIndex(model->index(f.path()));
-  fsm_Index = model->index(f.path());
-  set_return_text(f.path());
-  ui->treeView->setCurrentIndex(
-      model->index(shownName));  //并设置当前条目为打开的文件
-  ui->treeView->setFocus();
+  init_fsmSyncOpenedFile(shownName);
 
+  QFileInfo f(shownName);
   if (f.suffix().toLower() == "dsl" || f.suffix().toLower() == "cpp" ||
       f.suffix().toLower() == "c") {
     ui->actionWrapWord->setChecked(false);  //取消自动换行，影响dsl文件开启速度
@@ -653,7 +648,7 @@ void MainWindow::setCurrentFile(const QString& fileName) {
   }
 
   ui->tabWidget_textEdit->setTabText(ui->tabWidget_textEdit->currentIndex(),
-                                     f.baseName());
+                                     f.fileName());
 }
 
 void MainWindow::set_return_text(QString text) {
@@ -4673,13 +4668,13 @@ void MainWindow::init_treeWidget() {
   QString strStyle =
       "QTreeView::branch:hover {background-color:rgba(127,255,0,50)}"
 
-      "QTreeView::branch:selected {background: rgba(135 206 235, "
-      "255);selection-background-color:rgba(135 206 235, 255);}"
+      "QTreeView::branch:selected {background: rgb(135 ,235 ,255);"
+      "selection-background-color:rgb(135 ,235, 255);}"
 
       "QTreeWidget::item:hover{background-color:rgba(127,255,0,50)}"
 
-      "QTreeWidget::item:selected{background-color:rgba(135 206 235, 255); "
-      "color:rgba(5,5,5,255);} "
+      "QTreeWidget::item:selected{background-color:rgb(135, 235, 255); "
+      "color:rgb(5,5,5);} "
 
       "QTreeView::branch:open:has-children:!has-siblings,QTreeView::branch:"
       "open:has-children:has-siblings {image: url(:/icon/sub.svg);}"
@@ -4775,12 +4770,6 @@ void MainWindow::init_filesystem() {
 
   if (fi.exists()) {
     QSettings Reg(qfile, QSettings::IniFormat);
-
-    QString dir = Reg.value("dir").toString().trimmed();
-    QString btn = Reg.value("btn").toString().trimmed();
-    ui->treeView->setRootIndex(model->index(dir));
-    fsm_Index = model->index(dir);
-    ui->btnReturn->setText(btn);
 
     // 主窗口位置和大小
     int x, y, width, height;
@@ -5440,9 +5429,8 @@ void MainWindow::on_treeView_doubleClicked(const QModelIndex& index) {
 
 void MainWindow::on_btnReturn_clicked() {
   QString str = model->filePath(fsm_Index.parent());
-
+  model->setRootPath(str);
   ui->treeView->setRootIndex(model->index(str));
-
   ui->btnReturn->setText(str);
 
   fsm_Index = fsm_Index.parent();
@@ -5552,11 +5540,7 @@ void MainWindow::on_tabWidget_textEdit_tabBarClicked(int index) {
   }
 
   //初始化fsm
-  ui->treeView->setRootIndex(model->index(f.path()));
-  fsm_Index = model->index(f.path());
-  set_return_text(f.path());
-  ui->treeView->setCurrentIndex(
-      model->index(curFile));  //并设置当前条目为打开的文件
+  init_fsmSyncOpenedFile(curFile);
 
   textEdit->setFocus();
 
@@ -5566,6 +5550,17 @@ void MainWindow::on_tabWidget_textEdit_tabBarClicked(int index) {
   hs = getCurrentEditor(index)->horizontalScrollBar()->sliderPosition();
 
   One = false;
+}
+
+void MainWindow::init_fsmSyncOpenedFile(QString OpenedFile) {
+  QFileInfo f(OpenedFile);
+  fsm_Filepath = f.path();
+  model->setRootPath(fsm_Filepath);
+  fsm_Index = model->index(f.path());
+  ui->treeView->setRootIndex(fsm_Index);
+  set_return_text(fsm_Filepath);
+  ui->treeView->setCurrentIndex(
+      model->index(OpenedFile));  //设置当前条目为打开的文件
 }
 
 QsciScintilla* MainWindow::getCurrentEditor(int index) {
