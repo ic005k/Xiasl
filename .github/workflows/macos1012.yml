@@ -24,7 +24,7 @@ jobs:
         qt_arch: [clang_64]
         
     env:
-      targetName: QtiASL
+      targetName: Xiasl
       VERSION: Mac10.12 and below
       
     steps:
