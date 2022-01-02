@@ -1,8 +1,8 @@
 [Desktop Entry]
 Type=Application
-Name=QtiASL
+Name=Xiasl
 Exec=AppRun %F
 Icon=icon
-Comment=QtiASL
+Comment=Xiasl
 Categories=Application;
 Terminal=true
