@@ -24,7 +24,7 @@ jobs:
         qt_arch: [gcc_64]
         
     env:
-         targetName: QtiASL
+         targetName: Xiasl
          VERSION: Linux
       
         
