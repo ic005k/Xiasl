@@ -28,9 +28,9 @@ jobs:
             qt_tools_mingw_install: mingw810_64
           
     env:
-      targetName: QtiASL.exe
+      targetName: Xiasl.exe
       VERSION: Win64
-      orgName: QtiASL
+      orgName: Xiasl
       
     steps:
       - name: Install Qt
