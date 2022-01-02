@@ -10,7 +10,7 @@
 #include "mytabwidget.h"
 #include "ui_mainwindow.h"
 
-QString CurVerison = "1.0.99";
+QString CurVerison = "1.1.00";
 bool loading = false;
 bool thread_end = true;
 bool break_run = false;
@@ -163,13 +163,6 @@ MainWindow::MainWindow(QWidget* parent)
   textEdit->setFrameShape(QFrame::NoFrame);
   init_edit(textEdit);
 
-  ui->dockWidgetContents->layout()->setMargin(2);  //成员列表
-  ui->gridLayout->setMargin(2);
-  ui->gridLayout_8->setMargin(2);
-
-  ui->centralwidget->layout()->setMargin(2);
-  ui->centralwidget->layout()->setSpacing(2);
-
   //删除titleba
   QWidget* lTitleBar = ui->dockWidget_Mini->titleBarWidget();
   QWidget* lEmptyWidget = new QWidget();
@@ -185,7 +178,6 @@ MainWindow::MainWindow(QWidget* parent)
   ui->frame->layout()->addWidget(ui->frameTip);
   ui->frame->layout()->addWidget(ui->hlFind);
   ui->frame->layout()->addWidget(ui->tabWidget_textEdit);
-  ui->dockWidgetSymbols->setHidden(true);
   splitterH->addWidget(ui->tabWidget_misc);
   splitterH->addWidget(ui->frame);
   ui->centralwidget->layout()->addWidget(splitterH);
@@ -345,7 +337,8 @@ void MainWindow::about() {
       "https://github.com/ic005k/QtiASL>QtiASL"
       "</a><br><br>";
 
-  QMessageBox::about(this, "About", str1 + "V" + CurVerison + "<br>" + last);
+  QMessageBox::about(this, "About",
+                     str1 + "V" + CurVerison + "<br><br>" + last);
 }
 
 QString MainWindow::openFile(QString fileName) {
@@ -660,7 +653,7 @@ void MainWindow::setCurrentFile(const QString& fileName) {
   }
 
   ui->tabWidget_textEdit->setTabText(ui->tabWidget_textEdit->currentIndex(),
-                                     f.fileName());
+                                     f.baseName());
 }
 
 void MainWindow::set_return_text(QString text) {
@@ -4727,7 +4720,6 @@ void MainWindow::init_treeWidget() {
           });
 
   ui->lblMembers->setHidden(true);
-  ui->dockWidgetSymbols->setWindowTitle(tr("Symbols"));
 }
 
 void MainWindow::init_filesystem() {
@@ -4789,10 +4781,6 @@ void MainWindow::init_filesystem() {
     ui->treeView->setRootIndex(model->index(dir));
     fsm_Index = model->index(dir);
     ui->btnReturn->setText(btn);
-
-    //读取成员列表窗口的宽度和信息显示窗口的高度
-    int m_w = Reg.value("members_win", 375).toInt();
-    resizeDocks({ui->dockWidgetSymbols}, {m_w}, Qt::Horizontal);
 
     // 主窗口位置和大小
     int x, y, width, height;
@@ -6242,10 +6230,10 @@ bool MainWindow::enterEdit(QPoint pp, QsciScintilla* btn) {
 }
 
 int MainWindow::getDockWidth() {
-  if (ui->dockWidgetSymbols->x() != 0) return 0;
+  if (ui->tabWidget_misc->x() != 0) return 0;
 
-  if (ui->dockWidgetSymbols->isVisible())
-    return ui->dockWidgetSymbols->width();
+  if (ui->tabWidget_misc->isVisible())
+    return ui->tabWidget_misc->width();
   else
     return 0;
 }
@@ -6257,7 +6245,7 @@ int MainWindow::getMiniDockX() { return ui->dockWidget_Mini->x(); }
 int MainWindow::getTabWidgetEditX() { return ui->tabWidget_textEdit->x(); }
 
 int MainWindow::getTabWidgetEditW() {
-  return ui->tabWidget_textEdit->width() + ui->tabWidget_misc->width() + 6;
+  return ui->tabWidget_textEdit->width() + 6;
 }
 
 void MainWindow::on_PreviousError() {
@@ -6304,11 +6292,7 @@ void MainWindow::on_listWidget_itemSelectionChanged() {
   ui->tabWidget->setCurrentIndex(index);
 }
 
-void MainWindow::on_tabWidget_misc_currentChanged(int index) {
-  if (index == 0) ui->dockWidgetSymbols->setWindowTitle(tr("Symbols"));
-  if (index == 1)
-    ui->dockWidgetSymbols->setWindowTitle(tr("Filesystem Browser"));
-}
+void MainWindow::on_tabWidget_misc_currentChanged(int index) {}
 
 void MainWindow::loadFindString() {
   //读取之前的目录
