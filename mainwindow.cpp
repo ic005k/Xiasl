@@ -9,8 +9,11 @@
 #include "filesystemwatcher.h"
 #include "mytabwidget.h"
 #include "ui_mainwindow.h"
+#ifdef __APPLE__
+#include "OSXHideTitleBar.h"
+#endif
 
-QString CurVerison = "1.1.02";
+QString CurVerison = "1.1.03";
 bool loading = false;
 bool thread_end = true;
 bool break_run = false;
@@ -168,7 +171,7 @@ MainWindow::MainWindow(QWidget* parent)
   QWidget* lEmptyWidget = new QWidget();
   ui->dockWidget_Mini->setTitleBarWidget(lEmptyWidget);
   delete lTitleBar;
-  ui->dockWidgetContents_5->layout()->setMargin(1);
+  ui->dockWidgetContents_Mini->layout()->setMargin(1);
   ui->gridLayout_10->setMargin(0);
   ui->gridLayout_10->setSpacing(0);
   ui->gridLayout_10->addWidget(miniEdit);
@@ -189,6 +192,7 @@ MainWindow::MainWindow(QWidget* parent)
   list.append(w0);
   list.append(w1);
   splitterH->setSizes(list);
+  connect(splitterH, &QSplitter::splitterMoved, [=]() {});
 
   QSplitter* splitterV = new QSplitter(Qt::Vertical, this);
   ui->frameInfo->layout()->addWidget(ui->listWidget);
@@ -4038,7 +4042,7 @@ void MainWindow::init_recentFiles() {
 }
 
 void MainWindow::init_toolbar() {
-  if (mac || osx1012) this->setUnifiedTitleAndToolBarOnMac(true);
+  // if (mac || osx1012) this->setUnifiedTitleAndToolBarOnMac(true);
   ui->toolBar->setHidden(true);
   ui->hlFind->setHidden(true);
   ui->chkCaseSensitive->setHidden(true);
@@ -6573,13 +6577,14 @@ void MainWindow::on_actionLatest_Release_triggered() {
 void MainWindow::init_UIStyle() {
   if (mac || osx1012) {
     if (red < 55) {
-      this->setStyleSheet("QMainWindow { background-color: rgb(42,42,42);}");
+      // this->setStyleSheet("QMainWindow { background-color: rgb(42,42,42);}");
       ui->tabWidget_misc->setStyleSheet(tabStyleDark);
       ui->tabWidget_textEdit->setStyleSheet(tabStyleDark);
       ui->statusbar->setStyleSheet(sbarStyleDark);
 
     } else {
-      this->setStyleSheet("QMainWindow { background-color: rgb(212,212,212);}");
+      // this->setStyleSheet("QMainWindow { background-color:
+      // rgb(212,212,212);}");
       ui->tabWidget_misc->setStyleSheet(tabStyleLight);
       ui->tabWidget_textEdit->setStyleSheet(tabStyleLight);
       ui->statusbar->setStyleSheet(sbarStyleLight);
@@ -6596,10 +6601,14 @@ void MainWindow::init_UIStyle() {
 void MainWindow::on_btnTabList_clicked() {}
 
 void MainWindow::init_TabList() {
+  if (ui->tabWidget_textEdit->count() <= 0) return;
   QList<QAction*> actList;
+  int ci = ui->tabWidget_textEdit->currentIndex();
   for (int i = 0; i < ui->tabWidget_textEdit->count(); i++) {
     QString txt = ui->tabWidget_textEdit->tabText(i);
     QAction* act = new QAction(this);
+    act->setCheckable(true);
+    if (i == ci) act->setChecked(true);
     act->setText(QString::number(i + 1) + " . " + txt);
     connect(act, &QAction::triggered, [=]() {
       ui->tabWidget_textEdit->setCurrentIndex(i);
@@ -6614,3 +6623,13 @@ void MainWindow::init_TabList() {
     menuTabList->addActions(actList);
   }
 }
+
+void MainWindow::changeEvent(QEvent* e) {
+  Q_UNUSED(e);
+#ifdef __APPLE__
+  return;
+  OSXHideTitleBar::HideTitleBar(winId());
+#endif
+}
+
+void MainWindow::resizeEvent(QResizeEvent* event) { Q_UNUSED(event); }

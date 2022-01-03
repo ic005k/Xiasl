@@ -191,12 +191,12 @@ class MainWindow : public QMainWindow {
   QString getMD5FromList(QString file);
 
   QString sbarStyleLight =
-      "QStatusBar { background: rgb(212, 212, 212);}\
+      "QStatusBar { background: rgb(236, 236, 236);}\
           QStatusBar::item {\
                    border: 0px solid blue;\
                    border-radius: 3px;}";
   QString sbarStyleDark =
-      "QStatusBar { background: rgb(42, 42, 42);}\
+      "QStatusBar { background: rgb(50, 50, 50);}\
           QStatusBar::item {\
                    border: 0px solid red;\
                    border-radius: 3px;}";
@@ -420,6 +420,7 @@ class MainWindow : public QMainWindow {
   void mouseReleaseEvent(QMouseEvent*) override;
   void mouseMoveEvent(QMouseEvent*) override;
 
+  void resizeEvent(QResizeEvent* event) override;
  public slots:
   void Open();
   QString openFile(QString fileName);
@@ -433,7 +434,7 @@ class MainWindow : public QMainWindow {
   void on_tabWidget_textEdit_tabBarClicked(int index);
 
   void miniEdit_cursorPositionChanged();
-
+  virtual void changeEvent(QEvent* event) override;
   void setValue();
   void setValue2();
 
@@ -752,7 +753,7 @@ class MainWindow : public QMainWindow {
   void setTextModifyMark();
   void init_TabList();
   void init_fsmSyncOpenedFile(QString OpenedFile);
-  };
+};
 
 class MiniEditor : public QsciScintilla {
   Q_OBJECT
@@ -767,6 +768,7 @@ class MiniEditor : public QsciScintilla {
   // void mousePressEvent(QMouseEvent* event) override;
   // void mouseDoubleClickEvent(QMouseEvent* event) override;
   // void mouseMoveEvent(QMouseEvent* event) override;
+
  private slots:
   void miniEdit_cursorPositionChanged();
   void miniEdit_verticalScrollBarChanged();

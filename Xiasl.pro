@@ -37,6 +37,20 @@ TRANSLATIONS += en.ts\
                 cn.ts
 
 
+mac {
+    # Only include / compile these files on OS X
+    OBJECTIVE_SOURCES += \
+        OSXHideTitleBar.mm
+    HEADERS  +=\
+        OSXHideTitleBar.h
+
+    # Additionally include Cocoa for OS X code
+
+    LIBS += -framework Foundation -framework Cocoa
+    INCLUDEPATH += /System/Library/Frameworks/Foundation.framework/Versions/C/Headers
+}
+
+
 # The following define makes your compiler emit warnings if you use
 # any Qt feature that has been marked deprecated (the exact warnings
 # depend on your compiler). Please consult the documentation of the
