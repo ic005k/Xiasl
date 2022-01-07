@@ -190,6 +190,18 @@ class MainWindow : public QMainWindow {
   QString getMD5(QString targetFile);
   QString getMD5FromList(QString file);
 
+  QString treeViewStyleLight =
+      "QTreeView::branch:hover {background-color:rgba(127,255,0,50)}\
+          QTreeView::branch:selected {background: rgba(180 ,209 ,255, 255);selection-background-color:rgba(180 ,209 ,255, 255);}\
+          QTreeView::item:hover{background-color:rgba(127,255,0,50)}\
+          QTreeView::item:selected{background-color:rgba(180 ,209 ,255, 255); color:rgba(5,5,5,255);}";
+
+  QString treeViewStyleDark =
+      "QTreeView::branch:hover {background-color:rgba(127,255,0,50)}\
+          QTreeView::branch:selected {background: rgba(66 ,92 ,141, 255);selection-background-color:rgba(66 ,92 ,141, 255);}\
+          QTreeView::item:hover{background-color:rgba(127,255,0,50)}\
+          QTreeView::item:selected{background-color:rgba(66 ,92 ,141, 255); color:rgba(226,230,237,255);}";
+
   QString treeWidgetStyleLight =
       "QTreeView::branch:hover {background-color:rgba(127,255,0,50)}"
 

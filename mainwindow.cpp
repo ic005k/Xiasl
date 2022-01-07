@@ -6572,6 +6572,7 @@ void MainWindow::init_UIStyle() {
   if (red > 55) {
     ui->treeWidget->setStyleSheet(treeWidgetStyleLight);
     ui->listWidget->setStyleSheet(infoShowStyleLight);
+    ui->treeView->setStyleSheet(treeViewStyleLight);
 
     QPalette label_palette;
     label_palette.setColor(QPalette::Background, QColor(180, 209, 255));
@@ -6580,6 +6581,7 @@ void MainWindow::init_UIStyle() {
   } else {
     ui->treeWidget->setStyleSheet(treeWidgetStyleDark);
     ui->listWidget->setStyleSheet(infoShowStyleDark);
+    ui->treeView->setStyleSheet(treeViewStyleDark);
 
     QPalette label_palette;
     label_palette.setColor(QPalette::Background, QColor(66, 92, 141));
