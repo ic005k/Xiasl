@@ -537,13 +537,13 @@ QListWidget::item::selected:active
 { 
     color:black;
     border-width:0;
-   background: rgb(135, 235, 255);
+   background: rgb(180 ,209 ,255);
 }
 QListWidget::item:selected
 {
     color:black;
     border-width:0;
-   background: rgb(135, 235, 255);
+   background: rgb(180 ,209 ,255);
 }
 </string>
          </property>

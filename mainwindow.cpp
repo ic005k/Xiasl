@@ -13,7 +13,7 @@
 #include "OSXHideTitleBar.h"
 #endif
 
-QString CurVerison = "1.1.03";
+QString CurVerison = "1.1.04";
 bool loading = false;
 bool thread_end = true;
 bool break_run = false;
@@ -4669,34 +4669,6 @@ void MainWindow::init_treeWidget() {
   ui->treeWidget->installEventFilter(this);
   if (!win) ui->treeWidget->setAlternatingRowColors(true);  //底色交替显示
 
-  QString strStyle =
-      "QTreeView::branch:hover {background-color:rgba(127,255,0,50)}"
-
-      "QTreeView::branch:selected {background: rgb(135 ,235 ,255);"
-      "selection-background-color:rgb(135 ,235, 255);}"
-
-      "QTreeWidget::item:hover{background-color:rgba(127,255,0,50)}"
-
-      "QTreeWidget::item:selected{background-color:rgb(135, 235, 255); "
-      "color:rgb(5,5,5);} "
-
-      "QTreeView::branch:open:has-children:!has-siblings,QTreeView::branch:"
-      "open:has-children:has-siblings {image: url(:/icon/sub.svg);}"
-
-      "QTreeView::branch:has-children:!has-siblings:closed,QTreeView::branch:"
-      "closed:has-children:has-siblings {image: url(:/icon/main.svg);}"
-
-      "QTreeView::branch:has-siblings:!adjoins-item{border-image:url(:/icon/"
-      "branch-line.png)0;}"
-
-      "QTreeView::branch:has-siblings:adjoins-item{border-image:url(:/icon/"
-      "branch-more.png)0;}"
-
-      "QTreeView::branch:!has-children:!has-siblings:adjoins-item{border-image:"
-      "url(:/icon//branch-end.png)0;}";
-
-  ui->treeWidget->setStyleSheet(strStyle);
-
   //右键菜单
   ui->treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
   QMenu* menu = new QMenu(this);
@@ -5128,14 +5100,12 @@ void MainWindow::init_statusBar() {
   statusBar()->addWidget(locationLabel);
 
   lblLayer = new QLabel(this);
-  QPalette label_palette;
-  label_palette.setColor(QPalette::Background, QColor(135, 235, 255));
-  label_palette.setColor(QPalette::WindowText, Qt::black);
+
   QFont lblFont;
   lblFont.setFamily(ui->treeWidget->font().family());
   lblLayer->setFont(lblFont);
   lblLayer->setAutoFillBackground(true);
-  lblLayer->setPalette(label_palette);
+
   lblLayer->setText(tr(" Layer "));
   lblLayer->setTextInteractionFlags(
       Qt::TextSelectableByMouse);  //允许选择其中的文字
@@ -6576,15 +6546,17 @@ void MainWindow::on_actionLatest_Release_triggered() {
 
 void MainWindow::init_UIStyle() {
   if (mac || osx1012) {
+    this->setUnifiedTitleAndToolBarOnMac(false);
     if (red < 55) {
-      // this->setStyleSheet("QMainWindow { background-color: rgb(42,42,42);}");
+      if (unifiedTitleAndToolBarOnMac())
+        this->setStyleSheet("QMainWindow { background-color: rgb(42,42,42);}");
       ui->tabWidget_misc->setStyleSheet(tabStyleDark);
       ui->tabWidget_textEdit->setStyleSheet(tabStyleDark);
       ui->statusbar->setStyleSheet(sbarStyleDark);
 
     } else {
-      // this->setStyleSheet("QMainWindow { background-color:
-      // rgb(212,212,212);}");
+      if (unifiedTitleAndToolBarOnMac())
+        this->setStyleSheet("QMainWindow { background-color:rgb(212,212,212);");
       ui->tabWidget_misc->setStyleSheet(tabStyleLight);
       ui->tabWidget_textEdit->setStyleSheet(tabStyleLight);
       ui->statusbar->setStyleSheet(sbarStyleLight);
@@ -6595,6 +6567,24 @@ void MainWindow::init_UIStyle() {
     QString tabBarStyle = "QTabBar::tab{min-height:35px;}";
     ui->tabWidget_misc->setStyleSheet(tabBarStyle);
     ui->tabWidget_textEdit->setStyleSheet(tabBarStyle);
+  }
+
+  if (red > 55) {
+    ui->treeWidget->setStyleSheet(treeWidgetStyleLight);
+    ui->listWidget->setStyleSheet(infoShowStyleLight);
+
+    QPalette label_palette;
+    label_palette.setColor(QPalette::Background, QColor(180, 209, 255));
+    label_palette.setColor(QPalette::WindowText, Qt::black);
+    lblLayer->setPalette(label_palette);
+  } else {
+    ui->treeWidget->setStyleSheet(treeWidgetStyleDark);
+    ui->listWidget->setStyleSheet(infoShowStyleDark);
+
+    QPalette label_palette;
+    label_palette.setColor(QPalette::Background, QColor(66, 92, 141));
+    label_palette.setColor(QPalette::WindowText, QColor(226, 230, 237));
+    lblLayer->setPalette(label_palette);
   }
 }
 

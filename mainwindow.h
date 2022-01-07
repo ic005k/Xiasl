@@ -190,6 +190,86 @@ class MainWindow : public QMainWindow {
   QString getMD5(QString targetFile);
   QString getMD5FromList(QString file);
 
+  QString treeWidgetStyleLight =
+      "QTreeView::branch:hover {background-color:rgba(127,255,0,50)}"
+
+      "QTreeView::branch:selected {background: rgb(180 ,209 ,255);"
+      "selection-background-color:rgb(180 ,209 ,255);}"
+
+      "QTreeWidget::item:hover{background-color:rgba(127,255,0,50)}"
+
+      "QTreeWidget::item:selected{background-color:rgb(180 ,209 ,255); "
+      "color:rgb(5,5,5);} "
+
+      "QTreeView::branch:open:has-children:!has-siblings,QTreeView::branch:"
+      "open:has-children:has-siblings {image: url(:/icon/sub.svg);}"
+
+      "QTreeView::branch:has-children:!has-siblings:closed,QTreeView::branch:"
+      "closed:has-children:has-siblings {image: url(:/icon/main.svg);}"
+
+      "QTreeView::branch:has-siblings:!adjoins-item{border-image:url(:/icon/"
+      "branch-line.png)0;}"
+
+      "QTreeView::branch:has-siblings:adjoins-item{border-image:url(:/icon/"
+      "branch-more.png)0;}"
+
+      "QTreeView::branch:!has-children:!has-siblings:adjoins-item{border-image:"
+      "url(:/icon//branch-end.png)0;}";
+
+  QString treeWidgetStyleDark =
+      "QTreeView::branch:hover {background-color:rgba(127,255,0,50)}"
+
+      "QTreeView::branch:selected {background: rgb(66 ,92 ,141);"
+      "selection-background-color:rgb(66 ,92 ,141);}"
+
+      "QTreeWidget::item:hover{background-color:rgba(127,255,0,50)}"
+
+      "QTreeWidget::item:selected{background-color:rgb(66 ,92 ,141); "
+      "color:rgb(226,230,237);} "
+
+      "QTreeView::branch:open:has-children:!has-siblings,QTreeView::branch:"
+      "open:has-children:has-siblings {image: url(:/icon/sub.svg);}"
+
+      "QTreeView::branch:has-children:!has-siblings:closed,QTreeView::branch:"
+      "closed:has-children:has-siblings {image: url(:/icon/main.svg);}"
+
+      "QTreeView::branch:has-siblings:!adjoins-item{border-image:url(:/icon/"
+      "branch-line.png)0;}"
+
+      "QTreeView::branch:has-siblings:adjoins-item{border-image:url(:/icon/"
+      "branch-more.png)0;}"
+
+      "QTreeView::branch:!has-children:!has-siblings:adjoins-item{border-image:"
+      "url(:/icon//branch-end.png)0;}";
+
+  QString infoShowStyleLight =
+      "QListWidget::item::selected:active\
+          {\
+              color:black;\
+              border-width:0;\
+             background: rgb(180 ,209 ,255);\
+          }\
+          QListWidget::item:selected\
+          {\
+              color:black;\
+              border-width:0;\
+             background: rgb(180 ,209 ,255);\
+          }";
+
+  QString infoShowStyleDark =
+      "QListWidget::item::selected:active\
+          {\
+              color:black;\
+              border-width:0;\
+             background: rgb(66 ,92 ,141);\
+          }\
+          QListWidget::item:selected\
+          {\
+              color:rgb(226,230,237);\
+              border-width:0;\
+             background: rgb(66 ,92 ,141);\
+          }";
+
   QString sbarStyleLight =
       "QStatusBar { background: rgb(236, 236, 236);}\
           QStatusBar::item {\
