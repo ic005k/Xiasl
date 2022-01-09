@@ -13,7 +13,7 @@
 #include "OSXHideTitleBar.h"
 #endif
 
-QString CurVerison = "1.1.05";
+QString CurVerison = "1.1.06";
 bool loading = false;
 bool thread_end = true;
 bool break_run = false;
@@ -4696,6 +4696,7 @@ void MainWindow::init_treeWidget() {
 void MainWindow::init_filesystem() {
   ui->treeView->installEventFilter(this);       //安装事件过滤器
   ui->treeView->setAlternatingRowColors(true);  //不同的底色交替显示
+  // ui->treeView->setIconSize(QSize(15, 15));     // 文件浏览器行高
 
   ui->treeView->setContextMenuPolicy(Qt::CustomContextMenu);
   QMenu* menu = new QMenu(this);

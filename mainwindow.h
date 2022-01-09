@@ -192,15 +192,27 @@ class MainWindow : public QMainWindow {
 
   QString treeViewStyleLight =
       "QTreeView::branch:hover {background-color:rgba(127,255,0,50)}\
-          QTreeView::branch:selected {background: rgba(180 ,209 ,255, 255);selection-background-color:rgba(180 ,209 ,255, 255);}\
-          QTreeView::item:hover{background-color:rgba(127,255,0,50)}\
-          QTreeView::item:selected{background-color:rgba(180 ,209 ,255, 255); color:rgba(5,5,5,255);}";
+      QTreeView::branch:selected {background: rgba(180 ,209 ,255, 255);selection-background-color:rgba(180 ,209 ,255, 255);}\
+      QTreeView::item:hover{background-color:rgba(127,255,0,50)}\
+      QTreeView::item:selected{background-color:rgba(180 ,209 ,255, 255); color:rgba(5,5,5,255);}"
+
+      "QTreeView::branch:open:has-children:!has-siblings,QTreeView::branch:"
+      "open:has-children:has-siblings {image: url(:/icon/sub.svg);}"
+
+      "QTreeView::branch:has-children:!has-siblings:closed,QTreeView::branch:"
+      "closed:has-children:has-siblings {image: url(:/icon/main.svg);}";
 
   QString treeViewStyleDark =
       "QTreeView::branch:hover {background-color:rgba(127,255,0,50)}\
-          QTreeView::branch:selected {background: rgba(66 ,92 ,141, 255);selection-background-color:rgba(66 ,92 ,141, 255);}\
-          QTreeView::item:hover{background-color:rgba(127,255,0,50)}\
-          QTreeView::item:selected{background-color:rgba(66 ,92 ,141, 255); color:rgba(226,230,237,255);}";
+       QTreeView::branch:selected {background: rgba(66 ,92 ,141, 255);selection-background-color:rgba(66 ,92 ,141, 255);}\
+       QTreeView::item:hover{background-color:rgba(127,255,0,50)}\
+       QTreeView::item:selected{background-color:rgba(66 ,92 ,141, 255); color:rgba(226,230,237,255);}"
+
+      "QTreeView::branch:open:has-children:!has-siblings,QTreeView::branch:"
+      "open:has-children:has-siblings {image: url(:/icon/sub.svg);}"
+
+      "QTreeView::branch:has-children:!has-siblings:closed,QTreeView::branch:"
+      "closed:has-children:has-siblings {image: url(:/icon/main.svg);}";
 
   QString treeWidgetStyleLight =
       "QTreeView::branch:hover {background-color:rgba(127,255,0,50)}"
