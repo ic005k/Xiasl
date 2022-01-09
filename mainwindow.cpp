@@ -13,7 +13,7 @@
 #include "OSXHideTitleBar.h"
 #endif
 
-QString CurVerison = "1.1.04";
+QString CurVerison = "1.1.05";
 bool loading = false;
 bool thread_end = true;
 bool break_run = false;
@@ -5266,6 +5266,7 @@ void MainWindow::paintEvent(QPaintEvent* event) {
     init_UIStyle();
     //注意：1.代码折叠线的颜色 2.双引号输入时的背景色
     for (int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i++) {
+      return;
       init_edit(getCurrentEditor(i));
     }
   }
