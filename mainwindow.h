@@ -109,6 +109,8 @@ class MainWindow : public QMainWindow {
   ~MainWindow();
   Ui::MainWindow* ui;
 
+  QMenu* mnuRecentOpenFile;
+  QStringList recentFileList;
   void setRecentFiles(QString fileName);
   void addFilesWatch();
   void removeFilesWatch();
@@ -512,6 +514,8 @@ class MainWindow : public QMainWindow {
             margin-bottom: 0;\
         }";
 
+  void init_RecentOpenMenuItem();
+
  protected:
   void closeEvent(QCloseEvent* event) override;
   void dragEnterEvent(QDragEnterEvent* e) override;
@@ -856,7 +860,8 @@ class MainWindow : public QMainWindow {
   void setTextModifyMark();
   void init_TabList();
   void init_fsmSyncOpenedFile(QString OpenedFile);
-};
+  void init_listForRecentFile(QString fileName);
+  };
 
 class MiniEditor : public QsciScintilla {
   Q_OBJECT

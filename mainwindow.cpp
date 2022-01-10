@@ -492,8 +492,27 @@ QString MainWindow::openFile(QString fileName) {
   return fileName;
 }
 
+void MainWindow::init_listForRecentFile(QString fileName) {
+  fileName = QDir::fromNativeSeparators(fileName);
+  for (int i = 0; i < recentFileList.count(); i++) {
+    if (fileName == recentFileList.at(i)) recentFileList.removeAt(i);
+  }
+  recentFileList.insert(0, fileName);
+  if (recentFileList.count() == 21) recentFileList.removeAt(20);
+  init_RecentOpenMenuItem();
+
+  QString qfile = QDir::homePath() + "/.config/QtiASL/QtiASL.ini";
+  QSettings Reg(qfile, QSettings::IniFormat);
+  Reg.setValue("RecentOpenFileCount", recentFileList.count());
+  for (int i = 0; i < recentFileList.count(); i++) {
+    Reg.setValue("RecentOpenFile" + QString::number(i), recentFileList.at(i));
+  }
+}
+
 void MainWindow::loadFile(const QString& fileName, int row, int col) {
   loading = true;
+
+  init_listForRecentFile(fileName);
 
   /*如果之前文件已打开，则返回已打开的文件*/
   for (int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i++) {
@@ -791,6 +810,7 @@ bool MainWindow::saveFile(const QString& fileName) {
 
   updateMd5(fileName);
   addFilesWatch();
+  init_listForRecentFile(fileName);
 
   return true;
 }
@@ -4017,18 +4037,57 @@ void MainWindow::init_info_edit() {
   }
 }
 
+void MainWindow::init_RecentOpenMenuItem() {
+  mnuRecentOpenFile->clear();
+  for (int i = 0; i < recentFileList.count(); i++) {
+    QString file = recentFileList.at(i);
+    QAction* act = new QAction(QString::number(i + 1) + " . " + file);
+    connect(act, &QAction::triggered,
+            [=]() { loadFile(openFile(file), -1, -1); });
+    mnuRecentOpenFile->addAction(act);
+  }
+  mnuRecentOpenFile->addSeparator();
+  QAction* actClear = new QAction(tr("Clear List"));
+  connect(actClear, &QAction::triggered, [=]() {
+    recentFileList.clear();
+    mnuRecentOpenFile->clear();
+    QString qfile = QDir::homePath() + "/.config/QtiASL/QtiASL.ini";
+    QSettings Reg(qfile, QSettings::IniFormat);
+    Reg.setValue("RecentOpenFileCount", recentFileList.count());
+  });
+  mnuRecentOpenFile->addAction(actClear);
+}
+
 void MainWindow::init_recentFiles() {
   //最近打开的文件
+  QString qfile = QDir::homePath() + "/.config/QtiASL/QtiASL.ini";
+  QSettings Reg(qfile, QSettings::IniFormat);
+  int count = Reg.value("RecentOpenFileCount", 0).toInt();
+  for (int i = 0; i < count; i++) {
+    QString str = Reg.value("RecentOpenFile" + QString::number(i)).toString();
+    recentFileList.append(str);
+  }
+
+  mnuRecentOpenFile = new QMenu(tr("Open Recent..."));
+  ui->menu_File->insertMenu(ui->actionOpen, mnuRecentOpenFile);
+#ifdef Q_OS_MAC
+  mnuRecentOpenFile->setAsDockMenu();
+#endif
+  init_RecentOpenMenuItem();
+
   // Mac:"/Users/../Library/Preferences/com.github-com-ic005k.QtiASL.plist"
   // Win:"\\HKEY_CURRENT_USER\\Software\\ic005k\\QtiASL"
-  QCoreApplication::setOrganizationName("ic005k");
-  QCoreApplication::setOrganizationDomain("github.com/ic005k");
-  QCoreApplication::setApplicationName("QtiASL");
+  // QCoreApplication::setOrganizationName("ic005k");
+  // QCoreApplication::setOrganizationDomain("github.com/ic005k");
+  // QCoreApplication::setApplicationName("QtiASL");
 
   m_recentFiles = new RecentFiles(this);
-  m_recentFiles->attachToMenuAfterItem(ui->menu_File, tr("Open"),
-                                       SLOT(recentOpen(QString)));
-  m_recentFiles->setNumOfRecentFiles(25);  //最多显示最近的文件个数
+  // m_recentFiles->setNumOfRecentFiles(25);  //最多显示最近的文件个数
+#ifdef Q_OS_MAC
+  // m_recentFiles->m_recentMenu->setAsDockMenu();
+#endif
+  // m_recentFiles->attachToMenuAfterItem(ui->menu_File, tr("Open"),
+  //                                     SLOT(recentOpen(QString)));
 
   // SSDT list
   QCoreApplication::setOrganizationName("ic005k");
@@ -4919,9 +4978,9 @@ void MainWindow::regACPI_win() {
 void MainWindow::closeEvent(QCloseEvent* event) {
   //存储编译选项
   QString qfile = QDir::homePath() + "/.config/QtiASL/QtiASL.ini";
+  QSettings Reg(qfile, QSettings::IniFormat);
   QFile file(qfile);
 
-  QSettings Reg(qfile, QSettings::IniFormat);
   Reg.setValue("options",
                dlgset->ui->cboxCompilationOptions->currentText().trimmed());
 
