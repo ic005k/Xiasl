@@ -4075,19 +4075,7 @@ void MainWindow::init_recentFiles() {
 #endif
   init_RecentOpenMenuItem();
 
-  // Mac:"/Users/../Library/Preferences/com.github-com-ic005k.QtiASL.plist"
-  // Win:"\\HKEY_CURRENT_USER\\Software\\ic005k\\QtiASL"
-  // QCoreApplication::setOrganizationName("ic005k");
-  // QCoreApplication::setOrganizationDomain("github.com/ic005k");
-  // QCoreApplication::setApplicationName("QtiASL");
-
   m_recentFiles = new RecentFiles(this);
-  // m_recentFiles->setNumOfRecentFiles(25);  //最多显示最近的文件个数
-#ifdef Q_OS_MAC
-  // m_recentFiles->m_recentMenu->setAsDockMenu();
-#endif
-  // m_recentFiles->attachToMenuAfterItem(ui->menu_File, tr("Open"),
-  //                                     SLOT(recentOpen(QString)));
 
   // SSDT list
   QCoreApplication::setOrganizationName("ic005k");
@@ -4106,7 +4094,7 @@ void MainWindow::init_recentFiles() {
 }
 
 void MainWindow::init_toolbar() {
-  // if (mac || osx1012) this->setUnifiedTitleAndToolBarOnMac(true);
+  if (mac || osx1012) this->setUnifiedTitleAndToolBarOnMac(false);
   ui->toolBar->setHidden(true);
   ui->hlFind->setHidden(true);
   ui->chkCaseSensitive->setHidden(true);
