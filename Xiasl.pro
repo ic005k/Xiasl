@@ -73,6 +73,7 @@ SOURCES += \
     filesystemwatcher.cpp \
     main.cpp \
     mainwindow.cpp \
+    methods.cpp \
     minidialog.cpp \
     myapp.cpp \
     recentfiles.cpp
@@ -139,6 +140,7 @@ HEADERS += \
     dlgpreferences.h \
     filesystemwatcher.h \
     mainwindow.h \
+    methods.h \
     minidialog.h \
     myapp.h \
     mytabwidget.h \
