@@ -108,6 +108,7 @@ class MainWindow : public QMainWindow {
   MainWindow(QWidget* parent = nullptr);
   ~MainWindow();
   Ui::MainWindow* ui;
+
   void setRecentFiles(QString fileName);
   void addFilesWatch();
   void removeFilesWatch();
@@ -148,8 +149,6 @@ class MainWindow : public QMainWindow {
   void update_ui_tree();
 
   void loadLocal();
-
-  QString curFile;
 
   QProcess* co;
 

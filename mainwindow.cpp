@@ -12,8 +12,9 @@
 #ifdef __APPLE__
 #include "OSXHideTitleBar.h"
 #endif
+#include "methods.h"
 
-QString CurVerison = "1.1.06";
+QString CurVerison = "1.1.07";
 bool loading = false;
 bool thread_end = true;
 bool break_run = false;
@@ -44,7 +45,7 @@ QList<QTreeWidgetItem*> tw_name;
 QList<QTreeWidgetItem*> tw_list;
 QTreeWidget* treeWidgetBak;
 
-QString fileName;
+QString fileName, curFile;
 QVector<QString> filelist;
 QWidgetList wdlist;
 QscilexerCppAttach* textLexer;
@@ -1559,6 +1560,7 @@ void MainWindow::on_btnFindPrevious() {
 void MainWindow::on_treeWidget_itemClicked(QTreeWidgetItem* item, int column) {
   if (column == 0 && !loading) {
     int lines = item->text(1).toInt();
+    textEdit = getCurrentEditor(ui->tabWidget_textEdit->currentIndex());
     textEdit->setCursorPosition(lines, 0);
     textEdit->setFocus();
   }
@@ -2125,7 +2127,11 @@ void thread_one::run() {
 
   thread_end = false;
 
-  getMemberTree(textEditBack);
+  if (QFileInfo(curFile).suffix().toLower() == "cpp" ||
+      QFileInfo(curFile).suffix().toLower() == "c") {
+    Methods::getVoidForCpp(curFile);
+  } else
+    getMemberTree(textEditBack);
 
   QMetaObject::invokeMethod(this, "over");
 }
@@ -2243,7 +2249,6 @@ void MainWindow::refresh_tree(QsciScintilla* textEdit) {
 
 void MainWindow::on_btnRefreshTree() {
   refresh_tree(textEdit);
-
   syncMiniEdit();
 }
 
@@ -4465,9 +4470,9 @@ void MainWindow::setLexer(QsciLexer* textLexer, QsciScintilla* textEdit) {
   textEdit->setMarginSensitivity(1, true);    //设置是否可以显示断点
   textEdit->setMarginsBackgroundColor(QColor("#bbfaae"));
   textEdit->setMarginMarkerMask(1, 0x02);
-  connect(textEdit, SIGNAL(marginClicked(int, int, Qt::KeyboardModifiers)),this,
-          SLOT(on_margin_clicked(int, int, Qt::KeyboardModifiers)));
-  textEdit->markerDefine(QsciScintilla::Circle, 1);
+  connect(textEdit, SIGNAL(marginClicked(int, int,
+  Qt::KeyboardModifiers)),this, SLOT(on_margin_clicked(int, int,
+  Qt::KeyboardModifiers))); textEdit->markerDefine(QsciScintilla::Circle, 1);
   textEdit->setMarkerBackgroundColor(QColor("#ee1111"), 1);*/
   //单步执行显示区域
   /*textEdit->setMarginType(2, QsciScintilla::SymbolMargin);
@@ -5502,18 +5507,18 @@ void MainWindow::on_tabWidget_textEdit_tabBarClicked(int index) {
 
   textEdit = getCurrentEditor(index);
 
+  ui->treeWidget->clear();
   on_btnRefreshTree();
-
-  setWindowTitle(ver + currentFile);
 
   QFileInfo f(curFile);
   if (f.suffix().toLower() == "dsl" || f.suffix().toLower() == "cpp" ||
       f.suffix().toLower() == "c") {
     ui->actionCompiling->setEnabled(true);
-
   } else {
     ui->actionCompiling->setEnabled(false);
   }
+
+  setWindowTitle(ver + currentFile);
 
   //初始化fsm
   init_fsmSyncOpenedFile(curFile);
@@ -5759,7 +5764,8 @@ void MainWindow::highlighsearchtext(QString searchText) {
 
   m_searchTextPosList.clear();
 
-  //查找document中flag 出现的所有位置,采用标准字符串来计算，QString会有一些问题
+  //查找document中flag
+  //出现的所有位置,采用标准字符串来计算，QString会有一些问题
   std::string flag = search_string.toStdString();
 
   unsigned long long position = 0;
@@ -6596,6 +6602,7 @@ void MainWindow::on_btnTabList_clicked() {}
 
 void MainWindow::init_TabList() {
   if (ui->tabWidget_textEdit->count() <= 0) return;
+
   QList<QAction*> actList;
   int ci = ui->tabWidget_textEdit->currentIndex();
   for (int i = 0; i < ui->tabWidget_textEdit->count(); i++) {
