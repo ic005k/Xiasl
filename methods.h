@@ -1,6 +1,8 @@
 #ifndef METHODS_H
 #define METHODS_H
 
+#include <Qsci/qsciscintilla.h>
+
 #include <QDebug>
 #include <QDir>
 #include <QFileInfo>
@@ -17,7 +19,7 @@ class Methods : public QObject {
  public:
   explicit Methods(QObject *parent = nullptr);
 
-  static QStringList getVoidForCpp(QString c_file);
+  static QStringList getVoidForCpp(QsciScintilla *textEdit);
   static QString loadText(QString textFile);
   static QString getTextEditLineText(QTextEdit *txtEdit, int i);
   static bool isSymbol(QString line);

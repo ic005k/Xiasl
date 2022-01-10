@@ -14,7 +14,7 @@
 #endif
 #include "methods.h"
 
-QString CurVerison = "1.1.07";
+QString CurVerison = "1.1.08";
 bool loading = false;
 bool thread_end = true;
 bool break_run = false;
@@ -574,7 +574,7 @@ void MainWindow::loadFile(const QString& fileName, int row, int col) {
 
   if (ReLoad)  //文本重装之后刷新树并回到之前的位置
   {
-    refresh_tree(textEdit);
+    refresh_tree();
     textEdit->setCursorPosition(RowNum, ColNum);
   }
 
@@ -1249,9 +1249,9 @@ void MainWindow::readResult(int exitCode) {
     ui->listWidget->setFocus();
 
     if (!zh_cn)
-      QMessageBox::information(this, "QtiASL", "Compilation successful.");
+      QMessageBox::information(this, "Xiasl", "Compilation successful.");
     else {
-      QMessageBox message(QMessageBox::Information, "QtiASL",
+      QMessageBox message(QMessageBox::Information, "Xiasl",
                           tr("Compilation successful."));
       message.setStandardButtons(QMessageBox::Ok);
       message.setButtonText(QMessageBox::Ok, QString(tr("Ok")));
@@ -1276,7 +1276,23 @@ void MainWindow::readResult(int exitCode) {
 }
 
 void MainWindow::textEdit_cursorPositionChanged() {
-  set_currsor_position(textEdit);
+  int RowNum, ColNum;
+  textEdit->getCursorPosition(&RowNum, &ColNum);
+
+  QString msg = tr("Row") + " : " + QString::number(RowNum + 1) + "    " +
+                tr("Column") + " : " + QString::number(ColNum);
+
+  locationLabel->setText(msg);
+
+  locationLabel->setAlignment(Qt::AlignCenter);
+  locationLabel->setMinimumSize(locationLabel->sizeHint());
+  // statusBar()->setStyleSheet(
+  //    QString("QStatusBar::item{border: 0px}"));  // 设置不显示label的边框
+  statusBar()->setSizeGripEnabled(true);  //设置是否显示右边的大小控制点
+
+  //联动treeWidget
+  mem_linkage(ui->treeWidget, RowNum);
+
   setTextModifyMark();
 }
 
@@ -1295,27 +1311,8 @@ void MainWindow::setTextModifyMark() {
   }
 }
 
-void MainWindow::set_currsor_position(QsciScintilla* textEdit) {
-  int ColNum, RowNum;
-  textEdit->getCursorPosition(&RowNum, &ColNum);
-
-  QString msg = tr("Row") + " : " + QString::number(RowNum + 1) + "    " +
-                tr("Column") + " : " + QString::number(ColNum);
-
-  locationLabel->setText(msg);
-
-  locationLabel->setAlignment(Qt::AlignCenter);
-  locationLabel->setMinimumSize(locationLabel->sizeHint());
-  // statusBar()->setStyleSheet(
-  //    QString("QStatusBar::item{border: 0px}"));  // 设置不显示label的边框
-  statusBar()->setSizeGripEnabled(true);  //设置是否显示右边的大小控制点
-
-  //联动treeWidget
-  mem_linkage(ui->treeWidget, RowNum);
-}
-
 void MainWindow::miniEdit_cursorPositionChanged() {
-  int ColNum, RowNum;
+  int RowNum, ColNum;
   miniEdit->getCursorPosition(&RowNum, &ColNum);
   textEdit->setCursorPosition(RowNum, ColNum);
 
@@ -1335,6 +1332,8 @@ void MainWindow::timer_linkage() {
 
 /*单击文本任意位置，当前代码块与成员树进行联动*/
 void MainWindow::mem_linkage(QTreeWidget* tw, int RowNum) {
+  if (QFileInfo(curFile).suffix().toLower() != "dsl") return;
+
   /*进行联动的条件：装载文件没有进行&成员树不为空&不是始终在同一行里面*/
   if (!loading && tw->topLevelItemCount() > 0 && preRow != RowNum) {
     int treeSn = 0;
@@ -1578,7 +1577,6 @@ void MainWindow::on_btnFindPrevious() {
 void MainWindow::on_treeWidget_itemClicked(QTreeWidgetItem* item, int column) {
   if (column == 0 && !loading) {
     int lines = item->text(1).toInt();
-    textEdit = getCurrentEditor(ui->tabWidget_textEdit->currentIndex());
     textEdit->setCursorPosition(lines, 0);
     textEdit->setFocus();
   }
@@ -1978,7 +1976,7 @@ void MainWindow::textEdit_textChanged() {
   }
 }
 
-void MainWindow::on_editFind_returnPressed() {
+void MainWindow::onEditFind_returnPressed() {
   on_btnFindNext();
 
   QString findText = ui->editFind->lineEdit()->text().trimmed();
@@ -2147,7 +2145,7 @@ void thread_one::run() {
 
   if (QFileInfo(curFile).suffix().toLower() == "cpp" ||
       QFileInfo(curFile).suffix().toLower() == "c") {
-    Methods::getVoidForCpp(curFile);
+    Methods::getVoidForCpp(textEditBack);
   } else
     getMemberTree(textEditBack);
 
@@ -2205,8 +2203,6 @@ void MainWindow::update_ui_tree() {
                   QTime::currentTime().toString() + "    " +
                   QString::number(a, 'f', 2) + " s)");
 
-  textEdit_cursorPositionChanged();
-
   QFileInfo fi(curFile);
   if (fi.suffix().toLower() == "dsl") {
     ui->treeWidget->setHidden(false);
@@ -2242,7 +2238,7 @@ void MainWindow::update_ui_tw() {
   }
 }
 
-void MainWindow::refresh_tree(QsciScintilla* textEdit) {
+void MainWindow::refresh_tree() {
   if (!thread_end) {
     break_run = true;
 
@@ -2266,8 +2262,8 @@ void MainWindow::refresh_tree(QsciScintilla* textEdit) {
 }
 
 void MainWindow::on_btnRefreshTree() {
-  refresh_tree(textEdit);
   syncMiniEdit();
+  refresh_tree();
 }
 
 void MainWindow::syncMiniEdit() {
@@ -2276,6 +2272,11 @@ void MainWindow::syncMiniEdit() {
   miniEdit->clear();
   miniEdit->setText(textEdit->text());
   miniEdit->setCursorPosition(row, col);
+
+  QString msg = tr("Row") + " : " + QString::number(row + 1) + "    " +
+                tr("Column") + " : " + QString::number(col);
+
+  locationLabel->setText(msg);
 }
 
 QString getMemberName(QString str_member, QsciScintilla* textEdit, int RowNum) {
@@ -4188,7 +4189,7 @@ void MainWindow::init_toolbar() {
   setEditFindCompleter();
 
   connect(ui->editFind->lineEdit(), &QLineEdit::returnPressed, this,
-          &MainWindow::on_editFind_returnPressed);
+          &MainWindow::onEditFind_returnPressed);
 
   ui->lblCount->setText("0");
   // ui->toolBar->addWidget(ui->lblCount);
@@ -5039,7 +5040,7 @@ void MainWindow::closeEvent(QCloseEvent* event) {
             QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
 
       } else {
-        QMessageBox message(QMessageBox::Warning, "QtiASL",
+        QMessageBox message(QMessageBox::Warning, "Xiasl",
                             "文件内容已修改，是否保存？\n\n" +
                                 ui->tabWidget_textEdit->tabBar()->tabText(i));
         message.setStandardButtons(QMessageBox::Save | QMessageBox::Discard |
@@ -5536,6 +5537,7 @@ void MainWindow::on_tabWidget_textEdit_tabBarClicked(int index) {
   if (index == -1)  //点击标签页之外的区域
     return;
 
+  textEdit = getCurrentEditor(index);
   //取消自动换行
   ui->actionWrapWord->setChecked(false);
   textEdit->setWrapMode(QsciScintilla::WrapNone);
@@ -5549,8 +5551,6 @@ void MainWindow::on_tabWidget_textEdit_tabBarClicked(int index) {
   } else {
     curFile = currentFile;
   }
-
-  textEdit = getCurrentEditor(index);
 
   ui->treeWidget->clear();
   on_btnRefreshTree();
@@ -5927,7 +5927,7 @@ QString MainWindow::getTabTitle() {
 
 void MainWindow::on_NewWindow() {
   QFileInfo appInfo(qApp->applicationDirPath());
-  QString pathSource = appInfo.filePath() + "/QtiASL";
+  QString pathSource = appInfo.filePath() + "/Xiasl";
   QStringList arguments;
   QString fn = "";
   arguments << fn;

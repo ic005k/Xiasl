@@ -200,7 +200,7 @@ void MyTabWidget::popPage(QWidget* page) {
   });
 
   QString qfile = QDir::homePath() + "/.config/QtiASL/QtiASL.ini";
-  QFile file(qfile);
+  // QFile file(qfile);
   QSettings Reg(qfile, QSettings::IniFormat);
   Reg.setValue("restore", true);
   Reg.setValue("count", 1);
@@ -211,7 +211,7 @@ void MyTabWidget::popPage(QWidget* page) {
   Reg.setValue(QString::number(0) + "/" + "vs", vs);
   Reg.setValue(QString::number(0) + "/" + "hs", hs);
 
-  file.close();
+  // file.close();
 
   FileSystemWatcher::removeWatchPath(dragFileName);
   for (int i = 0; i < openFileList.count(); i++) {

@@ -8,15 +8,11 @@ extern MainWindow* mw_one;
 
 Methods::Methods(QObject* parent) : QObject{parent} {}
 
-QStringList Methods::getVoidForCpp(QString c_file) {
+QStringList Methods::getVoidForCpp(QsciScintilla* textEdit) {
   QStringList listVoid;
-  QFileInfo fi(c_file);
-
-  // if (fi.suffix().toLower() != "c" && fi.suffix().toLower() != "cpp")
-  //  return listVoid;
 
   QTextEdit* txtEdit = new QTextEdit;
-  txtEdit->setPlainText(loadText(c_file));
+  txtEdit->setPlainText(textEdit->text());
 
   for (int i = 0; i < txtEdit->document()->lineCount(); i++) {
     QString line = getTextEditLineText(txtEdit, i).trimmed();
@@ -33,7 +29,6 @@ QStringList Methods::getVoidForCpp(QString c_file) {
 
   tw_list.clear();
   for (int i = 0; i < listVoid.count(); i++) {
-    // qDebug() << listVoid.at(i);
     QString str0 = listVoid.at(i);
     QStringList list0 = str0.split("|");
     QTreeWidgetItem* twItem0 =

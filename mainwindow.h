@@ -570,7 +570,7 @@ class MainWindow : public QMainWindow {
 
   void on_btnRefreshTree();
 
-  void refresh_tree(QsciScintilla* textEdit);
+  void refresh_tree();
 
   void timer_linkage();
 
@@ -616,7 +616,7 @@ class MainWindow : public QMainWindow {
 
   void on_editShowMsg_selectionChanged();
 
-  void on_editFind_returnPressed();
+  void onEditFind_returnPressed();
 
   void on_MainWindow_destroyed();
 
@@ -816,8 +816,6 @@ class MainWindow : public QMainWindow {
 
   void update_ui_tw();
 
-  void set_currsor_position(QsciScintilla* textEdit);
-
   void separ_info(QString str_key, QTextEdit* editInfo);
 
   void set_cursor_line_color(QTextEdit* edit);
@@ -861,7 +859,7 @@ class MainWindow : public QMainWindow {
   void init_TabList();
   void init_fsmSyncOpenedFile(QString OpenedFile);
   void init_listForRecentFile(QString fileName);
-  };
+};
 
 class MiniEditor : public QsciScintilla {
   Q_OBJECT
