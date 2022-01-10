@@ -33,7 +33,7 @@ QStringList Methods::getVoidForCpp(QString c_file) {
 
   tw_list.clear();
   for (int i = 0; i < listVoid.count(); i++) {
-    qDebug() << listVoid.at(i);
+    // qDebug() << listVoid.at(i);
     QString str0 = listVoid.at(i);
     QStringList list0 = str0.split("|");
     QTreeWidgetItem* twItem0 =

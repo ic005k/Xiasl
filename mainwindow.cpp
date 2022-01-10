@@ -525,9 +525,8 @@ void MainWindow::loadFile(const QString& fileName, int row, int col) {
 
       if (!ReLoad) {
         on_tabWidget_textEdit_tabBarClicked(i);
-
         addFilesWatch();
-
+        loading = false;
         return;
       } else {
         textEdit = getCurrentEditor(i);
@@ -545,7 +544,7 @@ void MainWindow::loadFile(const QString& fileName, int row, int col) {
             .arg(QDir::toNativeSeparators(fileName), file.errorString()));
 
     addFilesWatch();
-
+    loading = false;
     return;
   }
 
@@ -616,7 +615,6 @@ void MainWindow::loadFile(const QString& fileName, int row, int col) {
       ui->tabWidget_textEdit->currentIndex(), icon);
   One = false;
 
-  setRecentFiles(fileName);
   updateMd5(fileName);
   addFilesWatch();
   init_TabList();
@@ -4650,7 +4648,7 @@ void MainWindow::init_edit(QsciScintilla* textEdit) {
   if (win) font.setFamily(Reg.value("FontName", "consolas").toString());
   if (linuxOS) font.setFamily(Reg.value("FontName").toString());
 
-  font.setPointSize(Reg.value("FontSize").toInt());
+  font.setPointSize(Reg.value("FontSize", 12).toInt());
   font.setBold(Reg.value("FontBold").toBool());
   font.setItalic(Reg.value("FontItalic").toBool());
   font.setUnderline(Reg.value("FontUnderline").toBool());
@@ -5593,7 +5591,7 @@ void MainWindow::init_fsmSyncOpenedFile(QString OpenedFile) {
 
 QsciScintilla* MainWindow::getCurrentEditor(int index) {
   QWidget* pWidget = ui->tabWidget_textEdit->widget(index);
-  QsciScintilla* edit = new QsciScintilla;
+  QsciScintilla* edit;  // = new QsciScintilla;
   edit = (QsciScintilla*)pWidget->children().at(editNumber);
 
   return edit;
