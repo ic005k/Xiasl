@@ -12,8 +12,8 @@ QStringList Methods::getVoidForCpp(QString c_file) {
   QStringList listVoid;
   QFileInfo fi(c_file);
 
-  if (fi.suffix().toLower() != "c" && fi.suffix().toLower() != "cpp")
-    return listVoid;
+  // if (fi.suffix().toLower() != "c" && fi.suffix().toLower() != "cpp")
+  //  return listVoid;
 
   QTextEdit* txtEdit = new QTextEdit;
   txtEdit->setPlainText(loadText(c_file));
@@ -50,9 +50,26 @@ bool Methods::isSymbol(QString line) {
   QStringList listKeys = QStringList() << "static"
                                        << "void"
                                        << "int"
+                                       << "bool"
+                                       << "const"
+                                       << "virtual"
+                                       << "class"
+                                       << "long"
+                                       << "signed"
+                                       << "unsigned"
+                                       << "typedef"
+                                       << "friend"
+                                       << "template"
+                                       << "enum"
+                                       << "inline"
+                                       << "short"
+                                       << "struct"
+                                       << "union"
                                        << "double"
                                        << "float"
                                        << "string"
+                                       << "char"
+                                       << "wchar_t"
                                        << "QString"
                                        << "StringList";
   for (int i = 0; i < listKeys.count(); i++) {

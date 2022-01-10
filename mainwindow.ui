@@ -352,6 +352,9 @@ QTreeView::branch:!has-children:!has-siblings:adjoins-item{border-image:url(:/ic
           <property name="text">
            <string>Return</string>
           </property>
+          <property name="flat">
+           <bool>false</bool>
+          </property>
          </widget>
         </item>
         <item row="1" column="0">
