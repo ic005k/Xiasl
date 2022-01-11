@@ -14,7 +14,7 @@
 #endif
 #include "methods.h"
 
-QString CurVerison = "1.1.09";
+QString CurVerison = "1.1.10";
 bool loading = false;
 bool thread_end = true;
 bool break_run = false;
@@ -485,7 +485,8 @@ QString MainWindow::openFile(QString fileName) {
 
   QFileInfo fi(fileName);
   if (fi.suffix().toLower() == "dsl") {
-    ui->actionWrapWord->setChecked(false);  //取消自动换行，影响dsl文件开启速度
+    ui->actionAutomatic_Line_Feeds->setChecked(
+        false);  //取消自动换行，影响dsl文件开启速度
     textEdit->setWrapMode(QsciScintilla::WrapNone);
   }
 
@@ -511,7 +512,7 @@ void MainWindow::init_listForRecentFile(QString fileName) {
 
 void MainWindow::loadFile(const QString& fileName, int row, int col) {
   loading = true;
-
+  ui->actionAutomatic_Line_Feeds->setChecked(false);
   init_listForRecentFile(fileName);
 
   /*如果之前文件已打开，则返回已打开的文件*/
@@ -527,6 +528,7 @@ void MainWindow::loadFile(const QString& fileName, int row, int col) {
         on_tabWidget_textEdit_tabBarClicked(i);
         addFilesWatch();
         loading = false;
+
         return;
       } else {
         textEdit = getCurrentEditor(i);
@@ -5548,7 +5550,7 @@ void MainWindow::on_tabWidget_textEdit_tabBarClicked(int index) {
 
   textEdit = getCurrentEditor(index);
   //取消自动换行
-  ui->actionWrapWord->setChecked(false);
+  ui->actionAutomatic_Line_Feeds->setChecked(false);
   textEdit->setWrapMode(QsciScintilla::WrapNone);
   miniEdit->setWrapMode(QsciScintilla::WrapNone);
   miniDlgEdit->setWrapMode(QsciScintilla::WrapNone);
@@ -6688,3 +6690,15 @@ void MainWindow::changeEvent(QEvent* e) {
 }
 
 void MainWindow::resizeEvent(QResizeEvent* event) { Q_UNUSED(event); }
+
+void MainWindow::on_actionAutomatic_Line_Feeds_triggered() {
+  if (ui->actionAutomatic_Line_Feeds->isChecked()) {
+    textEdit->setWrapMode(QsciScintilla::WrapWord);
+    miniEdit->setWrapMode(QsciScintilla::WrapWord);
+    miniDlgEdit->setWrapMode(QsciScintilla::WrapWord);
+  } else {
+    textEdit->setWrapMode(QsciScintilla::WrapNone);
+    miniEdit->setWrapMode(QsciScintilla::WrapNone);
+    miniDlgEdit->setWrapMode(QsciScintilla::WrapNone);
+  }
+}

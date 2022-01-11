@@ -83,7 +83,7 @@
     </widget>
    </item>
    <item row="3" column="0">
-    <widget class="QGroupBox" name="groupBox_3">
+    <widget class="QGroupBox" name="groupBox_Options">
      <property name="title">
       <string>Additional Options</string>
      </property>

@@ -9,6 +9,7 @@ extern MainWindow* mw_one;
 dlgPreferences::dlgPreferences(QWidget* parent)
     : QDialog(parent), ui(new Ui::dlgPreferences) {
   ui->setupUi(this);
+  ui->groupBox_Options->setVisible(false);
 }
 
 dlgPreferences::~dlgPreferences() { delete ui; }

@@ -962,6 +962,8 @@ QListWidget::item:selected
     <addaction name="actionMembers_win"/>
     <addaction name="actionInfo_win"/>
     <addaction name="actionMinimap"/>
+    <addaction name="separator"/>
+    <addaction name="actionAutomatic_Line_Feeds"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -1296,6 +1298,17 @@ QListWidget::item:selected
   <action name="actionLatest_Release">
    <property name="text">
     <string>Latest Release</string>
+   </property>
+  </action>
+  <action name="actionAutomatic_Line_Feeds">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Automatic line feeds</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Return</string>
    </property>
   </action>
  </widget>

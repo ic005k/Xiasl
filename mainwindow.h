@@ -718,6 +718,8 @@ class MainWindow : public QMainWindow {
 
   void on_btnTabList_clicked();
 
+  void on_actionAutomatic_Line_Feeds_triggered();
+
  private:
   QMenu* menuTabList;
   bool isDrag;
