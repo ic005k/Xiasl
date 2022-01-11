@@ -14,7 +14,7 @@
 #endif
 #include "methods.h"
 
-QString CurVerison = "1.1.10";
+QString CurVerison = "1.1.11";
 bool loading = false;
 bool thread_end = true;
 bool break_run = false;
@@ -4546,15 +4546,15 @@ void MainWindow::init_miniEdit() {
   miniEdit->setFrameShape(QFrame::NoFrame);
 
 #ifdef Q_OS_WIN32
-  ui->dockWidget_Mini->setFixedWidth(115);
+  ui->dockWidget_Mini->setFixedWidth(80);
 #endif
 
 #ifdef Q_OS_LINUX
-  ui->dockWidget_Mini->setFixedWidth(115);
+  ui->dockWidget_Mini->setFixedWidth(80);
 #endif
 
 #ifdef Q_OS_MAC
-  ui->dockWidget_Mini->setFixedWidth(115);
+  ui->dockWidget_Mini->setFixedWidth(80);
 #endif
 
   miniDlg = new miniDialog(this);
@@ -4597,7 +4597,7 @@ void MainWindow::init_miniEdit() {
   }
 
   QFont minifont;
-  minifont.setPixelSize(1);
+  minifont.setPointSizeF(1);
   miniLexer->setFont(minifont);
   miniEdit->setFont(minifont);
   miniEdit->setLexer(miniLexer);
