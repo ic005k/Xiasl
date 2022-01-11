@@ -14,7 +14,7 @@
 #endif
 #include "methods.h"
 
-QString CurVerison = "1.1.08";
+QString CurVerison = "1.1.09";
 bool loading = false;
 bool thread_end = true;
 bool break_run = false;
@@ -1332,7 +1332,11 @@ void MainWindow::timer_linkage() {
 
 /*单击文本任意位置，当前代码块与成员树进行联动*/
 void MainWindow::mem_linkage(QTreeWidget* tw, int RowNum) {
-  if (QFileInfo(curFile).suffix().toLower() != "dsl") return;
+  if (QFileInfo(curFile).suffix().toLower() != "dsl" ||
+      tw->topLevelItemCount() == 0) {
+    lblLayer->setText("");
+    return;
+  }
 
   /*进行联动的条件：装载文件没有进行&成员树不为空&不是始终在同一行里面*/
   if (!loading && tw->topLevelItemCount() > 0 && preRow != RowNum) {
@@ -2207,6 +2211,11 @@ void MainWindow::update_ui_tree() {
   if (fi.suffix().toLower() == "dsl") {
     ui->treeWidget->setHidden(false);
   }
+
+  int row, col;
+  textEdit->getCursorPosition(&row, &col);
+  preRow = 0;
+  mem_linkage(ui->treeWidget, row);
 }
 
 void MainWindow::update_ui_tw() {
