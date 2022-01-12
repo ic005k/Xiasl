@@ -14,7 +14,7 @@
 #endif
 #include "methods.h"
 
-QString CurVerison = "1.1.13";
+QString CurVerison = "1.1.14";
 bool loading = false;
 bool thread_end = true;
 bool break_run = false;
@@ -6147,7 +6147,10 @@ void MiniEditor::showZoomWin(int x, int y) {
   }
 
   int miniEditX = mw_one->getTabWidgetEditX() + mw_one->getTabWidgetEditW();
-  int w = 800;
+  int w = 550;
+  if (mw_one->ui->tabWidget_textEdit->width() > w)
+    w = mw_one->textEdit->width() - 110;
+  if (mw_one->width() < w) w = mw_one->width() - width() - 2;
   int h = miniDlgEdit->textHeight(y) * 9;
   int y1 = y;
 
