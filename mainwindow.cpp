@@ -172,7 +172,7 @@ MainWindow::MainWindow(QWidget* parent)
   ui->vLayout->addWidget(ui->frameTip);
   ui->vLayout->addWidget(ui->hlFind);
   ui->vLayout->addWidget(ui->tabWidget_textEdit);
-  ui->hLayout->addWidget(miniEdit);
+  // ui->hLayout->addWidget(miniEdit);
 
   splitterH->addWidget(ui->tabWidget_misc);
   splitterH->addWidget(ui->frame);
@@ -5214,15 +5214,30 @@ void MainWindow::newFile() {
   textEdit->setFrameShape(QFrame::NoFrame);
 
   init_edit(textEdit);
+  init_miniEdit();
 
   MyTabPage* page = new MyTabPage;
 
-  QVBoxLayout* vboxLayout = new QVBoxLayout(page);
+  QGridLayout* gridLayout = new QGridLayout(page);
+  gridLayout->setMargin(0);
+  gridLayout->setContentsMargins(0, 0, 0, 0);
+  QVBoxLayout* vboxLayout = new QVBoxLayout();
   vboxLayout->setMargin(2);
+  vboxLayout->setContentsMargins(0, 0, 0, 0);
   vboxLayout->addWidget(textEdit);
   QLabel* lbl = new QLabel(tr("untitled") + ".dsl");
   vboxLayout->addWidget(lbl);
   lbl->setHidden(true);
+
+  QVBoxLayout* hboxLayout = new QVBoxLayout();
+  hboxLayout->setMargin(0);
+  hboxLayout->setContentsMargins(0, 0, 0, 0);
+  hboxLayout->setSpacing(0);
+  hboxLayout->addWidget(miniEdit);
+
+  gridLayout->addLayout(vboxLayout, 0, 0);
+  gridLayout->addLayout(hboxLayout, 0, 1);
+  page->setLayout(gridLayout);
 
   ui->tabWidget_textEdit->addTab(page, tr("untitled") + ".dsl");
 
@@ -5542,6 +5557,7 @@ void MainWindow::on_tabWidget_textEdit_tabBarClicked(int index) {
     return;
 
   textEdit = getCurrentEditor(index);
+  miniEdit = getCurrentMiniEditor(index);
   //取消自动换行
   ui->actionAutomatic_Line_Feeds->setChecked(false);
   textEdit->setWrapMode(QsciScintilla::WrapNone);
@@ -5597,6 +5613,14 @@ QsciScintilla* MainWindow::getCurrentEditor(int index) {
   QWidget* pWidget = ui->tabWidget_textEdit->widget(index);
   QsciScintilla* edit;  // = new QsciScintilla;
   edit = (QsciScintilla*)pWidget->children().at(editNumber);
+
+  return edit;
+}
+
+MiniEditor* MainWindow::getCurrentMiniEditor(int index) {
+  QWidget* pWidget = ui->tabWidget_textEdit->widget(index);
+  MiniEditor* edit;  // = new QsciScintilla;
+  edit = (MiniEditor*)pWidget->children().at(3);
 
   return edit;
 }
@@ -5944,12 +5968,11 @@ void MainWindow::on_NewWindow() {
 }
 
 void MainWindow::on_miniMap() {
+  if (ui->tabWidget_textEdit->currentIndex() < 0) return;
+
   if (!ui->actionMinimap->isChecked()) {
     miniEdit->setVisible(false);
-
-  }
-
-  else {
+  } else {
     miniEdit->setVisible(true);
   }
 }
@@ -6168,9 +6191,10 @@ void MiniEditor::showZoomWin(int x, int y) {
     y1 = y;
 
   if (mw_one->ui->tabWidget_misc->isVisible())
-    miniDlg->setGeometry(mw_one->getDockWidth() + miniEditX - w, y1, w, h);
+    miniDlg->setGeometry(
+        mw_one->getDockWidth() + mw_one->textEdit->width() - w - 2, y1, w, h);
   else
-    miniDlg->setGeometry(mw_one->ui->tabWidget_textEdit->width() - w, y1, w, h);
+    miniDlg->setGeometry(mw_one->textEdit->width() - w - 8, y1, w, h);
 
   if (miniDlg->isHidden()) {
     miniDlgEdit->setFont(mw_one->font);

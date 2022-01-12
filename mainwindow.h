@@ -515,6 +515,9 @@ class MainWindow : public QMainWindow {
         }";
 
   void init_RecentOpenMenuItem();
+  void init_miniEdit();
+
+  MiniEditor* getCurrentMiniEditor(int index);
 
  protected:
   void closeEvent(QCloseEvent* event) override;
@@ -805,8 +808,6 @@ class MainWindow : public QMainWindow {
   void init_info_edit();
 
   void init_edit(QsciScintilla* textEdit);
-
-  void init_miniEdit();
 
   void init_treeWidget();
 
