@@ -6147,7 +6147,7 @@ void MiniEditor::showZoomWin(int x, int y) {
   }
 
   int miniEditX = mw_one->getTabWidgetEditX() + mw_one->getTabWidgetEditW();
-  int w = 550;
+  int w = 600;
   if (mw_one->ui->tabWidget_textEdit->width() > w)
     w = mw_one->textEdit->width() - 110;
   if (mw_one->width() < w) w = mw_one->width() - width() - 2;
@@ -6159,7 +6159,10 @@ void MiniEditor::showZoomWin(int x, int y) {
   else
     y1 = y;
 
-  miniDlg->setGeometry(mw_one->getDockWidth() + miniEditX - w, y1, w, h);
+  if (mw_one->ui->tabWidget_misc->isVisible())
+    miniDlg->setGeometry(mw_one->getDockWidth() + miniEditX - w, y1, w, h);
+  else
+    miniDlg->setGeometry(mw_one->ui->tabWidget_textEdit->width() - w, y1, w, h);
 
   if (miniDlg->isHidden()) {
     miniDlgEdit->setFont(mw_one->font);
