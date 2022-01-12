@@ -14,7 +14,7 @@
 #endif
 #include "methods.h"
 
-QString CurVerison = "1.1.11";
+QString CurVerison = "1.1.12";
 bool loading = false;
 bool thread_end = true;
 bool break_run = false;
@@ -172,10 +172,9 @@ MainWindow::MainWindow(QWidget* parent)
   QWidget* lEmptyWidget = new QWidget();
   ui->dockWidget_Mini->setTitleBarWidget(lEmptyWidget);
   delete lTitleBar;
-  ui->dockWidgetContents_Mini->layout()->setMargin(1);
-  ui->gridLayout_10->setMargin(0);
-  ui->gridLayout_10->setSpacing(0);
-  ui->gridLayout_10->addWidget(miniEdit);
+  ui->dockWidgetContents_Mini->layout()->setMargin(0);
+  ui->dockWidgetContents_Mini->layout()->setSpacing(0);
+  ui->dockWidgetContents_Mini->layout()->addWidget(miniEdit);
 
   // 分割窗口
   QSplitter* splitterH = new QSplitter(Qt::Horizontal, this);
@@ -5609,6 +5608,8 @@ QsciScintilla* MainWindow::getCurrentEditor(int index) {
 }
 
 void MainWindow::closeTab(int index) {
+  if (index < 0) return;
+
   if (ui->tabWidget_textEdit->tabBar()->count() > 1) {
     ui->tabWidget_textEdit->setCurrentIndex(index);
     textEdit = getCurrentEditor(index);
