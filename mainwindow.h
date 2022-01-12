@@ -871,9 +871,10 @@ class MiniEditor : public QsciScintilla {
   void mouseMoveEvent(QMouseEvent* event) override;
   void wheelEvent(QWheelEvent* event) override;
   void showZoomWin(int x, int y);
+  int miniLineNum = 0;
 
  protected:
-  // void mousePressEvent(QMouseEvent* event) override;
+  void mousePressEvent(QMouseEvent* event) override;
   // void mouseDoubleClickEvent(QMouseEvent* event) override;
   // void mouseMoveEvent(QMouseEvent* event) override;
 

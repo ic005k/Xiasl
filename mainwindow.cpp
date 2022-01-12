@@ -14,7 +14,7 @@
 #endif
 #include "methods.h"
 
-QString CurVerison = "1.1.14";
+QString CurVerison = "1.1.15";
 bool loading = false;
 bool thread_end = true;
 bool break_run = false;
@@ -5963,6 +5963,12 @@ void MiniEditor::mouseMoveEvent(QMouseEvent* event) {
   }
 }
 
+void MiniEditor::mousePressEvent(QMouseEvent* event) {
+  Q_UNUSED(event);
+  mw_one->textEdit->setFocus();
+  mw_one->textEdit->setCursorPosition(miniLineNum, 0);
+}
+
 void MiniEditor::wheelEvent(QWheelEvent* event) {
   int spos = this->verticalScrollBar()->sliderPosition();
   miniEditWheel = true;
@@ -6139,6 +6145,8 @@ void MiniEditor::showZoomWin(int x, int y) {
                                  QsciScintilla::SC_MARK_UNDERLINE);
     }
   }
+
+  miniLineNum = y0;
 
   if (t1.trimmed() == "" && t5.trimmed() == "" && t2.trimmed() == "" &&
       t3.trimmed() == "" && t4.trimmed() == "") {
