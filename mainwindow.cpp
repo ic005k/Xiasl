@@ -14,7 +14,7 @@
 #endif
 #include "methods.h"
 
-QString CurVerison = "1.1.12";
+QString CurVerison = "1.1.13";
 bool loading = false;
 bool thread_end = true;
 bool break_run = false;
@@ -167,22 +167,16 @@ MainWindow::MainWindow(QWidget* parent)
   textEdit->setFrameShape(QFrame::NoFrame);
   init_edit(textEdit);
 
-  //删除titleba
-  QWidget* lTitleBar = ui->dockWidget_Mini->titleBarWidget();
-  QWidget* lEmptyWidget = new QWidget();
-  ui->dockWidget_Mini->setTitleBarWidget(lEmptyWidget);
-  delete lTitleBar;
-  ui->dockWidgetContents_Mini->layout()->setMargin(0);
-  ui->dockWidgetContents_Mini->layout()->setSpacing(0);
-  ui->dockWidgetContents_Mini->layout()->addWidget(miniEdit);
-
   // 分割窗口
   QSplitter* splitterH = new QSplitter(Qt::Horizontal, this);
-  ui->frame->layout()->addWidget(ui->frameTip);
-  ui->frame->layout()->addWidget(ui->hlFind);
-  ui->frame->layout()->addWidget(ui->tabWidget_textEdit);
+  ui->vLayout->addWidget(ui->frameTip);
+  ui->vLayout->addWidget(ui->hlFind);
+  ui->vLayout->addWidget(ui->tabWidget_textEdit);
+  ui->hLayout->addWidget(miniEdit);
+
   splitterH->addWidget(ui->tabWidget_misc);
   splitterH->addWidget(ui->frame);
+
   ui->centralwidget->layout()->addWidget(splitterH);
   int w0 = Reg.value("w0", 200).toInt();
   int w1 = Reg.value("w1", 450).toInt();
@@ -263,9 +257,9 @@ void MainWindow::loadTabFiles() {
     else
       ui->actionMinimap->setChecked(true);
     if (ui->actionMinimap->isChecked())
-      ui->dockWidget_Mini->setVisible(true);
+      miniEdit->setVisible(true);
     else
-      ui->dockWidget_Mini->setVisible(false);
+      miniEdit->setVisible(false);
 
     bool file_exists = false;
 
@@ -4545,15 +4539,15 @@ void MainWindow::init_miniEdit() {
   miniEdit->setFrameShape(QFrame::NoFrame);
 
 #ifdef Q_OS_WIN32
-  ui->dockWidget_Mini->setFixedWidth(80);
+  miniEdit->setFixedWidth(80);
 #endif
 
 #ifdef Q_OS_LINUX
-  ui->dockWidget_Mini->setFixedWidth(80);
+  miniEdit->setFixedWidth(80);
 #endif
 
 #ifdef Q_OS_MAC
-  ui->dockWidget_Mini->setFixedWidth(80);
+  miniEdit->setFixedWidth(80);
 #endif
 
   miniDlg = new miniDialog(this);
@@ -5614,13 +5608,14 @@ void MainWindow::closeTab(int index) {
     ui->tabWidget_textEdit->setCurrentIndex(index);
     textEdit = getCurrentEditor(index);
 
-    openFileList.removeOne(getCurrentFileName(index));
-    FileSystemWatcher::removeWatchPath(getCurrentFileName(index));
+    QString currentFile = getCurrentFileName(index);
+    openFileList.removeOne(currentFile);
+    FileSystemWatcher::removeWatchPath(currentFile);
 
-    if (getCurrentFileName(index) == tr("untitled") + ".dsl")
+    if (currentFile == tr("untitled") + ".dsl")
       curFile = "";
     else
-      curFile = getCurrentFileName(index);
+      curFile = currentFile;
 
     if (maybeSave(ui->tabWidget_textEdit->tabBar()->tabText(index))) {
       ui->tabWidget_textEdit->removeTab(index);
@@ -5950,12 +5945,12 @@ void MainWindow::on_NewWindow() {
 
 void MainWindow::on_miniMap() {
   if (!ui->actionMinimap->isChecked()) {
-    ui->dockWidget_Mini->setVisible(false);
+    miniEdit->setVisible(false);
 
   }
 
   else {
-    ui->dockWidget_Mini->setVisible(true);
+    miniEdit->setVisible(true);
   }
 }
 
@@ -6274,7 +6269,7 @@ int MainWindow::getDockWidth() {
 
 int MainWindow::getMainWindowHeight() { return this->height(); }
 
-int MainWindow::getMiniDockX() { return ui->dockWidget_Mini->x(); }
+int MainWindow::getMiniDockX() { return miniEdit->x(); }
 
 int MainWindow::getTabWidgetEditX() { return ui->tabWidget_textEdit->x(); }
 
@@ -6326,7 +6321,9 @@ void MainWindow::on_listWidget_itemSelectionChanged() {
   ui->tabWidget->setCurrentIndex(index);
 }
 
-void MainWindow::on_tabWidget_misc_currentChanged(int index) {}
+void MainWindow::on_tabWidget_misc_currentChanged(int index) {
+  Q_UNUSED(index);
+}
 
 void MainWindow::loadFindString() {
   //读取之前的目录
