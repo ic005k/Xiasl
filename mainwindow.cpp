@@ -14,7 +14,7 @@
 #endif
 #include "methods.h"
 
-QString CurVerison = "1.1.16";
+QString CurVerison = "1.1.17";
 bool loading = false;
 bool thread_end = true;
 bool break_run = false;
@@ -6200,11 +6200,14 @@ void MiniEditor::showZoomWin(int x, int y) {
   else
     y1 = y;
 
-  if (mw_one->ui->tabWidget_misc->isVisible())
-    miniDlg->setGeometry(
-        mw_one->getDockWidth() + mw_one->textEdit->width() - w - 2, y1, w, h);
+  if (!mw_one->ui->tabWidget_misc->isHidden())
+    miniDlg->setGeometry(mw_one->ui->tabWidget_misc->width() +
+                             mw_one->ui->tabWidget_textEdit->width() - w -
+                             width() + 6,
+                         y1, w, h);
   else
-    miniDlg->setGeometry(mw_one->textEdit->width() - w - 8, y1, w, h);
+    miniDlg->setGeometry(mw_one->ui->tabWidget_textEdit->width() - w - width(),
+                         y1, w, h);
 
   if (miniDlg->isHidden()) {
     miniDlgEdit->setFont(mw_one->font);
