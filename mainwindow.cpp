@@ -14,7 +14,7 @@
 #endif
 #include "methods.h"
 
-QString CurVerison = "1.1.18";
+QString CurVerison = "1.1.19";
 bool loading = false;
 bool thread_end = true;
 bool break_run = false;
@@ -4393,7 +4393,7 @@ void MainWindow::setLexer(QsciLexer* textLexer, QsciScintilla* textEdit) {
 
 #ifdef Q_OS_LINUX
   textEdit->setMarginWidth(0, 60);
-  m_font.setPointSize(12);
+  m_font.setPointSize(10);
 #endif
 
 #ifdef Q_OS_MAC
