@@ -14,7 +14,7 @@
 #endif
 #include "methods.h"
 
-QString CurVerison = "1.1.15";
+QString CurVerison = "1.1.16";
 bool loading = false;
 bool thread_end = true;
 bool break_run = false;
@@ -150,8 +150,6 @@ MainWindow::MainWindow(QWidget* parent)
 
   init_info_edit();
 
-  init_miniEdit();
-
   init_treeWidget();
 
   init_UIStyle();
@@ -163,6 +161,10 @@ MainWindow::MainWindow(QWidget* parent)
           SLOT(closeTab(int)));
   ui->tabWidget_textEdit->setIconSize(QSize(8, 8));
 
+  miniDlg = new miniDialog(this);
+  miniDlgEdit->setFont(font);
+  miniDlg->close();
+
   textEdit = new QsciScintilla;
   textEdit->setFrameShape(QFrame::NoFrame);
   init_edit(textEdit);
@@ -172,7 +174,6 @@ MainWindow::MainWindow(QWidget* parent)
   ui->vLayout->addWidget(ui->frameTip);
   ui->vLayout->addWidget(ui->hlFind);
   ui->vLayout->addWidget(ui->tabWidget_textEdit);
-  // ui->hLayout->addWidget(miniEdit);
 
   splitterH->addWidget(ui->tabWidget_misc);
   splitterH->addWidget(ui->frame);
@@ -250,16 +251,6 @@ void MainWindow::loadTabFiles() {
   if (fi.exists()) {
     QSettings Reg(qfile, QSettings::IniFormat);
     int count = Reg.value("count").toInt();
-
-    // minimap
-    if (Reg.contains("minimap"))
-      ui->actionMinimap->setChecked(Reg.value("minimap").toBool());
-    else
-      ui->actionMinimap->setChecked(true);
-    if (ui->actionMinimap->isChecked())
-      miniEdit->setVisible(true);
-    else
-      miniEdit->setVisible(false);
 
     bool file_exists = false;
 
@@ -587,6 +578,13 @@ void MainWindow::loadFile(const QString& fileName, int row, int col) {
   ui->tabWidget_textEdit->tabBar()->setTabToolTip(
       ui->tabWidget_textEdit->currentIndex(), ft.filePath());
 
+  QString qfile = QDir::homePath() + "/.config/QtiASL/QtiASL.ini";
+  QSettings Reg(qfile, QSettings::IniFormat);
+  int count = Reg.value("miniMapCount").toInt();
+  for (int i = 0; i < count; i++) {
+    miniEdit->setHidden(Reg.value("miniMap" + fileName, false).toBool());
+  }
+
   //为拖拽tab准备拖动后的标题名
   ui->tabWidget_textEdit->currentWidget()->setWindowTitle("        " +
                                                           ft.fileName());
@@ -677,7 +675,7 @@ void MainWindow::set_return_text(QString text) {
 
 void MainWindow::Open() {
   QStringList fileNames = QFileDialog::getOpenFileNames(
-      this, "DSDT", "", "DSDT(*.aml *.dsl *.dat);;All(*.*)");
+      this, "DSDT", "", "DSDT(*.aml *.dsl *.dat *.asl);;All(*.*)");
   for (int i = 0; i < fileNames.count(); i++) {
     if (!fileNames.at(i).isEmpty()) {
       loadFile(openFile(fileNames.at(i)), -1, -1);
@@ -730,8 +728,8 @@ bool MainWindow::Save() {
 
 bool MainWindow::SaveAs() {
   QFileDialog dialog;
-  QString fn =
-      dialog.getSaveFileName(this, "DSDT", "", "DSDT(*.dsl);;All(*.*)");
+  QString fn = dialog.getSaveFileName(this, "DSDT", "",
+                                      "DSDT(*.dsl);;DSDT(*.asl);;All(*.*)");
   if (fn.isEmpty()) return false;
 
   //去重
@@ -982,11 +980,11 @@ void MainWindow::btnGenerate_clicked() { getACPITables(false); }
 
 void MainWindow::btnCompile_clicked() {
   QFileInfo cf_info(curFile);
-  if (cf_info.suffix().toLower() != "dsl" &&
+  /*if (cf_info.suffix().toLower() != "dsl" &&
       cf_info.suffix().toLower() != "cpp" &&
       cf_info.suffix().toLower() != "c") {
     return;
-  }
+  }*/
 
   QFileInfo appInfo(qApp->applicationDirPath());
   co = new QProcess;
@@ -997,7 +995,8 @@ void MainWindow::btnCompile_clicked() {
 
   qTime.start();
 
-  if (cf_info.suffix().toLower() == "dsl") {
+  if (cf_info.suffix().toLower() == "dsl" ||
+      cf_info.suffix().toLower() == "asl") {
     QString op = dlgset->ui->cboxCompilationOptions->currentText().trimmed();
 
 #ifdef Q_OS_WIN32
@@ -4108,6 +4107,7 @@ void MainWindow::init_toolbar() {
 
   ui->btnSave->setIcon(QIcon(":/icon/save.png"));
   ui->btnNew->setIcon(QIcon(":/icon/new.png"));
+  ui->btnMiniMap->setIcon(QIcon(":/icon/map.png"));
 
   // TAB List
   ui->btnTabList->setToolTip(tr("TAB List"));
@@ -4550,10 +4550,6 @@ void MainWindow::init_miniEdit() {
   miniEdit->setFixedWidth(80);
 #endif
 
-  miniDlg = new miniDialog(this);
-  miniDlgEdit->setFont(font);
-  miniDlg->close();
-
   miniEdit->setMarginWidth(0, 0);
   miniEdit->setMargins(0);
   miniEdit->setReadOnly(true);
@@ -4992,7 +4988,11 @@ void MainWindow::closeEvent(QCloseEvent* event) {
   Reg.setValue("height", this->height());
 
   //存储minimap
-  Reg.setValue("minimap", ui->actionMinimap->isChecked());
+  Reg.setValue("miniMapCount", ui->tabWidget_textEdit->count());
+  for (int i = 0; i < ui->tabWidget_textEdit->count(); i++) {
+    Reg.setValue("miniMap" + getCurrentFileName(i),
+                 getCurrentMiniEditor(i)->isHidden());
+  }
 
   //存储编码选项
   Reg.setValue("utf-8", ui->actionUTF_8->isChecked());
@@ -5221,6 +5221,7 @@ void MainWindow::newFile() {
   QGridLayout* gridLayout = new QGridLayout(page);
   gridLayout->setMargin(0);
   gridLayout->setContentsMargins(0, 0, 0, 0);
+  gridLayout->layout()->setSpacing(0);
   QVBoxLayout* vboxLayout = new QVBoxLayout();
   vboxLayout->setMargin(2);
   vboxLayout->setContentsMargins(0, 0, 0, 0);
@@ -5229,11 +5230,11 @@ void MainWindow::newFile() {
   vboxLayout->addWidget(lbl);
   lbl->setHidden(true);
 
-  QVBoxLayout* hboxLayout = new QVBoxLayout();
-  hboxLayout->setMargin(0);
-  hboxLayout->setContentsMargins(0, 0, 0, 0);
-  hboxLayout->setSpacing(0);
+  QHBoxLayout* hboxLayout = new QHBoxLayout();
   hboxLayout->addWidget(miniEdit);
+  hboxLayout->setMargin(0);
+  hboxLayout->setContentsMargins(1, 0, 0, 0);
+  hboxLayout->setSpacing(0);
 
   gridLayout->addLayout(vboxLayout, 0, 0);
   gridLayout->addLayout(hboxLayout, 0, 1);
@@ -5558,6 +5559,12 @@ void MainWindow::on_tabWidget_textEdit_tabBarClicked(int index) {
 
   textEdit = getCurrentEditor(index);
   miniEdit = getCurrentMiniEditor(index);
+
+  if (miniEdit->isVisible())
+    ui->actionMinimap->setChecked(true);
+  else
+    ui->actionMinimap->setChecked(false);
+
   //取消自动换行
   ui->actionAutomatic_Line_Feeds->setChecked(false);
   textEdit->setWrapMode(QsciScintilla::WrapNone);
@@ -5576,8 +5583,8 @@ void MainWindow::on_tabWidget_textEdit_tabBarClicked(int index) {
   on_btnRefreshTree();
 
   QFileInfo f(curFile);
-  if (f.suffix().toLower() == "dsl" || f.suffix().toLower() == "cpp" ||
-      f.suffix().toLower() == "c") {
+  if (f.suffix().toLower() == "dsl" || f.suffix().toLower() == "asl" ||
+      f.suffix().toLower() == "cpp" || f.suffix().toLower() == "c") {
     ui->actionCompiling->setEnabled(true);
   } else {
     ui->actionCompiling->setEnabled(false);
@@ -6737,4 +6744,11 @@ void MainWindow::on_actionAutomatic_Line_Feeds_triggered() {
     miniEdit->setWrapMode(QsciScintilla::WrapNone);
     miniDlgEdit->setWrapMode(QsciScintilla::WrapNone);
   }
+}
+
+void MainWindow::on_btnMiniMap_clicked() {
+  if (miniEdit->isHidden())
+    miniEdit->setHidden(false);
+  else
+    miniEdit->setHidden(true);
 }

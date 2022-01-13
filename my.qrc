@@ -42,5 +42,6 @@
         <file>icon/c.png</file>
         <file>icon/c0.png</file>
         <file>icon/list.png</file>
+        <file>icon/map.png</file>
     </qresource>
 </RCC>
