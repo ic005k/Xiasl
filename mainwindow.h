@@ -56,10 +56,12 @@
 #include "autoupdatedialog.h"
 #include "dlgdecompile.h"
 #include "dlgpreferences.h"
+#include "dlgscrollbox.h"
 #include "minidialog.h"
 #include "recentfiles.h"
 #include "ui_dlgdecompile.h"
 #include "ui_dlgpreferences.h"
+#include "ui_dlgscrollbox.h"
 
 //网络相关头文件
 #include <QtNetwork/QNetworkAccessManager>
@@ -109,6 +111,7 @@ class MainWindow : public QMainWindow {
   ~MainWindow();
   Ui::MainWindow* ui;
 
+  dlgScrollBox* myScrollBox;
   QMenu* mnuRecentOpenFile;
   QStringList recentFileList;
   void setRecentFiles(QString fileName);
@@ -880,6 +883,7 @@ class MiniEditor : public QsciScintilla {
   void mousePressEvent(QMouseEvent* event) override;
   // void mouseDoubleClickEvent(QMouseEvent* event) override;
   // void mouseMoveEvent(QMouseEvent* event) override;
+  // void paintEvent(QPaintEvent*);
 
  private slots:
   void miniEdit_cursorPositionChanged();

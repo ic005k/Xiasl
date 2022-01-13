@@ -70,6 +70,7 @@ SOURCES += \
     autoupdatedialog.cpp \
     dlgdecompile.cpp \
     dlgpreferences.cpp \
+    dlgscrollbox.cpp \
     filesystemwatcher.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -138,6 +139,7 @@ HEADERS += \
     autoupdatedialog.h \
     dlgdecompile.h \
     dlgpreferences.h \
+    dlgscrollbox.h \
     filesystemwatcher.h \
     mainwindow.h \
     methods.h \
@@ -150,6 +152,7 @@ FORMS += \
     autoupdatedialog.ui \
     dlgdecompile.ui \
     dlgpreferences.ui \
+    dlgscrollbox.ui \
     mainwindow.ui \
     minidialog.ui
 

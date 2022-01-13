@@ -14,7 +14,7 @@
 #endif
 #include "methods.h"
 
-QString CurVerison = "1.1.17";
+QString CurVerison = "1.1.18";
 bool loading = false;
 bool thread_end = true;
 bool break_run = false;
@@ -118,6 +118,8 @@ MainWindow::MainWindow(QWidget* parent)
   dlg = new dlgDecompile(this);
   dlgAutoUpdate = new AutoUpdateDialog(this);
   dlgset = new dlgPreferences(this);
+  myScrollBox = new dlgScrollBox(this);
+  myScrollBox->close();
 
 #ifdef Q_OS_WIN32
   regACPI_win();
@@ -4557,6 +4559,7 @@ void MainWindow::init_miniEdit() {
   miniEdit->setReadOnly(true);
   miniEdit->SendScintilla(QsciScintillaBase::SCI_SETCURSOR, 0, 7);
   miniEdit->setWrapMode(QsciScintilla::WrapNone);
+  miniEdit->setCaretWidth(0);
 
   QscilexerCppAttach* miniLexer = new QscilexerCppAttach;
 
@@ -5521,25 +5524,11 @@ bool MainWindow::eventFilter(QObject* watched, QEvent* event) {
   }
 
   if (watched == this) {
-    return QWidget::eventFilter(watched, event);
+    // return QWidget::eventFilter(watched, event);
     if (event->type() == QEvent::ActivationChange) {
       if (QApplication::activeWindow() != this) {
-        if (red > 55) {
-          this->setStyleSheet(
-              "QMainWindow { background-color: rgb(246,246,246);}");
-        } else {
-          this->setStyleSheet(
-              "QMainWindow { background-color: rgb(45,45,45);}");
-        }
       }
       if (QApplication::activeWindow() == this) {
-        if (red > 55) {
-          this->setStyleSheet(
-              "QMainWindow { background-color: rgb(212,212,212);}");
-        } else {
-          this->setStyleSheet(
-              "QMainWindow { background-color: rgb(42,42,42);}");
-        }
       }
     }
   }
@@ -5995,6 +5984,8 @@ void MiniEditor::mouseMoveEvent(QMouseEvent* event) {
     showZoomWin(event->x(), event->y());
   }
 }
+
+// void MiniEditor::paintEvent(QPaintEvent*) {}
 
 void MiniEditor::mousePressEvent(QMouseEvent* event) {
   Q_UNUSED(event);
