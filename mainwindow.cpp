@@ -647,8 +647,8 @@ void MainWindow::setCurrentFile(const QString& fileName) {
   init_fsmSyncOpenedFile(shownName);
 
   QFileInfo f(shownName);
-  if (f.suffix().toLower() == "dsl" || f.suffix().toLower() == "cpp" ||
-      f.suffix().toLower() == "c") {
+  if (f.suffix().toLower() == "dsl" || f.suffix().toLower() == "asl" ||
+      f.suffix().toLower() == "cpp" || f.suffix().toLower() == "c") {
     ui->actionWrapWord->setChecked(false);  //取消自动换行，影响dsl文件开启速度
     textEdit->setWrapMode(QsciScintilla::WrapNone);
 
@@ -980,11 +980,12 @@ void MainWindow::btnGenerate_clicked() { getACPITables(false); }
 
 void MainWindow::btnCompile_clicked() {
   QFileInfo cf_info(curFile);
-  /*if (cf_info.suffix().toLower() != "dsl" &&
+  if (cf_info.suffix().toLower() != "dsl" &&
+      cf_info.suffix().toLower() != "asl" &&
       cf_info.suffix().toLower() != "cpp" &&
       cf_info.suffix().toLower() != "c") {
     return;
-  }*/
+  }
 
   QFileInfo appInfo(qApp->applicationDirPath());
   co = new QProcess;
@@ -4335,6 +4336,7 @@ void MainWindow::init_menu() {
   connect(ui->actionMinimap, &QAction::triggered, this,
           &MainWindow::on_miniMap);
   ui->actionMinimap->setShortcut(tr("ctrl+3"));
+  ui->actionMinimap->setVisible(false);
 
   // Help
   connect(ui->actionCheckUpdate, &QAction::triggered, this,
@@ -5640,13 +5642,14 @@ void MainWindow::closeTab(int index) {
     textEdit = getCurrentEditor(index);
 
     QString currentFile = getCurrentFileName(index);
-    openFileList.removeOne(currentFile);
-    FileSystemWatcher::removeWatchPath(currentFile);
 
     if (currentFile == tr("untitled") + ".dsl")
       curFile = "";
     else
       curFile = currentFile;
+
+    openFileList.removeOne(currentFile);
+    if (curFile != "") FileSystemWatcher::removeWatchPath(currentFile);
 
     if (maybeSave(ui->tabWidget_textEdit->tabBar()->tabText(index))) {
       ui->tabWidget_textEdit->removeTab(index);
