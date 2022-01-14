@@ -14,7 +14,7 @@
 #endif
 #include "methods.h"
 
-QString CurVerison = "1.1.20";
+QString CurVerison = "1.1.21";
 bool loading = false;
 bool thread_end = true;
 bool break_run = false;
@@ -161,7 +161,7 @@ MainWindow::MainWindow(QWidget* parent)
       this);  //安装事件过滤器以禁用鼠标滚轮切换标签页
   connect(ui->tabWidget_textEdit, SIGNAL(tabCloseRequested(int)), this,
           SLOT(closeTab(int)));
-  ui->tabWidget_textEdit->setIconSize(QSize(8, 8));
+  ui->tabWidget_textEdit->setIconSize(QSize(7, 7));
 
   miniDlg = new miniDialog(this);
   miniDlgEdit->setFont(font);
