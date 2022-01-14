@@ -5988,8 +5988,8 @@ void MiniEditor::mouseMoveEvent(QMouseEvent* event) {
 // void MiniEditor::paintEvent(QPaintEvent*) {}
 
 void MiniEditor::mousePressEvent(QMouseEvent* event) {
+  mw_one->textEdit->setFocus();
   if (event->button() == Qt::LeftButton) {
-    mw_one->textEdit->setFocus();
     mw_one->textEdit->setCursorPosition(miniLineNum, 0);
   }
 
