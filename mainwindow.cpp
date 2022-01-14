@@ -15,6 +15,8 @@
 #include "methods.h"
 
 QString CurVerison = "1.1.23";
+QString fileName, curFile, dragFileName;
+
 bool loading = false;
 bool thread_end = true;
 bool break_run = false;
@@ -22,17 +24,20 @@ bool show_s = true;
 bool show_d = true;
 bool show_m = true;
 bool show_n = false;
+bool textEditScroll = false;
+bool miniEditWheel = false;
+bool ReLoad = false;
+bool zh_cn = false;
+
 int s_count = 0;
 int m_count = 0;
 int d_count = 0;
 int n_count = 0;
+int vs, hs, red, rowDrag, colDrag;
+
 QsciScintilla* textEditBack;
 QsciScintilla* miniDlgEdit;
 miniDialog* miniDlg;
-
-bool textEditScroll = false;
-bool miniEditWheel = false;
-bool ReLoad = false;
 
 // QVector<QsciScintilla*> textEditList;
 QVector<QString> openFileList;
@@ -45,15 +50,9 @@ QList<QTreeWidgetItem*> tw_name;
 QList<QTreeWidgetItem*> tw_list;
 QTreeWidget* treeWidgetBak;
 
-QString fileName, curFile;
 QVector<QString> filelist;
 QWidgetList wdlist;
-QsciLexer* myTextLexer;
-
-bool zh_cn = false;
-
-QString dragFileName;
-int vs, hs, red, rowDrag, colDrag;
+QsciLexer *myTextLexer, *miniLexer;
 
 extern MainWindow* mw_one;
 
@@ -2123,11 +2122,20 @@ void thread_one::run() {
 
   thread_end = false;
 
+  tw_list.clear();
+
+  s_count = 0;
+  m_count = 0;
+  d_count = 0;
+  n_count = 0;
+
   if (QFileInfo(curFile).suffix().toLower() == "cpp" ||
       QFileInfo(curFile).suffix().toLower() == "c") {
     Methods::getVoidForCpp(textEditBack);
-  } else
+  } else if (QFileInfo(curFile).suffix().toLower() == "dsl" ||
+             QFileInfo(curFile).suffix().toLower() == "asl") {
     getMemberTree(textEditBack);
+  }
 
   QMetaObject::invokeMethod(this, "over");
 }
@@ -4538,8 +4546,7 @@ void MainWindow::init_miniEdit() {
   miniEdit->SendScintilla(QsciScintillaBase::SCI_SETCURSOR, 0, 7);
   miniEdit->setWrapMode(QsciScintilla::WrapNone);
   miniEdit->setCaretWidth(0);
-
-  QscilexerCppAttach* miniLexer = new QscilexerCppAttach;
+  miniEdit->setCaretLineVisible(false);
 
   if (red < 55)  //暗模式，mac下为50
   {
@@ -4570,6 +4577,7 @@ void MainWindow::init_miniEdit() {
 
   QFont minifont;
   minifont.setPointSizeF(1);
+  minifont.setWordSpacing(-8);
   miniLexer->setFont(minifont);
   miniEdit->setFont(minifont);
   miniEdit->setLexer(miniLexer);
@@ -5198,13 +5206,19 @@ void MainWindow::newFile(QString file) {
   if (file == "" || QFileInfo(file).suffix().toLower() == "dsl" ||
       QFileInfo(file).suffix().toLower() == "asl") {
     myTextLexer = new QscilexerCppAttach;
-  } else if (QFileInfo(file).suffix().toLower() == "py")
+    miniLexer = new QscilexerCppAttach;
+  } else if (QFileInfo(file).suffix().toLower() == "py") {
     myTextLexer = new QsciLexerPython;
-  else if (QFileInfo(file).suffix().toLower() == "c" ||
-           QFileInfo(file).suffix().toLower() == "cpp")
+    miniLexer = new QsciLexerPython;
+  } else if (QFileInfo(file).suffix().toLower() == "c" ||
+             QFileInfo(file).suffix().toLower() == "cpp") {
     myTextLexer = new QsciLexerCPP;
-  else
+    miniLexer = new QsciLexerCPP;
+  } else {
     myTextLexer = new QscilexerCppAttach;
+    miniLexer = new QscilexerCppAttach;
+  }
+
   init_edit();
   init_miniEdit();
 
@@ -6195,10 +6209,15 @@ void MiniEditor::showZoomWin(int x, int y) {
   else
     y1 = y;
 
+  int w0 = 0;
+  if (mw_one->mac || mw_one->osx1012)
+    w0 = 6;
+  else
+    w0 = 3;
   if (!mw_one->ui->tabWidget_misc->isHidden())
     miniDlg->setGeometry(mw_one->ui->tabWidget_misc->width() +
                              mw_one->ui->tabWidget_textEdit->width() - w -
-                             width() + 5,
+                             width() + w0,
                          y1, w, h);
   else
     miniDlg->setGeometry(mw_one->ui->tabWidget_textEdit->width() - w - width(),
