@@ -4588,7 +4588,7 @@ void MainWindow::init_miniEdit() {
   miniEdit->SendScintilla(QsciScintilla::SCI_SETSCROLLWIDTHTRACKING, false);
   miniEdit->horizontalScrollBar()->setHidden(true);
 
-  // SendScintilla(QsciScintilla::SCI_SETMOUSEDOWNCAPTURES, 0, true);
+  // miniEdit->SendScintilla(QsciScintilla::SCI_SETMOUSEDOWNCAPTURES, 0, false);
 
   connect(miniEdit, &QsciScintilla::cursorPositionChanged, this,
           &MainWindow::miniEdit_cursorPositionChanged);
