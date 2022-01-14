@@ -4,6 +4,7 @@
 #include <Qsci/qsciapis.h>
 #include <Qsci/qscilexercoffeescript.h>
 #include <Qsci/qscilexercpp.h>
+#include <Qsci/qscilexerpython.h>
 #include <Qsci/qscilexerverilog.h>
 #include <Qsci/qsciscintilla.h>
 
@@ -592,7 +593,7 @@ class MainWindow : public QMainWindow {
   void recentOpen(QString filename);
   void ssdtOpen(QString filename);
 
-  void newFile();
+  void newFile(QString file);
 
   bool Save();
 
@@ -729,6 +730,8 @@ class MainWindow : public QMainWindow {
 
   void on_btnMiniMap_clicked();
 
+  void on_actionNew_triggered();
+
  private:
   QMenu* menuTabList;
   bool isDrag;
@@ -813,7 +816,7 @@ class MainWindow : public QMainWindow {
 
   void init_info_edit();
 
-  void init_edit(QsciScintilla* textEdit);
+  void init_edit();
 
   void init_treeWidget();
 

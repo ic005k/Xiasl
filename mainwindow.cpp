@@ -14,7 +14,7 @@
 #endif
 #include "methods.h"
 
-QString CurVerison = "1.1.22";
+QString CurVerison = "1.1.23";
 bool loading = false;
 bool thread_end = true;
 bool break_run = false;
@@ -48,7 +48,7 @@ QTreeWidget* treeWidgetBak;
 QString fileName, curFile;
 QVector<QString> filelist;
 QWidgetList wdlist;
-QscilexerCppAttach* textLexer;
+QsciLexer* myTextLexer;
 
 bool zh_cn = false;
 
@@ -167,10 +167,6 @@ MainWindow::MainWindow(QWidget* parent)
   miniDlgEdit->setFont(font);
   miniDlg->close();
 
-  textEdit = new QsciScintilla;
-  textEdit->setFrameShape(QFrame::NoFrame);
-  init_edit(textEdit);
-
   // 分割窗口
   QSplitter* splitterH = new QSplitter(Qt::Horizontal, this);
   ui->vLayout->addWidget(ui->frameTip);
@@ -248,70 +244,52 @@ void MainWindow::loadTabFiles() {
 
   //读取标签页
   QString qfile = QDir::homePath() + "/.config/QtiASL/QtiASL.ini";
-  QFileInfo fi(qfile);
+  QSettings Reg(qfile, QSettings::IniFormat);
+  int count = Reg.value("count").toInt();
+  bool yes = false;
 
-  if (fi.exists()) {
-    QSettings Reg(qfile, QSettings::IniFormat);
-    int count = Reg.value("count").toInt();
+  if (count == 0) {
+    newFile("");
+    yes = true;
+  }
 
-    bool file_exists = false;
+  for (int i = 0; i < count; i++) {
+    QString file = Reg.value(QString::number(i) + "/file").toString();
+    QFileInfo fi(file);
 
-    if (count == 0) {
-      newFile();
-      file_exists = true;
-    }
+    if (fi.exists()) {
+      int row, col;
+      row = Reg.value(QString::number(i) + "/row").toInt();
+      col = Reg.value(QString::number(i) + "/col").toInt();
 
-    for (int i = 0; i < count; i++) {
-      QString file = Reg.value(QString::number(i) + "/file").toString();
+      loadFile(file, row, col);
 
-      if (file == tr("untitled") + ".dsl") {
-        newFile();
-        file_exists = true;
-      }
+      int vs, hs;
+      vs = Reg.value(QString::number(i) + "/vs").toInt();
+      hs = Reg.value(QString::number(i) + "/hs").toInt();
 
-      QFileInfo fi(file);
-      if (fi.exists()) {
-        int row, col;
-        row = Reg.value(QString::number(i) + "/row").toInt();
-        col = Reg.value(QString::number(i) + "/col").toInt();
+      textEdit->verticalScrollBar()->setSliderPosition(vs);
+      textEdit->horizontalScrollBar()->setSliderPosition(hs);
+      textEdit->setFocus();
 
-        loadFile(file, row, col);
-
-        int vs, hs;
-        vs = Reg.value(QString::number(i) + "/vs").toInt();
-        hs = Reg.value(QString::number(i) + "/hs").toInt();
-
-        QWidget* pWidget = ui->tabWidget_textEdit->currentWidget();
-
-        QsciScintilla* currentEdit = new QsciScintilla;
-        currentEdit = (QsciScintilla*)pWidget->children().at(editNumber);
-
-        currentEdit->verticalScrollBar()->setSliderPosition(vs);
-        currentEdit->horizontalScrollBar()->setSliderPosition(hs);
-
-        currentEdit->setFocus();
-
-        file_exists = true;
-      }
-    }
-
-    int tab_total =
-        ui->tabWidget_textEdit->tabBar()->count();  //以实际存在的为准
-
-    if (!file_exists) newFile();
-
-    int ci = Reg.value("ci").toInt();
-
-    if (ci < tab_total) {
-      ui->tabWidget_textEdit->setCurrentIndex(ci);
-      on_tabWidget_textEdit_tabBarClicked(ci);
+      yes = true;
     } else {
-      ui->tabWidget_textEdit->setCurrentIndex(tab_total - 1);
-      on_tabWidget_textEdit_tabBarClicked(tab_total - 1);
+      newFile("");
+      yes = true;
     }
+  }
 
-  } else
-    newFile();
+  if (!yes) newFile("");
+
+  int tab_total = ui->tabWidget_textEdit->tabBar()->count();  //以实际存在的为准
+  int ci = Reg.value("ci").toInt();
+  if (ci < tab_total) {
+    ui->tabWidget_textEdit->setCurrentIndex(ci);
+    on_tabWidget_textEdit_tabBarClicked(ci);
+  } else {
+    ui->tabWidget_textEdit->setCurrentIndex(tab_total - 1);
+    on_tabWidget_textEdit_tabBarClicked(tab_total - 1);
+  }
 
   loading = false;
 }
@@ -522,7 +500,7 @@ void MainWindow::loadFile(const QString& fileName, int row, int col) {
     }
   }
 
-  if (!ReLoad) newFile();
+  if (!ReLoad) newFile(fileName);
 
   QFile file(fileName);
   if (!file.open(QFile::ReadOnly | QFile::Text)) {
@@ -4244,7 +4222,6 @@ void MainWindow::init_toolbar() {
 void MainWindow::init_menu() {
   // File
   ui->actionNew->setShortcut(tr("ctrl+n"));
-  connect(ui->actionNew, &QAction::triggered, this, &MainWindow::newFile);
   if (mac) ui->actionNew->setIconVisibleInMenu(false);
 
   ui->actionOpen->setShortcut(tr("ctrl+o"));
@@ -4616,7 +4593,9 @@ void MainWindow::init_miniEdit() {
   this->setAcceptDrops(true);
 }
 
-void MainWindow::init_edit(QsciScintilla* textEdit) {
+void MainWindow::init_edit() {
+  textEdit = new QsciScintilla(this);
+  textEdit->setFrameShape(QFrame::NoFrame);
   textEditBack = new QsciScintilla();
 
   textEdit->setWrapMode(QsciScintilla::WrapNone);
@@ -4645,8 +4624,7 @@ void MainWindow::init_edit(QsciScintilla* textEdit) {
   textEdit->setFont(font);
   textEdit->setMarginsFont(font);
 
-  textLexer = new QscilexerCppAttach;
-  textEdit->setLexer(textLexer);
+  textEdit->setLexer(myTextLexer);
 
   //读取字体
   QString qfile = QDir::homePath() + "/.config/QtiASL/QtiASL.ini";
@@ -4660,8 +4638,8 @@ void MainWindow::init_edit(QsciScintilla* textEdit) {
   font.setItalic(Reg.value("FontItalic").toBool());
   font.setUnderline(Reg.value("FontUnderline").toBool());
 
-  textLexer->setFont(font);
-  setLexer(textLexer, textEdit);
+  myTextLexer->setFont(font);
+  setLexer(myTextLexer, textEdit);
 
   if (!linuxOS) {
     ui->treeWidget->setFont(font.family());
@@ -5190,7 +5168,8 @@ void MainWindow::init_statusBar() {
   ui->statusbar->addPermanentWidget(lblMsg);
 }
 
-void MainWindow::newFile() {
+// Menu New
+void MainWindow::newFile(QString file) {
   if (!thread_end) {
     break_run = true;  //通知打断线程
     mythread->quit();
@@ -5216,10 +5195,17 @@ void MainWindow::newFile() {
   ui->editWarnings->clear();
   ui->editRemarks->clear();
 
-  textEdit = new QsciScintilla(this);
-  textEdit->setFrameShape(QFrame::NoFrame);
-
-  init_edit(textEdit);
+  if (file == "" || QFileInfo(file).suffix().toLower() == "dsl" ||
+      QFileInfo(file).suffix().toLower() == "asl") {
+    myTextLexer = new QscilexerCppAttach;
+  } else if (QFileInfo(file).suffix().toLower() == "py")
+    myTextLexer = new QsciLexerPython;
+  else if (QFileInfo(file).suffix().toLower() == "c" ||
+           QFileInfo(file).suffix().toLower() == "cpp")
+    myTextLexer = new QsciLexerCPP;
+  else
+    myTextLexer = new QscilexerCppAttach;
+  init_edit();
   init_miniEdit();
 
   MyTabPage* page = new MyTabPage;
@@ -5295,9 +5281,9 @@ void MainWindow::set_font() {
 
   if (ok) {
     for (int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i++) {
-      textLexer->setFont(font);
-      getCurrentEditor(i)->setLexer(textLexer);
-      setLexer(textLexer, getCurrentEditor(i));
+      myTextLexer->setFont(font);
+      getCurrentEditor(i)->setLexer(myTextLexer);
+      setLexer(myTextLexer, getCurrentEditor(i));
     }
 
     ui->treeView->setFont(font);
@@ -5345,7 +5331,7 @@ void MainWindow::paintEvent(QPaintEvent* event) {
     //注意：1.代码折叠线的颜色 2.双引号输入时的背景色
     for (int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i++) {
       return;
-      init_edit(getCurrentEditor(i));
+      init_edit();
     }
   }
 }
@@ -5435,7 +5421,7 @@ void MainWindow::kextstat() {
 
 void MainWindow::readKextstat() {
   QString result = QString::fromUtf8(pk->readAll());
-  newFile();
+  newFile("");
   textEdit->append(result);
   textEdit->setModified(false);
 
@@ -5717,7 +5703,7 @@ void MainWindow::readHelpResult(int exitCode) {
   QString result;
 
   result = QString::fromUtf8(pk->readAll());
-  newFile();
+  newFile("");
   textEdit->append(result);
   textEdit->setModified(false);
 }
@@ -6599,7 +6585,7 @@ void MainWindow::on_btnCaseSensitive_clicked() {
 
 void MainWindow::on_btnSave_clicked() { Save(); }
 
-void MainWindow::on_btnNew_clicked() { newFile(); }
+void MainWindow::on_btnNew_clicked() { newFile(""); }
 
 QString MainWindow::getMD5(QString targetFile) {
   QCryptographicHash hashTest(QCryptographicHash::Md5);
@@ -6767,3 +6753,5 @@ void MainWindow::on_btnMiniMap_clicked() {
   else
     miniEdit->setHidden(true);
 }
+
+void MainWindow::on_actionNew_triggered() { newFile(""); }
