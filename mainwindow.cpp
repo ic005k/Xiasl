@@ -14,7 +14,7 @@
 #endif
 #include "methods.h"
 
-QString CurVerison = "1.1.23";
+QString CurVerison = "1.1.24";
 QString fileName, curFile, dragFileName;
 
 bool loading = false;
@@ -4576,8 +4576,9 @@ void MainWindow::init_miniEdit() {
   }
 
   QFont minifont;
+  if (win) minifont.setFamily("Agency FB");
   minifont.setPointSizeF(1);
-  minifont.setWordSpacing(-8);
+  minifont.setWordSpacing(-6);
   miniLexer->setFont(minifont);
   miniEdit->setFont(minifont);
   miniEdit->setLexer(miniLexer);
@@ -6213,7 +6214,7 @@ void MiniEditor::showZoomWin(int x, int y) {
   if (mw_one->mac || mw_one->osx1012)
     w0 = 6;
   else
-    w0 = 3;
+    w0 = 2;
   if (!mw_one->ui->tabWidget_misc->isHidden())
     miniDlg->setGeometry(mw_one->ui->tabWidget_misc->width() +
                              mw_one->ui->tabWidget_textEdit->width() - w -
@@ -6752,7 +6753,10 @@ void MainWindow::changeEvent(QEvent* e) {
 #endif
 }
 
-void MainWindow::resizeEvent(QResizeEvent* event) { Q_UNUSED(event); }
+void MainWindow::resizeEvent(QResizeEvent* event) {
+  Q_UNUSED(event);
+  isDrag = false;
+}
 
 void MainWindow::on_actionAutomatic_Line_Feeds_triggered() {
   if (ui->actionAutomatic_Line_Feeds->isChecked()) {
