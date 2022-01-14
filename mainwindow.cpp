@@ -14,7 +14,7 @@
 #endif
 #include "methods.h"
 
-QString CurVerison = "1.1.21";
+QString CurVerison = "1.1.22";
 bool loading = false;
 bool thread_end = true;
 bool break_run = false;
@@ -1329,9 +1329,10 @@ void MainWindow::timer_linkage() {
 
 /*单击文本任意位置，当前代码块与成员树进行联动*/
 void MainWindow::mem_linkage(QTreeWidget* tw, int RowNum) {
-  if (QFileInfo(curFile).suffix().toLower() != "dsl" ||
+  lblLayer->setText("");
+  if (QFileInfo(curFile).suffix().toLower() != "dsl" &&
+      QFileInfo(curFile).suffix().toLower() != "asl" &&
       tw->topLevelItemCount() == 0) {
-    lblLayer->setText("");
     return;
   }
 
@@ -4543,11 +4544,11 @@ void MainWindow::init_miniEdit() {
   miniEdit->setFrameShape(QFrame::NoFrame);
 
 #ifdef Q_OS_WIN32
-  miniEdit->setFixedWidth(80);
+  miniEdit->setFixedWidth(85);
 #endif
 
 #ifdef Q_OS_LINUX
-  miniEdit->setFixedWidth(80);
+  miniEdit->setFixedWidth(85);
 #endif
 
 #ifdef Q_OS_MAC
