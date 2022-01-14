@@ -6211,7 +6211,7 @@ void MiniEditor::showZoomWin(int x, int y) {
   if (!mw_one->ui->tabWidget_misc->isHidden())
     miniDlg->setGeometry(mw_one->ui->tabWidget_misc->width() +
                              mw_one->ui->tabWidget_textEdit->width() - w -
-                             width() + 6,
+                             width() + 5,
                          y1, w, h);
   else
     miniDlg->setGeometry(mw_one->ui->tabWidget_textEdit->width() - w - width(),
