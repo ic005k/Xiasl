@@ -8,6 +8,7 @@
 #include <Qsci/qsciscintilla.h>
 
 #include <QApplication>
+#include <QClipboard>
 #include <QCloseEvent>
 #include <QCommandLineOption>
 #include <QCommandLineParser>
@@ -878,6 +879,7 @@ class MiniEditor : public QsciScintilla {
   void wheelEvent(QWheelEvent* event) override;
   void showZoomWin(int x, int y);
   int miniLineNum = 0;
+  QString currentLineText;
 
  protected:
   void mousePressEvent(QMouseEvent* event) override;

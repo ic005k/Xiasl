@@ -14,7 +14,7 @@
 #endif
 #include "methods.h"
 
-QString CurVerison = "1.1.19";
+QString CurVerison = "1.1.20";
 bool loading = false;
 bool thread_end = true;
 bool break_run = false;
@@ -5988,9 +5988,16 @@ void MiniEditor::mouseMoveEvent(QMouseEvent* event) {
 // void MiniEditor::paintEvent(QPaintEvent*) {}
 
 void MiniEditor::mousePressEvent(QMouseEvent* event) {
-  Q_UNUSED(event);
-  mw_one->textEdit->setFocus();
-  mw_one->textEdit->setCursorPosition(miniLineNum, 0);
+  if (event->button() == Qt::LeftButton) {
+    mw_one->textEdit->setFocus();
+    mw_one->textEdit->setCursorPosition(miniLineNum, 0);
+  }
+
+  if (event->button() == Qt::RightButton) {
+    currentLineText = currentLineText.trimmed();
+    QClipboard* clipboard = QApplication::clipboard();
+    clipboard->setText(currentLineText);
+  }
 }
 
 void MiniEditor::wheelEvent(QWheelEvent* event) {
@@ -6022,6 +6029,7 @@ void MiniEditor::showZoomWin(int x, int y) {
   miniDlgEdit->clear();
 
   if (totalLines < 10) {
+    currentLineText = this->text(4);
     for (int i = 0; i < totalLines; i++) {
       miniDlgEdit->append(QString::number(i + 1) + "  " + this->text(i));
 
@@ -6055,6 +6063,8 @@ void MiniEditor::showZoomWin(int x, int y) {
       t7 = this->text(6);
       t8 = this->text(7);
       t9 = this->text(8);
+
+      currentLineText = t5;
 
       miniDlgEdit->append(QString::number(1) + "  " + t1);
       miniDlgEdit->append(QString::number(2) + "  " + t2);
@@ -6097,6 +6107,8 @@ void MiniEditor::showZoomWin(int x, int y) {
       t8 = this->text(y0 + 3);
       t9 = this->text(y0 + 4);
 
+      currentLineText = t5;
+
       miniDlgEdit->append(QString::number(y0 - 3) + "  " + t1);
       miniDlgEdit->append(QString::number(y0 - 2) + "  " + t2);
       miniDlgEdit->append(QString::number(y0 - 1) + "  " + t3);
@@ -6136,6 +6148,8 @@ void MiniEditor::showZoomWin(int x, int y) {
       t7 = this->text(totalLines - 3);
       t8 = this->text(totalLines - 2);
       t9 = this->text(totalLines - 1);
+
+      currentLineText = t5;
 
       miniDlgEdit->append(QString::number(totalLines - 8) + "  " + t1);
       miniDlgEdit->append(QString::number(totalLines - 7) + "  " + t2);
@@ -6178,12 +6192,15 @@ void MiniEditor::showZoomWin(int x, int y) {
     return;
   }
 
-  int miniEditX = mw_one->getTabWidgetEditX() + mw_one->getTabWidgetEditW();
+  miniDlgEdit->append("\n");
+  miniDlgEdit->append(tr("Left click: Position to the current line.") + "\n");
+  miniDlgEdit->append(tr("Right click: Copy the current line."));
+
   int w = 600;
   if (mw_one->ui->tabWidget_textEdit->width() > w)
     w = mw_one->textEdit->width() - 110;
   if (mw_one->width() < w) w = mw_one->width() - width() - 2;
-  int h = miniDlgEdit->textHeight(y) * 9;
+  int h = miniDlgEdit->textHeight(y) * 12 + 4;
   int y1 = y;
 
   if (y >= mw_one->getMainWindowHeight() - h)
