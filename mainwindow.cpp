@@ -14,7 +14,7 @@
 #endif
 #include "methods.h"
 
-QString CurVerison = "1.1.24";
+QString CurVerison = "1.1.25";
 QString fileName, curFile, dragFileName;
 
 bool loading = false;
@@ -562,6 +562,10 @@ void MainWindow::loadFile(const QString& fileName, int row, int col) {
   int count = Reg.value("miniMapCount").toInt();
   for (int i = 0; i < count; i++) {
     miniEdit->setHidden(Reg.value("miniMap" + fileName, false).toBool());
+    if (miniEdit->isHidden())
+      textEdit->SendScintilla(QsciScintilla::SCI_SETVSCROLLBAR, true);
+    else
+      textEdit->SendScintilla(QsciScintilla::SCI_SETVSCROLLBAR, false);
   }
 
   //为拖拽tab准备拖动后的标题名
@@ -2265,6 +2269,7 @@ void MainWindow::syncMiniEdit() {
   miniEdit->clear();
   miniEdit->setText(textEdit->text());
   miniEdit->setCursorPosition(row, col);
+  miniEdit->p0 = miniEdit->verticalScrollBar()->sliderPosition();
 
   QString msg = tr("Row") + " : " + QString::number(row + 1) + "    " +
                 tr("Column") + " : " + QString::number(col);
@@ -4527,6 +4532,7 @@ void MainWindow::setLexer(QsciLexer* textLexer, QsciScintilla* textEdit) {
 void MainWindow::init_miniEdit() {
   miniEdit = new MiniEditor(this);
   miniEdit->setFrameShape(QFrame::NoFrame);
+  miniEdit->verticalScrollBar()->installEventFilter(this);
 
 #ifdef Q_OS_WIN32
   miniEdit->setFixedWidth(85);
@@ -4615,10 +4621,13 @@ void MainWindow::init_edit() {
 
   textEdit->setTabWidth(4);
 
-  //水平滚动条:暂时关闭下面两行代码，否则没法设置水平滚动条的数据
+  // 水平滚动条:暂时关闭下面两行代码，否则没法设置水平滚动条的数据
   // textEdit->SendScintilla(QsciScintilla::SCI_SETSCROLLWIDTH,
   // textEdit->viewport()->width());
   // textEdit->SendScintilla(QsciScintilla::SCI_SETSCROLLWIDTHTRACKING, true);
+
+  // 垂直滚动棒是否看见
+  textEdit->SendScintilla(QsciScintilla::SCI_SETVSCROLLBAR, false);
 
   connect(textEdit, &QsciScintilla::cursorPositionChanged, this,
           &MainWindow::textEdit_cursorPositionChanged);
@@ -6233,11 +6242,40 @@ void MiniEditor::showZoomWin(int x, int y) {
 void MiniEditor::miniEdit_cursorPositionChanged() {}
 
 void MiniEditor::miniEdit_verticalScrollBarChanged() {
+  int p = verticalScrollBar()->sliderPosition();
   if (!textEditScroll) {
     if (curY == 0) curY = this->height() / 2;
+    if (p > p0)
+      curY = height();
+    else
+      curY = 0;
+
     showZoomWin(20, curY);
   } else
     miniDlg->close();
+}
+
+bool MiniEditor::eventFilter(QObject* watched, QEvent* event) {
+  if (watched == this->verticalScrollBar()) {
+    if (event->type() == QEvent::MouseButtonRelease) {
+      mw_one->textEdit->setFocus();
+      mw_one->textEdit->setCursorPosition(miniLineNum, 0);
+
+      p0 = verticalScrollBar()->sliderPosition();
+      return true;
+    }
+  }
+
+  if (watched == this) {
+    if (event->type() == QEvent::ActivationChange) {
+      if (QApplication::activeWindow() != this) {
+      }
+      if (QApplication::activeWindow() == this) {
+      }
+    }
+  }
+
+  return QWidget::eventFilter(watched, event);
 }
 
 void MaxEditor::mouseMoveEvent(QMouseEvent* event) {
@@ -6756,6 +6794,7 @@ void MainWindow::changeEvent(QEvent* e) {
 void MainWindow::resizeEvent(QResizeEvent* event) {
   Q_UNUSED(event);
   isDrag = false;
+  miniDlg->close();
 }
 
 void MainWindow::on_actionAutomatic_Line_Feeds_triggered() {
@@ -6771,10 +6810,14 @@ void MainWindow::on_actionAutomatic_Line_Feeds_triggered() {
 }
 
 void MainWindow::on_btnMiniMap_clicked() {
-  if (miniEdit->isHidden())
+  miniDlg->close();
+  if (miniEdit->isHidden()) {
     miniEdit->setHidden(false);
-  else
+    textEdit->SendScintilla(QsciScintilla::SCI_SETVSCROLLBAR, false);
+  } else {
     miniEdit->setHidden(true);
+    textEdit->SendScintilla(QsciScintilla::SCI_SETVSCROLLBAR, true);
+  }
 }
 
 void MainWindow::on_actionNew_triggered() { newFile(""); }

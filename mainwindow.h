@@ -883,6 +883,10 @@ class MiniEditor : public QsciScintilla {
   void showZoomWin(int x, int y);
   int miniLineNum = 0;
   QString currentLineText;
+  int p0 = 0;
+
+ public slots:
+  bool eventFilter(QObject*, QEvent*) override;
 
  protected:
   void mousePressEvent(QMouseEvent* event) override;
