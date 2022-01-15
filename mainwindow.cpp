@@ -241,8 +241,6 @@ MainWindow::~MainWindow() {
 }
 
 void MainWindow::loadTabFiles() {
-  // loading = true;
-
   //读取标签页
   QString qfile = QDir::homePath() + "/.config/QtiASL/QtiASL.ini";
   QSettings Reg(qfile, QSettings::IniFormat);
@@ -291,8 +289,6 @@ void MainWindow::loadTabFiles() {
     ui->tabWidget_textEdit->setCurrentIndex(tab_total - 1);
     on_tabWidget_textEdit_tabBarClicked(tab_total - 1);
   }
-
-  // loading = false;
 }
 
 void MainWindow::about() {
@@ -476,8 +472,6 @@ void MainWindow::init_listForRecentFile(QString fileName) {
 }
 
 void MainWindow::loadFile(const QString& fileName, int row, int col) {
-  // loading = true;
-
   ui->actionAutomatic_Line_Feeds->setChecked(false);
   init_listForRecentFile(fileName);
 
@@ -493,7 +487,6 @@ void MainWindow::loadFile(const QString& fileName, int row, int col) {
       if (!ReLoad) {
         on_tabWidget_textEdit_tabBarClicked(i);
         addFilesWatch();
-        // loading = false;
 
         return;
       } else {
@@ -512,8 +505,6 @@ void MainWindow::loadFile(const QString& fileName, int row, int col) {
             .arg(QDir::toNativeSeparators(fileName), file.errorString()));
 
     addFilesWatch();
-
-    // loading = false;
 
     return;
   }
@@ -599,8 +590,6 @@ void MainWindow::loadFile(const QString& fileName, int row, int col) {
   updateMd5(fileName);
   addFilesWatch();
   init_TabList();
-
-  // loading = false;
 }
 
 void MainWindow::setRecentFiles(QString fileName) {
@@ -2415,8 +2404,6 @@ void getMemberTree(QsciScintilla* textEdit) {
     return;
   }
 
-  // loading = true;
-
   tw_list.clear();
 
   s_count = 0;
@@ -3847,8 +3834,6 @@ void getMemberTree(QsciScintilla* textEdit) {
       j = end_d - 1;
     }
   }
-
-  // loading = false;
 }
 
 void refreshTree() {
@@ -5199,8 +5184,6 @@ void MainWindow::newFile(QString file) {
     mythread->wait();
   }
 
-  // loading = true;
-
   ui->treeWidget->clear();
   s_count = 0;
   d_count = 0;
@@ -5284,8 +5267,6 @@ void MainWindow::newFile(QString file) {
   lblMsg->setText("");
 
   ui->treeWidget->setHidden(false);
-
-  // loading = false;
 }
 
 void MainWindow::on_btnReplaceFind() {
@@ -6242,7 +6223,7 @@ void MiniEditor::showZoomWin(int x, int y) {
 
   if (miniDlg->isHidden()) {
     QFont font = mw_one->font;
-    font.setPointSizeF(12);
+    font.setPointSizeF(11);
     miniDlgEdit->setFont(font);
     miniDlg->show();
   }
