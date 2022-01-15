@@ -6198,7 +6198,9 @@ void MiniEditor::showZoomWin(int x, int y) {
   int w = 600;
   if (mw_one->ui->tabWidget_textEdit->width() > w)
     w = mw_one->textEdit->width() - 110;
+  w = 350;
   if (mw_one->width() < w) w = mw_one->width() - width() - 2;
+
   int h = miniDlgEdit->textHeight(y) * 12 + 4;
   int y1 = y;
 
@@ -6223,7 +6225,7 @@ void MiniEditor::showZoomWin(int x, int y) {
 
   if (miniDlg->isHidden()) {
     QFont font = mw_one->font;
-    font.setPointSizeF(11);
+    font.setPointSizeF(10);
     miniDlgEdit->setFont(font);
     miniDlg->show();
   }
