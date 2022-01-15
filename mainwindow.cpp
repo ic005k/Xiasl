@@ -83,6 +83,7 @@ CodeEditor::CodeEditor(QWidget* parent) : QPlainTextEdit(parent) {
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
   ui->setupUi(this);
+  loading = true;
   installEventFilter(this);
   blInit = true;
   loadLocal();
@@ -229,6 +230,7 @@ MainWindow::MainWindow(QWidget* parent)
 
   One = false;
   blInit = false;
+  loading = false;
 }
 
 MainWindow::~MainWindow() {
@@ -239,7 +241,7 @@ MainWindow::~MainWindow() {
 }
 
 void MainWindow::loadTabFiles() {
-  loading = true;
+  // loading = true;
 
   //读取标签页
   QString qfile = QDir::homePath() + "/.config/QtiASL/QtiASL.ini";
@@ -290,7 +292,7 @@ void MainWindow::loadTabFiles() {
     on_tabWidget_textEdit_tabBarClicked(tab_total - 1);
   }
 
-  loading = false;
+  // loading = false;
 }
 
 void MainWindow::about() {
@@ -474,7 +476,8 @@ void MainWindow::init_listForRecentFile(QString fileName) {
 }
 
 void MainWindow::loadFile(const QString& fileName, int row, int col) {
-  loading = true;
+  // loading = true;
+
   ui->actionAutomatic_Line_Feeds->setChecked(false);
   init_listForRecentFile(fileName);
 
@@ -490,7 +493,7 @@ void MainWindow::loadFile(const QString& fileName, int row, int col) {
       if (!ReLoad) {
         on_tabWidget_textEdit_tabBarClicked(i);
         addFilesWatch();
-        loading = false;
+        // loading = false;
 
         return;
       } else {
@@ -509,7 +512,9 @@ void MainWindow::loadFile(const QString& fileName, int row, int col) {
             .arg(QDir::toNativeSeparators(fileName), file.errorString()));
 
     addFilesWatch();
-    loading = false;
+
+    // loading = false;
+
     return;
   }
 
@@ -595,7 +600,7 @@ void MainWindow::loadFile(const QString& fileName, int row, int col) {
   addFilesWatch();
   init_TabList();
 
-  loading = false;
+  // loading = false;
 }
 
 void MainWindow::setRecentFiles(QString fileName) {
@@ -2410,7 +2415,7 @@ void getMemberTree(QsciScintilla* textEdit) {
     return;
   }
 
-  loading = true;
+  // loading = true;
 
   tw_list.clear();
 
@@ -3843,7 +3848,7 @@ void getMemberTree(QsciScintilla* textEdit) {
     }
   }
 
-  loading = false;
+  // loading = false;
 }
 
 void refreshTree() {
@@ -5194,7 +5199,7 @@ void MainWindow::newFile(QString file) {
     mythread->wait();
   }
 
-  loading = true;
+  // loading = true;
 
   ui->treeWidget->clear();
   s_count = 0;
@@ -5280,7 +5285,7 @@ void MainWindow::newFile(QString file) {
 
   ui->treeWidget->setHidden(false);
 
-  loading = false;
+  // loading = false;
 }
 
 void MainWindow::on_btnReplaceFind() {
@@ -6012,6 +6017,8 @@ void MiniEditor::mousePressEvent(QMouseEvent* event) {
 }
 
 void MiniEditor::wheelEvent(QWheelEvent* event) {
+  if (!this->isHidden()) return;
+
   int spos = this->verticalScrollBar()->sliderPosition();
   miniEditWheel = true;
 
@@ -6234,7 +6241,9 @@ void MiniEditor::showZoomWin(int x, int y) {
                          y1, w, h);
 
   if (miniDlg->isHidden()) {
-    miniDlgEdit->setFont(mw_one->font);
+    QFont font = mw_one->font;
+    font.setPointSizeF(12);
+    miniDlgEdit->setFont(font);
     miniDlg->show();
   }
 }
@@ -6242,20 +6251,31 @@ void MiniEditor::showZoomWin(int x, int y) {
 void MiniEditor::miniEdit_cursorPositionChanged() {}
 
 void MiniEditor::miniEdit_verticalScrollBarChanged() {
-  int p = verticalScrollBar()->sliderPosition();
+  miniDlg->close();
+
+  if (loading) return;
+
+  textEditScroll = false;
+  mw_one->setValue();
+
+  return;
+
   if (!textEditScroll) {
     if (curY == 0) curY = this->height() / 2;
+    int p = verticalScrollBar()->sliderPosition();
     if (p > p0)
       curY = height();
     else
       curY = 0;
 
     showZoomWin(20, curY);
+
   } else
     miniDlg->close();
 }
 
 bool MiniEditor::eventFilter(QObject* watched, QEvent* event) {
+  return QWidget::eventFilter(watched, event);
   if (watched == this->verticalScrollBar()) {
     if (event->type() == QEvent::MouseButtonRelease) {
       mw_one->textEdit->setFocus();
@@ -6292,12 +6312,15 @@ void MainWindow::setValue() {
   int p = b * t;
 
   textEdit->verticalScrollBar()->setSliderPosition(p);
-
-  textEdit->verticalScrollBar()->setHidden(true);
 }
 
 void MainWindow::setValue2() {
-  textEditScroll = true;
+  if (miniEdit->isHidden()) return;
+
+  if (!textEditScroll) {
+    textEditScroll = true;
+    return;
+  }
 
   int t = textEdit->verticalScrollBar()->maximum();
   int m = miniEdit->verticalScrollBar()->maximum();
@@ -6814,6 +6837,8 @@ void MainWindow::on_btnMiniMap_clicked() {
   if (miniEdit->isHidden()) {
     miniEdit->setHidden(false);
     textEdit->SendScintilla(QsciScintilla::SCI_SETVSCROLLBAR, false);
+    textEditScroll = true;
+    setValue2();
   } else {
     miniEdit->setHidden(true);
     textEdit->SendScintilla(QsciScintilla::SCI_SETVSCROLLBAR, true);
