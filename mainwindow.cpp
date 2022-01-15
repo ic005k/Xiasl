@@ -2141,7 +2141,7 @@ void thread_one::run() {
 /*线程结束后对成员树进行数据刷新*/
 void MainWindow::dealover() {
   update_ui_tree();
-
+  if (!loading) myScrollBox->init_ScrollBox();
   thread_end = true;
   break_run = false;
 }
@@ -2230,6 +2230,7 @@ void MainWindow::update_ui_tw() {
 }
 
 void MainWindow::refresh_tree() {
+  // myScrollBox->close();
   if (!thread_end) {
     break_run = true;
 
@@ -4523,6 +4524,7 @@ void MainWindow::init_miniEdit() {
   miniEdit = new MiniEditor(this);
   miniEdit->setFrameShape(QFrame::NoFrame);
   miniEdit->verticalScrollBar()->installEventFilter(this);
+  miniEdit->SendScintilla(QsciScintilla::SCI_SETVSCROLLBAR, false);
 
 #ifdef Q_OS_WIN32
   miniEdit->setFixedWidth(85);
@@ -4533,7 +4535,7 @@ void MainWindow::init_miniEdit() {
 #endif
 
 #ifdef Q_OS_MAC
-  miniEdit->setFixedWidth(80);
+  miniEdit->setFixedWidth(60);
 #endif
 
   miniEdit->setMarginWidth(0, 0);
@@ -6312,6 +6314,7 @@ void MainWindow::setValue2() {
   int p = b * m;
 
   miniEdit->verticalScrollBar()->setSliderPosition(p);
+  if (!loading) myScrollBox->init_ScrollBox();
 }
 
 #ifndef QT_NO_CONTEXTMENU
@@ -6326,6 +6329,21 @@ void MainWindow::on_actionOpenDir() {
 void MainWindow::on_actionExpandAll() { ui->treeWidget->expandAll(); }
 
 void MainWindow::on_actionCollapseAll() { ui->treeWidget->collapseAll(); }
+
+void MainWindow::moveEvent(QMoveEvent* e) { Q_UNUSED(e); }
+
+bool MainWindow::event(QEvent* event) {
+  if (event->type() == QEvent::NonClientAreaMouseButtonPress) {
+    // qDebug() << "title double clicked event";
+    myScrollBox->close();
+  }
+
+  if (event->type() == QEvent::NonClientAreaMouseButtonRelease) {
+    myScrollBox->init_ScrollBox();
+  }
+
+  return QWidget::event(event);
+}
 
 void MainWindow::mouseMoveEvent(QMouseEvent* e) {
   e->accept();
@@ -6345,14 +6363,20 @@ void MainWindow::mouseMoveEvent(QMouseEvent* e) {
 }
 
 void MainWindow::mousePressEvent(QMouseEvent* e) {
+  qDebug() << "dd";
   if (e->button() == Qt::LeftButton) {
     isDrag = true;
     m_position = e->globalPos() - this->pos();
     e->accept();
+
+    myScrollBox->close();
   }
 }
 
-void MainWindow::mouseReleaseEvent(QMouseEvent*) { isDrag = false; }
+void MainWindow::mouseReleaseEvent(QMouseEvent*) {
+  isDrag = false;
+  myScrollBox->init_ScrollBox();
+}
 
 bool MainWindow::enterEdit(QPoint pp, QsciScintilla* btn) {
   int height = btn->height();
@@ -6791,6 +6815,7 @@ void MainWindow::init_TabList() {
 
 void MainWindow::changeEvent(QEvent* e) {
   Q_UNUSED(e);
+
 #ifdef __APPLE__
   return;
   OSXHideTitleBar::HideTitleBar(winId());
@@ -6801,6 +6826,7 @@ void MainWindow::resizeEvent(QResizeEvent* event) {
   Q_UNUSED(event);
   isDrag = false;
   miniDlg->close();
+  myScrollBox->init_ScrollBox();
 }
 
 void MainWindow::on_actionAutomatic_Line_Feeds_triggered() {
@@ -6825,6 +6851,7 @@ void MainWindow::on_btnMiniMap_clicked() {
   } else {
     miniEdit->setHidden(true);
     textEdit->SendScintilla(QsciScintilla::SCI_SETVSCROLLBAR, true);
+    myScrollBox->close();
   }
 }
 

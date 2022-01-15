@@ -534,6 +534,8 @@ class MainWindow : public QMainWindow {
   void mousePressEvent(QMouseEvent*) override;
   void mouseReleaseEvent(QMouseEvent*) override;
   void mouseMoveEvent(QMouseEvent*) override;
+  void moveEvent(QMoveEvent*) override;
+  bool event(QEvent* event) override;
 
   void resizeEvent(QResizeEvent* event) override;
  public slots:

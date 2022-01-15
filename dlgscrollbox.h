@@ -16,6 +16,8 @@ class dlgScrollBox : public QDialog {
   ~dlgScrollBox();
   Ui::dlgScrollBox *ui;
 
+  void init_ScrollBox();
+
  protected:
   void mousePressEvent(QMouseEvent *) override;
   void mouseReleaseEvent(QMouseEvent *) override;
@@ -24,6 +26,7 @@ class dlgScrollBox : public QDialog {
  private:
   bool isDrag = false;
   QPoint m_position;
+  int s_box_h = 25;
 };
 
 #endif  // DLGSCROLLBOX_H
