@@ -93,6 +93,29 @@ MainWindow::MainWindow(QWidget* parent)
   setWindowTitle(ver);
   ver = "";
 
+#ifdef Q_OS_WIN32
+  regACPI_win();
+  ui->actionKextstat->setEnabled(false);
+  win = true;
+#endif
+
+#ifdef Q_OS_LINUX
+  ui->actionKextstat->setEnabled(false);
+  ui->actionGenerate->setEnabled(false);
+  linuxOS = true;
+#endif
+
+#ifdef Q_OS_MAC
+  ui->actionGenerate->setEnabled(true);
+  mac = true;
+
+#if (QT_VERSION <= QT_VERSION_CHECK(5, 9, 9))
+  osx1012 = true;
+  mac = false;
+#endif
+
+#endif
+
   QString qfile = QDir::homePath() + "/.config/QtiASL/QtiASL.ini";
   QSettings Reg(qfile, QSettings::IniFormat);
 
@@ -119,32 +142,16 @@ MainWindow::MainWindow(QWidget* parent)
   dlgAutoUpdate = new AutoUpdateDialog(this);
   dlgset = new dlgPreferences(this);
   myScrollBox = new dlgScrollBox();
-  myScrollBox->setParent(this); //指定父窗口
-  myScrollBox->setWindowFlags(myScrollBox->windowFlags() | Qt::Dialog | Qt::FramelessWindowHint);
+  if (win) {
+    myScrollBox->setParent(this);  //指定父窗口
+    myScrollBox->setWindowFlags(myScrollBox->windowFlags() | Qt::Dialog |
+                                Qt::FramelessWindowHint);
+  } else {
+    myScrollBox->setWindowFlags(Qt::WindowStaysOnTopHint |
+                                Qt::CustomizeWindowHint | Qt::Tool |
+                                Qt::FramelessWindowHint);
+  }
   myScrollBox->close();
-
-#ifdef Q_OS_WIN32
-  regACPI_win();
-  ui->actionKextstat->setEnabled(false);
-  win = true;
-#endif
-
-#ifdef Q_OS_LINUX
-  ui->actionKextstat->setEnabled(false);
-  ui->actionGenerate->setEnabled(false);
-  linuxOS = true;
-#endif
-
-#ifdef Q_OS_MAC
-  ui->actionGenerate->setEnabled(true);
-  mac = true;
-
-#if (QT_VERSION <= QT_VERSION_CHECK(5, 9, 9))
-  osx1012 = true;
-  mac = false;
-#endif
-
-#endif
 
   init_statusBar();
 
@@ -5984,7 +5991,7 @@ void MiniEditor::mouseMoveEvent(QMouseEvent* event) {
     showZoomWin(event->x(), event->y());
   }
 
-  mw_one->myScrollBox->init_ScrollBox();
+  if (!mw_one->myScrollBox->isVisible()) mw_one->myScrollBox->init_ScrollBox();
 }
 
 // void MiniEditor::paintEvent(QPaintEvent*) {}
@@ -6318,8 +6325,7 @@ void MainWindow::setValue2() {
   int p = b * m;
 
   miniEdit->verticalScrollBar()->setSliderPosition(p);
-  if (!loading)
-      myScrollBox->init_ScrollBox();
+  if (!loading) myScrollBox->init_ScrollBox();
 
   // qDebug() << "setValue2";
 }
