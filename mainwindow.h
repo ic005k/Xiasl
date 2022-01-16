@@ -114,6 +114,7 @@ class MainWindow : public QMainWindow {
   ~MainWindow();
   Ui::MainWindow* ui;
 
+  QTimer* tmrWatchPos;
   dlgScrollBox *myScrollBox;
   QMenu* mnuRecentOpenFile;
   QStringList recentFileList;
@@ -557,6 +558,7 @@ class MainWindow : public QMainWindow {
   void setValue2();
 
  private slots:
+  void timer_watch_pos();
   void on_actionExpandAll();
 
   void on_actionCollapseAll();
@@ -736,6 +738,7 @@ class MainWindow : public QMainWindow {
   void on_actionNew_triggered();
 
  private:
+  QPoint winPos;
   QMenu* menuTabList;
   bool isDrag;
   QPoint m_position;

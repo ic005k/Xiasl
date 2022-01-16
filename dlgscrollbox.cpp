@@ -23,12 +23,11 @@ dlgScrollBox::dlgScrollBox(QWidget *parent)
 #endif
 
 #ifdef Q_OS_LINUX
-  setStyleSheet(
-      QString("border-width: 1px;"
-              "border-style: solid;"
-              "border-radius:2px;"
-              "border-color: rgb(25,25,255);"
-              "background-color:rgba(0,0,255,20);"));
+  this->setAutoFillBackground(true);
+  QPalette palette = this->palette();
+  palette.setColor(QPalette::Background, Qt::blue);
+  this->setPalette(palette);
+  setWindowOpacity(0.3);
 #endif
 
 #ifdef Q_OS_MAC
@@ -44,10 +43,14 @@ dlgScrollBox::dlgScrollBox(QWidget *parent)
 dlgScrollBox::~dlgScrollBox() { delete ui; }
 
 void dlgScrollBox::mouseMoveEvent(QMouseEvent *e) {
+  int info_h = mw_one->ui->frameInfo->height() + 6;
+  if (mw_one->ui->frameInfo->isHidden()) info_h = 0;
+
   y0 = mw_one->y() +
        (mw_one->height() - mw_one->ui->statusbar->height() -
-        mw_one->miniEdit->height()) +
+        mw_one->miniEdit->height() - info_h) +
        this->height();
+
   y1 = y0 + mw_one->miniEdit->height() - this->height();
 
   x = mw_one->x() + (mw_one->width() - mw_one->miniEdit->width() - 4);
@@ -87,12 +90,6 @@ void dlgScrollBox::mouseMoveEvent(QMouseEvent *e) {
 }
 
 void dlgScrollBox::mousePressEvent(QMouseEvent *e) {
-  y0 = mw_one->y() +
-       (mw_one->height() - mw_one->ui->statusbar->height() -
-        mw_one->miniEdit->height()) +
-       this->height();
-  y1 = y0 + mw_one->miniEdit->height() - this->height();
-
   if (e->button() == Qt::LeftButton) {
     isDrag = true;
     x = mw_one->x() + (mw_one->width() - mw_one->miniEdit->width() - 4);
@@ -112,13 +109,19 @@ void dlgScrollBox::mouseReleaseEvent(QMouseEvent *) {
 }
 
 void dlgScrollBox::init_ScrollBox() {
+  if (mw_one->linuxOS) return;
+  if (!mw_one->miniEdit->isVisible()) return;
+
   x = mw_one->x() + mw_one->width() - mw_one->miniEdit->width() - 4;
   w = mw_one->miniEdit->width();
   h = s_box_h;
 
+  int info_h = mw_one->ui->frameInfo->height() + 6;
+  if (mw_one->ui->frameInfo->isHidden()) info_h = 0;
+
   y0 = mw_one->y() +
        (mw_one->height() - mw_one->ui->statusbar->height() -
-        mw_one->miniEdit->height()) +
+        mw_one->miniEdit->height() - info_h) +
        this->height();
 
   int p0;

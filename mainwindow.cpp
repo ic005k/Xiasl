@@ -142,7 +142,7 @@ MainWindow::MainWindow(QWidget* parent)
   dlgAutoUpdate = new AutoUpdateDialog(this);
   dlgset = new dlgPreferences(this);
   myScrollBox = new dlgScrollBox();
-  if (win) {
+  if (win || linuxOS) {
     myScrollBox->setParent(this);  //指定父窗口
     myScrollBox->setWindowFlags(myScrollBox->windowFlags() | Qt::Dialog |
                                 Qt::FramelessWindowHint);
@@ -210,6 +210,11 @@ MainWindow::MainWindow(QWidget* parent)
   list.append(h0);
   list.append(h1);
   splitterV->setSizes(list);
+  connect(splitterV, &QSplitter::splitterMoved, [=]() {
+      myScrollBox->init_ScrollBox();
+      if (ui->frameInfo->height() > this->height() - 100)
+          myScrollBox->close();
+  });
 
   //设置鼠标追踪
   ui->centralwidget->setMouseTracking(true);
@@ -220,6 +225,11 @@ MainWindow::MainWindow(QWidget* parent)
 
   timer = new QTimer(this);
   connect(timer, SIGNAL(timeout()), this, SLOT(timer_linkage()));
+
+  winPos.setX(this->x());
+  winPos.setY(this->y());
+  tmrWatchPos = new QTimer(this);
+  connect(tmrWatchPos, SIGNAL(timeout()), this, SLOT(timer_watch_pos()));
 
   manager = new QNetworkAccessManager(this);
   connect(manager, SIGNAL(finished(QNetworkReply*)), this,
@@ -1172,6 +1182,8 @@ void MainWindow::readCppResult(int exitCode) {
   ui->frameInfo->setHidden(false);
   InfoWinShow = true;
   ui->actionInfo_win->setChecked(true);
+
+  myScrollBox->init_ScrollBox();
 }
 
 /*读取编译结果信息dsl*/
@@ -1252,6 +1264,8 @@ void MainWindow::readResult(int exitCode) {
   ui->frameInfo->setHidden(false);
   InfoWinShow = true;
   ui->actionInfo_win->setChecked(true);
+
+  myScrollBox->init_ScrollBox();
 
   loading = false;
 }
@@ -4533,19 +4547,23 @@ void MainWindow::init_miniEdit() {
   miniEdit = new MiniEditor(this);
   miniEdit->setFrameShape(QFrame::NoFrame);
   miniEdit->verticalScrollBar()->installEventFilter(this);
-  miniEdit->SendScintilla(QsciScintilla::SCI_SETVSCROLLBAR, false);
 
 #ifdef Q_OS_WIN32
   miniEdit->setFixedWidth(60);
+  miniEdit->SendScintilla(QsciScintilla::SCI_SETVSCROLLBAR, false);
 #endif
 
 #ifdef Q_OS_LINUX
   miniEdit->setFixedWidth(60);
+  miniEdit->SendScintilla(QsciScintilla::SCI_SETVSCROLLBAR, true);
 #endif
 
 #ifdef Q_OS_MAC
   miniEdit->setFixedWidth(60);
+  miniEdit->SendScintilla(QsciScintilla::SCI_SETVSCROLLBAR, false);
 #endif
+
+  // miniEdit->SendScintilla(QsciScintilla::SCI_SETVSCROLLBAR, true);
 
   miniEdit->setMarginWidth(0, 0);
   miniEdit->setMargins(0);
@@ -5680,6 +5698,8 @@ void MainWindow::view_info() {
     ui->frameInfo->setHidden(true);
     ui->actionInfo_win->setChecked(false);
   }
+
+  myScrollBox->init_ScrollBox();
 }
 
 void MainWindow::view_mem_list() {
@@ -6345,17 +6365,18 @@ void MainWindow::on_actionCollapseAll() { ui->treeWidget->collapseAll(); }
 
 void MainWindow::moveEvent(QMoveEvent* e) { Q_UNUSED(e); }
 
-bool MainWindow::event(QEvent* event) {
-  if (event->type() == QEvent::NonClientAreaMouseButtonPress) {
-    // qDebug() << "title double clicked event";
-    myScrollBox->close();
-  }
+bool MainWindow::event(QEvent *event)
+{
+    if (event->type() == QEvent::NonClientAreaMouseButtonPress) {
+        // qDebug() << "title double clicked event";
+        myScrollBox->close();
+    }
 
-  if (event->type() == QEvent::NonClientAreaMouseButtonRelease) {
-    myScrollBox->init_ScrollBox();
-  }
+    if (event->type() == QEvent::NonClientAreaMouseButtonRelease) {
+        myScrollBox->init_ScrollBox();
+    }
 
-  return QWidget::event(event);
+    return QWidget::event(event);
 }
 
 void MainWindow::mouseMoveEvent(QMouseEvent* e) {
@@ -6870,3 +6891,12 @@ void MainWindow::on_btnMiniMap_clicked() {
 }
 
 void MainWindow::on_actionNew_triggered() { newFile(""); }
+
+void MainWindow::timer_watch_pos()
+{
+    QPoint curPos(this->x(), this->y());
+    if (winPos != curPos) {
+        myScrollBox->close();
+        winPos = curPos;
+    }
+}
