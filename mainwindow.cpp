@@ -4531,7 +4531,7 @@ void MainWindow::init_miniEdit() {
 #endif
 
 #ifdef Q_OS_LINUX
-  miniEdit->setFixedWidth(85);
+  miniEdit->setFixedWidth(60);
 #endif
 
 #ifdef Q_OS_MAC
@@ -5523,11 +5523,16 @@ bool MainWindow::eventFilter(QObject* watched, QEvent* event) {
   }
 
   if (watched == this) {
-    // return QWidget::eventFilter(watched, event);
     if (event->type() == QEvent::ActivationChange) {
       if (QApplication::activeWindow() != this) {
+        // myScrollBox->close();
+        // return true;
       }
       if (QApplication::activeWindow() == this) {
+        if (!myScrollBox->isVisible()) {
+          // myScrollBox->show();
+          // return true;
+        }
       }
     }
   }

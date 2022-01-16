@@ -27,6 +27,7 @@ class dlgScrollBox : public QDialog {
   bool isDrag = false;
   QPoint m_position;
   int s_box_h = 25;
+  int s_box_x = 0;
 };
 
 #endif  // DLGSCROLLBOX_H
