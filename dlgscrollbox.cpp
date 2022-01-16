@@ -3,112 +3,133 @@
 #include "mainwindow.h"
 #include "ui_dlgscrollbox.h"
 #include "ui_mainwindow.h"
-extern MainWindow* mw_one;
-extern miniDialog* miniDlg;
+extern MainWindow *mw_one;
+extern miniDialog *miniDlg;
 
-dlgScrollBox::dlgScrollBox(QWidget* parent)
-    : QDialog(parent), ui(new Ui::dlgScrollBox) {
-  ui->setupUi(this);
+dlgScrollBox::dlgScrollBox(QWidget *parent) : QDialog(parent), ui(new Ui::dlgScrollBox)
+{
+    ui->setupUi(this);
 
-  // 最顶层，在任何APP之上
-  // this->setWindowFlags(this->windowFlags() | Qt::WindowStaysOnTopHint |
-  //                     Qt::FramelessWindowHint);
-  this->setWindowFlags(Qt::WindowStaysOnTopHint | Qt::CustomizeWindowHint |
-                       Qt::Tool | Qt::FramelessWindowHint);
+    // MainWindow *mw_one1 = qobject_cast<MainWindow *>(parent);
 
-  this->setAutoFillBackground(true);
-  QPalette palette = this->palette();
-  palette.setColor(QPalette::Background, Qt::blue);
+    // 最顶层，在任何APP之上
+    // this->setWindowFlags(this->windowFlags() | Qt::WindowStaysOnTopHint |
+    //                     Qt::FramelessWindowHint);
 
-  this->setPalette(palette);
+    // this->setWindowFlags(Qt::WindowStaysOnTopHint | Qt::CustomizeWindowHint |
+    //                     Qt::Tool | Qt::FramelessWindowHint);
 
-  /*this->setStyleSheet(
-      QString("border-width: 1px;"
-              "border-style: solid;"
-              "border-radius:2px;"
-              "border-color: rgb(25,25,255);"
-              "background-color:rgba(0,0,255,20);"));*/
+    this->setAutoFillBackground(true);
+    QPalette palette = this->palette();
+    palette.setColor(QPalette::Background, Qt::blue);
+    this->setPalette(palette);
+    setWindowOpacity(0.3);
 
-  setWindowOpacity(0.3);
+    /*setStyleSheet(QString("border-width: 1px;"
+"border-style: solid;"
+"border-radius:2px;"
+"border-color: rgb(25,25,255);"
+"background-color:rgba(0,0,255,20);"));*/
 }
 
 dlgScrollBox::~dlgScrollBox() { delete ui; }
 
-void dlgScrollBox::mouseMoveEvent(QMouseEvent* e) {
-  if (isDrag & (e->buttons() & Qt::LeftButton)) {
-    move(e->globalPos() - m_position);
-    // move(e->pos() - m_position);
-    e->accept();
-  }
+void dlgScrollBox::mouseMoveEvent(QMouseEvent *e)
+{
+    y0 = mw_one->y()
+         + (mw_one->height() - mw_one->ui->statusbar->height() - mw_one->miniEdit->height())
+         + this->height();
+    y1 = y0 + mw_one->miniEdit->height() - this->height();
 
-  int x, y, w, h;
-  x = mw_one->x() + (mw_one->width() - mw_one->miniEdit->width() - 3);
-  y = this->y();
-  w = mw_one->miniEdit->width();
-  h = s_box_h;
+    x = mw_one->x() + (mw_one->width() - mw_one->miniEdit->width() - 4);
 
-  int y0, y1;
+    w = mw_one->miniEdit->width();
+    h = s_box_h;
 
-  y0 = mw_one->y() +
-       (mw_one->height() - mw_one->ui->statusbar->height() -
-        mw_one->miniEdit->height()) +
-       this->height();
-  y1 = y0 + mw_one->miniEdit->height() - this->height();
+    if (isDrag & (e->buttons() & Qt::LeftButton)) {
+        // move(e->globalPos() - m_position);
+        QPoint pMove(x, e->globalY());
+        move(pMove - m_position);
 
-  int thisP = 0;
+        e->accept();
+    }
 
-  if (y <= y0) y = y0;
-  if (y >= y1) {
-    y = y1;
-  }
-  thisP = y - y0;
+    int t = mw_one->miniEdit->height() - this->height();
+    unsigned long max = mw_one->miniEdit->verticalScrollBar()->maximum();
+    my = this->y();
 
-  this->setGeometry(x, y, w, h);
+    if (my <= y0) {
+        my = y0;
+        isDrag = false;
+    }
 
-  int t = mw_one->miniEdit->height() - this->height();
-  int m = mw_one->miniEdit->verticalScrollBar()->maximum();
-  double b = (double)(thisP) / (double)t;
-  int p = b * m;
+    if (my >= y1) {
+        my = y1;
+        isDrag = false;
+    }
 
-  mw_one->miniEdit->verticalScrollBar()->setSliderPosition(p);
+    thisP = my - y0;
+    double b = (double) (thisP) / (double) t;
+    unsigned long p = b * max;
+
+    mw_one->miniEdit->verticalScrollBar()->setSliderPosition(p);
+
+    this->setGeometry(x, my, w, h);
 }
 
-void dlgScrollBox::mousePressEvent(QMouseEvent* e) {
-  if (e->button() == Qt::LeftButton) {
-    isDrag = true;
-    m_position = e->globalPos() - this->pos();
+void dlgScrollBox::mousePressEvent(QMouseEvent *e)
+{
+    y0 = mw_one->y()
+         + (mw_one->height() - mw_one->ui->statusbar->height() - mw_one->miniEdit->height())
+         + this->height();
+    y1 = y0 + mw_one->miniEdit->height() - this->height();
 
-    e->accept();
-  }
+    my = 0;
+
+    if (e->button() == Qt::LeftButton) {
+        isDrag = true;
+        x = mw_one->x() + (mw_one->width() - mw_one->miniEdit->width() - 4);
+        QPoint p1(x, e->globalY());
+        QPoint p0(x, this->pos().y());
+        // m_position = e->globalPos() - this->pos();
+        m_position = p1 - p0;
+        e->accept();
+    }
 }
 
-void dlgScrollBox::mouseReleaseEvent(QMouseEvent*) { isDrag = false; }
+void dlgScrollBox::mouseReleaseEvent(QMouseEvent *)
+{
+    isDrag = false;
 
-void dlgScrollBox::init_ScrollBox() {
-  int x, y, w, h;
-  x = mw_one->x() + mw_one->width() - mw_one->miniEdit->width() - 3;
-  w = mw_one->miniEdit->width();
-  h = s_box_h;
+    if (my == y0)
+        this->setGeometry(x, my + 1, w, h);
+    if (my == y1)
+        this->setGeometry(x, my - 1, w, h);
+}
 
-  int y0;
-  y0 = mw_one->y() +
-       (mw_one->height() - mw_one->ui->statusbar->height() -
-        mw_one->miniEdit->height()) +
-       this->height();
+void dlgScrollBox::init_ScrollBox()
+{
+    x = mw_one->x() + mw_one->width() - mw_one->miniEdit->width() - 4;
+    w = mw_one->miniEdit->width();
+    h = s_box_h;
 
-  int p0;
-  int h0 = mw_one->miniEdit->height() - this->height();
-  int h1 = mw_one->miniEdit->verticalScrollBar()->maximum();
-  int p1 = mw_one->miniEdit->verticalScrollBar()->sliderPosition();
-  double b = (double)(p1) / (double)(h1);
-  p0 = h0 * b;
-  if (p0 < 0) {
-    close();
-    return;
-  }
+    y0 = mw_one->y()
+         + (mw_one->height() - mw_one->ui->statusbar->height() - mw_one->miniEdit->height())
+         + this->height();
 
-  y = p0 + y0;
+    int p0;
+    int h0 = mw_one->miniEdit->height() - this->height();
+    int h1 = mw_one->miniEdit->verticalScrollBar()->maximum();
+    int p1 = mw_one->miniEdit->verticalScrollBar()->sliderPosition();
+    double b = (double) (p1) / (double) (h1);
+    p0 = h0 * b;
+    if (p0 < 0) {
+        close();
+        return;
+    }
 
-  this->setGeometry(x, y, w, h);
-  this->show();
+    my = p0 + y0;
+
+    this->setGeometry(x, my, w, h);
+    this->show();
 }

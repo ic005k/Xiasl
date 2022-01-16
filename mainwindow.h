@@ -54,6 +54,7 @@
 #include <QTreeWidget>
 #include <QTreeWidgetItem>
 #include <QWidget>
+#include <QWindow>
 
 #include "autoupdatedialog.h"
 #include "dlgdecompile.h"
@@ -113,7 +114,7 @@ class MainWindow : public QMainWindow {
   ~MainWindow();
   Ui::MainWindow* ui;
 
-  dlgScrollBox* myScrollBox;
+  dlgScrollBox *myScrollBox;
   QMenu* mnuRecentOpenFile;
   QStringList recentFileList;
   void setRecentFiles(QString fileName);

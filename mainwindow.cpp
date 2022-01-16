@@ -118,7 +118,9 @@ MainWindow::MainWindow(QWidget* parent)
   dlg = new dlgDecompile(this);
   dlgAutoUpdate = new AutoUpdateDialog(this);
   dlgset = new dlgPreferences(this);
-  myScrollBox = new dlgScrollBox(this);
+  myScrollBox = new dlgScrollBox();
+  myScrollBox->setParent(this); //指定父窗口
+  myScrollBox->setWindowFlags(myScrollBox->windowFlags() | Qt::Dialog | Qt::FramelessWindowHint);
   myScrollBox->close();
 
 #ifdef Q_OS_WIN32
@@ -4527,7 +4529,7 @@ void MainWindow::init_miniEdit() {
   miniEdit->SendScintilla(QsciScintilla::SCI_SETVSCROLLBAR, false);
 
 #ifdef Q_OS_WIN32
-  miniEdit->setFixedWidth(85);
+  miniEdit->setFixedWidth(60);
 #endif
 
 #ifdef Q_OS_LINUX
@@ -5525,14 +5527,8 @@ bool MainWindow::eventFilter(QObject* watched, QEvent* event) {
   if (watched == this) {
     if (event->type() == QEvent::ActivationChange) {
       if (QApplication::activeWindow() != this) {
-        // myScrollBox->close();
-        // return true;
       }
       if (QApplication::activeWindow() == this) {
-        if (!myScrollBox->isVisible()) {
-          // myScrollBox->show();
-          // return true;
-        }
       }
     }
   }
@@ -5987,6 +5983,8 @@ void MiniEditor::mouseMoveEvent(QMouseEvent* event) {
   if (!textEditScroll) {
     showZoomWin(event->x(), event->y());
   }
+
+  mw_one->myScrollBox->init_ScrollBox();
 }
 
 // void MiniEditor::paintEvent(QPaintEvent*) {}
@@ -6302,6 +6300,7 @@ void MainWindow::setValue() {
   int p = b * t;
 
   textEdit->verticalScrollBar()->setSliderPosition(p);
+  // qDebug() << "setValue";
 }
 
 void MainWindow::setValue2() {
@@ -6319,7 +6318,10 @@ void MainWindow::setValue2() {
   int p = b * m;
 
   miniEdit->verticalScrollBar()->setSliderPosition(p);
-  if (!loading) myScrollBox->init_ScrollBox();
+  if (!loading)
+      myScrollBox->init_ScrollBox();
+
+  // qDebug() << "setValue2";
 }
 
 #ifndef QT_NO_CONTEXTMENU
@@ -6831,7 +6833,8 @@ void MainWindow::resizeEvent(QResizeEvent* event) {
   Q_UNUSED(event);
   isDrag = false;
   miniDlg->close();
-  myScrollBox->init_ScrollBox();
+
+  myScrollBox->close();
 }
 
 void MainWindow::on_actionAutomatic_Line_Feeds_triggered() {
