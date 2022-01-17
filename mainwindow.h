@@ -59,12 +59,10 @@
 #include "autoupdatedialog.h"
 #include "dlgdecompile.h"
 #include "dlgpreferences.h"
-#include "dlgscrollbox.h"
 #include "minidialog.h"
 #include "recentfiles.h"
 #include "ui_dlgdecompile.h"
 #include "ui_dlgpreferences.h"
-#include "ui_dlgscrollbox.h"
 
 //网络相关头文件
 #include <QtNetwork/QNetworkAccessManager>
