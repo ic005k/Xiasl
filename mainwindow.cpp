@@ -14,7 +14,7 @@
 #endif
 #include "methods.h"
 
-QString CurVerison = "1.1.25";
+QString CurVerison = "1.1.26";
 QString fileName, curFile, dragFileName;
 
 bool loading = false;
@@ -6358,6 +6358,8 @@ void MainWindow::init_ScrollBox() {
   int p0 = h0 * b;
   int y = p0 + y0;
 
+  miniEdit->setGeometry(miniEdit->x(), 0, ui->dockMiniEdit->width() - 1,
+                        ui->dockMiniEdit->height());
   ui->fBox->setGeometry(miniEdit->x(), y, miniEdit->width() - 1, 30);
   ui->fBox->raise();
   ui->fBox->show();

@@ -1082,13 +1082,11 @@ QListWidget::item:selected
         </size>
        </property>
        <property name="styleSheet">
-        <string notr="true">QFrame
-{
-    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:0, 
-                                    stop:0 rgba(195, 40, 9, 55), 
-                                    stop:0.7 rgba(225, 121, 113, 55), 
-                                    stop:1 rgba(237, 154, 152, 55));
-}</string>
+        <string notr="true">QFrame { background-color:rgba(255,25,25,35); 
+			border-left: 1px solid black; 
+			border-right: 1px solid black; 
+			border-top: 1px solid black; 
+			border-bottom: 1px solid black; }</string>
        </property>
        <property name="frameShape">
         <enum>QFrame::StyledPanel</enum>
