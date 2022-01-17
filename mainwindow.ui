@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>822</width>
+    <width>909</width>
     <height>638</height>
    </rect>
   </property>
@@ -938,8 +938,8 @@ QListWidget::item:selected
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>822</width>
-     <height>24</height>
+     <width>909</width>
+     <height>30</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -1044,7 +1044,7 @@ QListWidget::item:selected
    <property name="minimumSize">
     <size>
      <width>60</width>
-     <height>52</height>
+     <height>63</height>
     </size>
    </property>
    <property name="features">
@@ -1059,7 +1059,7 @@ QListWidget::item:selected
       <number>0</number>
      </property>
      <property name="topMargin">
-      <number>0</number>
+      <number>2</number>
      </property>
      <property name="rightMargin">
       <number>2</number>

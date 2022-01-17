@@ -237,7 +237,6 @@ MainWindow::MainWindow(QWidget* parent)
   readINIProxy();
 
   ui->fBox->setMouseTracking(true);
-  ui->fBox->installEventFilter(this);
   init_miniEdit();
   ui->dockMiniEdit->layout()->addWidget(miniEdit);
   ui->dockMiniEdit->layout()->addWidget(ui->fBox);
@@ -574,6 +573,7 @@ void MainWindow::loadFile(const QString& fileName, int row, int col) {
   int count = Reg.value("miniMapCount").toInt();
   for (int i = 0; i < count; i++) {
     miniEdit->setHidden(Reg.value("miniMap" + fileName, false).toBool());
+    miniEdit->setHidden(false);
     if (miniEdit->isHidden())
       textEdit->SendScintilla(QsciScintilla::SCI_SETVSCROLLBAR, true);
     else
@@ -5008,11 +5008,11 @@ void MainWindow::closeEvent(QCloseEvent* event) {
   Reg.setValue("height", this->height());
 
   //存储minimap
-  Reg.setValue("miniMapCount", ui->tabWidget_textEdit->count());
-  for (int i = 0; i < ui->tabWidget_textEdit->count(); i++) {
-    Reg.setValue("miniMap" + getCurrentFileName(i),
-                 getCurrentMiniEditor(i)->isHidden());
-  }
+  // Reg.setValue("miniMapCount", ui->tabWidget_textEdit->count());
+  // for (int i = 0; i < ui->tabWidget_textEdit->count(); i++) {
+  //  Reg.setValue("miniMap" + getCurrentFileName(i),
+  //               getCurrentMiniEditor(i)->isHidden());
+  // }
 
   //存储编码选项
   Reg.setValue("utf-8", ui->actionUTF_8->isChecked());
@@ -5550,12 +5550,10 @@ bool MainWindow::eventFilter(QObject* watched, QEvent* event) {
     }
   }
 
-  /*if (watched == ui->fBox) {
+  if (watched == ui->fBox) {
     if (event->type() == QEvent::MouseMove) {
-
-      return true;
     }
-  }*/
+  }
 
   if (watched == this) {
     if (event->type() == QEvent::ActivationChange) {
@@ -6351,13 +6349,15 @@ void MainWindow::setValue2() {
 }
 
 void MainWindow::init_ScrollBox() {
-  int y0 = ui->dockMiniEdit->y();
+  int y0 = 0;
+
   int h0 = miniEdit->height() - ui->fBox->height();
   int h1 = miniEdit->verticalScrollBar()->maximum();
   int p1 = miniEdit->verticalScrollBar()->sliderPosition();
   double b = (double)(p1) / (double)(h1);
   int p0 = h0 * b;
   int y = p0 + y0;
+
   ui->fBox->setGeometry(miniEdit->x(), y, miniEdit->width() - 1, 30);
   ui->fBox->raise();
 }
@@ -6379,7 +6379,7 @@ void MainWindow::moveEvent(QMoveEvent* e) { Q_UNUSED(e); }
 
 bool MainWindow::event(QEvent* event) {
   if (event->type() == QEvent::NonClientAreaMouseButtonPress) {
-    // qDebug() << "title double clicked event";
+    // qDebug() << "title clicked event";
   }
 
   if (event->type() == QEvent::NonClientAreaMouseButtonRelease) {
@@ -6389,40 +6389,43 @@ bool MainWindow::event(QEvent* event) {
 }
 
 void MainWindow::mouseMoveEvent(QMouseEvent* e) {
-  e->accept();
-
-  if (enterEdit(e->pos(), miniEdit)) {
-  }
-
-  if (enterEdit(e->pos(), textEdit)) {
-  }
+  if (!isDrag) return;
 
   miniDlg->close();
 
-  /*if (isDrag & (e->buttons() & Qt::LeftButton)) {
-    move(e->globalPos() - m_position);
-    e->accept();
-  }*/
-
   if (e->x() < ui->dockMiniEdit->x() ||
-      e->x() > ui->dockMiniEdit->x() + ui->dockMiniEdit->width())
-    return;
-  if (e->y() < ui->dockMiniEdit->y() ||
-      e->y() > ui->dockMiniEdit->y() + ui->dockMiniEdit->height())
-    return;
+      e->x() > ui->dockMiniEdit->x() + ui->dockMiniEdit->width() - 5) {
+    if (!isDrag & (e->buttons() & Qt::LeftButton)) {
+      move(e->globalPos() - m_position);
+      e->accept();
+    }
 
-  int y0, y, y1;
-  y0 = ui->dockMiniEdit->y();
+    return;
+  }
+
+  e->accept();
+
+  int y0, y, y1, my;
+  y0 = 0;
   y1 = y0 + miniEdit->height() - ui->fBox->height();
+
   y = e->y();
-  if (y <= y0) y = y0;
-  if (y >= y1) y = y1;
-  ui->fBox->setGeometry(miniEdit->x(), y, miniEdit->width() - 1, 30);
+
+  if (y <= y0) {
+    my = y0;
+  } else if (y >= y1) {
+    my = y1;
+  } else
+    my = y - ui->fBox->height();
+
+  if (my <= y0) my = y0;
+
+  ui->fBox->setGeometry(miniEdit->x(), my, miniEdit->width() - 1, 30);
   ui->fBox->show();
 
   int t = miniEdit->height() - ui->fBox->height();
   unsigned long max = miniEdit->verticalScrollBar()->maximum();
-  int thisP = y - y0;
+  int thisP = my - y0;
   double b = (double)(thisP) / (double)t;
   unsigned long p = b * max;
 
@@ -6430,13 +6433,11 @@ void MainWindow::mouseMoveEvent(QMouseEvent* e) {
 }
 
 void MainWindow::mousePressEvent(QMouseEvent* e) {
-  /*if (e->button() == Qt::LeftButton) {
+  if (e->button() == Qt::LeftButton) {
     isDrag = true;
     m_position = e->globalPos() - this->pos();
     e->accept();
-
-    myScrollBox->close();
-  }*/
+  }
 }
 
 void MainWindow::mouseReleaseEvent(QMouseEvent*) { isDrag = false; }
