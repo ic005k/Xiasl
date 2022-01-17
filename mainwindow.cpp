@@ -2151,7 +2151,7 @@ void thread_one::run() {
       QFileInfo(curFile).suffix().toLower() == "c") {
     Methods::getVoidForCpp(textEditBack);
   } else if (QFileInfo(curFile).suffix().toLower() == "dsl" ||
-             QFileInfo(curFile).suffix().toLower() == "asl") {
+             QFileInfo(curFile).suffix().toLower() == "asl" || curFile == "") {
     getMemberTree(textEditBack);
   }
 
@@ -6360,6 +6360,7 @@ void MainWindow::init_ScrollBox() {
 
   ui->fBox->setGeometry(miniEdit->x(), y, miniEdit->width() - 1, 30);
   ui->fBox->raise();
+  ui->fBox->show();
 }
 
 #ifndef QT_NO_CONTEXTMENU
