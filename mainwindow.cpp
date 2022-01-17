@@ -141,17 +141,12 @@ MainWindow::MainWindow(QWidget* parent)
   dlg = new dlgDecompile(this);
   dlgAutoUpdate = new AutoUpdateDialog(this);
   dlgset = new dlgPreferences(this);
-  myScrollBox = new dlgScrollBox();
-  if (win || linuxOS) {
-    myScrollBox->setParent(this);  //指定父窗口
-    myScrollBox->setWindowFlags(myScrollBox->windowFlags() | Qt::Dialog |
-                                Qt::FramelessWindowHint);
-  } else {
-    myScrollBox->setWindowFlags(Qt::WindowStaysOnTopHint |
-                                Qt::CustomizeWindowHint | Qt::Tool |
-                                Qt::FramelessWindowHint);
-  }
-  myScrollBox->close();
+
+  miniDlg = new miniDialog(this);
+  miniDlgEdit->setFont(font);
+  miniDlg->close();
+
+  miniEdit = new MiniEditor(this);
 
   init_statusBar();
 
@@ -171,10 +166,6 @@ MainWindow::MainWindow(QWidget* parent)
   connect(ui->tabWidget_textEdit, SIGNAL(tabCloseRequested(int)), this,
           SLOT(closeTab(int)));
   ui->tabWidget_textEdit->setIconSize(QSize(7, 7));
-
-  miniDlg = new miniDialog(this);
-  miniDlgEdit->setFont(font);
-  miniDlg->close();
 
   // 分割窗口
   QSplitter* splitterH = new QSplitter(Qt::Horizontal, this);
@@ -211,9 +202,7 @@ MainWindow::MainWindow(QWidget* parent)
   list.append(h1);
   splitterV->setSizes(list);
   connect(splitterV, &QSplitter::splitterMoved, [=]() {
-      myScrollBox->init_ScrollBox();
-      if (ui->frameInfo->height() > this->height() - 100)
-          myScrollBox->close();
+
   });
 
   //设置鼠标追踪
@@ -246,6 +235,14 @@ MainWindow::MainWindow(QWidget* parent)
   loadFindString();
 
   readINIProxy();
+
+  ui->fBox->setMouseTracking(true);
+  ui->fBox->installEventFilter(this);
+  init_miniEdit();
+  ui->dockMiniEdit->layout()->addWidget(miniEdit);
+  ui->dockMiniEdit->layout()->addWidget(ui->fBox);
+  syncMiniEdit();
+  init_ScrollBox();
 
   One = false;
   blInit = false;
@@ -1183,7 +1180,7 @@ void MainWindow::readCppResult(int exitCode) {
   InfoWinShow = true;
   ui->actionInfo_win->setChecked(true);
 
-  myScrollBox->init_ScrollBox();
+  init_ScrollBox();
 }
 
 /*读取编译结果信息dsl*/
@@ -1265,7 +1262,7 @@ void MainWindow::readResult(int exitCode) {
   InfoWinShow = true;
   ui->actionInfo_win->setChecked(true);
 
-  myScrollBox->init_ScrollBox();
+  init_ScrollBox();
 
   loading = false;
 }
@@ -2164,7 +2161,8 @@ void thread_one::run() {
 /*线程结束后对成员树进行数据刷新*/
 void MainWindow::dealover() {
   update_ui_tree();
-  if (!loading) myScrollBox->init_ScrollBox();
+
+  if (!loading) init_ScrollBox();
   thread_end = true;
   break_run = false;
 }
@@ -4117,6 +4115,7 @@ void MainWindow::init_toolbar() {
   ui->btnSave->setIcon(QIcon(":/icon/save.png"));
   ui->btnNew->setIcon(QIcon(":/icon/new.png"));
   ui->btnMiniMap->setIcon(QIcon(":/icon/map.png"));
+  ui->btnMiniMap->setHidden(true);
 
   // TAB List
   ui->btnTabList->setToolTip(tr("TAB List"));
@@ -4544,7 +4543,7 @@ void MainWindow::setLexer(QsciLexer* textLexer, QsciScintilla* textEdit) {
 }
 
 void MainWindow::init_miniEdit() {
-  miniEdit = new MiniEditor(this);
+  // miniEdit = new MiniEditor(this);
   miniEdit->setFrameShape(QFrame::NoFrame);
   miniEdit->verticalScrollBar()->installEventFilter(this);
 
@@ -4555,7 +4554,7 @@ void MainWindow::init_miniEdit() {
 
 #ifdef Q_OS_LINUX
   miniEdit->setFixedWidth(60);
-  miniEdit->SendScintilla(QsciScintilla::SCI_SETVSCROLLBAR, true);
+  miniEdit->SendScintilla(QsciScintilla::SCI_SETVSCROLLBAR, false);
 #endif
 
 #ifdef Q_OS_MAC
@@ -5247,7 +5246,7 @@ void MainWindow::newFile(QString file) {
   }
 
   init_edit();
-  init_miniEdit();
+  // init_miniEdit();
 
   MyTabPage* page = new MyTabPage;
 
@@ -5263,8 +5262,9 @@ void MainWindow::newFile(QString file) {
   vboxLayout->addWidget(lbl);
   lbl->setHidden(true);
 
-  QHBoxLayout* hboxLayout = new QHBoxLayout();
-  hboxLayout->addWidget(miniEdit);
+  // QVBoxLayout* hboxLayout = new QVBoxLayout();
+  hboxLayout = new QVBoxLayout();
+  // hboxLayout->addWidget(miniEdit);
   hboxLayout->setMargin(0);
   hboxLayout->setContentsMargins(1, 0, 0, 0);
   hboxLayout->setSpacing(0);
@@ -5291,6 +5291,7 @@ void MainWindow::newFile(QString file) {
   textEdit->clear();
   textEditBack->clear();
   miniEdit->clear();
+  init_ScrollBox();
 
   lblLayer->setText("");
   lblMsg->setText("");
@@ -5549,6 +5550,13 @@ bool MainWindow::eventFilter(QObject* watched, QEvent* event) {
     }
   }
 
+  /*if (watched == ui->fBox) {
+    if (event->type() == QEvent::MouseMove) {
+
+      return true;
+    }
+  }*/
+
   if (watched == this) {
     if (event->type() == QEvent::ActivationChange) {
       if (QApplication::activeWindow() != this) {
@@ -5574,7 +5582,7 @@ void MainWindow::on_tabWidget_textEdit_tabBarClicked(int index) {
     return;
 
   textEdit = getCurrentEditor(index);
-  miniEdit = getCurrentMiniEditor(index);
+  // miniEdit = getCurrentMiniEditor(index);
 
   if (miniEdit->isVisible())
     ui->actionMinimap->setChecked(true);
@@ -5699,7 +5707,7 @@ void MainWindow::view_info() {
     ui->actionInfo_win->setChecked(false);
   }
 
-  myScrollBox->init_ScrollBox();
+  init_ScrollBox();
 }
 
 void MainWindow::view_mem_list() {
@@ -5997,9 +6005,9 @@ void MainWindow::on_miniMap() {
   if (ui->tabWidget_textEdit->currentIndex() < 0) return;
 
   if (!ui->actionMinimap->isChecked()) {
-    miniEdit->setVisible(false);
+    ui->dockMiniEdit->setVisible(false);
   } else {
-    miniEdit->setVisible(true);
+    ui->dockMiniEdit->setVisible(true);
   }
 }
 
@@ -6010,8 +6018,6 @@ void MiniEditor::mouseMoveEvent(QMouseEvent* event) {
   if (!textEditScroll) {
     showZoomWin(event->x(), event->y());
   }
-
-  if (!mw_one->myScrollBox->isVisible()) mw_one->myScrollBox->init_ScrollBox();
 }
 
 // void MiniEditor::paintEvent(QPaintEvent*) {}
@@ -6246,14 +6252,8 @@ void MiniEditor::showZoomWin(int x, int y) {
     w0 = 6;
   else
     w0 = 2;
-  if (!mw_one->ui->tabWidget_misc->isHidden())
-    miniDlg->setGeometry(mw_one->ui->tabWidget_misc->width() +
-                             mw_one->ui->tabWidget_textEdit->width() - w -
-                             width() + w0,
-                         y1, w, h);
-  else
-    miniDlg->setGeometry(mw_one->ui->tabWidget_textEdit->width() - w - width(),
-                         y1, w, h);
+
+  miniDlg->setGeometry(mw_one->ui->dockMiniEdit->x() - w - 1, y1, w, h);
 
   if (miniDlg->isHidden()) {
     QFont font = mw_one->font;
@@ -6345,9 +6345,21 @@ void MainWindow::setValue2() {
   int p = b * m;
 
   miniEdit->verticalScrollBar()->setSliderPosition(p);
-  if (!loading) myScrollBox->init_ScrollBox();
 
+  if (!loading) init_ScrollBox();
   // qDebug() << "setValue2";
+}
+
+void MainWindow::init_ScrollBox() {
+  int y0 = ui->dockMiniEdit->y();
+  int h0 = miniEdit->height() - ui->fBox->height();
+  int h1 = miniEdit->verticalScrollBar()->maximum();
+  int p1 = miniEdit->verticalScrollBar()->sliderPosition();
+  double b = (double)(p1) / (double)(h1);
+  int p0 = h0 * b;
+  int y = p0 + y0;
+  ui->fBox->setGeometry(miniEdit->x(), y, miniEdit->width() - 1, 30);
+  ui->fBox->raise();
 }
 
 #ifndef QT_NO_CONTEXTMENU
@@ -6365,18 +6377,15 @@ void MainWindow::on_actionCollapseAll() { ui->treeWidget->collapseAll(); }
 
 void MainWindow::moveEvent(QMoveEvent* e) { Q_UNUSED(e); }
 
-bool MainWindow::event(QEvent *event)
-{
-    if (event->type() == QEvent::NonClientAreaMouseButtonPress) {
-        // qDebug() << "title double clicked event";
-        myScrollBox->close();
-    }
+bool MainWindow::event(QEvent* event) {
+  if (event->type() == QEvent::NonClientAreaMouseButtonPress) {
+    // qDebug() << "title double clicked event";
+  }
 
-    if (event->type() == QEvent::NonClientAreaMouseButtonRelease) {
-        myScrollBox->init_ScrollBox();
-    }
+  if (event->type() == QEvent::NonClientAreaMouseButtonRelease) {
+  }
 
-    return QWidget::event(event);
+  return QWidget::event(event);
 }
 
 void MainWindow::mouseMoveEvent(QMouseEvent* e) {
@@ -6390,27 +6399,47 @@ void MainWindow::mouseMoveEvent(QMouseEvent* e) {
 
   miniDlg->close();
 
-  if (isDrag & (e->buttons() & Qt::LeftButton)) {
+  /*if (isDrag & (e->buttons() & Qt::LeftButton)) {
     move(e->globalPos() - m_position);
     e->accept();
-  }
+  }*/
+
+  if (e->x() < ui->dockMiniEdit->x() ||
+      e->x() > ui->dockMiniEdit->x() + ui->dockMiniEdit->width())
+    return;
+  if (e->y() < ui->dockMiniEdit->y() ||
+      e->y() > ui->dockMiniEdit->y() + ui->dockMiniEdit->height())
+    return;
+
+  int y0, y, y1;
+  y0 = ui->dockMiniEdit->y();
+  y1 = y0 + miniEdit->height() - ui->fBox->height();
+  y = e->y();
+  if (y <= y0) y = y0;
+  if (y >= y1) y = y1;
+  ui->fBox->setGeometry(miniEdit->x(), y, miniEdit->width() - 1, 30);
+  ui->fBox->show();
+
+  int t = miniEdit->height() - ui->fBox->height();
+  unsigned long max = miniEdit->verticalScrollBar()->maximum();
+  int thisP = y - y0;
+  double b = (double)(thisP) / (double)t;
+  unsigned long p = b * max;
+
+  miniEdit->verticalScrollBar()->setSliderPosition(p);
 }
 
 void MainWindow::mousePressEvent(QMouseEvent* e) {
-  qDebug() << "dd";
-  if (e->button() == Qt::LeftButton) {
+  /*if (e->button() == Qt::LeftButton) {
     isDrag = true;
     m_position = e->globalPos() - this->pos();
     e->accept();
 
     myScrollBox->close();
-  }
+  }*/
 }
 
-void MainWindow::mouseReleaseEvent(QMouseEvent*) {
-  isDrag = false;
-  myScrollBox->init_ScrollBox();
-}
+void MainWindow::mouseReleaseEvent(QMouseEvent*) { isDrag = false; }
 
 bool MainWindow::enterEdit(QPoint pp, QsciScintilla* btn) {
   int height = btn->height();
@@ -6861,7 +6890,10 @@ void MainWindow::resizeEvent(QResizeEvent* event) {
   isDrag = false;
   miniDlg->close();
 
-  myScrollBox->close();
+  miniEdit->setGeometry(miniEdit->x(), 0, ui->dockMiniEdit->width() - 1,
+                        ui->dockMiniEdit->height());
+
+  init_ScrollBox();
 }
 
 void MainWindow::on_actionAutomatic_Line_Feeds_triggered() {
@@ -6886,17 +6918,14 @@ void MainWindow::on_btnMiniMap_clicked() {
   } else {
     miniEdit->setHidden(true);
     textEdit->SendScintilla(QsciScintilla::SCI_SETVSCROLLBAR, true);
-    myScrollBox->close();
   }
 }
 
 void MainWindow::on_actionNew_triggered() { newFile(""); }
 
-void MainWindow::timer_watch_pos()
-{
-    QPoint curPos(this->x(), this->y());
-    if (winPos != curPos) {
-        myScrollBox->close();
-        winPos = curPos;
-    }
+void MainWindow::timer_watch_pos() {
+  QPoint curPos(this->x(), this->y());
+  if (winPos != curPos) {
+    winPos = curPos;
+  }
 }

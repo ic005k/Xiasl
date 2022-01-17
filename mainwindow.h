@@ -114,8 +114,8 @@ class MainWindow : public QMainWindow {
   ~MainWindow();
   Ui::MainWindow* ui;
 
+  QVBoxLayout* hboxLayout;
   QTimer* tmrWatchPos;
-  dlgScrollBox *myScrollBox;
   QMenu* mnuRecentOpenFile;
   QStringList recentFileList;
   void setRecentFiles(QString fileName);
@@ -525,6 +525,8 @@ class MainWindow : public QMainWindow {
   void init_miniEdit();
 
   MiniEditor* getCurrentMiniEditor(int index);
+
+  void init_ScrollBox();
 
  protected:
   void closeEvent(QCloseEvent* event) override;
