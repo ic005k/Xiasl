@@ -14,7 +14,7 @@
 #endif
 #include "methods.h"
 
-QString CurVerison = "1.1.27";
+QString CurVerison = "1.1.28";
 QString fileName, curFile, dragFileName;
 
 bool loading = false;
@@ -6440,6 +6440,12 @@ void MainWindow::mouseMoveEvent(QMouseEvent* e) {
   unsigned long p = b * max;
 
   miniEdit->verticalScrollBar()->setSliderPosition(p);
+
+  if (miniEdit->verticalScrollBar()->maximum() <= miniEdit->height()) {
+    max = textEdit->verticalScrollBar()->maximum();
+    p = b * max;
+    textEdit->verticalScrollBar()->setSliderPosition(p);
+  }
 }
 
 void MainWindow::mousePressEvent(QMouseEvent* e) {
