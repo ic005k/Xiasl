@@ -14,7 +14,7 @@
 #endif
 #include "methods.h"
 
-QString CurVerison = "1.1.29";
+QString CurVerison = "1.1.30";
 QString fileName, curFile, dragFileName;
 
 bool loading = false;
@@ -6357,10 +6357,11 @@ void MainWindow::setValue2() {
 void MainWindow::init_ScrollBox() {
   int y0 = 0;
 
-  int miniHeight;
+  int miniHeight, th;
   miniHeight = miniEdit->height();
-  if (miniEdit->verticalScrollBar()->maximum() <= miniEdit->height()) {
-    miniHeight = miniEdit->textHeight(1) * miniEdit->lines();
+  th = miniEdit->textHeight(1) * miniEdit->lines();
+  if (th <= miniEdit->height()) {
+    miniHeight = th;
   }
 
   int h0 = miniHeight - ui->fBox->height();
@@ -6427,7 +6428,8 @@ void MainWindow::mouseMoveEvent(QMouseEvent* e) {
   y0 = 0;
   y1 = y0 + miniHeight - ui->fBox->height();
 
-  if (miniEdit->verticalScrollBar()->maximum() <= miniEdit->height()) {
+  int th = miniEdit->textHeight(1) * miniEdit->lines();
+  if (th <= miniEdit->height()) {
     int th = miniEdit->textHeight(1) * miniEdit->lines();
     int nh = th - ui->fBox->height();
     y1 = y0 + nh;
@@ -6456,8 +6458,7 @@ void MainWindow::mouseMoveEvent(QMouseEvent* e) {
 
   miniEdit->verticalScrollBar()->setSliderPosition(p);
 
-  if (miniEdit->verticalScrollBar()->maximum() <= miniEdit->height()) {
-    int th = miniEdit->textHeight(1) * miniEdit->lines();
+  if (th <= miniEdit->height()) {
     t = th - ui->fBox->height();
     max = textEdit->verticalScrollBar()->maximum();
     double b = (double)(thisP) / (double)t;
