@@ -4117,6 +4117,9 @@ void MainWindow::init_toolbar() {
   ui->btnErrorP->setIcon(QIcon(":/icon/1.png"));
   ui->btnErrorN->setIcon(QIcon(":/icon/3.png"));
 
+  ui->treeFind->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
+  ui->treeFind->header()->setStretchLastSection(false);
+
   ui->btnSave->setIcon(QIcon(":/icon/save.png"));
   ui->btnNew->setIcon(QIcon(":/icon/new.png"));
   ui->btnMiniMap->setIcon(QIcon(":/icon/map.png"));
@@ -5897,7 +5900,17 @@ void MainWindow::highlighsearchtext(QString searchText) {
 
   for (int i = 0; i < m_searchTextPosList.count(); i++) {
     QTreeWidgetItem* item = new QTreeWidgetItem(topItem);
-    item->setText(0, QString::number(m_searchTextPosList.at(i)));
+    long long pos = m_searchTextPosList.at(i);
+    int row, col;
+    row = textEdit->SendScintilla(QsciScintillaBase::SCI_LINEFROMPOSITION, pos,
+                                  NULL);
+    col = textEdit->SendScintilla(QsciScintillaBase::SCI_GETCOLUMN, pos, NULL);
+
+    QString lineText = textEdit->text(row).trimmed();
+    item->setText(0, tr("Line : ") + QString::number(row) + "    " +
+                         tr("Column : ") + QString::number(col) + "    " +
+                         lineText);
+    item->setText(1, QString::number(pos));
   }
 }
 
@@ -6963,7 +6976,15 @@ void MainWindow::timer_watch_pos() {
 
 void MainWindow::on_treeFind_itemClicked(QTreeWidgetItem* item, int column) {
   if (column == 0) {
-    long long pos = item->text(0).toLongLong();
-    qDebug() << pos;
+    if (QFile(item->text(0)).exists()) return;
+
+    long long pos = item->text(1).toLongLong();
+    int row, col;
+    row = textEdit->SendScintilla(QsciScintillaBase::SCI_LINEFROMPOSITION, pos,
+                                  NULL);
+    col = textEdit->SendScintilla(QsciScintillaBase::SCI_GETCOLUMN, pos, NULL);
+    textEdit->setFocus();
+    textEdit->setCursorPosition(row, col);
+    qDebug() << pos << row << col;
   }
 }
