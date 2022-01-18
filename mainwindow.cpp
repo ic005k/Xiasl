@@ -14,7 +14,7 @@
 #endif
 #include "methods.h"
 
-QString CurVerison = "1.1.26";
+QString CurVerison = "1.1.27";
 QString fileName, curFile, dragFileName;
 
 bool loading = false;
@@ -1576,6 +1576,7 @@ void MainWindow::on_treeWidget_itemClicked(QTreeWidgetItem* item, int column) {
     int lines = item->text(1).toInt();
     textEdit->setCursorPosition(lines, 0);
     textEdit->setFocus();
+    init_ScrollBox();
   }
 }
 
@@ -2163,6 +2164,7 @@ void MainWindow::dealover() {
   update_ui_tree();
 
   if (!loading) init_ScrollBox();
+
   thread_end = true;
   break_run = false;
 }
@@ -2291,6 +2293,8 @@ void MainWindow::syncMiniEdit() {
                 tr("Column") + " : " + QString::number(col);
 
   locationLabel->setText(msg);
+
+  init_ScrollBox();
 }
 
 QString getMemberName(QString str_member, QsciScintilla* textEdit, int RowNum) {
@@ -6318,6 +6322,8 @@ void MaxEditor::mouseMoveEvent(QMouseEvent* event) {
 }
 
 void MainWindow::setValue() {
+  // miniEdit滚动条更改事件
+
   int t = textEdit->verticalScrollBar()->maximum();
   int m = miniEdit->verticalScrollBar()->maximum();
   double b =
@@ -6325,10 +6331,11 @@ void MainWindow::setValue() {
   int p = b * t;
 
   textEdit->verticalScrollBar()->setSliderPosition(p);
-  // qDebug() << "setValue";
 }
 
 void MainWindow::setValue2() {
+  // textEdit滚动条更改事件
+
   if (miniEdit->isHidden()) return;
 
   if (!textEditScroll) {
@@ -6344,16 +6351,16 @@ void MainWindow::setValue2() {
 
   miniEdit->verticalScrollBar()->setSliderPosition(p);
 
-  if (!loading) init_ScrollBox();
-  // qDebug() << "setValue2";
+  init_ScrollBox();
 }
 
 void MainWindow::init_ScrollBox() {
   int y0 = 0;
 
   int h0 = miniEdit->height() - ui->fBox->height();
-  int h1 = miniEdit->verticalScrollBar()->maximum();
-  int p1 = miniEdit->verticalScrollBar()->sliderPosition();
+
+  int h1 = textEdit->verticalScrollBar()->maximum();
+  int p1 = textEdit->verticalScrollBar()->sliderPosition();
   double b = (double)(p1) / (double)(h1);
   int p0 = h0 * b;
   int y = p0 + y0;
