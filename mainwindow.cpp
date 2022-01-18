@@ -14,7 +14,7 @@
 #endif
 #include "methods.h"
 
-QString CurVerison = "1.1.28";
+QString CurVerison = "1.1.29";
 QString fileName, curFile, dragFileName;
 
 bool loading = false;
@@ -6357,7 +6357,13 @@ void MainWindow::setValue2() {
 void MainWindow::init_ScrollBox() {
   int y0 = 0;
 
-  int h0 = miniEdit->height() - ui->fBox->height();
+  int miniHeight;
+  miniHeight = miniEdit->height();
+  if (miniEdit->verticalScrollBar()->maximum() <= miniEdit->height()) {
+    miniHeight = miniEdit->textHeight(1) * miniEdit->lines();
+  }
+
+  int h0 = miniHeight - ui->fBox->height();
 
   int h1 = textEdit->verticalScrollBar()->maximum();
   int p1 = textEdit->verticalScrollBar()->sliderPosition();
@@ -6415,9 +6421,17 @@ void MainWindow::mouseMoveEvent(QMouseEvent* e) {
 
   e->accept();
 
+  int miniHeight = miniEdit->height();
+
   int y0, y, y1, my;
   y0 = 0;
-  y1 = y0 + miniEdit->height() - ui->fBox->height();
+  y1 = y0 + miniHeight - ui->fBox->height();
+
+  if (miniEdit->verticalScrollBar()->maximum() <= miniEdit->height()) {
+    int th = miniEdit->textHeight(1) * miniEdit->lines();
+    int nh = th - ui->fBox->height();
+    y1 = y0 + nh;
+  }
 
   y = e->y();
 
@@ -6433,7 +6447,8 @@ void MainWindow::mouseMoveEvent(QMouseEvent* e) {
   ui->fBox->setGeometry(miniEdit->x(), my, miniEdit->width() - 1, 30);
   ui->fBox->show();
 
-  int t = miniEdit->height() - ui->fBox->height();
+  int t = miniHeight - ui->fBox->height();
+
   unsigned long max = miniEdit->verticalScrollBar()->maximum();
   int thisP = my - y0;
   double b = (double)(thisP) / (double)t;
@@ -6442,7 +6457,10 @@ void MainWindow::mouseMoveEvent(QMouseEvent* e) {
   miniEdit->verticalScrollBar()->setSliderPosition(p);
 
   if (miniEdit->verticalScrollBar()->maximum() <= miniEdit->height()) {
+    int th = miniEdit->textHeight(1) * miniEdit->lines();
+    t = th - ui->fBox->height();
     max = textEdit->verticalScrollBar()->maximum();
+    double b = (double)(thisP) / (double)t;
     p = b * max;
     textEdit->verticalScrollBar()->setSliderPosition(p);
   }
