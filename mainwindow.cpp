@@ -168,9 +168,9 @@ MainWindow::MainWindow(QWidget* parent)
   ui->tabWidget_textEdit->setIconSize(QSize(7, 7));
 
   // 分割窗口
+  ui->centralwidget->layout()->setContentsMargins(2, 2, 2, 2);
   QSplitter* splitterH = new QSplitter(Qt::Horizontal, this);
   ui->vLayout->addWidget(ui->frameTip);
-  ui->vLayout->addWidget(ui->hlFind);
   ui->vLayout->addWidget(ui->tabWidget_textEdit);
 
   splitterH->addWidget(ui->tabWidget_misc);
@@ -1474,7 +1474,6 @@ void MainWindow::forEach(QString str, QString strReplace) {
 
 void MainWindow::on_btnFindNext() {
   if (!blInit) {
-    ui->hlFind->setHidden(false);
     ui->editFind->setFocus();
   }
   clearSearchHighlight(textEdit);
@@ -2203,7 +2202,7 @@ void MainWindow::update_ui_tree() {
   ui->treeWidget->setHeaderLabel(lbl);
   ui->lblMembers->setText(lbl);
 
-  ui->tabWidget_misc->tabBar()->setTabText(0, lbl);
+  // ui->tabWidget_misc->tabBar()->setTabText(0, lbl);
 
   ui->treeWidget->update();
 
@@ -4109,9 +4108,11 @@ void MainWindow::init_recentFiles() {
 void MainWindow::init_toolbar() {
   if (mac || osx1012) this->setUnifiedTitleAndToolBarOnMac(false);
   ui->toolBar->setHidden(true);
-  ui->hlFind->setHidden(true);
   ui->chkCaseSensitive->setHidden(true);
   ui->btnFind->setIcon(QIcon(":/icon/find.png"));
+  // ui->tabWidget_misc->setTabIcon(2, QIcon(":/icon/find.png"));
+  // ui->tabWidget_misc->setTabText(2, "");
+  ui->btnFind->setHidden(true);
   ui->btnCompile->setIcon(QIcon(":/icon/2.png"));
   ui->btnErrorP->setIcon(QIcon(":/icon/1.png"));
   ui->btnErrorN->setIcon(QIcon(":/icon/3.png"));
@@ -4136,10 +4137,7 @@ void MainWindow::init_toolbar() {
   ui->frameFun->layout()->setSpacing(3);
   ui->tabWidget_misc->setCornerWidget(ui->frameFun);
 
-  // hlFind
-  ui->wReplace->setHidden(true);
-  ui->hlFind->layout()->setSpacing(2);
-  // ui->hlFind->setFixedHeight(ui->editFind->height() * 2 + 4);
+  // Find
   ui->lblCount->setFixedWidth(50);
   ui->lblCount->setAlignment(Qt::AlignCenter);
   QAction* actClear = new QAction(this);
@@ -4188,11 +4186,8 @@ void MainWindow::init_toolbar() {
 
   ui->toolBar->addSeparator();
 
-  // ui->toolBar->addWidget(ui->chkAll);
-
   ui->toolBar->addSeparator();
-  // ui->toolBar->addWidget(ui->chkCaseSensitive);
-  // ui->toolBar->addWidget(ui->editFind);
+
   ui->editFind->setMinimumWidth(240);
 
   ui->editFind->lineEdit()->setPlaceholderText(
@@ -4208,7 +4203,6 @@ void MainWindow::init_toolbar() {
           &MainWindow::onEditFind_returnPressed);
 
   ui->lblCount->setText("0");
-  // ui->toolBar->addWidget(ui->lblCount);
 
   // ui->actionFindPrevious->setIcon(QIcon(":/icon/fp.png"));
   ui->toolBar->addAction(ui->actionFindPrevious);
@@ -4217,8 +4211,6 @@ void MainWindow::init_toolbar() {
   ui->toolBar->addAction(ui->actionFindNext);
 
   ui->toolBar->addSeparator();
-  // ui->toolBar->addWidget(ui->editReplace);
-  // ui->editReplace->setFixedWidth(ui->editFind->width());
   ui->editReplace->setMinimumWidth(160);
 
   // ui->actionReplace->setIcon(QIcon(":/icon/re.png"));
@@ -4765,7 +4757,7 @@ void MainWindow::init_treeWidget() {
             menu->exec(QCursor::pos());
           });
 
-  ui->lblMembers->setHidden(true);
+  ui->lblMembers->setHidden(false);
 }
 
 void MainWindow::init_filesystem() {
@@ -5226,7 +5218,7 @@ void MainWindow::newFile(QString file) {
   ui->treeWidget->setHeaderLabel(lblMembers);
   ui->lblMembers->setText(lblMembers);
 
-  ui->tabWidget_misc->tabBar()->setTabText(0, lblMembers);
+  // ui->tabWidget_misc->tabBar()->setTabText(0, lblMembers);
 
   ui->editShowMsg->clear();
   ui->editErrors->clear();
@@ -5895,6 +5887,18 @@ void MainWindow::highlighsearchtext(QString searchText) {
 
   int count = m_searchTextPosList.count();
   ui->lblCount->setText(QString::number(count));
+
+  ui->treeFind->clear();
+  ui->treeFind->setHeaderHidden(true);
+  //添加顶层节点
+  QTreeWidgetItem* topItem = new QTreeWidgetItem(ui->treeFind);
+  topItem->setText(0, curFile);
+  ui->treeFind->addTopLevelItem(topItem);
+
+  for (int i = 0; i < m_searchTextPosList.count(); i++) {
+    QTreeWidgetItem* item = new QTreeWidgetItem(topItem);
+    item->setText(0, QString::number(m_searchTextPosList.at(i)));
+  }
 }
 
 void MainWindow::clearSearchHighlight(QsciScintilla* textEdit) {
@@ -6738,7 +6742,7 @@ void MainWindow::on_btnNext_clicked() { on_btnFindNext(); }
 
 void MainWindow::on_btnPrevious_clicked() { on_btnFindPrevious(); }
 
-void MainWindow::on_btnDone_clicked() { ui->hlFind->setHidden(true); }
+void MainWindow::on_btnDone_clicked() {}
 
 void MainWindow::on_btnReplace_clicked() { on_btnReplace(); }
 
@@ -6813,16 +6817,7 @@ QString MainWindow::getMD5FromList(QString file) {
   return "";
 }
 
-void MainWindow::on_btnShowRepace_clicked() {
-  if (ui->btnShowRepace->text() == tr("Show Replace")) {
-    ui->wReplace->setHidden(false);
-    ui->btnShowRepace->setText(tr("Hide Replace"));
-
-  } else if (ui->btnShowRepace->text() == tr("Hide Replace")) {
-    ui->wReplace->setHidden(true);
-    ui->btnShowRepace->setText(tr("Show Replace"));
-  }
-}
+void MainWindow::on_btnShowRepace_clicked() {}
 
 void MainWindow::on_actionReporting_Issues_triggered() {
   QUrl url(QString("https://github.com/ic005k/QtiASL/issues"));
@@ -6963,5 +6958,12 @@ void MainWindow::timer_watch_pos() {
   QPoint curPos(this->x(), this->y());
   if (winPos != curPos) {
     winPos = curPos;
+  }
+}
+
+void MainWindow::on_treeFind_itemClicked(QTreeWidgetItem* item, int column) {
+  if (column == 0) {
+    long long pos = item->text(0).toLongLong();
+    qDebug() << pos;
   }
 }

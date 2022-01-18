@@ -737,6 +737,8 @@ class MainWindow : public QMainWindow {
 
   void on_actionNew_triggered();
 
+  void on_treeFind_itemClicked(QTreeWidgetItem* item, int column);
+
  private:
   QPoint winPos;
   QMenu* menuTabList;
