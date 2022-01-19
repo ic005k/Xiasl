@@ -1520,7 +1520,7 @@ void MainWindow::on_btnFindNext(QsciScintilla* textEdit, QString file) {
   find_down = true;
   find_up = false;
 
-  highlighsearchtext(str, textEdit, file);
+  highlighsearchtext(str, textEdit, file, true);
 
   init_ScrollBox();
 }
@@ -1576,7 +1576,7 @@ void MainWindow::on_btnFindPrevious() {
 
   int index = ui->tabWidget_textEdit->currentIndex();
   QString file = getCurrentFileName(index);
-  highlighsearchtext(name, textEdit, file);
+  highlighsearchtext(name, textEdit, file, true);
 
   init_ScrollBox();
 }
@@ -2267,7 +2267,6 @@ void MainWindow::update_ui_tw() {
 }
 
 void MainWindow::refresh_tree() {
-  // myScrollBox->close();
   if (!thread_end) {
     break_run = true;
 
@@ -4630,6 +4629,7 @@ void MainWindow::init_miniEdit() {
 void MainWindow::init_edit() {
   textEdit = new QsciScintilla(this);
   textEdit->setFrameShape(QFrame::NoFrame);
+  textEdit->installEventFilter(this);
   textEditBack = new QsciScintilla();
 
   textEdit->setWrapMode(QsciScintilla::WrapNone);
@@ -5567,6 +5567,16 @@ bool MainWindow::eventFilter(QObject* watched, QEvent* event) {
     }
   }
 
+  if (watched == textEdit) {
+    if (event->type() == QEvent::KeyPress) {
+      if (m_searchTextPosList.count() > 0) {
+        clearSearchHighlight(textEdit);
+        m_searchTextPosList.clear();
+        return true;
+      }
+    }
+  }
+
   return QWidget::eventFilter(watched, event);
 }
 
@@ -5847,7 +5857,7 @@ int MainWindow::parse_UpdateJSON(QString str) {
 }
 
 void MainWindow::highlighsearchtext(QString searchText, QsciScintilla* textEdit,
-                                    QString file) {
+                                    QString file, bool addTreeItem) {
   if (searchText.trimmed() == "") return;
 
   std::string document;
@@ -5903,6 +5913,7 @@ void MainWindow::highlighsearchtext(QString searchText, QsciScintilla* textEdit,
   }
 
   // 结果列表
+  if (!addTreeItem) return;
   if (count == 0) return;
   QTreeWidgetItem* topItem = new QTreeWidgetItem(ui->treeFind);
   topItem->setText(0, QString::number(count) + "    " + file);
@@ -6986,14 +6997,19 @@ void MainWindow::on_treeFind_itemClicked(QTreeWidgetItem* item, int column) {
 
     unsigned long long pos = item->text(1).toLongLong();
     int row, col;
+    row = textEdit->SendScintilla(QsciScintillaBase::SCI_LINEFROMPOSITION, pos,
+                                  NULL);
+    col = textEdit->SendScintilla(QsciScintillaBase::SCI_GETCOLUMN, pos, NULL);
 
     if (ui->cboxFindScope->currentIndex() == 1) {
       QString file = item->parent()->text(1);
       if (file != curFile) {
         for (int i = 0; i < ui->tabWidget_textEdit->count(); i++) {
           if (file == getCurrentFileName(i)) {
+            textEdit = getCurrentEditor(i);
             ui->tabWidget_textEdit->setCurrentIndex(i);
             on_tabWidget_textEdit_tabBarClicked(i);
+
             break;
           }
         }
@@ -7003,22 +7019,25 @@ void MainWindow::on_treeFind_itemClicked(QTreeWidgetItem* item, int column) {
     if (ui->cboxFindScope->currentIndex() == 2) {
       QString file = item->parent()->text(1);
       bool isOpen = false;
-      for (int i = 0; i < ui->tabWidget_textEdit->count(); i++) {
-        if (file == getCurrentFileName(i)) {
-          ui->tabWidget_textEdit->setCurrentIndex(i);
-          on_tabWidget_textEdit_tabBarClicked(i);
-          isOpen = true;
-          break;
+      if (file != curFile) {
+        for (int i = 0; i < ui->tabWidget_textEdit->count(); i++) {
+          if (file == getCurrentFileName(i)) {
+            ui->tabWidget_textEdit->setCurrentIndex(i);
+            getCurrentEditor(i)->setCursorPosition(row, col);
+            on_tabWidget_textEdit_tabBarClicked(i);
+
+            isOpen = true;
+            break;
+          }
         }
-      }
-      if (!isOpen) {
-        loadFile(file, -1, -1);
+
+        if (!isOpen) {
+          loadFile(file, row, col);
+        }
       }
     }
 
-    row = textEdit->SendScintilla(QsciScintillaBase::SCI_LINEFROMPOSITION, pos,
-                                  NULL);
-    col = textEdit->SendScintilla(QsciScintillaBase::SCI_GETCOLUMN, pos, NULL);
+    highlighsearchtext(ui->editFind->currentText(), textEdit, curFile, false);
     textEdit->setFocus();
     textEdit->setCursorPosition(row, col);
 
@@ -7080,8 +7099,6 @@ void MainWindow::on_btnSearch_clicked() {
       clearSearchHighlight(textEditBack);
       on_btnFindNext(textEditBack, files.at(i));
     }
-
-    qDebug() << files;
   }
 }
 

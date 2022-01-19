@@ -759,7 +759,7 @@ class MainWindow : public QMainWindow {
   dlgDecompile* dlg;
 
   void highlighsearchtext(QString searchText, QsciScintilla* textEdit,
-                          QString file);
+                          QString file, bool addTreeItem);
   void clearSearchHighlight(QsciScintilla* textEdit);
   QList<int> m_searchTextPosList;
   QString search_string;
