@@ -343,7 +343,7 @@ QTreeView::branch:!has-children:!has-siblings:adjoins-item{border-image:url(:/ic
             </item>
             <item>
              <property name="text">
-              <string>In Open Files</string>
+              <string>In All Open Files</string>
              </property>
             </item>
             <item>

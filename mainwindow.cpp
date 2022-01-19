@@ -1507,13 +1507,15 @@ void MainWindow::on_btnFindNext(QsciScintilla* textEdit, QString file) {
 
   } else {
     if (str.count() > 0) {
-      QPalette palette;
-      palette.setColor(QPalette::Text, Qt::white);
-      ui->editFind->setPalette(palette);
+      if (ui->treeFind->topLevelItemCount() == 0) {
+        QPalette palette;
+        palette.setColor(QPalette::Text, Qt::white);
+        ui->editFind->setPalette(palette);
 
-      palette = ui->editFind->palette();
-      palette.setColor(QPalette::Base, QColor(255, 70, 70));
-      ui->editFind->setPalette(palette);
+        palette = ui->editFind->palette();
+        palette.setColor(QPalette::Base, QColor(255, 70, 70));
+        ui->editFind->setPalette(palette);
+      }
     }
   }
 
@@ -6766,9 +6768,68 @@ void MainWindow::on_actionPreferences_triggered() {
   dlgset->show();
 }
 
-void MainWindow::on_btnNext_clicked() { ui->btnSearch->clicked(); }
+void MainWindow::on_btnNext_clicked() {
+  if (ui->cboxFindScope->currentIndex() == 0) {
+    ui->btnSearch->clicked();
+  }
 
-void MainWindow::on_btnPrevious_clicked() { on_btnFindPrevious(); }
+  if (ui->cboxFindScope->currentIndex() == 1 ||
+      ui->cboxFindScope->currentIndex() == 2) {
+    int count = ui->treeFind->topLevelItemCount();
+    int topIndex = 0;
+    for (int i = 0; i < count; i++) {
+      QString file = ui->treeFind->topLevelItem(i)->text(1);
+
+      if (file == curFile) {
+        topIndex = i;
+        break;
+      }
+    }
+
+    index_treeFindChild = ui->treeFind->currentIndex().row() + 1;
+
+    if (index_treeFindChild >=
+        ui->treeFind->topLevelItem(topIndex)->childCount()) {
+      index_treeFindChild = 0;
+    }
+
+    ui->treeFind->setCurrentItem(
+        ui->treeFind->topLevelItem(topIndex)->child(index_treeFindChild));
+    on_treeFind_itemClicked(
+        ui->treeFind->topLevelItem(topIndex)->child(index_treeFindChild), 0);
+  }
+}
+
+void MainWindow::on_btnPrevious_clicked() {
+  if (ui->cboxFindScope->currentIndex() == 0) {
+    on_btnFindPrevious();
+  }
+
+  if (ui->cboxFindScope->currentIndex() == 1 ||
+      ui->cboxFindScope->currentIndex() == 2) {
+    int count = ui->treeFind->topLevelItemCount();
+    int topIndex = 0;
+    for (int i = 0; i < count; i++) {
+      QString file = ui->treeFind->topLevelItem(i)->text(1);
+
+      if (file == curFile) {
+        topIndex = i;
+        break;
+      }
+    }
+
+    index_treeFindChild = ui->treeFind->currentIndex().row() - 1;
+
+    if (index_treeFindChild < 0) {
+      index_treeFindChild = 0;
+    }
+
+    ui->treeFind->setCurrentItem(
+        ui->treeFind->topLevelItem(topIndex)->child(index_treeFindChild));
+    on_treeFind_itemClicked(
+        ui->treeFind->topLevelItem(topIndex)->child(index_treeFindChild), 0);
+  }
+}
 
 void MainWindow::on_btnDone_clicked() {}
 

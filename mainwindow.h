@@ -757,7 +757,7 @@ class MainWindow : public QMainWindow {
   int editNumber = 1;
   bool AddCboxFindItem = false;
   dlgDecompile* dlg;
-
+  int index_treeFindChild = 0;
   void highlighsearchtext(QString searchText, QsciScintilla* textEdit,
                           QString file, bool addTreeItem);
   void clearSearchHighlight(QsciScintilla* textEdit);
