@@ -334,7 +334,8 @@
     </message>
     <message>
         <location filename="mainwindow.ui" line="346"/>
-        <source>In Open Files</source>
+        <source>In All Open Files</source>
+        <oldsource>In Open Files</oldsource>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -349,7 +350,7 @@
     </message>
     <message>
         <location filename="mainwindow.ui" line="385"/>
-        <location filename="mainwindow.cpp" line="7115"/>
+        <location filename="mainwindow.cpp" line="7174"/>
         <source>Set Folder</source>
         <translation type="unfinished"></translation>
     </message>
@@ -527,14 +528,14 @@
         <location filename="mainwindow.cpp" line="768"/>
         <location filename="mainwindow.cpp" line="4053"/>
         <location filename="mainwindow.cpp" line="5061"/>
-        <location filename="mainwindow.cpp" line="7089"/>
+        <location filename="mainwindow.cpp" line="7148"/>
         <source>Application</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="519"/>
         <location filename="mainwindow.cpp" line="4054"/>
-        <location filename="mainwindow.cpp" line="7090"/>
+        <location filename="mainwindow.cpp" line="7149"/>
         <source>Cannot read file %1:
 %2.</source>
         <translation type="unfinished"></translation>
