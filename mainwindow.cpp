@@ -1473,6 +1473,9 @@ void MainWindow::forEach(QString str, QString strReplace) {
 }
 
 void MainWindow::on_btnFindNext() {
+  if (loading) return;
+
+  ui->tabWidget_misc->setCurrentIndex(2);
   if (!blInit) {
     ui->editFind->setFocus();
   }
@@ -4117,8 +4120,10 @@ void MainWindow::init_toolbar() {
   ui->btnErrorP->setIcon(QIcon(":/icon/1.png"));
   ui->btnErrorN->setIcon(QIcon(":/icon/3.png"));
 
+  ui->treeFind->setHeaderHidden(true);
   ui->treeFind->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
   ui->treeFind->header()->setStretchLastSection(false);
+  ui->lblCount->setHidden(true);
 
   ui->btnSave->setIcon(QIcon(":/icon/save.png"));
   ui->btnNew->setIcon(QIcon(":/icon/new.png"));
@@ -4191,8 +4196,6 @@ void MainWindow::init_toolbar() {
 
   ui->toolBar->addSeparator();
 
-  ui->editFind->setMinimumWidth(240);
-
   ui->editFind->lineEdit()->setPlaceholderText(
       tr("Find") + "  (" + tr("History entries") + ": " +
       QString::number(ui->editFind->count()) + ")");
@@ -4214,7 +4217,6 @@ void MainWindow::init_toolbar() {
   ui->toolBar->addAction(ui->actionFindNext);
 
   ui->toolBar->addSeparator();
-  ui->editReplace->setMinimumWidth(160);
 
   // ui->actionReplace->setIcon(QIcon(":/icon/re.png"));
   ui->toolBar->addAction(ui->actionReplace);
@@ -5891,11 +5893,13 @@ void MainWindow::highlighsearchtext(QString searchText) {
   int count = m_searchTextPosList.count();
   ui->lblCount->setText(QString::number(count));
 
+  // 结果列表
   ui->treeFind->clear();
-  ui->treeFind->setHeaderHidden(true);
+
   //添加顶层节点
   QTreeWidgetItem* topItem = new QTreeWidgetItem(ui->treeFind);
-  topItem->setText(0, curFile);
+  topItem->setText(0, QString::number(count) + "    " + curFile);
+  topItem->setText(1, curFile);
   ui->treeFind->addTopLevelItem(topItem);
 
   for (int i = 0; i < m_searchTextPosList.count(); i++) {
@@ -5907,9 +5911,8 @@ void MainWindow::highlighsearchtext(QString searchText) {
     col = textEdit->SendScintilla(QsciScintillaBase::SCI_GETCOLUMN, pos, NULL);
 
     QString lineText = textEdit->text(row).trimmed();
-    item->setText(0, tr("Line : ") + QString::number(row) + "    " +
-                         tr("Column : ") + QString::number(col) + "    " +
-                         lineText);
+    item->setText(0, "( " + QString::number(row + 1) + " , " +
+                         QString::number(col) + " )" + "    " + lineText);
     item->setText(1, QString::number(pos));
   }
 }
@@ -6976,7 +6979,7 @@ void MainWindow::timer_watch_pos() {
 
 void MainWindow::on_treeFind_itemClicked(QTreeWidgetItem* item, int column) {
   if (column == 0) {
-    if (QFile(item->text(0)).exists()) return;
+    if (item->childCount() > 0) return;
 
     long long pos = item->text(1).toLongLong();
     int row, col;
@@ -6985,6 +6988,14 @@ void MainWindow::on_treeFind_itemClicked(QTreeWidgetItem* item, int column) {
     col = textEdit->SendScintilla(QsciScintillaBase::SCI_GETCOLUMN, pos, NULL);
     textEdit->setFocus();
     textEdit->setCursorPosition(row, col);
-    qDebug() << pos << row << col;
+    init_ScrollBox();
+  }
+}
+
+void MainWindow::on_btnSearch_clicked() { on_btnFindNext(); }
+
+void MainWindow::on_tabWidget_misc_tabBarClicked(int index) {
+  if (index == 2) {
+    ui->editFind->setFocus();
   }
 }
