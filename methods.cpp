@@ -8,6 +8,35 @@ extern MainWindow* mw_one;
 
 Methods::Methods(QObject* parent) : QObject{parent} {}
 
+void Methods::setColorMatch(int red, QsciLexer* textLexer) {
+  if (red < 55)  //暗模式，mac下为50
+  {
+    textLexer->setColor(QColor(30, 190, 30),
+                        QsciLexerCPP::CommentLine);  //"//"注释颜色
+    textLexer->setColor(QColor(30, 190, 30), QsciLexerCPP::Comment);
+
+    textLexer->setColor(QColor(210, 210, 210), QsciLexerCPP::Identifier);
+    textLexer->setColor(QColor(245, 150, 147), QsciLexerCPP::Number);
+    textLexer->setColor(QColor(100, 100, 250), QsciLexerCPP::Keyword);
+    textLexer->setColor(QColor(210, 32, 240), QsciLexerCPP::KeywordSet2);
+    textLexer->setColor(QColor(245, 245, 245), QsciLexerCPP::Operator);
+    textLexer->setColor(QColor(84, 235, 159),
+                        QsciLexerCPP::DoubleQuotedString);  //双引号
+  } else {
+    textLexer->setColor(QColor(30, 190, 30),
+                        QsciLexerCPP::CommentLine);  //"//"注释颜色
+    textLexer->setColor(QColor(30, 190, 30), QsciLexerCPP::Comment);
+
+    textLexer->setColor(QColor(13, 136, 91), QsciLexerCPP::Number);
+    textLexer->setColor(QColor(0, 0, 255), QsciLexerCPP::Keyword);
+    textLexer->setColor(QColor(0, 0, 0), QsciLexerCPP::Identifier);
+    textLexer->setColor(QColor(210, 0, 210), QsciLexerCPP::KeywordSet2);
+    textLexer->setColor(QColor(20, 20, 20), QsciLexerCPP::Operator);
+    textLexer->setColor(QColor(163, 21, 21),
+                        QsciLexerCPP::DoubleQuotedString);  //双引号
+  }
+}
+
 QStringList Methods::getVoidForCpp(QsciScintilla* textEdit) {
   QStringList listVoid;
 

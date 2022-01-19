@@ -1008,12 +1008,12 @@ QListWidget::item:selected
     <addaction name="separator"/>
     <addaction name="actionRefreshTree"/>
     <addaction name="separator"/>
+    <addaction name="actionFind"/>
     <addaction name="actionFindPrevious"/>
     <addaction name="actionFindNext"/>
     <addaction name="separator"/>
     <addaction name="actionReplace"/>
     <addaction name="actionReplace_Find"/>
-    <addaction name="actionFind"/>
     <addaction name="actionReplaceAll"/>
     <addaction name="separator"/>
     <addaction name="actionKextstat"/>
@@ -1209,10 +1209,16 @@ QListWidget::item:selected
    <property name="text">
     <string>FindPrevious</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+[</string>
+   </property>
   </action>
   <action name="actionFindNext">
    <property name="text">
     <string>FindNext</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+]</string>
    </property>
   </action>
   <action name="actionReplace">
@@ -1277,6 +1283,9 @@ QListWidget::item:selected
   <action name="actionFind">
    <property name="text">
     <string>Find</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+F</string>
    </property>
   </action>
   <action name="actionClear_search_history">

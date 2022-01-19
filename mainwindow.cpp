@@ -14,7 +14,7 @@
 #endif
 #include "methods.h"
 
-QString CurVerison = "1.1.30";
+QString CurVerison = "1.1.31";
 QString fileName, curFile, dragFileName;
 
 bool loading = false;
@@ -4297,13 +4297,10 @@ void MainWindow::init_menu() {
           &MainWindow::on_btnRefreshTree);
   if (mac) ui->actionRefreshTree->setIconVisibleInMenu(false);
 
-  ui->actionFindPrevious->setShortcut(tr("ctrl+p"));
-  connect(ui->actionFindPrevious, &QAction::triggered, this,
-          &MainWindow::on_btnFindPrevious);
   if (mac) ui->actionFindPrevious->setIconVisibleInMenu(false);
 
   // Find & Replace
-  ui->actionFindNext->setShortcut(tr("ctrl+f"));
+
   if (mac) ui->actionFindNext->setIconVisibleInMenu(false);
   if (mac) ui->actionFind->setIconVisibleInMenu(false);
 
@@ -4429,34 +4426,13 @@ void MainWindow::setLexer(QsciLexer* textLexer, QsciScintilla* textEdit) {
     textEdit->setCaretLineFrameWidth(1);
     textEdit->setCaretLineVisible(true);
 
-    textLexer->setColor(QColor(30, 190, 30),
-                        QsciLexerCPP::CommentLine);  //"//"注释颜色
-    textLexer->setColor(QColor(30, 190, 30), QsciLexerCPP::Comment);
-
-    textLexer->setColor(QColor(210, 210, 210), QsciLexerCPP::Identifier);
-    textLexer->setColor(QColor(245, 150, 147), QsciLexerCPP::Number);
-    textLexer->setColor(QColor(100, 100, 250), QsciLexerCPP::Keyword);
-    textLexer->setColor(QColor(210, 32, 240), QsciLexerCPP::KeywordSet2);
-    textLexer->setColor(QColor(245, 245, 245), QsciLexerCPP::Operator);
-    textLexer->setColor(QColor(84, 235, 159),
-                        QsciLexerCPP::DoubleQuotedString);  //双引号
   } else {
     textEdit->setCaretLineBackgroundColor(QColor(255, 255, 0, 50));
     textEdit->setCaretLineFrameWidth(0);
     textEdit->setCaretLineVisible(true);
-
-    textLexer->setColor(QColor(30, 190, 30),
-                        QsciLexerCPP::CommentLine);  //"//"注释颜色
-    textLexer->setColor(QColor(30, 190, 30), QsciLexerCPP::Comment);
-
-    textLexer->setColor(QColor(255, 0, 0), QsciLexerCPP::Number);
-    textLexer->setColor(QColor(0, 0, 255), QsciLexerCPP::Keyword);
-    textLexer->setColor(QColor(0, 0, 0), QsciLexerCPP::Identifier);
-    textLexer->setColor(QColor(210, 0, 210), QsciLexerCPP::KeywordSet2);
-    textLexer->setColor(QColor(20, 20, 20), QsciLexerCPP::Operator);
-    textLexer->setColor(QColor(205, 38, 38),
-                        QsciLexerCPP::DoubleQuotedString);  //双引号
   }
+
+  Methods::setColorMatch(red, textLexer);
 
   //匹配大小括弧
   textEdit->setBraceMatching(QsciScintilla::SloppyBraceMatch);
@@ -4574,32 +4550,7 @@ void MainWindow::init_miniEdit() {
   miniEdit->setCaretWidth(0);
   miniEdit->setCaretLineVisible(false);
 
-  if (red < 55)  //暗模式，mac下为50
-  {
-    miniLexer->setColor(QColor(30, 190, 30),
-                        QsciLexerCPP::CommentLine);  //"//"注释颜色
-    miniLexer->setColor(QColor(30, 190, 30), QsciLexerCPP::Comment);
-
-    miniLexer->setColor(QColor(210, 210, 210), QsciLexerCPP::Identifier);
-    miniLexer->setColor(QColor(245, 150, 147), QsciLexerCPP::Number);
-    miniLexer->setColor(QColor(100, 100, 250), QsciLexerCPP::Keyword);
-    miniLexer->setColor(QColor(210, 32, 240), QsciLexerCPP::KeywordSet2);
-    miniLexer->setColor(QColor(245, 245, 245), QsciLexerCPP::Operator);
-    miniLexer->setColor(QColor(84, 235, 159),
-                        QsciLexerCPP::DoubleQuotedString);  //双引号
-  } else {
-    miniLexer->setColor(QColor(30, 190, 30),
-                        QsciLexerCPP::CommentLine);  //"//"注释颜色
-    miniLexer->setColor(QColor(30, 190, 30), QsciLexerCPP::Comment);
-
-    miniLexer->setColor(QColor(255, 0, 0), QsciLexerCPP::Number);
-    miniLexer->setColor(QColor(0, 0, 255), QsciLexerCPP::Keyword);
-    miniLexer->setColor(QColor(0, 0, 0), QsciLexerCPP::Identifier);
-    miniLexer->setColor(QColor(210, 0, 210), QsciLexerCPP::KeywordSet2);
-    miniLexer->setColor(QColor(20, 20, 20), QsciLexerCPP::Operator);
-    miniLexer->setColor(QColor(205, 38, 38),
-                        QsciLexerCPP::DoubleQuotedString);  //双引号
-  }
+  Methods::setColorMatch(red, miniLexer);
 
   QFont minifont;
   if (win) minifont.setFamily("Agency FB");
@@ -7132,9 +7083,14 @@ void MainWindow::on_btnSearch_clicked() {
                 << "*.asl"
                 << "*.c"
                 << "*.cpp"
+                << "*.h"
+                << "*.hpp"
+                << "*.mm"
+                << "*.bat"
                 << "*.txt"
                 << "*.py"
                 << "*.plist";
+
     QStringList filesTemp =
         dir.entryList(nameFilters, QDir::Files | QDir::Readable, QDir::Name);
     QStringList files;
@@ -7169,7 +7125,7 @@ void MainWindow::on_tabWidget_misc_tabBarClicked(int index) {
   }
 }
 
-void MainWindow::on_actionFindNext_triggered() { ui->btnSearch->clicked(); }
+void MainWindow::on_actionFindNext_triggered() { ui->btnNext->clicked(); }
 
 void MainWindow::on_btnFolder_clicked() {
   QString dirpath = QFileDialog::getExistingDirectory(
@@ -7186,3 +7142,7 @@ void MainWindow::on_btnExpand_clicked() {
     ui->btnExpand->setText("E");
   }
 }
+
+void MainWindow::on_actionFindPrevious_triggered() { ui->btnPrevious->click(); }
+
+void MainWindow::on_actionFind_triggered() { ui->btnSearch->clicked(); }

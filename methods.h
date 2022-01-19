@@ -23,6 +23,7 @@ class Methods : public QObject {
   static QString loadText(QString textFile);
   static QString getTextEditLineText(QTextEdit *txtEdit, int i);
   static bool isSymbol(QString line);
+  static void setColorMatch(int red, QsciLexer *textLexer);
  signals:
 };
 
