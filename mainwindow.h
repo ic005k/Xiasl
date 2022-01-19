@@ -744,6 +744,8 @@ class MainWindow : public QMainWindow {
 
   void on_actionFindNext_triggered();
 
+  void on_btnFolder_clicked();
+
  private:
   QPoint winPos;
   QMenu* menuTabList;

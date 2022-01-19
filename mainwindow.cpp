@@ -1981,6 +1981,10 @@ void MainWindow::on_editShowMsg_selectionChanged() {
 
 void MainWindow::textEdit_textChanged() {
   if (!loading) {
+    if (m_searchTextPosList.count() > 0) {
+      // clearSearchHighlight(textEdit);
+      // m_searchTextPosList.clear();
+    }
   }
 }
 
@@ -4128,12 +4132,14 @@ void MainWindow::init_toolbar() {
   ui->btnErrorP->setIcon(QIcon(":/icon/1.png"));
   ui->btnErrorN->setIcon(QIcon(":/icon/3.png"));
 
-  // 初始化搜索结果显示
+  // 初始化搜索
   ui->treeFind->setIconSize(QSize(12, 12));
   ui->treeFind->setHeaderHidden(true);
   ui->treeFind->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
   ui->treeFind->header()->setStretchLastSection(false);
   ui->lblCount->setHidden(true);
+  ui->tabFindReplace->layout()->setMargin(2);
+  ui->tabFindReplace->layout()->setSpacing(2);
 
   ui->btnSave->setIcon(QIcon(":/icon/save.png"));
   ui->btnNew->setIcon(QIcon(":/icon/new.png"));
@@ -4206,9 +4212,7 @@ void MainWindow::init_toolbar() {
 
   ui->toolBar->addSeparator();
 
-  ui->editFind->lineEdit()->setPlaceholderText(
-      tr("Find") + "  (" + tr("History entries") + ": " +
-      QString::number(ui->editFind->count()) + ")");
+  ui->editFind->lineEdit()->setPlaceholderText(tr("Find"));
 
   ui->editFind->lineEdit()->setClearButtonEnabled(true);
   // ui->editFind->setAutoCompletionCaseSensitivity(Qt::CaseSensitive);
@@ -5894,6 +5898,10 @@ void MainWindow::highlighsearchtext(QString searchText, QsciScintilla* textEdit,
   int count = m_searchTextPosList.count();
   ui->lblCount->setText(QString::number(count));
 
+  if (file != curFile) {
+    clearSearchHighlight(textEdit);
+  }
+
   // 结果列表
   if (count == 0) return;
   QTreeWidgetItem* topItem = new QTreeWidgetItem(ui->treeFind);
@@ -5934,9 +5942,7 @@ void MainWindow::on_editFind_editTextChanged(const QString& arg1) {
     clearSearchHighlight(textEdit);
     ui->lblCount->setText("0");
 
-    ui->editFind->lineEdit()->setPlaceholderText(
-        tr("Find") + "  (" + tr("History entries") + ": " +
-        QString::number(ui->editFind->count()) + ")");
+    ui->editFind->lineEdit()->setPlaceholderText(tr("Find"));
 
     if (red < 55) {
       QPalette palette;
@@ -6002,9 +6008,7 @@ void MainWindow::on_editFind_currentIndexChanged(const QString& arg1) {
 void MainWindow::on_clearFindText() {
   ui->editFind->clear();
 
-  ui->editFind->lineEdit()->setPlaceholderText(
-      tr("Find") + "  (" + tr("History entries") + ": " +
-      QString::number(ui->editFind->count()) + ")");
+  ui->editFind->lineEdit()->setPlaceholderText(tr("Find"));
 }
 
 QString MainWindow::getTabTitle() {
@@ -6595,9 +6599,6 @@ void MainWindow::loadFindString() {
     }
     ui->editFind->addItems(findTextList);
 
-    ui->editFind->lineEdit()->setPlaceholderText(
-        tr("Find") + "  (" + tr("History entries") + ": " +
-        QString::number(ui->editFind->count()) + ")");
     ui->editFind->setCurrentText("");
   }
 }
@@ -7091,3 +7092,9 @@ void MainWindow::on_tabWidget_misc_tabBarClicked(int index) {
 }
 
 void MainWindow::on_actionFindNext_triggered() { ui->btnSearch->clicked(); }
+
+void MainWindow::on_btnFolder_clicked() {
+  QString dirpath = QFileDialog::getExistingDirectory(
+      this, tr("Set Folder"), "./", QFileDialog::ShowDirsOnly);
+  ui->editFolder->setText(dirpath);
+}
