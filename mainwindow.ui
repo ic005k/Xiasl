@@ -735,7 +735,7 @@ QTreeView::branch:!has-children:!has-siblings:adjoins-item{border-image:url(:/ic
            <widget class="QLabel" name="label">
             <property name="maximumSize">
              <size>
-              <width>60</width>
+              <width>16777215</width>
               <height>16777215</height>
              </size>
             </property>
@@ -745,17 +745,7 @@ QTreeView::branch:!has-children:!has-siblings:adjoins-item{border-image:url(:/ic
            </widget>
           </item>
           <item>
-           <widget class="QComboBox" name="cboxDir">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="editable">
-             <bool>true</bool>
-            </property>
-           </widget>
+           <widget class="QLineEdit" name="editFolder"/>
           </item>
           <item>
            <widget class="QToolButton" name="btnFolder">

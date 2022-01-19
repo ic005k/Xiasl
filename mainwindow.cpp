@@ -4134,9 +4134,6 @@ void MainWindow::init_toolbar() {
   ui->treeFind->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
   ui->treeFind->header()->setStretchLastSection(false);
   ui->lblCount->setHidden(true);
-  //设置滚动条
-  ui->cboxDir->view()->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-  // ui->cboxDir->setMaximumWidth(200);
 
   ui->btnSave->setIcon(QIcon(":/icon/save.png"));
   ui->btnNew->setIcon(QIcon(":/icon/new.png"));
@@ -5639,7 +5636,7 @@ void MainWindow::init_fsmSyncOpenedFile(QString OpenedFile) {
   ui->treeView->setCurrentIndex(
       model->index(OpenedFile));  //设置当前条目为打开的文件
 
-  ui->cboxDir->addItem(f.path());
+  ui->editFolder->setText(f.path());
 }
 
 QsciScintilla* MainWindow::getCurrentEditor(int index) {
@@ -5906,7 +5903,7 @@ void MainWindow::highlighsearchtext(QString searchText, QsciScintilla* textEdit,
 
   for (int i = 0; i < m_searchTextPosList.count(); i++) {
     QTreeWidgetItem* item = new QTreeWidgetItem(topItem);
-    long long pos = m_searchTextPosList.at(i);
+    unsigned long long pos = m_searchTextPosList.at(i);
     int row, col;
     row = textEdit->SendScintilla(QsciScintillaBase::SCI_LINEFROMPOSITION, pos,
                                   NULL);
@@ -6986,6 +6983,9 @@ void MainWindow::on_treeFind_itemClicked(QTreeWidgetItem* item, int column) {
   if (column == 0) {
     if (item->childCount() > 0) return;
 
+    unsigned long long pos = item->text(1).toLongLong();
+    int row, col;
+
     if (ui->cboxFindScope->currentIndex() == 1) {
       QString file = item->parent()->text(1);
       if (file != curFile) {
@@ -7015,13 +7015,13 @@ void MainWindow::on_treeFind_itemClicked(QTreeWidgetItem* item, int column) {
       }
     }
 
-    long long pos = item->text(1).toLongLong();
-    int row, col;
     row = textEdit->SendScintilla(QsciScintillaBase::SCI_LINEFROMPOSITION, pos,
                                   NULL);
     col = textEdit->SendScintilla(QsciScintillaBase::SCI_GETCOLUMN, pos, NULL);
     textEdit->setFocus();
     textEdit->setCursorPosition(row, col);
+
+    qDebug() << row << col;
 
     init_ScrollBox();
   }
@@ -7044,7 +7044,7 @@ void MainWindow::on_btnSearch_clicked() {
   }
 
   if (ui->cboxFindScope->currentIndex() == 2) {
-    QString path = ui->cboxDir->currentText();
+    QString path = ui->editFolder->text().trimmed();
     QDir dir(path);
     QStringList nameFilters;
     nameFilters << "*.dsl"
@@ -7052,6 +7052,7 @@ void MainWindow::on_btnSearch_clicked() {
                 << "*.c"
                 << "*.cpp"
                 << "*.txt"
+                << "*.py"
                 << "*.plist";
     QStringList filesTemp =
         dir.entryList(nameFilters, QDir::Files | QDir::Readable, QDir::Name);
