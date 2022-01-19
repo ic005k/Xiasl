@@ -112,6 +112,7 @@ class MainWindow : public QMainWindow {
   ~MainWindow();
   Ui::MainWindow* ui;
 
+  void on_btnFindNext(QsciScintilla* textEdit, QString file);
   QVBoxLayout* hboxLayout;
   QTimer* tmrWatchPos;
   QMenu* mnuRecentOpenFile;
@@ -616,8 +617,6 @@ class MainWindow : public QMainWindow {
 
   void on_btnReplace();
 
-  void on_btnFindNext();
-
   void on_btnFindPrevious();
 
   void on_treeWidget_itemClicked(QTreeWidgetItem* item, int column);
@@ -743,6 +742,8 @@ class MainWindow : public QMainWindow {
 
   void on_tabWidget_misc_tabBarClicked(int index);
 
+  void on_actionFindNext_triggered();
+
  private:
   QPoint winPos;
   QMenu* menuTabList;
@@ -753,7 +754,8 @@ class MainWindow : public QMainWindow {
   bool AddCboxFindItem = false;
   dlgDecompile* dlg;
 
-  void highlighsearchtext(QString searchText);
+  void highlighsearchtext(QString searchText, QsciScintilla* textEdit,
+                          QString file);
   void clearSearchHighlight(QsciScintilla* textEdit);
   QList<int> m_searchTextPosList;
   QString search_string;

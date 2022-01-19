@@ -1472,13 +1472,14 @@ void MainWindow::forEach(QString str, QString strReplace) {
   }
 }
 
-void MainWindow::on_btnFindNext() {
+void MainWindow::on_btnFindNext(QsciScintilla* textEdit, QString file) {
   if (loading) return;
 
   ui->tabWidget_misc->setCurrentIndex(2);
   if (!blInit) {
     ui->editFind->setFocus();
   }
+
   clearSearchHighlight(textEdit);
 
   QString str = ui->editFind->currentText().trimmed();
@@ -1519,11 +1520,14 @@ void MainWindow::on_btnFindNext() {
   find_down = true;
   find_up = false;
 
-  highlighsearchtext(str);
+  highlighsearchtext(str, textEdit, file);
+
+  init_ScrollBox();
 }
 
 void MainWindow::on_btnFindPrevious() {
   clearSearchHighlight(textEdit);
+  ui->treeFind->clear();
 
   QString name = ui->editFind->currentText().trimmed();
   std::string str = name.toStdString();
@@ -1570,7 +1574,11 @@ void MainWindow::on_btnFindPrevious() {
   find_down = false;
   find_up = true;
 
-  highlighsearchtext(name);
+  int index = ui->tabWidget_textEdit->currentIndex();
+  QString file = getCurrentFileName(index);
+  highlighsearchtext(name, textEdit, file);
+
+  init_ScrollBox();
 }
 
 void MainWindow::on_treeWidget_itemClicked(QTreeWidgetItem* item, int column) {
@@ -1977,7 +1985,7 @@ void MainWindow::textEdit_textChanged() {
 }
 
 void MainWindow::onEditFind_returnPressed() {
-  on_btnFindNext();
+  ui->btnSearch->clicked();
 
   QString findText = ui->editFind->lineEdit()->text().trimmed();
   QStringList strList;
@@ -4120,10 +4128,15 @@ void MainWindow::init_toolbar() {
   ui->btnErrorP->setIcon(QIcon(":/icon/1.png"));
   ui->btnErrorN->setIcon(QIcon(":/icon/3.png"));
 
+  // 初始化搜索结果显示
+  ui->treeFind->setIconSize(QSize(12, 12));
   ui->treeFind->setHeaderHidden(true);
   ui->treeFind->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
   ui->treeFind->header()->setStretchLastSection(false);
   ui->lblCount->setHidden(true);
+  //设置滚动条
+  ui->cboxDir->view()->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+  // ui->cboxDir->setMaximumWidth(200);
 
   ui->btnSave->setIcon(QIcon(":/icon/save.png"));
   ui->btnNew->setIcon(QIcon(":/icon/new.png"));
@@ -4212,15 +4225,7 @@ void MainWindow::init_toolbar() {
 
   // ui->actionFindPrevious->setIcon(QIcon(":/icon/fp.png"));
   ui->toolBar->addAction(ui->actionFindPrevious);
-
-  // ui->actionFindNext->setIcon(QIcon(":/icon/fn.png"));
-  ui->toolBar->addAction(ui->actionFindNext);
-
-  ui->toolBar->addSeparator();
-
-  // ui->actionReplace->setIcon(QIcon(":/icon/re.png"));
   ui->toolBar->addAction(ui->actionReplace);
-
   // ui->actionReplace_Find->setIcon(QIcon(":/icon/rf.png"));
   ui->toolBar->addAction(ui->actionReplace_Find);
 
@@ -4296,14 +4301,8 @@ void MainWindow::init_menu() {
   if (mac) ui->actionFindPrevious->setIconVisibleInMenu(false);
 
   // Find & Replace
-
   ui->actionFindNext->setShortcut(tr("ctrl+f"));
-  connect(ui->actionFindNext, &QAction::triggered, this,
-          &MainWindow::on_btnFindNext);
   if (mac) ui->actionFindNext->setIconVisibleInMenu(false);
-  // ui->actionFind->setShortcut(tr("ctrl+f")); //注意：win下不起作用
-  connect(ui->actionFind, &QAction::triggered, this,
-          &MainWindow::on_btnFindNext);
   if (mac) ui->actionFind->setIconVisibleInMenu(false);
 
   ui->actionReplace->setShortcut(tr("ctrl+k"));
@@ -5302,7 +5301,9 @@ void MainWindow::newFile(QString file) {
 
 void MainWindow::on_btnReplaceFind() {
   on_btnReplace();
-  if (find_down) on_btnFindNext();
+  if (find_down) {
+    ui->btnSearch->clicked();
+  }
   if (find_up) on_btnFindPrevious();
 }
 
@@ -5310,7 +5311,7 @@ void MainWindow::on_chkCaseSensitive_clicked() {}
 
 void MainWindow::on_chkCaseSensitive_clicked(bool checked) {
   CaseSensitive = checked;
-  on_btnFindNext();
+  ui->btnSearch->clicked();
 }
 
 /*菜单：设置字体*/
@@ -5637,6 +5638,8 @@ void MainWindow::init_fsmSyncOpenedFile(QString OpenedFile) {
   set_return_text(fsm_Filepath);
   ui->treeView->setCurrentIndex(
       model->index(OpenedFile));  //设置当前条目为打开的文件
+
+  ui->cboxDir->addItem(f.path());
 }
 
 QsciScintilla* MainWindow::getCurrentEditor(int index) {
@@ -5842,7 +5845,8 @@ int MainWindow::parse_UpdateJSON(QString str) {
   return 0;
 }
 
-void MainWindow::highlighsearchtext(QString searchText) {
+void MainWindow::highlighsearchtext(QString searchText, QsciScintilla* textEdit,
+                                    QString file) {
   if (searchText.trimmed() == "") return;
 
   std::string document;
@@ -5894,12 +5898,10 @@ void MainWindow::highlighsearchtext(QString searchText) {
   ui->lblCount->setText(QString::number(count));
 
   // 结果列表
-  ui->treeFind->clear();
-
-  //添加顶层节点
+  if (count == 0) return;
   QTreeWidgetItem* topItem = new QTreeWidgetItem(ui->treeFind);
-  topItem->setText(0, QString::number(count) + "    " + curFile);
-  topItem->setText(1, curFile);
+  topItem->setText(0, QString::number(count) + "    " + file);
+  topItem->setText(1, file);
   ui->treeFind->addTopLevelItem(topItem);
 
   for (int i = 0; i < m_searchTextPosList.count(); i++) {
@@ -5929,7 +5931,8 @@ void MainWindow::on_editFind_editTextChanged(const QString& arg1) {
   if (AddCboxFindItem) return;
 
   if (arg1.count() > 0) {
-    on_btnFindNext();
+    ui->btnSearch->clicked();
+
   } else {
     clearSearchHighlight(textEdit);
     ui->lblCount->setText("0");
@@ -6754,7 +6757,7 @@ void MainWindow::on_actionPreferences_triggered() {
   dlgset->show();
 }
 
-void MainWindow::on_btnNext_clicked() { on_btnFindNext(); }
+void MainWindow::on_btnNext_clicked() { ui->btnSearch->clicked(); }
 
 void MainWindow::on_btnPrevious_clicked() { on_btnFindPrevious(); }
 
@@ -6766,7 +6769,7 @@ void MainWindow::on_btnReplaceFind_clicked() { on_btnReplaceFind(); }
 
 void MainWindow::on_btnReplaceAll_clicked() { ReplaceAll(); }
 
-void MainWindow::on_btnFind_clicked() { on_btnFindNext(); }
+void MainWindow::on_btnFind_clicked() { ui->btnSearch->clicked(); }
 
 void MainWindow::on_btnCompile_clicked() { on_btnCompile(); }
 
@@ -6877,6 +6880,7 @@ void MainWindow::init_UIStyle() {
 
   if (red > 55) {
     ui->treeWidget->setStyleSheet(treeWidgetStyleLight);
+    ui->treeFind->setStyleSheet(ui->treeWidget->styleSheet());
     ui->listWidget->setStyleSheet(infoShowStyleLight);
     ui->treeView->setStyleSheet(treeViewStyleLight);
 
@@ -6886,6 +6890,7 @@ void MainWindow::init_UIStyle() {
     lblLayer->setPalette(label_palette);
   } else {
     ui->treeWidget->setStyleSheet(treeWidgetStyleDark);
+    ui->treeFind->setStyleSheet(ui->treeWidget->styleSheet());
     ui->listWidget->setStyleSheet(infoShowStyleDark);
     ui->treeView->setStyleSheet(treeViewStyleDark);
 
@@ -6981,6 +6986,35 @@ void MainWindow::on_treeFind_itemClicked(QTreeWidgetItem* item, int column) {
   if (column == 0) {
     if (item->childCount() > 0) return;
 
+    if (ui->cboxFindScope->currentIndex() == 1) {
+      QString file = item->parent()->text(1);
+      if (file != curFile) {
+        for (int i = 0; i < ui->tabWidget_textEdit->count(); i++) {
+          if (file == getCurrentFileName(i)) {
+            ui->tabWidget_textEdit->setCurrentIndex(i);
+            on_tabWidget_textEdit_tabBarClicked(i);
+            break;
+          }
+        }
+      }
+    }
+
+    if (ui->cboxFindScope->currentIndex() == 2) {
+      QString file = item->parent()->text(1);
+      bool isOpen = false;
+      for (int i = 0; i < ui->tabWidget_textEdit->count(); i++) {
+        if (file == getCurrentFileName(i)) {
+          ui->tabWidget_textEdit->setCurrentIndex(i);
+          on_tabWidget_textEdit_tabBarClicked(i);
+          isOpen = true;
+          break;
+        }
+      }
+      if (!isOpen) {
+        loadFile(file, -1, -1);
+      }
+    }
+
     long long pos = item->text(1).toLongLong();
     int row, col;
     row = textEdit->SendScintilla(QsciScintillaBase::SCI_LINEFROMPOSITION, pos,
@@ -6988,14 +7022,71 @@ void MainWindow::on_treeFind_itemClicked(QTreeWidgetItem* item, int column) {
     col = textEdit->SendScintilla(QsciScintillaBase::SCI_GETCOLUMN, pos, NULL);
     textEdit->setFocus();
     textEdit->setCursorPosition(row, col);
+
     init_ScrollBox();
   }
 }
 
-void MainWindow::on_btnSearch_clicked() { on_btnFindNext(); }
+void MainWindow::on_btnSearch_clicked() {
+  ui->treeFind->clear();
+
+  if (ui->cboxFindScope->currentIndex() == 0) {
+    int index = ui->tabWidget_textEdit->currentIndex();
+    on_btnFindNext(getCurrentEditor(index), getCurrentFileName(index));
+  }
+
+  if (ui->cboxFindScope->currentIndex() == 1) {
+    int count = ui->tabWidget_textEdit->count();
+    for (int i = 0; i < count; i++) {
+      clearSearchHighlight(textEdit);
+      on_btnFindNext(getCurrentEditor(i), getCurrentFileName(i));
+    }
+  }
+
+  if (ui->cboxFindScope->currentIndex() == 2) {
+    QString path = ui->cboxDir->currentText();
+    QDir dir(path);
+    QStringList nameFilters;
+    nameFilters << "*.dsl"
+                << "*.asl"
+                << "*.c"
+                << "*.cpp"
+                << "*.txt"
+                << "*.plist";
+    QStringList filesTemp =
+        dir.entryList(nameFilters, QDir::Files | QDir::Readable, QDir::Name);
+    QStringList files;
+    for (int j = 0; j < filesTemp.count(); j++) {
+      if (filesTemp.at(j).mid(0, 1) != ".")
+        files.append(path + "/" + filesTemp.at(j));
+    }
+
+    for (int i = 0; i < files.count(); i++) {
+      QFile file(files.at(i));
+      if (!file.open(QFile::ReadOnly | QFile::Text)) {
+        QMessageBox::warning(
+            this, tr("Application"),
+            tr("Cannot read file %1:\n%2.")
+                .arg(QDir::toNativeSeparators(fileName), file.errorString()));
+
+        return;
+      }
+      QTextStream in(&file);
+      QString text = in.readAll();
+      textEditBack->setText(text);
+
+      clearSearchHighlight(textEditBack);
+      on_btnFindNext(textEditBack, files.at(i));
+    }
+
+    qDebug() << files;
+  }
+}
 
 void MainWindow::on_tabWidget_misc_tabBarClicked(int index) {
   if (index == 2) {
     ui->editFind->setFocus();
   }
 }
+
+void MainWindow::on_actionFindNext_triggered() { ui->btnSearch->clicked(); }
