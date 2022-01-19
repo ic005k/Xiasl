@@ -386,6 +386,22 @@ QTreeView::branch:!has-children:!has-siblings:adjoins-item{border-image:url(:/ic
             </property>
            </widget>
           </item>
+          <item>
+           <widget class="QToolButton" name="btnExpand">
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>22</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>Expand / Collapse</string>
+            </property>
+            <property name="text">
+             <string>E</string>
+            </property>
+           </widget>
+          </item>
          </layout>
         </item>
         <item row="4" column="0">

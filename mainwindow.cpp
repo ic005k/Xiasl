@@ -4139,7 +4139,7 @@ void MainWindow::init_toolbar() {
   ui->treeFind->header()->setStretchLastSection(false);
   ui->lblCount->setHidden(true);
   ui->tabFindReplace->layout()->setMargin(2);
-  ui->tabFindReplace->layout()->setSpacing(2);
+  ui->tabFindReplace->layout()->setSpacing(3);
 
   ui->btnSave->setIcon(QIcon(":/icon/save.png"));
   ui->btnNew->setIcon(QIcon(":/icon/new.png"));
@@ -7097,4 +7097,14 @@ void MainWindow::on_btnFolder_clicked() {
   QString dirpath = QFileDialog::getExistingDirectory(
       this, tr("Set Folder"), "./", QFileDialog::ShowDirsOnly);
   ui->editFolder->setText(dirpath);
+}
+
+void MainWindow::on_btnExpand_clicked() {
+  if (ui->btnExpand->text() == "E") {
+    ui->treeFind->expandAll();
+    ui->btnExpand->setText("C");
+  } else if (ui->btnExpand->text() == "C") {
+    ui->treeFind->collapseAll();
+    ui->btnExpand->setText("E");
+  }
 }
