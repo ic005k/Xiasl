@@ -526,6 +526,7 @@ class MainWindow : public QMainWindow {
   MiniEditor* getCurrentMiniEditor(int index);
 
   void init_ScrollBox();
+  bool AddCboxFindItem = false;
 
  protected:
   void closeEvent(QCloseEvent* event) override;
@@ -628,7 +629,7 @@ class MainWindow : public QMainWindow {
 
   void on_editShowMsg_selectionChanged();
 
-  void onEditFind_returnPressed();
+  void on_editFind_ReturnPressed();
 
   void on_MainWindow_destroyed();
 
@@ -759,7 +760,7 @@ class MainWindow : public QMainWindow {
   QPoint m_position;
   int lblNumber = 2;
   int editNumber = 1;
-  bool AddCboxFindItem = false;
+
   dlgDecompile* dlg;
   int index_treeFindChild = 0;
   void highlighsearchtext(QString searchText, QsciScintilla* textEdit,
@@ -832,7 +833,7 @@ class MainWindow : public QMainWindow {
 
   void init_menu();
 
-  void init_toolbar();
+  void init_tool_ui();
 
   void init_recentFiles();
 

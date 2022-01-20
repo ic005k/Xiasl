@@ -273,56 +273,6 @@ QTreeView::branch:!has-children:!has-siblings:adjoins-item{border-image:url(:/ic
          </layout>
         </item>
         <item row="1" column="0">
-         <layout class="QHBoxLayout" name="hlReplace">
-          <item>
-           <widget class="QLineEdit" name="editReplace">
-            <property name="placeholderText">
-             <string>Replace</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QToolButton" name="btnReplace">
-            <property name="maximumSize">
-             <size>
-              <width>16777215</width>
-              <height>22</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>Replace</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QToolButton" name="btnReplaceFind">
-            <property name="maximumSize">
-             <size>
-              <width>16777215</width>
-              <height>22</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>Replace &amp;&amp; Find</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QToolButton" name="btnReplaceAll">
-            <property name="maximumSize">
-             <size>
-              <width>16777215</width>
-              <height>22</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>All</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item row="2" column="0">
          <layout class="QHBoxLayout" name="horizontalLayout_3">
           <property name="spacing">
            <number>-1</number>
@@ -355,7 +305,7 @@ QTreeView::branch:!has-children:!has-siblings:adjoins-item{border-image:url(:/ic
           </item>
          </layout>
         </item>
-        <item row="3" column="0">
+        <item row="2" column="0">
          <layout class="QHBoxLayout" name="hLayoutFolder">
           <item>
            <widget class="QLabel" name="label">
@@ -404,7 +354,7 @@ QTreeView::branch:!has-children:!has-siblings:adjoins-item{border-image:url(:/ic
           </item>
          </layout>
         </item>
-        <item row="4" column="0">
+        <item row="3" column="0">
          <widget class="QTreeWidget" name="treeFind">
           <property name="frameShape">
            <enum>QFrame::NoFrame</enum>
@@ -418,6 +368,56 @@ QTreeView::branch:!has-children:!has-siblings:adjoins-item{border-image:url(:/ic
            </property>
           </column>
          </widget>
+        </item>
+        <item row="4" column="0">
+         <layout class="QHBoxLayout" name="hlReplace">
+          <item>
+           <widget class="QLineEdit" name="editReplace">
+            <property name="placeholderText">
+             <string>Replace</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="btnReplace">
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>22</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>Replace</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="btnReplaceFind">
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>22</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>Replace &amp;&amp; Find</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="btnReplaceAll">
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>22</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>All</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
        </layout>
       </widget>

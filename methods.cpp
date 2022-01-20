@@ -5,8 +5,31 @@
 
 extern QList<QTreeWidgetItem*> tw_list;
 extern MainWindow* mw_one;
+extern bool loading;
 
 Methods::Methods(QObject* parent) : QObject{parent} {}
+
+void Methods::setSearchHistory() {
+  if (loading) return;
+
+  QString findText = mw_one->ui->editFind->lineEdit()->text().trimmed();
+  QStringList strList;
+  for (int i = 0; i < mw_one->ui->editFind->count(); i++) {
+    strList.append(mw_one->ui->editFind->itemText(i));
+  }
+
+  for (int i = 0; i < strList.count(); i++) {
+    if (findText == strList.at(i)) {
+      strList.removeAt(i);
+    }
+  }
+  strList.insert(0, findText);
+  mw_one->AddCboxFindItem = true;
+  mw_one->ui->editFind->clear();
+  mw_one->ui->editFind->addItems(strList);
+  mw_one->AddCboxFindItem = false;
+  mw_one->ui->editFind->lineEdit()->selectAll();
+}
 
 void Methods::setColorMatch(int red, QsciLexer* textLexer) {
   if (red < 55)  //暗模式，mac下为50
@@ -70,7 +93,7 @@ QStringList Methods::getVoidForCpp(QsciScintilla* textEdit) {
 }
 
 bool Methods::isSymbol(QString line) {
-  line.trimmed();
+  line = line.trimmed();
   QStringList listKeys = QStringList() << "static"
                                        << "void"
                                        << "int"

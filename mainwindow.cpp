@@ -14,7 +14,7 @@
 #endif
 #include "methods.h"
 
-QString CurVerison = "1.1.31";
+QString CurVerison = "1.1.32";
 QString fileName, curFile, dragFileName;
 
 bool loading = false;
@@ -228,7 +228,7 @@ MainWindow::MainWindow(QWidget* parent)
 
   init_filesystem();
 
-  init_toolbar();
+  init_tool_ui();
 
   loadTabFiles();
 
@@ -1990,26 +1990,9 @@ void MainWindow::textEdit_textChanged() {
   }
 }
 
-void MainWindow::onEditFind_returnPressed() {
-  ui->btnSearch->clicked();
-
-  QString findText = ui->editFind->lineEdit()->text().trimmed();
-  QStringList strList;
-  for (int i = 0; i < ui->editFind->count(); i++) {
-    strList.append(ui->editFind->itemText(i));
-  }
-
-  for (int i = 0; i < strList.count(); i++) {
-    if (findText == strList.at(i)) {
-      strList.removeAt(i);
-    }
-  }
-  strList.insert(0, findText);
-  AddCboxFindItem = true;
-  ui->editFind->clear();
-  ui->editFind->addItems(strList);
-  AddCboxFindItem = false;
-  ui->editFind->lineEdit()->selectAll();
+void MainWindow::on_editFind_ReturnPressed() {
+  on_btnSearch_clicked();
+  Methods::setSearchHistory();
 }
 
 const char* QscilexerCppAttach::keywords(int set) const {
@@ -4121,7 +4104,7 @@ void MainWindow::init_recentFiles() {
   }
 }
 
-void MainWindow::init_toolbar() {
+void MainWindow::init_tool_ui() {
   if (mac || osx1012) this->setUnifiedTitleAndToolBarOnMac(false);
   ui->toolBar->setHidden(true);
   ui->chkCaseSensitive->setHidden(true);
@@ -4171,86 +4154,13 @@ void MainWindow::init_toolbar() {
   ui->editFind->lineEdit()->addAction(actClear, QLineEdit::LeadingPosition);
   connect(actClear, &QAction::triggered, this, &MainWindow::on_clearFindText);
 
-  ui->toolBar->setStyleSheet(
-
-      "QToolButton:hover{ "
-      "color:rgb(255, 255, 255); "
-      "border-style:solid; "
-      "border-top-left-radius:2px;  "
-      "border-top-right-radius:2px; "
-      "background:#bfbfbf; "
-      "border:1px;"
-      "border-radius:5px;padding:2px 4px; }"
-
-      "QToolButton:pressed{ "
-      "color:rgb(255, 255, 255); "
-      "border-style:solid; "
-      "border-top-left-radius:2px;  "
-      "border-top-right-radius:2px; "
-      "background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop:0 "
-      "rgb(226,236,241),"
-      "stop: 0.3 rgb(190,190,190),"
-      "stop: 1 rgb(160,160,160));"
-      "border:1px;"
-      "border-radius:5px;padding:2px 4px; }"
-
-  );
-  ui->toolBar->setIconSize(QSize(20, 20));
-
-  ui->toolBar->layout()->setMargin(1);
-  ui->toolBar->layout()->setSpacing(1);
-
-  // ui->actionNew->setIcon(QIcon(":/icon/new.png"));
-  ui->toolBar->addAction(ui->actionNew);
-
-  // ui->actionOpen->setIcon(QIcon(":/icon/open.png"));
-  ui->toolBar->addAction(ui->actionOpen);
-
-  // ui->actionSave->setIcon(QIcon(":/icon/save.png"));
-  ui->toolBar->addAction(ui->actionSave);
-
-  ui->toolBar->addSeparator();
-
-  ui->toolBar->addSeparator();
-
   ui->editFind->lineEdit()->setPlaceholderText(tr("Find"));
-
   ui->editFind->lineEdit()->setClearButtonEnabled(true);
   // ui->editFind->setAutoCompletionCaseSensitivity(Qt::CaseSensitive);
-
   setEditFindCompleter();
-
   connect(ui->editFind->lineEdit(), &QLineEdit::returnPressed, this,
-          &MainWindow::onEditFind_returnPressed);
-
+          &MainWindow::on_editFind_ReturnPressed);
   ui->lblCount->setText("0");
-
-  // ui->actionFindPrevious->setIcon(QIcon(":/icon/fp.png"));
-  ui->toolBar->addAction(ui->actionFindPrevious);
-  ui->toolBar->addAction(ui->actionReplace);
-  // ui->actionReplace_Find->setIcon(QIcon(":/icon/rf.png"));
-  ui->toolBar->addAction(ui->actionReplace_Find);
-
-  // ui->actionFind->setIcon(QIcon(":/icon/fn.png"));
-  ui->toolBar->addAction(ui->actionFind);
-
-  // ui->actionReplaceAll->setIcon(QIcon(":/icon/ra.png"));
-  ui->toolBar->addAction(ui->actionReplaceAll);
-
-  ui->toolBar->addSeparator();
-  // ui->toolBar->addWidget(ui->cboxCompilationOptions);
-  // ui->actionGo_to_previous_error->setIcon(QIcon(":/icon/1.png"));
-  ui->toolBar->addAction(ui->actionGo_to_previous_error);
-
-  // ui->actionCompiling->setIcon(QIcon(":/icon/2.png"));
-  ui->toolBar->addAction(ui->actionCompiling);
-
-  // ui->actionGo_to_the_next_error->setIcon(QIcon(":/icon/3.png"));
-  ui->toolBar->addAction(ui->actionGo_to_the_next_error);
-
-  ui->toolBar->addSeparator();
-  // ui->actionRefreshTree->setIcon(QIcon(":/icon/r.png"));
-  ui->toolBar->addAction(ui->actionRefreshTree);
 }
 
 void MainWindow::init_menu() {
@@ -6398,14 +6308,9 @@ void MainWindow::mouseMoveEvent(QMouseEvent* e) {
 
   miniDlg->close();
 
-  if (e->x() < ui->dockMiniEdit->x() ||
-      e->x() > ui->dockMiniEdit->x() + ui->dockMiniEdit->width() - 5) {
-    if (!isDrag & (e->buttons() & Qt::LeftButton)) {
-      move(e->globalPos() - m_position);
-      e->accept();
-    }
-
-    return;
+  if (!isDrag & (e->buttons() & Qt::LeftButton)) {
+    move(e->globalPos() - m_position);
+    e->accept();
   }
 
   e->accept();
@@ -6456,6 +6361,12 @@ void MainWindow::mouseMoveEvent(QMouseEvent* e) {
 }
 
 void MainWindow::mousePressEvent(QMouseEvent* e) {
+  if (e->x() < ui->dockMiniEdit->x() ||
+      e->x() > ui->dockMiniEdit->x() + ui->dockMiniEdit->width() - 5) {
+    e->accept();
+    return;
+  }
+
   if (e->button() == Qt::LeftButton) {
     isDrag = true;
     m_position = e->globalPos() - this->pos();
@@ -7007,18 +6918,11 @@ void MainWindow::on_treeFind_itemClicked(QTreeWidgetItem* item, int column) {
   if (column == 0) {
     if (item->childCount() > 0) return;
 
-    unsigned long long pos = item->text(1).toLongLong();
-    int row, col;
-    row = textEdit->SendScintilla(QsciScintillaBase::SCI_LINEFROMPOSITION, pos,
-                                  NULL);
-    col = textEdit->SendScintilla(QsciScintillaBase::SCI_GETCOLUMN, pos, NULL);
-
     if (ui->cboxFindScope->currentIndex() == 1) {
       QString file = item->parent()->text(1);
       if (file != curFile) {
         for (int i = 0; i < ui->tabWidget_textEdit->count(); i++) {
           if (file == getCurrentFileName(i)) {
-            textEdit = getCurrentEditor(i);
             ui->tabWidget_textEdit->setCurrentIndex(i);
             on_tabWidget_textEdit_tabBarClicked(i);
 
@@ -7035,7 +6939,6 @@ void MainWindow::on_treeFind_itemClicked(QTreeWidgetItem* item, int column) {
         for (int i = 0; i < ui->tabWidget_textEdit->count(); i++) {
           if (file == getCurrentFileName(i)) {
             ui->tabWidget_textEdit->setCurrentIndex(i);
-            getCurrentEditor(i)->setCursorPosition(row, col);
             on_tabWidget_textEdit_tabBarClicked(i);
 
             isOpen = true;
@@ -7044,13 +6947,19 @@ void MainWindow::on_treeFind_itemClicked(QTreeWidgetItem* item, int column) {
         }
 
         if (!isOpen) {
-          loadFile(file, row, col);
+          loadFile(file, -1, -1);
         }
       }
     }
 
     highlighsearchtext(ui->editFind->currentText(), textEdit, curFile, false);
+
     textEdit->setFocus();
+    unsigned long pos = item->text(1).toULongLong();
+    int row, col;
+    row = textEdit->SendScintilla(QsciScintillaBase::SCI_LINEFROMPOSITION, pos,
+                                  NULL);
+    col = textEdit->SendScintilla(QsciScintillaBase::SCI_GETCOLUMN, pos, NULL);
     textEdit->setCursorPosition(row, col);
 
     qDebug() << row << col;
