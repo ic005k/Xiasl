@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>909</width>
+    <width>913</width>
     <height>638</height>
    </rect>
   </property>
@@ -275,7 +275,7 @@ QTreeView::branch:!has-children:!has-siblings:adjoins-item{border-image:url(:/ic
         <item row="1" column="0">
          <layout class="QHBoxLayout" name="horizontalLayout_3">
           <property name="spacing">
-           <number>-1</number>
+           <number>9</number>
           </property>
           <item>
            <widget class="QLabel" name="label_2">
@@ -356,6 +356,9 @@ QTreeView::branch:!has-children:!has-siblings:adjoins-item{border-image:url(:/ic
         </item>
         <item row="3" column="0">
          <widget class="QTreeWidget" name="treeFind">
+          <property name="focusPolicy">
+           <enum>Qt::NoFocus</enum>
+          </property>
           <property name="frameShape">
            <enum>QFrame::NoFrame</enum>
           </property>
@@ -975,8 +978,8 @@ QListWidget::item:selected
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>909</width>
-     <height>24</height>
+     <width>913</width>
+     <height>30</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
