@@ -14,7 +14,7 @@
 #endif
 #include "methods.h"
 
-QString CurVerison = "1.1.32";
+QString CurVerison = "1.1.33";
 QString fileName, curFile, dragFileName;
 
 bool loading = false;
@@ -6955,7 +6955,7 @@ void MainWindow::on_treeFind_itemClicked(QTreeWidgetItem* item, int column) {
     highlighsearchtext(ui->editFind->currentText(), textEdit, curFile, false);
 
     textEdit->setFocus();
-    unsigned long pos = item->text(1).toULongLong();
+    unsigned long long pos = item->text(1).toLongLong();
     int row, col;
     row = textEdit->SendScintilla(QsciScintillaBase::SCI_LINEFROMPOSITION, pos,
                                   NULL);
