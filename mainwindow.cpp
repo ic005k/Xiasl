@@ -4133,7 +4133,7 @@ void MainWindow::init_tool_ui() {
   ui->treeFind->setHeaderHidden(true);
   ui->treeFind->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
   ui->treeFind->header()->setStretchLastSection(false);
-  ui->lblCount->setHidden(true);
+
   ui->tabFindReplace->layout()->setMargin(2);
   ui->tabFindReplace->layout()->setSpacing(3);
 
@@ -4158,8 +4158,7 @@ void MainWindow::init_tool_ui() {
   ui->tabWidget_misc->setCornerWidget(ui->frameFun);
 
   // Find
-  ui->lblCount->setFixedWidth(50);
-  ui->lblCount->setAlignment(Qt::AlignCenter);
+
   QAction* actClear = new QAction(this);
   actClear->setToolTip(tr("Clear search history"));
   actClear->setIcon(QIcon(":/icon/clear.png"));
@@ -4172,7 +4171,6 @@ void MainWindow::init_tool_ui() {
   setEditFindCompleter();
   connect(ui->editFind->lineEdit(), &QLineEdit::returnPressed, this,
           &MainWindow::on_editFind_ReturnPressed);
-  ui->lblCount->setText("0");
 }
 
 void MainWindow::init_menu() {
@@ -4638,6 +4636,7 @@ void MainWindow::init_treeWidget() {
           });
 
   ui->lblMembers->setHidden(false);
+  ui->lblMembers->setAlignment(Qt::AlignCenter);
 }
 
 void MainWindow::init_filesystem() {
@@ -5822,7 +5821,6 @@ void MainWindow::on_editFind_editTextChanged(const QString& arg1) {
 
   } else {
     clearSearchHighlight(textEdit);
-    ui->lblCount->setText("0");
 
     ui->editFind->lineEdit()->setPlaceholderText(tr("Find"));
 

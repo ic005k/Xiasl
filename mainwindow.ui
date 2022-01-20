@@ -25,7 +25,7 @@
        <enum>QTabWidget::North</enum>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <property name="documentMode">
        <bool>false</bool>
@@ -185,6 +185,9 @@ QTreeView::branch:!has-children:!has-siblings:adjoins-item{border-image:url(:/ic
        <layout class="QGridLayout" name="gridLayout_11">
         <item row="0" column="0">
          <layout class="QHBoxLayout" name="horizontalLayout">
+          <property name="spacing">
+           <number>5</number>
+          </property>
           <item>
            <widget class="QToolButton" name="btnCaseSensitive">
             <property name="maximumSize">
@@ -214,13 +217,6 @@ QTreeView::branch:!has-children:!has-siblings:adjoins-item{border-image:url(:/ic
             </property>
             <property name="editable">
              <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="lblCount">
-            <property name="text">
-             <string>Count</string>
             </property>
            </widget>
           </item>
@@ -268,7 +264,7 @@ QTreeView::branch:!has-children:!has-siblings:adjoins-item{border-image:url(:/ic
         <item row="1" column="0">
          <layout class="QHBoxLayout" name="horizontalLayout_3">
           <property name="spacing">
-           <number>9</number>
+           <number>2</number>
           </property>
           <item>
            <widget class="QLabel" name="label_2">
