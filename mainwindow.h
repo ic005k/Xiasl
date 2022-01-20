@@ -92,6 +92,7 @@ class QWidget;
 class LineNumberArea;
 class QsciScintilla;
 class thread_one;
+class SearchThread;
 class MiniEditor;
 class MaxEditor;
 class MyWidget;
@@ -112,6 +113,12 @@ class MainWindow : public QMainWindow {
   ~MainWindow();
   Ui::MainWindow* ui;
 
+  static void highlighsearchtext(QString searchText, QsciScintilla* textEdit,
+                                 QString file, bool addTreeItem);
+  static void clearSearchHighlight(QsciScintilla* textEdit);
+  static void searchInFolders();
+  SearchThread* mySearchThread;
+  void dealDone();
   void on_btnFindNext(QsciScintilla* textEdit, QString file);
   QVBoxLayout* hboxLayout;
   QTimer* tmrWatchPos;
@@ -643,10 +650,6 @@ class MainWindow : public QMainWindow {
 
   void on_btnReplaceFind();
 
-  void on_chkCaseSensitive_clicked();
-
-  void on_chkCaseSensitive_clicked(bool checked);
-
   void on_btnCompile();
 
   void on_treeView_doubleClicked(const QModelIndex& index);
@@ -753,6 +756,10 @@ class MainWindow : public QMainWindow {
 
   void on_actionFind_triggered();
 
+  void on_chkSubDir_clicked(bool checked);
+
+  void on_cboxFindScope_currentIndexChanged(int index);
+
  private:
   QPoint winPos;
   QMenu* menuTabList;
@@ -763,11 +770,6 @@ class MainWindow : public QMainWindow {
 
   dlgDecompile* dlg;
   int index_treeFindChild = 0;
-  void highlighsearchtext(QString searchText, QsciScintilla* textEdit,
-                          QString file, bool addTreeItem);
-  void clearSearchHighlight(QsciScintilla* textEdit);
-  QList<int> m_searchTextPosList;
-  QString search_string;
 
   QStringList findTextList;
   void init_findTextList();
@@ -800,8 +802,6 @@ class MainWindow : public QMainWindow {
   bool find_up;
 
   bool find_down;
-
-  bool CaseSensitive = false;
 
   QString ver;
 
@@ -985,6 +985,21 @@ class thread_one : public QThread {
   void run();
  signals:
   void over();
+ public slots:
+};
+
+class SearchThread : public QThread {
+  Q_OBJECT
+ public:
+  explicit SearchThread(QObject* parent = nullptr);
+
+ protected:
+  void run();
+ signals:
+  void isDone();  //处理完成信号
+
+ signals:
+
  public slots:
 };
 

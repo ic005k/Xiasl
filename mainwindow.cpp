@@ -15,7 +15,7 @@
 #include "methods.h"
 
 QString CurVerison = "1.1.34";
-QString fileName, curFile, dragFileName;
+QString fileName, curFile, dragFileName, findStr, findPath, search_string;
 
 bool loading = false;
 bool thread_end = true;
@@ -28,6 +28,9 @@ bool textEditScroll = false;
 bool miniEditWheel = false;
 bool ReLoad = false;
 bool zh_cn = false;
+bool isIncludeSubDir, isCaseSensitive;
+QList<int> m_searchTextPosList;
+QStringList files;
 
 int s_count = 0;
 int m_count = 0;
@@ -35,7 +38,7 @@ int d_count = 0;
 int n_count = 0;
 int vs, hs, red, rowDrag, colDrag;
 
-QsciScintilla* textEditBack;
+QsciScintilla *textEditBack, *textEditSerach;
 QsciScintilla* miniDlgEdit;
 miniDialog* miniDlg;
 
@@ -48,6 +51,7 @@ QList<QTreeWidgetItem*> tw_device;
 QList<QTreeWidgetItem*> tw_method;
 QList<QTreeWidgetItem*> tw_name;
 QList<QTreeWidgetItem*> tw_list;
+QList<QTreeWidgetItem*> tw_SearchResults;
 QTreeWidget* treeWidgetBak;
 
 QVector<QString> filelist;
@@ -57,6 +61,7 @@ QsciLexer *myTextLexer, *miniLexer;
 extern MainWindow* mw_one;
 
 thread_one::thread_one(QObject* parent) : QThread(parent) {}
+SearchThread::SearchThread(QObject* parent) : QThread{parent} {}
 
 MiniEditor::MiniEditor(QWidget* parent) : QsciScintilla(parent) {
   setContextMenuPolicy(Qt::NoContextMenu);
@@ -137,6 +142,8 @@ MainWindow::MainWindow(QWidget* parent)
 
   mythread = new thread_one();
   connect(mythread, &thread_one::over, this, &MainWindow::dealover);
+  mySearchThread = new SearchThread();
+  connect(mySearchThread, &SearchThread::isDone, this, &MainWindow::dealDone);
 
   dlg = new dlgDecompile(this);
   dlgAutoUpdate = new AutoUpdateDialog(this);
@@ -253,6 +260,9 @@ MainWindow::~MainWindow() {
 
   mythread->quit();
   mythread->wait();
+
+  mySearchThread->quit();
+  mySearchThread->wait();
 }
 
 void MainWindow::loadTabFiles() {
@@ -1456,7 +1466,7 @@ void MainWindow::ReplaceAll() {
   QString searchtext = ui->editFind->currentText().trimmed();
   QString replacetext = ui->editReplace->text().trimmed();
   QString document = textEdit->text();
-  if (!ui->chkCaseSensitive->isChecked())
+  if (!isCaseSensitive)
     document.replace(searchtext, replacetext, Qt::CaseInsensitive);
   else
     document.replace(searchtext, replacetext);
@@ -1467,7 +1477,7 @@ void MainWindow::ReplaceAll() {
 }
 
 void MainWindow::forEach(QString str, QString strReplace) {
-  if (textEdit->findFirst(str, true, CaseSensitive, false, true, true)) {
+  if (textEdit->findFirst(str, true, isCaseSensitive, false, true, true)) {
     textEdit->replace(strReplace);
   }
 }
@@ -1485,7 +1495,7 @@ void MainWindow::on_btnFindNext(QsciScintilla* textEdit, QString file) {
   QString str = ui->editFind->currentText().trimmed();
   //正则、大小写、匹配整个词、循环查找、向下或向上：目前已开启向下的循环查找
 
-  if (textEdit->findFirst(str, true, CaseSensitive, false, true, true)) {
+  if (textEdit->findFirst(str, true, isCaseSensitive, false, true, true)) {
     if (red < 55) {
       QPalette palette;
       palette.setColor(QPalette::Text, Qt::white);
@@ -1536,7 +1546,7 @@ void MainWindow::on_btnFindPrevious() {
   const char* ch = str.c_str();
 
   int flags;
-  if (CaseSensitive)
+  if (isCaseSensitive)
     flags = QsciScintilla::SCFIND_MATCHCASE | QsciScintilla::SCFIND_REGEXP;
   else
     flags = QsciScintilla::SCFIND_REGEXP;
@@ -4107,7 +4117,6 @@ void MainWindow::init_recentFiles() {
 void MainWindow::init_tool_ui() {
   if (mac || osx1012) this->setUnifiedTitleAndToolBarOnMac(false);
   ui->toolBar->setHidden(true);
-  ui->chkCaseSensitive->setHidden(true);
   ui->btnFind->setIcon(QIcon(":/icon/find.png"));
   // ui->tabWidget_misc->setTabIcon(2, QIcon(":/icon/find.png"));
   // ui->tabWidget_misc->setTabText(2, "");
@@ -4117,6 +4126,9 @@ void MainWindow::init_tool_ui() {
   ui->btnErrorN->setIcon(QIcon(":/icon/3.png"));
 
   // 初始化搜索
+  textEditSerach = new QsciScintilla;
+  ui->frameInFolder->setHidden(true);
+  ui->treeFind->setUniformRowHeights(true);  //加快展开速度
   ui->treeFind->setIconSize(QSize(12, 12));
   ui->treeFind->setHeaderHidden(true);
   ui->treeFind->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
@@ -5171,13 +5183,6 @@ void MainWindow::on_btnReplaceFind() {
   if (find_up) on_btnFindPrevious();
 }
 
-void MainWindow::on_chkCaseSensitive_clicked() {}
-
-void MainWindow::on_chkCaseSensitive_clicked(bool checked) {
-  CaseSensitive = checked;
-  ui->btnSearch->clicked();
-}
-
 /*菜单：设置字体*/
 void MainWindow::set_font() {
   bool ok;
@@ -5725,7 +5730,7 @@ void MainWindow::highlighsearchtext(QString searchText, QsciScintilla* textEdit,
 
   std::string document;
 
-  if (ui->chkCaseSensitive->isChecked()) {
+  if (isCaseSensitive) {
     search_string = searchText;
     document = textEdit->text().toStdString();
   } else {
@@ -5766,10 +5771,11 @@ void MainWindow::highlighsearchtext(QString searchText, QsciScintilla* textEdit,
 
     position++;
     i++;
+
+    // qDebug() << i << position;
   }
 
   int count = m_searchTextPosList.count();
-  ui->lblCount->setText(QString::number(count));
 
   if (file != curFile) {
     clearSearchHighlight(textEdit);
@@ -5778,10 +5784,10 @@ void MainWindow::highlighsearchtext(QString searchText, QsciScintilla* textEdit,
   // 结果列表
   if (!addTreeItem) return;
   if (count == 0) return;
-  QTreeWidgetItem* topItem = new QTreeWidgetItem(ui->treeFind);
+
+  QTreeWidgetItem* topItem = new QTreeWidgetItem();
   topItem->setText(0, QString::number(count) + "    " + file);
   topItem->setText(1, file);
-  ui->treeFind->addTopLevelItem(topItem);
 
   for (int i = 0; i < m_searchTextPosList.count(); i++) {
     QTreeWidgetItem* item = new QTreeWidgetItem(topItem);
@@ -5796,6 +5802,8 @@ void MainWindow::highlighsearchtext(QString searchText, QsciScintilla* textEdit,
                          QString::number(col) + " )" + "    " + lineText);
     item->setText(1, QString::number(pos));
   }
+
+  tw_SearchResults.append(topItem);
 }
 
 void MainWindow::clearSearchHighlight(QsciScintilla* textEdit) {
@@ -6712,17 +6720,17 @@ void MainWindow::on_btnErrorN_clicked() { on_btnNextError(); }
 void MainWindow::on_btnCaseSensitive_clicked() {
   QFont font;
 
-  if (!ui->chkCaseSensitive->isChecked()) {
-    ui->chkCaseSensitive->setChecked(true);
+  if (!isCaseSensitive) {
+    isCaseSensitive = true;
     font.setBold(true);
     ui->btnCaseSensitive->setFont(font);
   } else {
-    ui->chkCaseSensitive->setChecked(false);
+    isCaseSensitive = false;
     font.setBold(false);
     ui->btnCaseSensitive->setFont(font);
   }
 
-  on_chkCaseSensitive_clicked(ui->chkCaseSensitive->isChecked());
+  on_btnSearch_clicked();
 }
 
 void MainWindow::on_btnSave_clicked() { Save(); }
@@ -6970,10 +6978,12 @@ void MainWindow::on_treeFind_itemClicked(QTreeWidgetItem* item, int column) {
 
 void MainWindow::on_btnSearch_clicked() {
   ui->treeFind->clear();
+  tw_SearchResults.clear();
 
   if (ui->cboxFindScope->currentIndex() == 0) {
     int index = ui->tabWidget_textEdit->currentIndex();
     on_btnFindNext(getCurrentEditor(index), getCurrentFileName(index));
+    ui->treeFind->addTopLevelItems(tw_SearchResults);
   }
 
   if (ui->cboxFindScope->currentIndex() == 1) {
@@ -6982,56 +6992,78 @@ void MainWindow::on_btnSearch_clicked() {
       clearSearchHighlight(textEdit);
       on_btnFindNext(getCurrentEditor(i), getCurrentFileName(i));
     }
+
+    ui->treeFind->addTopLevelItems(tw_SearchResults);
   }
 
   if (ui->cboxFindScope->currentIndex() == 2) {
-    QString path = ui->editFolder->text().trimmed();
-    QDir dir(path);
-    QStringList nameFilters;
-    nameFilters << "*.dsl"
-                << "*.asl"
-                << "*.c"
-                << "*.cpp"
-                << "*.h"
-                << "*.hpp"
-                << "*.mm"
-                << "*.bat"
-                << "*.txt"
-                << "*.py"
-                << "*.plist";
+    ui->progressBar->setMaximum(0);
+    ui->lblSearch->setText(tr("Files") + " : 0    " + tr("Results") + " : 0");
+    findPath = ui->editFolder->text().trimmed();
+    findStr = ui->editFind->currentText();
 
-    QStringList fmt =
-        QString("dsl;asl;c;cpp;h;hpp;mm;bat;txt;py;plist").split(';');
-    QStringList files;
-    if (!ui->chkSubDir->isChecked()) {
-      QStringList filesTemp =
-          dir.entryList(nameFilters, QDir::Files | QDir::Readable, QDir::Name);
+    mySearchThread->start();
+    // searchInFolders();
+  }
+}
 
-      for (int j = 0; j < filesTemp.count(); j++) {
-        if (filesTemp.at(j).mid(0, 1) != ".")
-          files.append(path + "/" + filesTemp.at(j));
-      }
-    } else {
-      Methods::getAllFiles(path, files, fmt);
+void SearchThread::run() {
+  MainWindow::searchInFolders();
+  emit isDone();
+}
+
+void MainWindow::dealDone() {
+  ui->treeFind->addTopLevelItems(tw_SearchResults);
+  ui->lblSearch->setText(tr("Files") + " : " + QString::number(files.count()) +
+                         "    " + tr("Results") + " : " +
+                         QString::number(tw_SearchResults.count()));
+  ui->progressBar->setMaximum(100);
+}
+
+void MainWindow::searchInFolders() {
+  QDir dir(findPath);
+  QStringList nameFilters;
+  nameFilters << "*.dsl"
+              << "*.asl"
+              << "*.c"
+              << "*.cpp"
+              << "*.h"
+              << "*.hpp"
+              << "*.mm"
+              << "*.bat"
+              << "*.txt"
+              << "*.py"
+              << "*.plist";
+
+  QStringList fmt =
+      QString("dsl;asl;c;cpp;h;hpp;mm;bat;txt;py;plist").split(';');
+
+  files.clear();
+  if (!isIncludeSubDir) {
+    QStringList filesTemp =
+        dir.entryList(nameFilters, QDir::Files | QDir::Readable, QDir::Name);
+
+    for (int j = 0; j < filesTemp.count(); j++) {
+      if (filesTemp.at(j).mid(0, 1) != ".")
+        files.append(findPath + "/" + filesTemp.at(j));
     }
-    // qDebug() << files;
-    for (int i = 0; i < files.count(); i++) {
-      QFile file(files.at(i));
-      if (!file.open(QFile::ReadOnly | QFile::Text)) {
-        QMessageBox::warning(
-            this, tr("Application"),
-            tr("Cannot read file %1:\n%2.")
-                .arg(QDir::toNativeSeparators(fileName), file.errorString()));
+  } else {
+    Methods::getAllFiles(findPath, files, fmt);
+  }
 
-        return;
-      }
-      QTextStream in(&file);
-      QString text = in.readAll();
-      textEditBack->setText(text);
-
-      clearSearchHighlight(textEditBack);
-      on_btnFindNext(textEditBack, files.at(i));
+  for (int i = 0; i < files.count(); i++) {
+    QFile file(files.at(i));
+    if (!file.open(QFile::ReadOnly | QFile::Text)) {
+      return;
     }
+    QTextStream in(&file);
+    QString text = in.readAll();
+    textEditSerach->clear();
+    textEditSerach->setText(text);
+
+    highlighsearchtext(findStr, textEditSerach, files.at(i), true);
+
+    clearSearchHighlight(textEditSerach);
   }
 }
 
@@ -7062,3 +7094,14 @@ void MainWindow::on_btnExpand_clicked() {
 void MainWindow::on_actionFindPrevious_triggered() { ui->btnPrevious->click(); }
 
 void MainWindow::on_actionFind_triggered() { ui->btnSearch->clicked(); }
+
+void MainWindow::on_chkSubDir_clicked(bool checked) {
+  isIncludeSubDir = checked;
+}
+
+void MainWindow::on_cboxFindScope_currentIndexChanged(int index) {
+  if (index == 2)
+    ui->frameInFolder->setHidden(false);
+  else
+    ui->frameInFolder->setHidden(true);
+}
