@@ -14,7 +14,7 @@
 #endif
 #include "methods.h"
 
-QString CurVerison = "1.1.33";
+QString CurVerison = "1.1.34";
 QString fileName, curFile, dragFileName;
 
 bool loading = false;
@@ -7000,14 +7000,21 @@ void MainWindow::on_btnSearch_clicked() {
                 << "*.py"
                 << "*.plist";
 
-    QStringList filesTemp =
-        dir.entryList(nameFilters, QDir::Files | QDir::Readable, QDir::Name);
+    QStringList fmt =
+        QString("dsl;asl;c;cpp;h;hpp;mm;bat;txt;py;plist").split(';');
     QStringList files;
-    for (int j = 0; j < filesTemp.count(); j++) {
-      if (filesTemp.at(j).mid(0, 1) != ".")
-        files.append(path + "/" + filesTemp.at(j));
-    }
+    if (!ui->chkSubDir->isChecked()) {
+      QStringList filesTemp =
+          dir.entryList(nameFilters, QDir::Files | QDir::Readable, QDir::Name);
 
+      for (int j = 0; j < filesTemp.count(); j++) {
+        if (filesTemp.at(j).mid(0, 1) != ".")
+          files.append(path + "/" + filesTemp.at(j));
+      }
+    } else {
+      Methods::getAllFiles(path, files, fmt);
+    }
+    // qDebug() << files;
     for (int i = 0; i < files.count(); i++) {
       QFile file(files.at(i));
       if (!file.open(QFile::ReadOnly | QFile::Text)) {

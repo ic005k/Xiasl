@@ -303,6 +303,13 @@ QTreeView::branch:!has-children:!has-siblings:adjoins-item{border-image:url(:/ic
             </item>
            </widget>
           </item>
+          <item>
+           <widget class="QCheckBox" name="chkSubDir">
+            <property name="text">
+             <string>Include Subfolders</string>
+            </property>
+           </widget>
+          </item>
          </layout>
         </item>
         <item row="2" column="0">
@@ -979,7 +986,7 @@ QListWidget::item:selected
      <x>0</x>
      <y>0</y>
      <width>913</width>
-     <height>30</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">

@@ -25,6 +25,9 @@ class Methods : public QObject {
   static bool isSymbol(QString line);
   static void setColorMatch(int red, QsciLexer *textLexer);
   static void setSearchHistory();
+  static void getAllFolds(const QString &foldPath, QStringList &folds);
+  static void getAllFiles(const QString &foldPath, QStringList &folds,
+                          const QStringList &formats);
  signals:
 };
 

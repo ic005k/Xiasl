@@ -9,6 +9,29 @@ extern bool loading;
 
 Methods::Methods(QObject* parent) : QObject{parent} {}
 
+void Methods::getAllFolds(const QString& foldPath, QStringList& folds) {
+  QDirIterator it(foldPath, QDir::Dirs | QDir::NoDotAndDotDot,
+                  QDirIterator::Subdirectories);
+  while (it.hasNext()) {
+    it.next();
+    QFileInfo fileInfo = it.fileInfo();
+    folds << fileInfo.absoluteFilePath();
+  }
+}
+
+void Methods::getAllFiles(const QString& foldPath, QStringList& folds,
+                          const QStringList& formats) {
+  QDirIterator it(foldPath, QDir::Files | QDir::NoDotAndDotDot,
+                  QDirIterator::Subdirectories);
+  while (it.hasNext()) {
+    it.next();
+    QFileInfo fileInfo = it.fileInfo();
+    if (formats.contains(fileInfo.suffix())) {  //检测格式，按需保存
+      folds << fileInfo.absoluteFilePath();
+    }
+  }
+}
+
 void Methods::setSearchHistory() {
   if (loading) return;
 
