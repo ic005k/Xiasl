@@ -14,9 +14,9 @@
 #endif
 #include "methods.h"
 
-QString CurVerison = "1.1.36";
+QString CurVerison = "1.1.37";
 QString fileName, curFile, dragFileName, findStr, findPath, search_string,
-    currentFindFile;
+    curFindFile;
 
 bool loading = false;
 bool thread_end = true;
@@ -40,7 +40,8 @@ int m_count = 0;
 int d_count = 0;
 int n_count = 0;
 int vs, hs, red, rowDrag, colDrag;
-int currentFindPos;
+long curFindPos;
+long totalPos;
 
 QsciScintilla *textEditBack, *textEditSerach;
 QsciScintilla* miniDlgEdit;
@@ -5765,12 +5766,10 @@ void MainWindow::highlighsearchtext(QString searchText, QsciScintilla* textEdit,
 
     position++;
     i++;
-    currentFindPos = i - 1;
-
-    // qDebug() << i << position;
+    curFindPos = i - 1;
   }
 
-  int count = m_searchTextPosList.count();
+  totalPos = totalPos + curFindPos;
 
   if (file != curFile) {
     clearSearchHighlight(textEdit);
@@ -5778,6 +5777,7 @@ void MainWindow::highlighsearchtext(QString searchText, QsciScintilla* textEdit,
 
   // 结果列表
   if (!addTreeItem) return;
+  int count = m_searchTextPosList.count();
   if (count == 0) return;
 
   QTreeWidgetItem* topItem = new QTreeWidgetItem();
@@ -7003,12 +7003,14 @@ void MainWindow::on_btnSearch_clicked() {
     if (findStr == "") return;
 
     ui->progressBar->setMaximum(0);
-    ui->lblSearch->setText(tr("Files") + " : 0    " + tr("Results") + " : 0");
+    ui->lblSearch->setText(tr("Files") + " : 0    " + tr("Results") + " : 0" +
+                           "    " + tr("Matches") + " : 0");
     findPath = ui->editFolder->text().trimmed();
 
     isFinishFind = false;
     isBreakFind = false;
-    currentFindPos = 0;
+    curFindPos = 0;
+    totalPos = 0;
 
     mySearchThread->start();
     tmeShowFindProgress->start(100);
@@ -7058,9 +7060,12 @@ void MainWindow::dealDone() {
   }
   ui->treeFind->addTopLevelItems(tw_SearchResults);
 
+  QString strMatches =
+      "    " + tr("Matches") + " : " + QString::number(totalPos);
   ui->lblSearch->setText(tr("Files") + " : " + QString::number(files.count()) +
                          "    " + tr("Results") + " : " +
-                         QString::number(tw_SearchResults.count()));
+                         QString::number(tw_SearchResults.count()) +
+                         strMatches);
   ui->progressBar->setMaximum(100);
   isFinishFind = true;
   isBreakFind = false;
@@ -7122,7 +7127,7 @@ void MainWindow::searchMain(QString file) {
   QString text = in.readAll();
   textEditSerach->clear();
   textEditSerach->setText(text);
-  currentFindFile = file;
+  curFindFile = file;
 
   highlighsearchtext(findStr, textEditSerach, file, true);
 
@@ -7178,12 +7183,15 @@ void MainWindow::on_btnStopFind_clicked() {
 }
 
 void MainWindow::on_ShowFindProgress() {
-  ui->lblPos->setText(tr("Count") + " : " + QString::number(currentFindPos));
-  ui->editProgress->setText(currentFindFile);
+  ui->lblPos->setText(tr("Count") + " : " + QString::number(curFindPos));
+  ui->editProgress->setText(curFindFile);
 
+  QString strMatches =
+      "    " + tr("Matches") + " : " + QString::number(totalPos);
   ui->lblSearch->setText(tr("Files") + " : " + QString::number(files.count()) +
                          "    " + tr("Results") + " : " +
-                         QString::number(tw_SearchResults.count()));
+                         QString::number(tw_SearchResults.count()) +
+                         strMatches);
 
   int s = QTime::currentTime().second();
   if (s % 3 == 0) {

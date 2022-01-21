@@ -7,7 +7,7 @@ extern QList<QTreeWidgetItem*> tw_list;
 extern MainWindow* mw_one;
 extern bool loading;
 extern bool isBreakFind;
-extern QString currentFindFile;
+extern QString curFindFile;
 
 Methods::Methods(QObject* parent) : QObject{parent} {}
 
@@ -30,8 +30,8 @@ void Methods::getAllFiles(const QString& foldPath, QStringList& folds,
     QFileInfo fileInfo = it.fileInfo();
     if (formats.contains(fileInfo.suffix())) {  //检测格式，按需保存
       folds << fileInfo.absoluteFilePath();
-      currentFindFile = fileInfo.absoluteFilePath();
-      MainWindow::searchMain(fileInfo.absoluteFilePath());
+      curFindFile = fileInfo.absoluteFilePath();
+      MainWindow::searchMain(curFindFile);
     }
   }
 }
