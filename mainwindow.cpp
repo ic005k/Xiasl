@@ -92,6 +92,7 @@ CodeEditor::CodeEditor(QWidget* parent) : QPlainTextEdit(parent) {
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
   ui->setupUi(this);
+
   loading = true;
   installEventFilter(this);
   blInit = true;
