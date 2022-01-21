@@ -15,7 +15,8 @@
 #include "methods.h"
 
 QString CurVerison = "1.1.34";
-QString fileName, curFile, dragFileName, findStr, findPath, search_string;
+QString fileName, curFile, dragFileName, findStr, findPath, search_string,
+    currentFindFile;
 
 bool loading = false;
 bool thread_end = true;
@@ -29,6 +30,8 @@ bool miniEditWheel = false;
 bool ReLoad = false;
 bool zh_cn = false;
 bool isIncludeSubDir, isCaseSensitive;
+bool isFinishFind = true;
+bool isBreakFind = false;
 QList<int> m_searchTextPosList;
 QStringList files;
 
@@ -37,6 +40,7 @@ int m_count = 0;
 int d_count = 0;
 int n_count = 0;
 int vs, hs, red, rowDrag, colDrag;
+int currentFindPos;
 
 QsciScintilla *textEditBack, *textEditSerach;
 QsciScintilla* miniDlgEdit;
@@ -221,6 +225,9 @@ MainWindow::MainWindow(QWidget* parent)
 
   timer = new QTimer(this);
   connect(timer, SIGNAL(timeout()), this, SLOT(timer_linkage()));
+  tmeShowFindProgress = new QTimer(this);
+  connect(tmeShowFindProgress, SIGNAL(timeout()), this,
+          SLOT(on_ShowFindProgress()));
 
   winPos.setX(this->x());
   winPos.setY(this->y());
@@ -5725,6 +5732,10 @@ int MainWindow::parse_UpdateJSON(QString str) {
 
 void MainWindow::highlighsearchtext(QString searchText, QsciScintilla* textEdit,
                                     QString file, bool addTreeItem) {
+  if (isBreakFind) {
+    return;
+  }
+
   if (searchText.trimmed() == "") return;
 
   std::string document;
@@ -5762,7 +5773,8 @@ void MainWindow::highlighsearchtext(QString searchText, QsciScintilla* textEdit,
   unsigned long long position = 0;
 
   int i = 1;
-  while ((position = document.find(flag, position)) != std::string::npos) {
+  while ((position = document.find(flag, position)) != std::string::npos &&
+         !isBreakFind) {
     textEdit->SendScintilla(QsciScintilla::SCI_INDICATORFILLRANGE, position,
                             search_string.toStdString().length());
 
@@ -5770,6 +5782,7 @@ void MainWindow::highlighsearchtext(QString searchText, QsciScintilla* textEdit,
 
     position++;
     i++;
+    currentFindPos = i - 1;
 
     // qDebug() << i << position;
   }
@@ -5789,6 +5802,11 @@ void MainWindow::highlighsearchtext(QString searchText, QsciScintilla* textEdit,
   topItem->setText(1, file);
 
   for (int i = 0; i < m_searchTextPosList.count(); i++) {
+    if (isBreakFind) {
+      break;
+      return;
+    }
+
     QTreeWidgetItem* item = new QTreeWidgetItem(topItem);
     unsigned long long pos = m_searchTextPosList.at(i);
     int row, col;
@@ -6995,12 +7013,18 @@ void MainWindow::on_btnSearch_clicked() {
   }
 
   if (ui->cboxFindScope->currentIndex() == 2) {
+    on_btnStopFind_clicked();
+    if (!isFinishFind) return;
+
     ui->progressBar->setMaximum(0);
     ui->lblSearch->setText(tr("Files") + " : 0    " + tr("Results") + " : 0");
     findPath = ui->editFolder->text().trimmed();
     findStr = ui->editFind->currentText();
+    isFinishFind = false;
+    isBreakFind = false;
 
     mySearchThread->start();
+    tmeShowFindProgress->start(100);
     // searchInFolders();
   }
 }
@@ -7011,11 +7035,19 @@ void SearchThread::run() {
 }
 
 void MainWindow::dealDone() {
+  ui->treeFind->clear();
+  if (isBreakFind) {
+    tw_SearchResults.removeAt(tw_SearchResults.count() - 1);
+  }
   ui->treeFind->addTopLevelItems(tw_SearchResults);
+
   ui->lblSearch->setText(tr("Files") + " : " + QString::number(files.count()) +
                          "    " + tr("Results") + " : " +
                          QString::number(tw_SearchResults.count()));
   ui->progressBar->setMaximum(100);
+  isFinishFind = true;
+  isBreakFind = false;
+  tmeShowFindProgress->stop();
 }
 
 void MainWindow::searchInFolders() {
@@ -7042,6 +7074,11 @@ void MainWindow::searchInFolders() {
         dir.entryList(nameFilters, QDir::Files | QDir::Readable, QDir::Name);
 
     for (int j = 0; j < filesTemp.count(); j++) {
+      if (isBreakFind) {
+        break;
+        return;
+      }
+
       if (filesTemp.at(j).mid(0, 1) != ".")
         files.append(findPath + "/" + filesTemp.at(j));
     }
@@ -7050,6 +7087,11 @@ void MainWindow::searchInFolders() {
   }
 
   for (int i = 0; i < files.count(); i++) {
+    if (isBreakFind) {
+      break;
+      return;
+    }
+
     QFile file(files.at(i));
     if (!file.open(QFile::ReadOnly | QFile::Text)) {
       return;
@@ -7058,6 +7100,7 @@ void MainWindow::searchInFolders() {
     QString text = in.readAll();
     textEditSerach->clear();
     textEditSerach->setText(text);
+    currentFindFile = files.at(i);
 
     highlighsearchtext(findStr, textEditSerach, files.at(i), true);
 
@@ -7102,4 +7145,43 @@ void MainWindow::on_cboxFindScope_currentIndexChanged(int index) {
     ui->frameInFolder->setHidden(false);
   else
     ui->frameInFolder->setHidden(true);
+}
+
+void MainWindow::on_btnStopFind_clicked() {
+  if (!isFinishFind) {
+    isBreakFind = true;
+    mySearchThread->quit();
+    mySearchThread->wait();
+    tmeShowFindProgress->stop();
+  }
+}
+
+void MainWindow::on_ShowFindProgress() {
+  ui->lblPos->setText(QString::number(currentFindPos));
+  ui->editProgress->setText(currentFindFile);
+
+  ui->lblSearch->setText(tr("Files") + " : " + QString::number(files.count()) +
+                         "    " + tr("Results") + " : " +
+                         QString::number(tw_SearchResults.count()));
+
+  int s = QTime::currentTime().second();
+  if (s % 2 == 0) {
+    return;
+    if (tw_SearchResults.count() > 0) {
+      ui->treeFind->clear();
+      for (int i = 0; i < tw_SearchResults.count(); i++) {
+        QTreeWidgetItem* topItem = new QTreeWidgetItem();
+        topItem->setText(0, tw_SearchResults.at(i)->text(0));
+        topItem->setText(1, tw_SearchResults.at(i)->text(1));
+
+        for (int j = 0; j < tw_SearchResults.at(i)->childCount(); j++) {
+          QTreeWidgetItem* item = new QTreeWidgetItem(topItem);
+          item->setText(0, tw_SearchResults.at(i)->child(j)->text(0));
+          item->setText(1, tw_SearchResults.at(i)->child(j)->text(1));
+        }
+
+        ui->treeFind->addTopLevelItem(topItem);
+      }
+    }
+  }
 }

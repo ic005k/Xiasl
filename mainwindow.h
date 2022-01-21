@@ -760,7 +760,12 @@ class MainWindow : public QMainWindow {
 
   void on_cboxFindScope_currentIndexChanged(int index);
 
+  void on_btnStopFind_clicked();
+
+  void on_ShowFindProgress();
+
  private:
+  QTimer* tmeShowFindProgress;
   QPoint winPos;
   QMenu* menuTabList;
   bool isDrag;
