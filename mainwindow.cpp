@@ -7015,13 +7015,16 @@ void MainWindow::on_btnSearch_clicked() {
   if (ui->cboxFindScope->currentIndex() == 2) {
     on_btnStopFind_clicked();
     if (!isFinishFind) return;
+    findStr = ui->editFind->currentText();
+    if (findStr == "") return;
 
     ui->progressBar->setMaximum(0);
     ui->lblSearch->setText(tr("Files") + " : 0    " + tr("Results") + " : 0");
     findPath = ui->editFolder->text().trimmed();
-    findStr = ui->editFind->currentText();
+
     isFinishFind = false;
     isBreakFind = false;
+    currentFindPos = 0;
 
     mySearchThread->start();
     tmeShowFindProgress->start(100);
@@ -7082,30 +7085,35 @@ void MainWindow::searchInFolders() {
       if (filesTemp.at(j).mid(0, 1) != ".")
         files.append(findPath + "/" + filesTemp.at(j));
     }
+
+    for (int i = 0; i < files.count(); i++) {
+      if (isBreakFind) {
+        break;
+        return;
+      }
+
+      QFile file(files.at(i));
+      if (!file.open(QFile::ReadOnly | QFile::Text)) {
+        return;
+      }
+
+      searchMain(files.at(i));
+    }
   } else {
     Methods::getAllFiles(findPath, files, fmt);
   }
+}
 
-  for (int i = 0; i < files.count(); i++) {
-    if (isBreakFind) {
-      break;
-      return;
-    }
+void MainWindow::searchMain(QString file) {
+  QTextStream in(&file);
+  QString text = in.readAll();
+  textEditSerach->clear();
+  textEditSerach->setText(text);
+  currentFindFile = file;
 
-    QFile file(files.at(i));
-    if (!file.open(QFile::ReadOnly | QFile::Text)) {
-      return;
-    }
-    QTextStream in(&file);
-    QString text = in.readAll();
-    textEditSerach->clear();
-    textEditSerach->setText(text);
-    currentFindFile = files.at(i);
+  highlighsearchtext(findStr, textEditSerach, file, true);
 
-    highlighsearchtext(findStr, textEditSerach, files.at(i), true);
-
-    clearSearchHighlight(textEditSerach);
-  }
+  clearSearchHighlight(textEditSerach);
 }
 
 void MainWindow::on_tabWidget_misc_tabBarClicked(int index) {
@@ -7157,7 +7165,7 @@ void MainWindow::on_btnStopFind_clicked() {
 }
 
 void MainWindow::on_ShowFindProgress() {
-  ui->lblPos->setText(QString::number(currentFindPos));
+  ui->lblPos->setText(tr("Count") + " : " + QString::number(currentFindPos));
   ui->editProgress->setText(currentFindFile);
 
   ui->lblSearch->setText(tr("Files") + " : " + QString::number(files.count()) +
@@ -7165,11 +7173,12 @@ void MainWindow::on_ShowFindProgress() {
                          QString::number(tw_SearchResults.count()));
 
   int s = QTime::currentTime().second();
-  if (s % 2 == 0) {
+  if (s % 3 == 0) {
     return;
-    if (tw_SearchResults.count() > 0) {
+    if (tw_SearchResults.count() > 2) {
       ui->treeFind->clear();
-      for (int i = 0; i < tw_SearchResults.count(); i++) {
+      // tw_SearchResults.removeAt(tw_SearchResults.count() - 1);
+      for (int i = 0; i < tw_SearchResults.count() - 2; i++) {
         QTreeWidgetItem* topItem = new QTreeWidgetItem();
         topItem->setText(0, tw_SearchResults.at(i)->text(0));
         topItem->setText(1, tw_SearchResults.at(i)->text(1));

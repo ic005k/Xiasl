@@ -31,6 +31,7 @@ void Methods::getAllFiles(const QString& foldPath, QStringList& folds,
     if (formats.contains(fileInfo.suffix())) {  //检测格式，按需保存
       folds << fileInfo.absoluteFilePath();
       currentFindFile = fileInfo.absoluteFilePath();
+      MainWindow::searchMain(fileInfo.absoluteFilePath());
     }
   }
 }

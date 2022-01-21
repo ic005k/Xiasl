@@ -394,7 +394,7 @@ QTreeView::branch:!has-children:!has-siblings:adjoins-item{border-image:url(:/ic
              <item>
               <widget class="QToolButton" name="btnStopFind">
                <property name="text">
-                <string>Stop Searching</string>
+                <string>Stop</string>
                </property>
               </widget>
              </item>
@@ -419,9 +419,6 @@ QTreeView::branch:!has-children:!has-siblings:adjoins-item{border-image:url(:/ic
         </item>
         <item row="3" column="0">
          <widget class="QTreeWidget" name="treeFind">
-          <property name="focusPolicy">
-           <enum>Qt::NoFocus</enum>
-          </property>
           <property name="frameShape">
            <enum>QFrame::NoFrame</enum>
           </property>

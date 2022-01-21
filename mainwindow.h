@@ -535,6 +535,8 @@ class MainWindow : public QMainWindow {
   void init_ScrollBox();
   bool AddCboxFindItem = false;
 
+  static void searchMain(QString file);
+
  protected:
   void closeEvent(QCloseEvent* event) override;
   void dragEnterEvent(QDragEnterEvent* e) override;
