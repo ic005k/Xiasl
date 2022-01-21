@@ -7092,11 +7092,6 @@ void MainWindow::searchInFolders() {
         return;
       }
 
-      QFile file(files.at(i));
-      if (!file.open(QFile::ReadOnly | QFile::Text)) {
-        return;
-      }
-
       searchMain(files.at(i));
     }
   } else {
@@ -7105,7 +7100,11 @@ void MainWindow::searchInFolders() {
 }
 
 void MainWindow::searchMain(QString file) {
-  QTextStream in(&file);
+  QFile openfile(file);
+  if (!openfile.open(QFile::ReadOnly | QFile::Text)) {
+    return;
+  }
+  QTextStream in(&openfile);
   QString text = in.readAll();
   textEditSerach->clear();
   textEditSerach->setText(text);
