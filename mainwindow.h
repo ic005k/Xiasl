@@ -901,6 +901,7 @@ class MainWindow : public QMainWindow {
   void init_TabList();
   void init_fsmSyncOpenedFile(QString OpenedFile);
   void init_listForRecentFile(QString fileName);
+  void setEditFindMarker();
 };
 
 class MiniEditor : public QsciScintilla {

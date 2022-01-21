@@ -14,7 +14,7 @@
 #endif
 #include "methods.h"
 
-QString CurVerison = "1.1.34";
+QString CurVerison = "1.1.35";
 QString fileName, curFile, dragFileName, findStr, findPath, search_string,
     currentFindFile;
 
@@ -1320,15 +1320,7 @@ void MainWindow::setTextModifyMark() {
   }
 }
 
-void MainWindow::miniEdit_cursorPositionChanged() {
-  int RowNum, ColNum;
-  miniEdit->getCursorPosition(&RowNum, &ColNum);
-  textEdit->setCursorPosition(RowNum, ColNum);
-
-  if (!ui->editFind->hasFocus()) textEdit->setFocus();
-
-  miniEdit->clearFocus();
-}
+void MainWindow::miniEdit_cursorPositionChanged() {}
 
 /*换行之后，1s后再刷新成员树*/
 void MainWindow::timer_linkage() {
@@ -1523,17 +1515,6 @@ void MainWindow::on_btnFindNext(QsciScintilla* textEdit, QString file) {
     }
 
   } else {
-    if (str.count() > 0) {
-      if (ui->treeFind->topLevelItemCount() == 0) {
-        QPalette palette;
-        palette.setColor(QPalette::Text, Qt::white);
-        ui->editFind->setPalette(palette);
-
-        palette = ui->editFind->palette();
-        palette.setColor(QPalette::Base, QColor(255, 70, 70));
-        ui->editFind->setPalette(palette);
-      }
-    }
   }
 
   find_down = true;
@@ -2301,7 +2282,7 @@ void MainWindow::syncMiniEdit() {
   textEdit->getCursorPosition(&row, &col);
   miniEdit->clear();
   miniEdit->setText(textEdit->text());
-  miniEdit->setCursorPosition(row, col);
+  miniEdit->setCursorPosition(row, 0);
   miniEdit->p0 = miniEdit->verticalScrollBar()->sliderPosition();
 
   QString msg = tr("Row") + " : " + QString::number(row + 1) + "    " +
@@ -5507,9 +5488,9 @@ void MainWindow::on_tabWidget_textEdit_tabBarClicked(int index) {
   textEdit->setFocus();
 
   dragFileName = curFile;
-  getCurrentEditor(index)->getCursorPosition(&rowDrag, &colDrag);
-  vs = getCurrentEditor(index)->verticalScrollBar()->sliderPosition();
-  hs = getCurrentEditor(index)->horizontalScrollBar()->sliderPosition();
+  textEdit->getCursorPosition(&rowDrag, &colDrag);
+  vs = textEdit->verticalScrollBar()->sliderPosition();
+  hs = textEdit->horizontalScrollBar()->sliderPosition();
 
   One = false;
 }
@@ -5835,7 +5816,7 @@ void MainWindow::on_editFind_editTextChanged(const QString& arg1) {
   if (AddCboxFindItem) return;
 
   if (arg1.count() > 0) {
-    ui->btnSearch->clicked();
+    on_btnSearch_clicked();
 
   } else {
     clearSearchHighlight(textEdit);
@@ -6995,6 +6976,7 @@ void MainWindow::on_treeFind_itemClicked(QTreeWidgetItem* item, int column) {
 void MainWindow::on_btnSearch_clicked() {
   ui->treeFind->clear();
   tw_SearchResults.clear();
+  findStr = ui->editFind->currentText();
 
   if (ui->cboxFindScope->currentIndex() == 0) {
     int index = ui->tabWidget_textEdit->currentIndex();
@@ -7015,7 +6997,7 @@ void MainWindow::on_btnSearch_clicked() {
   if (ui->cboxFindScope->currentIndex() == 2) {
     on_btnStopFind_clicked();
     if (!isFinishFind) return;
-    findStr = ui->editFind->currentText();
+
     if (findStr == "") return;
 
     ui->progressBar->setMaximum(0);
@@ -7028,7 +7010,37 @@ void MainWindow::on_btnSearch_clicked() {
 
     mySearchThread->start();
     tmeShowFindProgress->start(100);
-    // searchInFolders();
+  }
+
+  if (ui->cboxFindScope->currentIndex() != 2) setEditFindMarker();
+}
+
+void MainWindow::setEditFindMarker() {
+  if (findStr.count() > 0) {
+    if (tw_SearchResults.count() == 0) {
+      QPalette palette;
+      palette.setColor(QPalette::Text, Qt::white);
+      ui->editFind->setPalette(palette);
+
+      palette = ui->editFind->palette();
+      palette.setColor(QPalette::Base, QColor(255, 70, 70));
+      ui->editFind->setPalette(palette);
+    } else {
+      if (red < 55) {
+        QPalette palette;
+        palette = ui->editFind->palette();
+        palette.setColor(QPalette::Base, QColor(50, 50, 50));
+        palette.setColor(QPalette::Text, Qt::white);
+        ui->editFind->setPalette(palette);
+
+      } else {
+        QPalette palette;
+        palette = ui->editFind->palette();
+        palette.setColor(QPalette::Base, Qt::white);
+        palette.setColor(QPalette::Text, Qt::black);
+        ui->editFind->setPalette(palette);
+      }
+    }
   }
 }
 
