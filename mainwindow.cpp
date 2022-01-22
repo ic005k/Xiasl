@@ -6660,21 +6660,32 @@ void MainWindow::on_btnNext_clicked() {
   }
 
   int childCount = ui->treeFind->topLevelItem(topIndex)->childCount();
-  int row0, col0;
+  int row0, col0, row, col;
   textEdit->getCursorPosition(&row0, &col0);
-  for (int i = 0; i < childCount; i++) {
-    unsigned long long pos =
-        ui->treeFind->topLevelItem(topIndex)->child(i)->text(1).toLongLong();
 
-    int row, col;
-    row = textEdit->SendScintilla(QsciScintillaBase::SCI_LINEFROMPOSITION, pos,
-                                  NULL);
-    col = textEdit->SendScintilla(QsciScintillaBase::SCI_GETCOLUMN, pos, NULL);
-    textEdit->setCursorPosition(row, col);
+  unsigned long long pos = ui->treeFind->topLevelItem(topIndex)
+                               ->child(index_treeFindChild)
+                               ->text(1)
+                               .toLongLong();
 
-    if (row == row0 && col == col0 - findStr.length()) {
-      index_treeFindChild = i;
-      break;
+  row = textEdit->SendScintilla(QsciScintillaBase::SCI_LINEFROMPOSITION, pos,
+                                NULL);
+  col = textEdit->SendScintilla(QsciScintillaBase::SCI_GETCOLUMN, pos, NULL);
+
+  if (row != row0 && col != col0 - findStr.length()) {
+    for (int i = 0; i < childCount; i++) {
+      pos =
+          ui->treeFind->topLevelItem(topIndex)->child(i)->text(1).toLongLong();
+
+      row = textEdit->SendScintilla(QsciScintillaBase::SCI_LINEFROMPOSITION,
+                                    pos, NULL);
+      col =
+          textEdit->SendScintilla(QsciScintillaBase::SCI_GETCOLUMN, pos, NULL);
+
+      if (row == row0 && col == col0 - findStr.length()) {
+        index_treeFindChild = i;
+        break;
+      }
     }
   }
   ui->treeFind->setCurrentItem(
@@ -7021,6 +7032,7 @@ void MainWindow::on_btnSearch_clicked() {
   ui->treeFind->clear();
   tw_SearchResults.clear();
   findStr = ui->editFind->currentText();
+  index_treeFindChild = 0;
 
   if (ui->cboxFindScope->currentIndex() == 0) {
     int index = ui->tabWidget_textEdit->currentIndex();
