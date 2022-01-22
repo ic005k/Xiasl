@@ -14,7 +14,7 @@
 #endif
 #include "methods.h"
 
-QString CurVerison = "1.1.38";
+QString CurVerison = "1.1.39";
 QString fileName, curFile, dragFileName, findStr, findPath, search_string,
     curFindFile;
 
@@ -3984,6 +3984,7 @@ void MainWindow::init_info_edit() {
   ui->gridLayout_6->setMargin(0);
   ui->gridLayout_13->setMargin(0);
   ui->frameInfo->layout()->setMargin(0);
+  ui->frameInfo->layout()->setSpacing(1);
 
   ui->listWidget->setFrameShape(QFrame::NoFrame);
   ui->listWidget->setSpacing(0);
