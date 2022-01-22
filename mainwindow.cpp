@@ -1496,6 +1496,8 @@ void MainWindow::on_btnFindNext(QsciScintilla* textEdit, QString file) {
   QString str = ui->editFind->currentText().trimmed();
   //正则、大小写、匹配整个词、循环查找、向下或向上：目前已开启向下的循环查找
 
+  highlighsearchtext(str, textEdit, file, true);
+
   if (textEdit->findFirst(str, true, isCaseSensitive, false, true, true)) {
     if (red < 55) {
       QPalette palette;
@@ -1521,8 +1523,6 @@ void MainWindow::on_btnFindNext(QsciScintilla* textEdit, QString file) {
 
   find_down = true;
   find_up = false;
-
-  highlighsearchtext(str, textEdit, file, true);
 
   init_ScrollBox();
 }
@@ -1984,14 +1984,17 @@ void MainWindow::on_editShowMsg_selectionChanged() {
 void MainWindow::textEdit_textChanged() {
   if (!loading) {
     if (m_searchTextPosList.count() > 0) {
-      // clearSearchHighlight(textEdit);
-      // m_searchTextPosList.clear();
     }
   }
 }
 
 void MainWindow::on_editFind_ReturnPressed() {
-  on_btnSearch_clicked();
+  if (ui->treeFind->topLevelItemCount() > 0) {
+    on_btnNext_clicked();
+    ui->editFind->setFocus();
+  } else {
+    on_btnSearch_clicked();
+  }
   Methods::setSearchHistory();
 }
 
@@ -5557,6 +5560,7 @@ void MainWindow::closeTab(int index) {
 
 void MainWindow::on_tabWidget_textEdit_currentChanged(int index) {
   if (index < 0) return;
+  ui->treeFind->clear();
 
   if (index >= 0 && m_searchTextPosList.count() > 0) {
     for (int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i++) {
@@ -5818,11 +5822,15 @@ void MainWindow::clearSearchHighlight(QsciScintilla* textEdit) {
 void MainWindow::on_editFind_editTextChanged(const QString& arg1) {
   if (AddCboxFindItem) return;
 
+  ui->treeFind->clear();
+
   if (arg1.count() > 0) {
+    return;
     on_btnSearch_clicked();
 
   } else {
     clearSearchHighlight(textEdit);
+    ui->treeFind->clear();
 
     ui->editFind->lineEdit()->setPlaceholderText(tr("Find"));
 
@@ -6639,68 +6647,75 @@ void MainWindow::on_actionPreferences_triggered() {
 }
 
 void MainWindow::on_btnNext_clicked() {
-  if (ui->cboxFindScope->currentIndex() == 0) {
-    ui->btnSearch->clicked();
+  if (ui->treeFind->topLevelItemCount() == 0) return;
+  int count = ui->treeFind->topLevelItemCount();
+  int topIndex = 0;
+  for (int i = 0; i < count; i++) {
+    QString file = ui->treeFind->topLevelItem(i)->text(1);
+
+    if (file == curFile) {
+      topIndex = i;
+      break;
+    }
   }
 
-  if (ui->cboxFindScope->currentIndex() == 1 ||
-      ui->cboxFindScope->currentIndex() == 2) {
-    if (ui->treeFind->topLevelItemCount() == 0) return;
-    int count = ui->treeFind->topLevelItemCount();
-    int topIndex = 0;
-    for (int i = 0; i < count; i++) {
-      QString file = ui->treeFind->topLevelItem(i)->text(1);
+  int childCount = ui->treeFind->topLevelItem(topIndex)->childCount();
+  int row0, col0;
+  textEdit->getCursorPosition(&row0, &col0);
+  for (int i = 0; i < childCount; i++) {
+    unsigned long long pos =
+        ui->treeFind->topLevelItem(topIndex)->child(i)->text(1).toLongLong();
 
-      if (file == curFile) {
-        topIndex = i;
-        break;
-      }
+    int row, col;
+    row = textEdit->SendScintilla(QsciScintillaBase::SCI_LINEFROMPOSITION, pos,
+                                  NULL);
+    col = textEdit->SendScintilla(QsciScintillaBase::SCI_GETCOLUMN, pos, NULL);
+    textEdit->setCursorPosition(row, col);
+
+    if (row == row0 && col == col0 - findStr.length()) {
+      index_treeFindChild = i;
+      break;
     }
-
-    index_treeFindChild = ui->treeFind->currentIndex().row() + 1;
-
-    if (index_treeFindChild >=
-        ui->treeFind->topLevelItem(topIndex)->childCount()) {
-      index_treeFindChild = 0;
-    }
-
-    ui->treeFind->setCurrentItem(
-        ui->treeFind->topLevelItem(topIndex)->child(index_treeFindChild));
-    on_treeFind_itemClicked(
-        ui->treeFind->topLevelItem(topIndex)->child(index_treeFindChild), 0);
   }
+  ui->treeFind->setCurrentItem(
+      ui->treeFind->topLevelItem(topIndex)->child(index_treeFindChild));
+
+  index_treeFindChild = ui->treeFind->currentIndex().row() + 1;
+
+  if (index_treeFindChild >= childCount) {
+    index_treeFindChild = 0;
+  }
+
+  ui->treeFind->setCurrentItem(
+      ui->treeFind->topLevelItem(topIndex)->child(index_treeFindChild));
+
+  on_treeFind_itemClicked(
+      ui->treeFind->topLevelItem(topIndex)->child(index_treeFindChild), 0);
 }
 
 void MainWindow::on_btnPrevious_clicked() {
-  if (ui->cboxFindScope->currentIndex() == 0) {
-    on_btnFindPrevious();
+  if (ui->treeFind->topLevelItemCount() == 0) return;
+  int count = ui->treeFind->topLevelItemCount();
+  int topIndex = 0;
+  for (int i = 0; i < count; i++) {
+    QString file = ui->treeFind->topLevelItem(i)->text(1);
+
+    if (file == curFile) {
+      topIndex = i;
+      break;
+    }
   }
 
-  if (ui->cboxFindScope->currentIndex() == 1 ||
-      ui->cboxFindScope->currentIndex() == 2) {
-    if (ui->treeFind->topLevelItemCount() == 0) return;
-    int count = ui->treeFind->topLevelItemCount();
-    int topIndex = 0;
-    for (int i = 0; i < count; i++) {
-      QString file = ui->treeFind->topLevelItem(i)->text(1);
+  index_treeFindChild = ui->treeFind->currentIndex().row() - 1;
 
-      if (file == curFile) {
-        topIndex = i;
-        break;
-      }
-    }
-
-    index_treeFindChild = ui->treeFind->currentIndex().row() - 1;
-
-    if (index_treeFindChild < 0) {
-      index_treeFindChild = 0;
-    }
-
-    ui->treeFind->setCurrentItem(
-        ui->treeFind->topLevelItem(topIndex)->child(index_treeFindChild));
-    on_treeFind_itemClicked(
-        ui->treeFind->topLevelItem(topIndex)->child(index_treeFindChild), 0);
+  if (index_treeFindChild < 0) {
+    index_treeFindChild = 0;
   }
+
+  ui->treeFind->setCurrentItem(
+      ui->treeFind->topLevelItem(topIndex)->child(index_treeFindChild));
+  on_treeFind_itemClicked(
+      ui->treeFind->topLevelItem(topIndex)->child(index_treeFindChild), 0);
 }
 
 void MainWindow::on_btnDone_clicked() {}
@@ -6972,6 +6987,30 @@ void MainWindow::on_treeFind_itemClicked(QTreeWidgetItem* item, int column) {
     col = textEdit->SendScintilla(QsciScintillaBase::SCI_GETCOLUMN, pos, NULL);
     textEdit->setCursorPosition(row, col);
 
+    if (textEdit->findFirst(findStr, true, isCaseSensitive, false, true,
+                            true)) {
+      if (red < 55) {
+        QPalette palette;
+        palette.setColor(QPalette::Text, Qt::white);
+        ui->editFind->setPalette(palette);
+
+        palette = ui->editFind->palette();
+        palette.setColor(QPalette::Base, QColor(50, 50, 50, 255));
+        ui->editFind->setPalette(palette);
+
+      } else {
+        QPalette palette;
+        palette.setColor(QPalette::Text, Qt::black);
+        ui->editFind->setPalette(palette);
+
+        palette = ui->editFind->palette();
+        palette.setColor(QPalette::Base, Qt::white);
+        ui->editFind->setPalette(palette);
+      }
+
+    } else {
+    }
+
     qDebug() << row << col;
 
     init_ScrollBox();
@@ -7163,7 +7202,7 @@ void MainWindow::on_btnExpand_clicked() {
 
 void MainWindow::on_actionFindPrevious_triggered() { ui->btnPrevious->click(); }
 
-void MainWindow::on_actionFind_triggered() { ui->btnSearch->clicked(); }
+void MainWindow::on_actionFind_triggered() { on_btnSearch_clicked(); }
 
 void MainWindow::on_chkSubDir_clicked(bool checked) {
   isIncludeSubDir = checked;
@@ -7217,4 +7256,9 @@ void MainWindow::on_ShowFindProgress() {
       }
     }
   }
+}
+
+void MainWindow::on_cboxFindScope_currentTextChanged(const QString& arg1) {
+  Q_UNUSED(arg1);
+  ui->treeFind->clear();
 }

@@ -1313,7 +1313,7 @@ QListWidget::item:selected
     <string>FindPrevious</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+[</string>
+    <string>Ctrl+8</string>
    </property>
   </action>
   <action name="actionFindNext">
@@ -1321,7 +1321,7 @@ QListWidget::item:selected
     <string>FindNext</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+]</string>
+    <string>Ctrl+9</string>
    </property>
   </action>
   <action name="actionReplace">

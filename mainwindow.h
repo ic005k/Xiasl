@@ -766,6 +766,8 @@ class MainWindow : public QMainWindow {
 
   void on_ShowFindProgress();
 
+  void on_cboxFindScope_currentTextChanged(const QString& arg1);
+
  private:
   QTimer* tmeShowFindProgress;
   QPoint winPos;
