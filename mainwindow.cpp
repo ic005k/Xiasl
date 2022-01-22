@@ -5560,7 +5560,8 @@ void MainWindow::closeTab(int index) {
 
 void MainWindow::on_tabWidget_textEdit_currentChanged(int index) {
   if (index < 0) return;
-  ui->treeFind->clear();
+  if (ui->cboxFindScope->currentIndex() == 0) ui->treeFind->clear();
+  index_treeFindChild = 0;
 
   if (index >= 0 && m_searchTextPosList.count() > 0) {
     for (int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i++) {
@@ -6988,7 +6989,7 @@ void MainWindow::on_treeFind_itemClicked(QTreeWidgetItem* item, int column) {
       }
     }
 
-    highlighsearchtext(ui->editFind->currentText(), textEdit, curFile, false);
+    highlighsearchtext(findStr, textEdit, curFile, false);
 
     textEdit->setFocus();
     unsigned long long pos = item->text(1).toLongLong();
