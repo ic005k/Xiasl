@@ -14,7 +14,7 @@
 #endif
 #include "methods.h"
 
-QString CurVerison = "1.1.37";
+QString CurVerison = "1.1.38";
 QString fileName, curFile, dragFileName, findStr, findPath, search_string,
     curFindFile;
 
@@ -6644,6 +6644,7 @@ void MainWindow::on_btnNext_clicked() {
 
   if (ui->cboxFindScope->currentIndex() == 1 ||
       ui->cboxFindScope->currentIndex() == 2) {
+    if (ui->treeFind->topLevelItemCount() == 0) return;
     int count = ui->treeFind->topLevelItemCount();
     int topIndex = 0;
     for (int i = 0; i < count; i++) {
@@ -6676,6 +6677,7 @@ void MainWindow::on_btnPrevious_clicked() {
 
   if (ui->cboxFindScope->currentIndex() == 1 ||
       ui->cboxFindScope->currentIndex() == 2) {
+    if (ui->treeFind->topLevelItemCount() == 0) return;
     int count = ui->treeFind->topLevelItemCount();
     int topIndex = 0;
     for (int i = 0; i < count; i++) {
