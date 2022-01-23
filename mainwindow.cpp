@@ -5772,9 +5772,8 @@ void MainWindow::highlighsearchtext(QString searchText, QsciScintilla* textEdit,
 
     position++;
     i++;
-    curFindPos = i - 1;
   }
-
+  curFindPos = m_searchTextPosList.count();
   totalPos = totalPos + curFindPos;
 
   if (file != curFile) {
