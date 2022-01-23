@@ -1872,16 +1872,37 @@ void MainWindow::gotoLine(QTextEdit* edit) {
 
 void MainWindow::setErrorMarkers(int linenr) {
   // SCI_MARKERGET 参数用来设置标记，默认为圆形标记
-  textEdit->SendScintilla(QsciScintilla::SCI_MARKERGET, linenr - 1);
+  // textEdit->SendScintilla(QsciScintilla::SCI_MARKERGET, linenr - 1);
+
+  // 目前采用箭头
+  // 具体定义在此：https://www.scintilla.org/ScintillaDoc.html#SCI_MARKERDEFINE
+  textEdit->SendScintilla(QsciScintilla::SCI_MARKERDEFINE, 0,
+                          QsciScintilla::SC_MARK_SHORTARROW);
+
   // SCI_MARKERSETFORE，SCI_MARKERSETBACK设置标记前景和背景标记
   textEdit->SendScintilla(QsciScintilla::SCI_MARKERSETFORE, 0, QColor(Qt::red));
   textEdit->SendScintilla(QsciScintilla::SCI_MARKERSETBACK, 0, QColor(Qt::red));
   textEdit->SendScintilla(QsciScintilla::SCI_MARKERADD, linenr - 1);
-  //下划线
+
+  // 下划线
   // textEdit->SendScintilla(QsciScintilla::SCI_STYLESETUNDERLINE, linenr,
-  // true); textEdit->SendScintilla(QsciScintilla::SCI_MARKERDEFINE, 0,
+  // true);
+  // textEdit->SendScintilla(QsciScintilla::SCI_MARKERDEFINE, 0,
   // QsciScintilla::SC_MARK_UNDERLINE);
 }
+
+void MainWindow::setBookmarks(int linenr) {
+  textEdit->SendScintilla(QsciScintilla::SCI_MARKERDEFINE, 0,
+                          QsciScintilla::SC_MARK_BOOKMARK);
+
+  // SCI_MARKERSETFORE，SCI_MARKERSETBACK设置标记前景和背景标记
+  textEdit->SendScintilla(QsciScintilla::SCI_MARKERSETFORE, 0,
+                          QColor(Qt::green));
+  textEdit->SendScintilla(QsciScintilla::SCI_MARKERSETBACK, 0,
+                          QColor(Qt::green));
+  textEdit->SendScintilla(QsciScintilla::SCI_MARKERADD, linenr - 1);
+}
+
 void MainWindow::getCppErrorLine(int i) {
   //定位到错误行
   QString str1 =
@@ -4319,33 +4340,37 @@ void MainWindow::setLexer(QsciLexer* textLexer, QsciScintilla* textEdit) {
   m_font.setPointSize(12);
 #endif
 
-  textEdit->setMarginType(0, QsciScintilla::NumberMargin);
-  textEdit->setMarginLineNumbers(0, true);
+  int a;
+  // 行号区域
+  a = 0;
+  textEdit->setMarginType(a, QsciScintilla::NumberMargin);
+  textEdit->setMarginLineNumbers(a, true);
+
+  // 编译错误标记
+  a = 1;
+  // textEdit->setMargins(a);
+  textEdit->setMarginType(a, QsciScintilla::SymbolMargin);
+  textEdit->setMarginLineNumbers(a, false);
+  textEdit->setMarginWidth(a, 15);
+  textEdit->setMarginSensitivity(a, true);
+
+  // 跳转书签
+  a = 2;
+  textEdit->setMarginType(a, QsciScintilla::SymbolMargin);
+  textEdit->setMarginLineNumbers(a, false);
+  textEdit->setMarginWidth(a, 15);
+  textEdit->setMarginSensitivity(a, true);
+
+  //自动折叠区域
+  a = 3;
+  textEdit->setMarginType(a, QsciScintilla::SymbolMargin);
+  textEdit->setMarginLineNumbers(a, false);
+  textEdit->setMarginWidth(a, 2);
+  textEdit->setMarginSensitivity(a, true);
+  textEdit->setFolding(QsciScintilla::BoxedTreeFoldStyle);  //折叠样式
 
   m_font.setFamily(font.family());
   textEdit->setMarginsFont(m_font);
-  if (red < 55)  //暗模式，mac下为50
-  {
-    textEdit->setMarginsBackgroundColor(QColor(50, 50, 50));
-    textEdit->setMarginsForegroundColor(Qt::white);
-
-  } else {
-    textEdit->setMarginsBackgroundColor(brush.color());
-    textEdit->setMarginsForegroundColor(Qt::black);
-  }
-
-  if (red < 55)  //暗模式，mac下为50
-  {
-    //设置光标所在行背景色
-    textEdit->setCaretLineBackgroundColor(QColor(180, 180, 0));
-    textEdit->setCaretLineFrameWidth(1);
-    textEdit->setCaretLineVisible(true);
-
-  } else {
-    textEdit->setCaretLineBackgroundColor(QColor(255, 255, 0, 50));
-    textEdit->setCaretLineFrameWidth(0);
-    textEdit->setCaretLineVisible(true);
-  }
 
   Methods::setColorMatch(red, textLexer);
 
@@ -4373,7 +4398,7 @@ void MainWindow::setLexer(QsciLexer* textLexer, QsciScintilla* textEdit) {
 
   //设置自动补全
   textEdit->setCaretLineVisible(true);
-  // Ascii|None|All|Document|APIs
+  // Ascii、None、All、Document|APIs
   //禁用自动补全提示功能、所有可用的资源、当前文档中出现的名称都自动补全提示、使用QsciAPIs类加入的名称都自动补全提示
   textEdit->setAutoCompletionSource(
       QsciScintilla::AcsAll);  //自动补全,对于所有Ascii字符
@@ -4393,38 +4418,48 @@ void MainWindow::setLexer(QsciLexer* textLexer, QsciScintilla* textEdit) {
     textEdit->setCaretForegroundColor(QColor(Qt::black));
   textEdit->setCaretWidth(2);
 
-  //自动折叠区域
-  textEdit->setMarginType(3, QsciScintilla::SymbolMargin);
-  textEdit->setMarginLineNumbers(3, false);
-  textEdit->setMarginWidth(3, 15);
-  textEdit->setMarginSensitivity(3, true);
-  textEdit->setFolding(QsciScintilla::BoxedTreeFoldStyle);  //折叠样式
-
-  //暗模式，mac下为50
+  //颜色模式匹配，暗模式，mac下为50
   if (red < 55) {
+    //设置光标所在行背景色
+    textEdit->setCaretLineBackgroundColor(QColor(180, 180, 0));
+    textEdit->setCaretLineFrameWidth(1);
+    textEdit->setCaretLineVisible(true);
+
+    textEdit->setMarginsBackgroundColor(QColor(50, 50, 50));
+    textEdit->setMarginsForegroundColor(Qt::white);
+
     textEdit->setFoldMarginColors(Qt::gray, Qt::black);
     // textEdit->setMarginsForegroundColor(Qt::red);  //行号颜色
     textEdit->SendScintilla(QsciScintilla::SCI_SETFOLDFLAGS,
                             16);  //设置折叠标志
     // textEdit->SendScintilla(QsciScintilla::SCI_SETFOLDMARGINCOLOUR,Qt::red);
+
   } else {
+    textEdit->setCaretLineBackgroundColor(QColor(255, 255, 0, 50));
+    textEdit->setCaretLineFrameWidth(0);
+    textEdit->setCaretLineVisible(true);
+
+    textEdit->setMarginsBackgroundColor(brush.color());
+    textEdit->setMarginsForegroundColor(Qt::black);
+
     textEdit->setFoldMarginColors(Qt::gray, Qt::white);  //折叠栏颜色
     // textEdit->setMarginsForegroundColor(Qt::blue); //行号颜色
     textEdit->SendScintilla(QsciScintilla::SCI_SETFOLDFLAGS,
                             16);  //设置折叠标志
   }
 
-  /*断点设置区域,为后面可能会用到的功能预留*/
+  // 断点设置区域,为后面可能会用到的功能预留
   /*textEdit->setMarginType(1, QsciScintilla::SymbolMargin);
   textEdit->setMarginLineNumbers(1, false);
-  textEdit->setMarginWidth(1,20);
-  textEdit->setMarginSensitivity(1, true);    //设置是否可以显示断点
+  textEdit->setMarginWidth(1, 20);
+  textEdit->setMarginSensitivity(1, true);  //设置是否可以显示断点
   textEdit->setMarginsBackgroundColor(QColor("#bbfaae"));
   textEdit->setMarginMarkerMask(1, 0x02);
-  connect(textEdit, SIGNAL(marginClicked(int, int,
-  Qt::KeyboardModifiers)),this, SLOT(on_margin_clicked(int, int,
-  Qt::KeyboardModifiers))); textEdit->markerDefine(QsciScintilla::Circle, 1);
+  connect(textEdit, SIGNAL(marginClicked(int, int, Qt::KeyboardModifiers)),
+          this, SLOT(on_margin_clicked(int, int, Qt::KeyboardModifiers)));
+  textEdit->markerDefine(QsciScintilla::Circle, 1);
   textEdit->setMarkerBackgroundColor(QColor("#ee1111"), 1);*/
+
   //单步执行显示区域
   /*textEdit->setMarginType(2, QsciScintilla::SymbolMargin);
   textEdit->setMarginLineNumbers(2, false);
@@ -7023,7 +7058,7 @@ void MainWindow::on_treeFind_itemClicked(QTreeWidgetItem* item, int column) {
     } else {
     }
 
-    qDebug() << row << col;
+    // qDebug() << row << col;
 
     init_ScrollBox();
   }

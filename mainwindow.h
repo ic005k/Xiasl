@@ -537,7 +537,8 @@ class MainWindow : public QMainWindow {
 
   static void searchMain(QString file);
 
- protected:
+  void setBookmarks(int linenr);
+  protected:
   void closeEvent(QCloseEvent* event) override;
   void dragEnterEvent(QDragEnterEvent* e) override;
   void dropEvent(QDropEvent* e) override;
