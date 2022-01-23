@@ -182,6 +182,7 @@ MainWindow::MainWindow(QWidget* parent)
 
   // 分割窗口
   ui->centralwidget->layout()->setContentsMargins(2, 2, 2, 2);
+  ui->centralwidget->layout()->setSpacing(1);
   QSplitter* splitterH = new QSplitter(Qt::Horizontal, this);
   ui->vLayout->addWidget(ui->frameTip);
   ui->vLayout->addWidget(ui->tabWidget_textEdit);
@@ -217,6 +218,8 @@ MainWindow::MainWindow(QWidget* parent)
   connect(splitterV, &QSplitter::splitterMoved, [=]() {
 
   });
+
+  ui->centralwidget->layout()->addWidget(ui->listBook);
 
   //设置鼠标追踪
   ui->centralwidget->setMouseTracking(true);
@@ -1897,10 +1900,10 @@ void MainWindow::setBookmarks(int linenr) {
 
   // SCI_MARKERSETFORE，SCI_MARKERSETBACK设置标记前景和背景标记
   textEdit->SendScintilla(QsciScintilla::SCI_MARKERSETFORE, 0,
-                          QColor(Qt::green));
+                          QColor(Qt::blue));
   textEdit->SendScintilla(QsciScintilla::SCI_MARKERSETBACK, 0,
-                          QColor(Qt::green));
-  textEdit->SendScintilla(QsciScintilla::SCI_MARKERADD, linenr - 1);
+                          QColor(Qt::blue));
+  textEdit->SendScintilla(QsciScintilla::SCI_MARKERADD, linenr);
 }
 
 void MainWindow::getCppErrorLine(int i) {
@@ -2155,6 +2158,7 @@ QString findKey(QString str, QString str_sub, int f_null) {
 
 void MainWindow::textEdit_linesChanged() {
   if (!loading) timer->start(1000);
+  init_Bookmarks();
 }
 
 void thread_one::run() {
@@ -4141,6 +4145,17 @@ void MainWindow::init_tool_ui() {
   ui->btnErrorP->setIcon(QIcon(":/icon/1.png"));
   ui->btnErrorN->setIcon(QIcon(":/icon/3.png"));
 
+  // 书签
+  ui->listBook->setStyleSheet(ui->listWidget->styleSheet());
+  ui->listBook->setHidden(true);
+  ui->listBook->setFixedWidth(75);
+  QString qfile = QDir::homePath() + "/.config/QtiASL/book.ini";
+  QSettings Reg(qfile, QSettings::IniFormat);
+  int count = Reg.value("bookcount", 0).toInt();
+  for (int i = 0; i < count; i++) {
+    listBookmarks.append(Reg.value("book" + QString::number(i)).toString());
+  }
+
   // 初始化搜索
   textEditSerach = new QsciScintilla;
   ui->frameInFolder->setHidden(true);
@@ -4348,7 +4363,6 @@ void MainWindow::setLexer(QsciLexer* textLexer, QsciScintilla* textEdit) {
 
   // 编译错误标记
   a = 1;
-  // textEdit->setMargins(a);
   textEdit->setMarginType(a, QsciScintilla::SymbolMargin);
   textEdit->setMarginLineNumbers(a, false);
   textEdit->setMarginWidth(a, 15);
@@ -4356,10 +4370,10 @@ void MainWindow::setLexer(QsciLexer* textLexer, QsciScintilla* textEdit) {
 
   // 跳转书签
   a = 2;
-  textEdit->setMarginType(a, QsciScintilla::SymbolMargin);
-  textEdit->setMarginLineNumbers(a, false);
-  textEdit->setMarginWidth(a, 15);
-  textEdit->setMarginSensitivity(a, true);
+  textEdit->SendScintilla(QsciScintilla::SCI_SETMARGINTYPEN, a,
+                          QsciScintilla::SC_MARGIN_SYMBOL);
+  textEdit->SendScintilla(QsciScintilla::SCI_SETMARGINWIDTHN, a, 15);
+  textEdit->SendScintilla(QsciScintilla::SCI_SETMARGINMASKN, a, 0x01);
 
   //自动折叠区域
   a = 3;
@@ -5526,6 +5540,8 @@ void MainWindow::on_tabWidget_textEdit_tabBarClicked(int index) {
 
   //初始化fsm
   init_fsmSyncOpenedFile(curFile);
+
+  init_Bookmarks();
 
   textEdit->setFocus();
 
@@ -7310,4 +7326,105 @@ void MainWindow::on_ShowFindProgress() {
 void MainWindow::on_cboxFindScope_currentTextChanged(const QString& arg1) {
   Q_UNUSED(arg1);
   ui->treeFind->clear();
+}
+
+void MainWindow::on_actionSet_Bookmark_triggered() {
+  int row, col;
+  textEdit->getCursorPosition(&row, &col);
+  // setBookmarks(row);
+
+  QString text = textEdit->text(row).trimmed();
+  QString addStr = curFile + "|" + QString::number(row + 1) + "|" + text;
+  bool re = false;
+  for (int i = 0; i < listBookmarks.count(); i++) {
+    if (listBookmarks.at(i) == addStr) {
+      re = true;
+      break;
+    }
+  }
+  if (!re) listBookmarks.append(addStr);
+
+  QString qfile = QDir::homePath() + "/.config/QtiASL/book.ini";
+  QSettings Reg(qfile, QSettings::IniFormat);
+  Reg.setValue("bookcount", listBookmarks.count());
+  for (int i = 0; i < listBookmarks.count(); i++) {
+    Reg.setValue("book" + QString::number(i), listBookmarks.at(i));
+  }
+
+  getBookmarks();
+}
+
+void MainWindow::getBookmarks() {
+  if (curFile == "" || loading || listBookmarks.count() == 0) return;
+
+  ui->listBook->clear();
+  for (int i = 0; i < listBookmarks.count(); i++) {
+    QString str = listBookmarks.at(i);
+    QStringList list = str.split("|");
+    if (list.count() == 3) {
+      if (list.at(0) == curFile) {
+        QString line = list.at(1);
+        int num = line.toInt();
+        if (textEdit->text(num - 1).trimmed() == list.at(2)) {
+          ui->listBook->addItem(line);
+          ui->listBook->item(ui->listBook->count() - 1)->setToolTip(list.at(2));
+
+          setBookmarks(num - 1);
+        }
+      }
+    }
+  }
+}
+
+void MainWindow::on_actionBookmarks_List_2_triggered() {
+  init_Bookmarks();
+
+  if (ui->listBook->isHidden()) {
+    ui->listBook->setHidden(false);
+    ui->actionBookmarks_List_2->setChecked(true);
+  } else {
+    ui->listBook->setHidden(true);
+    ui->actionBookmarks_List_2->setChecked(false);
+  }
+}
+
+void MainWindow::on_listBook_itemClicked(QListWidgetItem* item) {
+  if (ui->listBook->count() == 0) return;
+
+  textEdit->setFocus();
+  int line = ui->listBook->currentItem()->text().toInt();
+  textEdit->setCursorPosition(line - 1, 0);
+}
+
+void MainWindow::init_Bookmarks() {
+  int line = 0;
+  for (int i = 0; i < listBookmarks.count(); i++) {
+    QString str = listBookmarks.at(i);
+    QStringList list = str.split("|");
+    if (list.at(0) == curFile) {
+      listBookmarks.removeAt(i);
+    }
+  }
+
+  for (int i = 1; i <= textEdit->lines(); i++) {
+    line = textEdit->SendScintilla(QsciScintilla::SCI_MARKERNEXT, i, 1);
+    if (line != -1) {
+      i = line;
+
+      QString addStr = curFile + "|" + QString::number(line + 1) + "|" +
+                       textEdit->text(line).trimmed();
+      bool re = false;
+      for (int j = 0; j < listBookmarks.count(); j++) {
+        if (listBookmarks.at(j) == addStr) {
+          re = true;
+          break;
+        }
+      }
+      if (!re) listBookmarks.append(addStr);
+    } else
+      break;
+    // qDebug() << i << line;
+  }
+
+  getBookmarks();
 }

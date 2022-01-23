@@ -14,12 +14,12 @@
    <string>MainWindow</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="my.qrc">
+   <iconset>
     <normaloff>:/icon/icon.png</normaloff>:/icon/icon.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout_12">
-    <item row="0" column="0" rowspan="4">
+   <layout class="QGridLayout" name="gridLayout_14">
+    <item row="0" column="0" rowspan="2">
      <widget class="QTabWidget" name="tabWidget_misc">
       <property name="tabPosition">
        <enum>QTabWidget::North</enum>
@@ -555,13 +555,7 @@ QTreeView::branch:!has-children:!has-siblings:adjoins-item{border-image:url(:/ic
       <property name="frameShadow">
        <enum>QFrame::Raised</enum>
       </property>
-      <layout class="QGridLayout" name="gridLayout_14">
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
-        <number>0</number>
-       </property>
+      <layout class="QGridLayout" name="gridLayout_12">
        <item row="0" column="0">
         <widget class="QLabel" name="lblFileName">
          <property name="text">
@@ -595,189 +589,202 @@ QTreeView::branch:!has-children:!has-siblings:adjoins-item{border-image:url(:/ic
          </property>
         </widget>
        </item>
+       <item row="1" column="0" colspan="2">
+        <widget class="QFrame" name="frameFun">
+         <property name="frameShape">
+          <enum>QFrame::NoFrame</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Plain</enum>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_15">
+          <property name="leftMargin">
+           <number>2</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item row="0" column="4">
+           <widget class="QToolButton" name="btnErrorN">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>50</width>
+              <height>200</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>Go to the next error</string>
+            </property>
+            <property name="text">
+             <string>&gt;</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QToolButton" name="btnCompile">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>50</width>
+              <height>200</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>Compile</string>
+            </property>
+            <property name="text">
+             <string>C</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="3">
+           <widget class="QToolButton" name="btnErrorP">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>50</width>
+              <height>200</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>Go to previous error</string>
+            </property>
+            <property name="text">
+             <string>&lt;</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="2" column="0" colspan="3">
+        <widget class="QFrame" name="frameMainFun">
+         <property name="frameShape">
+          <enum>QFrame::NoFrame</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Plain</enum>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_16">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item row="0" column="3">
+           <widget class="QToolButton" name="btnSave">
+            <property name="maximumSize">
+             <size>
+              <width>50</width>
+              <height>50</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>Save</string>
+            </property>
+            <property name="text">
+             <string>S</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QToolButton" name="btnNew">
+            <property name="toolTip">
+             <string>New</string>
+            </property>
+            <property name="text">
+             <string>N</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QToolButton" name="btnFind">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>50</width>
+              <height>50</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>Find</string>
+            </property>
+            <property name="text">
+             <string>F</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QToolButton" name="btnTabList">
+            <property name="text">
+             <string>L</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="4">
+           <widget class="QToolButton" name="btnMiniMap">
+            <property name="toolTip">
+             <string>Mini Map</string>
+            </property>
+            <property name="text">
+             <string>Map</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
       </layout>
+     </widget>
+    </item>
+    <item row="0" column="2" rowspan="3">
+     <widget class="QListWidget" name="listBook">
+      <property name="frameShape">
+       <enum>QFrame::NoFrame</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Plain</enum>
+      </property>
+      <property name="lineWidth">
+       <number>0</number>
+      </property>
      </widget>
     </item>
     <item row="1" column="1">
-     <widget class="QFrame" name="frameFun">
-      <property name="frameShape">
-       <enum>QFrame::NoFrame</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Plain</enum>
-      </property>
-      <layout class="QGridLayout" name="gridLayout_15">
-       <property name="leftMargin">
-        <number>2</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
-        <number>0</number>
-       </property>
-       <item row="0" column="4">
-        <widget class="QToolButton" name="btnErrorN">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>50</width>
-           <height>200</height>
-          </size>
-         </property>
-         <property name="toolTip">
-          <string>Go to the next error</string>
-         </property>
-         <property name="text">
-          <string>&gt;</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="2">
-        <widget class="QToolButton" name="btnCompile">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>50</width>
-           <height>200</height>
-          </size>
-         </property>
-         <property name="toolTip">
-          <string>Compile</string>
-         </property>
-         <property name="text">
-          <string>C</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="3">
-        <widget class="QToolButton" name="btnErrorP">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>50</width>
-           <height>200</height>
-          </size>
-         </property>
-         <property name="toolTip">
-          <string>Go to previous error</string>
-         </property>
-         <property name="text">
-          <string>&lt;</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item row="2" column="1">
-     <widget class="QFrame" name="frameMainFun">
-      <property name="frameShape">
-       <enum>QFrame::NoFrame</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Plain</enum>
-      </property>
-      <layout class="QGridLayout" name="gridLayout_16">
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
-        <number>0</number>
-       </property>
-       <item row="0" column="3">
-        <widget class="QToolButton" name="btnSave">
-         <property name="maximumSize">
-          <size>
-           <width>50</width>
-           <height>50</height>
-          </size>
-         </property>
-         <property name="toolTip">
-          <string>Save</string>
-         </property>
-         <property name="text">
-          <string>S</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="2">
-        <widget class="QToolButton" name="btnNew">
-         <property name="toolTip">
-          <string>New</string>
-         </property>
-         <property name="text">
-          <string>N</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QToolButton" name="btnFind">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>50</width>
-           <height>50</height>
-          </size>
-         </property>
-         <property name="toolTip">
-          <string>Find</string>
-         </property>
-         <property name="text">
-          <string>F</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="0">
-        <widget class="QToolButton" name="btnTabList">
-         <property name="text">
-          <string>L</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="4">
-        <widget class="QToolButton" name="btnMiniMap">
-         <property name="toolTip">
-          <string>Mini Map</string>
-         </property>
-         <property name="text">
-          <string>Map</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item row="3" column="1">
      <widget class="QFrame" name="frame">
       <property name="minimumSize">
        <size>
@@ -842,7 +849,7 @@ QTreeView::branch:!has-children:!has-siblings:adjoins-item{border-image:url(:/ic
       </layout>
      </widget>
     </item>
-    <item row="4" column="0" colspan="2">
+    <item row="2" column="0" colspan="2">
      <widget class="QFrame" name="frameInfo">
       <property name="frameShape">
        <enum>QFrame::NoFrame</enum>
@@ -1119,6 +1126,8 @@ QListWidget::item:selected
     <addaction name="actionReplace_Find"/>
     <addaction name="actionReplaceAll"/>
     <addaction name="separator"/>
+    <addaction name="actionSet_Bookmark"/>
+    <addaction name="separator"/>
     <addaction name="actionKextstat"/>
    </widget>
    <widget class="QMenu" name="menuView">
@@ -1128,6 +1137,7 @@ QListWidget::item:selected
     <addaction name="actionMembers_win"/>
     <addaction name="actionInfo_win"/>
     <addaction name="actionMinimap"/>
+    <addaction name="actionBookmarks_List_2"/>
     <addaction name="separator"/>
     <addaction name="actionAutomatic_Line_Feeds"/>
    </widget>
@@ -1515,6 +1525,30 @@ QListWidget::item:selected
     <string>Ctrl+Return</string>
    </property>
   </action>
+  <action name="actionSet_Bookmark">
+   <property name="text">
+    <string>Set Bookmark</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+B</string>
+   </property>
+  </action>
+  <action name="actionBookmarks_List">
+   <property name="text">
+    <string>Bookmarks List</string>
+   </property>
+  </action>
+  <action name="actionBookmarks_List_2">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Bookmarks List</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+3</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -1523,8 +1557,6 @@ QListWidget::item:selected
    <header>mytabwidget.h</header>
   </customwidget>
  </customwidgets>
- <resources>
-  <include location="my.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

@@ -113,6 +113,7 @@ class MainWindow : public QMainWindow {
   ~MainWindow();
   Ui::MainWindow* ui;
 
+  QStringList listBookmarks;
   static void highlighsearchtext(QString searchText, QsciScintilla* textEdit,
                                  QString file, bool addTreeItem);
   static void clearSearchHighlight(QsciScintilla* textEdit);
@@ -538,6 +539,10 @@ class MainWindow : public QMainWindow {
   static void searchMain(QString file);
 
   void setBookmarks(int linenr);
+
+  void getBookmarks();
+
+  void init_Bookmarks();
   protected:
   void closeEvent(QCloseEvent* event) override;
   void dragEnterEvent(QDragEnterEvent* e) override;
@@ -768,6 +773,12 @@ class MainWindow : public QMainWindow {
   void on_ShowFindProgress();
 
   void on_cboxFindScope_currentTextChanged(const QString& arg1);
+
+  void on_actionSet_Bookmark_triggered();
+
+  void on_actionBookmarks_List_2_triggered();
+
+  void on_listBook_itemClicked(QListWidgetItem* item);
 
  private:
   QTimer* tmeShowFindProgress;
