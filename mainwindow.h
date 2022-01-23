@@ -543,7 +543,9 @@ class MainWindow : public QMainWindow {
   void getBookmarks();
 
   void init_Bookmarks();
-  protected:
+  void saveBookmarks();
+
+ protected:
   void closeEvent(QCloseEvent* event) override;
   void dragEnterEvent(QDragEnterEvent* e) override;
   void dropEvent(QDropEvent* e) override;
@@ -779,6 +781,8 @@ class MainWindow : public QMainWindow {
   void on_actionBookmarks_List_2_triggered();
 
   void on_listBook_itemClicked(QListWidgetItem* item);
+
+  void on_btnDelBook_clicked();
 
  private:
   QTimer* tmeShowFindProgress;

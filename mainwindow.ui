@@ -14,7 +14,7 @@
    <string>MainWindow</string>
   </property>
   <property name="windowIcon">
-   <iconset>
+   <iconset resource="my.qrc">
     <normaloff>:/icon/icon.png</normaloff>:/icon/icon.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -772,16 +772,28 @@ QTreeView::branch:!has-children:!has-siblings:adjoins-item{border-image:url(:/ic
      </widget>
     </item>
     <item row="0" column="2" rowspan="3">
-     <widget class="QListWidget" name="listBook">
+     <widget class="QFrame" name="frameBook">
       <property name="frameShape">
        <enum>QFrame::NoFrame</enum>
       </property>
       <property name="frameShadow">
        <enum>QFrame::Plain</enum>
       </property>
-      <property name="lineWidth">
-       <number>0</number>
-      </property>
+      <layout class="QGridLayout" name="gridLayout_18">
+       <item row="0" column="0">
+        <widget class="QListWidget" name="listBook">
+         <property name="frameShape">
+          <enum>QFrame::NoFrame</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Plain</enum>
+         </property>
+         <property name="lineWidth">
+          <number>0</number>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </widget>
     </item>
     <item row="1" column="1">
@@ -1557,6 +1569,8 @@ QListWidget::item:selected
    <header>mytabwidget.h</header>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="my.qrc"/>
+ </resources>
  <connections/>
 </ui>

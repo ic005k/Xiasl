@@ -219,7 +219,7 @@ MainWindow::MainWindow(QWidget* parent)
 
   });
 
-  ui->centralwidget->layout()->addWidget(ui->listBook);
+  ui->centralwidget->layout()->addWidget(ui->frameBook);
 
   //设置鼠标追踪
   ui->centralwidget->setMouseTracking(true);
@@ -628,6 +628,7 @@ void MainWindow::loadFile(const QString& fileName, int row, int col) {
   updateMd5(fileName);
   addFilesWatch();
   init_TabList();
+  getBookmarks();
 }
 
 void MainWindow::setRecentFiles(QString fileName) {
@@ -2157,8 +2158,11 @@ QString findKey(QString str, QString str_sub, int f_null) {
 }
 
 void MainWindow::textEdit_linesChanged() {
-  if (!loading) timer->start(1000);
-  init_Bookmarks();
+  if (!loading) {
+    timer->start(1000);
+
+    init_Bookmarks();
+  }
 }
 
 void thread_one::run() {
@@ -4146,9 +4150,12 @@ void MainWindow::init_tool_ui() {
   ui->btnErrorN->setIcon(QIcon(":/icon/3.png"));
 
   // 书签
+
+  ui->frameBook->layout()->setMargin(0);
+  ui->frameBook->layout()->setSpacing(1);
   ui->listBook->setStyleSheet(ui->listWidget->styleSheet());
-  ui->listBook->setHidden(true);
-  ui->listBook->setFixedWidth(75);
+  ui->frameBook->setHidden(true);
+  ui->frameBook->setFixedWidth(75);
   QString qfile = QDir::homePath() + "/.config/QtiASL/book.ini";
   QSettings Reg(qfile, QSettings::IniFormat);
   int count = Reg.value("bookcount", 0).toInt();
@@ -5541,7 +5548,7 @@ void MainWindow::on_tabWidget_textEdit_tabBarClicked(int index) {
   //初始化fsm
   init_fsmSyncOpenedFile(curFile);
 
-  init_Bookmarks();
+  getBookmarks();
 
   textEdit->setFocus();
 
@@ -7344,12 +7351,7 @@ void MainWindow::on_actionSet_Bookmark_triggered() {
   }
   if (!re) listBookmarks.append(addStr);
 
-  QString qfile = QDir::homePath() + "/.config/QtiASL/book.ini";
-  QSettings Reg(qfile, QSettings::IniFormat);
-  Reg.setValue("bookcount", listBookmarks.count());
-  for (int i = 0; i < listBookmarks.count(); i++) {
-    Reg.setValue("book" + QString::number(i), listBookmarks.at(i));
-  }
+  saveBookmarks();
 
   getBookmarks();
 }
@@ -7379,11 +7381,11 @@ void MainWindow::getBookmarks() {
 void MainWindow::on_actionBookmarks_List_2_triggered() {
   init_Bookmarks();
 
-  if (ui->listBook->isHidden()) {
-    ui->listBook->setHidden(false);
+  if (ui->frameBook->isHidden()) {
+    ui->frameBook->setHidden(false);
     ui->actionBookmarks_List_2->setChecked(true);
   } else {
-    ui->listBook->setHidden(true);
+    ui->frameBook->setHidden(true);
     ui->actionBookmarks_List_2->setChecked(false);
   }
 }
@@ -7426,5 +7428,38 @@ void MainWindow::init_Bookmarks() {
     // qDebug() << i << line;
   }
 
+  saveBookmarks();
+
   getBookmarks();
+}
+
+void MainWindow::saveBookmarks() {
+  QString qfile = QDir::homePath() + "/.config/QtiASL/book.ini";
+  QSettings Reg(qfile, QSettings::IniFormat);
+  Reg.setValue("bookcount", listBookmarks.count());
+  for (int i = 0; i < listBookmarks.count(); i++) {
+    Reg.setValue("book" + QString::number(i), listBookmarks.at(i));
+  }
+}
+
+void MainWindow::on_btnDelBook_clicked() {
+  if (ui->listBook->currentRow() < 0) return;
+  int row = ui->listBook->currentRow();
+  int line = ui->listBook->currentItem()->text().toInt();
+  for (int i = 0; i < 20; i++) {
+    textEdit->SendScintilla(QsciScintilla::SCI_MARKERDELETE, line - 1);
+  }
+
+  for (int i = 0; i < listBookmarks.count(); i++) {
+    QString str = curFile + "|" + QString::number(line) + "|" +
+                  ui->listBook->currentItem()->toolTip();
+    if (str == listBookmarks.at(i)) {
+      listBookmarks.removeAt(i);
+      break;
+    }
+  }
+
+  ui->listBook->takeItem(row);
+
+  saveBookmarks();
 }
