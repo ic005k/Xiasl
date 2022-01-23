@@ -1483,7 +1483,7 @@ void MainWindow::forEach(QString str, QString strReplace) {
   }
 }
 
-void MainWindow::on_btnFindNext(QsciScintilla* textEdit, QString file) {
+void MainWindow::on_StartSearch(QsciScintilla* textEdit, QString file) {
   if (loading) return;
 
   ui->tabWidget_misc->setCurrentIndex(2);
@@ -5773,6 +5773,7 @@ void MainWindow::highlighsearchtext(QString searchText, QsciScintilla* textEdit,
     position++;
     i++;
   }
+
   curFindPos = m_searchTextPosList.count();
   totalPos = totalPos + curFindPos;
 
@@ -7029,6 +7030,7 @@ void MainWindow::on_treeFind_itemClicked(QTreeWidgetItem* item, int column) {
 }
 
 void MainWindow::on_btnSearch_clicked() {
+  clearSearchHighlight(textEdit);
   ui->treeFind->clear();
   tw_SearchResults.clear();
   findStr = ui->editFind->currentText();
@@ -7036,7 +7038,7 @@ void MainWindow::on_btnSearch_clicked() {
 
   if (ui->cboxFindScope->currentIndex() == 0) {
     int index = ui->tabWidget_textEdit->currentIndex();
-    on_btnFindNext(getCurrentEditor(index), getCurrentFileName(index));
+    on_StartSearch(getCurrentEditor(index), getCurrentFileName(index));
     ui->treeFind->addTopLevelItems(tw_SearchResults);
   }
 
@@ -7044,7 +7046,7 @@ void MainWindow::on_btnSearch_clicked() {
     int count = ui->tabWidget_textEdit->count();
     for (int i = 0; i < count; i++) {
       clearSearchHighlight(textEdit);
-      on_btnFindNext(getCurrentEditor(i), getCurrentFileName(i));
+      on_StartSearch(getCurrentEditor(i), getCurrentFileName(i));
     }
 
     ui->treeFind->addTopLevelItems(tw_SearchResults);

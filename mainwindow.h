@@ -119,7 +119,7 @@ class MainWindow : public QMainWindow {
   static void searchInFolders();
   SearchThread* mySearchThread;
   void dealDone();
-  void on_btnFindNext(QsciScintilla* textEdit, QString file);
+  void on_StartSearch(QsciScintilla* textEdit, QString file);
   QVBoxLayout* hboxLayout;
   QTimer* tmrWatchPos;
   QMenu* mnuRecentOpenFile;
