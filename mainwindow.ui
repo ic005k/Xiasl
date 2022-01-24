@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>913</width>
-    <height>647</height>
+    <width>1106</width>
+    <height>675</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -25,7 +25,7 @@
        <enum>QTabWidget::North</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <property name="documentMode">
        <bool>false</bool>
@@ -334,6 +334,9 @@ QTreeView::branch:!has-children:!has-siblings:adjoins-item{border-image:url(:/ic
             <property name="text">
              <string>Include Subfolders</string>
             </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
            </widget>
           </item>
           <item>
@@ -457,6 +460,9 @@ QTreeView::branch:!has-children:!has-siblings:adjoins-item{border-image:url(:/ic
                </property>
                <property name="value">
                 <number>0</number>
+               </property>
+               <property name="textVisible">
+                <bool>false</bool>
                </property>
               </widget>
              </item>
@@ -1114,8 +1120,8 @@ QListWidget::item:selected
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>913</width>
-     <height>24</height>
+     <width>1106</width>
+     <height>30</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">

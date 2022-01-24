@@ -14,7 +14,7 @@
 #endif
 #include "methods.h"
 
-QString CurVerison = "1.1.45";
+QString CurVerison = "1.1.46";
 QString fileName, curFile, dragFileName, findStr, findPath, search_string,
     curFindFile;
 
@@ -4176,6 +4176,7 @@ void MainWindow::init_Tool_UI() {
           });
 
   // 初始化搜索
+  isIncludeSubDir = true;
   textEditSerach = new QsciScintilla;
   ui->frameInFolder->setHidden(true);
   ui->treeFind->setUniformRowHeights(true);  //加快展开速度
