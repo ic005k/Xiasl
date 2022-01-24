@@ -786,6 +786,8 @@ class MainWindow : public QMainWindow {
 
   void on_textEditNotes_textChanged();
 
+  void on_listBook_currentRowChanged(int currentRow);
+
  private:
   QTimer* tmeShowFindProgress;
   QPoint winPos;

@@ -4150,6 +4150,8 @@ void MainWindow::init_Tool_UI() {
   ui->btnErrorN->setIcon(QIcon(":/icon/3.png"));
 
   // 书签
+  ui->lblBookmarks->setAlignment(Qt::AlignCenter);
+  ui->lblNotes->setAlignment(Qt::AlignCenter);
   ui->frameBook->layout()->setMargin(0);
   ui->frameBook->layout()->setSpacing(1);
   ui->listBook->setStyleSheet(ui->listWidget->styleSheet());
@@ -7370,6 +7372,9 @@ void MainWindow::on_actionSet_Bookmark_triggered() {
 void MainWindow::getBookmarks() {
   if (curFile == "" || loading || listBookmarks.count() == 0) return;
 
+  QString qfile = QDir::homePath() + "/.config/QtiASL/bookNotes.ini";
+  QSettings Reg(qfile, QSettings::IniFormat);
+
   ui->listBook->clear();
   for (int i = 0; i < listBookmarks.count(); i++) {
     QString str = listBookmarks.at(i);
@@ -7380,7 +7385,14 @@ void MainWindow::getBookmarks() {
         int num = line.toInt();
         if (textEdit->text(num - 1).trimmed() == list.at(2)) {
           ui->listBook->addItem(line);
-          ui->listBook->item(ui->listBook->count() - 1)->setToolTip(list.at(2));
+
+          QString strNotes =
+              Reg.value(curFile +
+                        ui->listBook->item(ui->listBook->count() - 1)->text())
+                  .toString();
+
+          ui->listBook->item(ui->listBook->count() - 1)
+              ->setToolTip(list.at(2) + "\n\n" + strNotes);
 
           setBookmarks(num - 1);
         }
@@ -7483,13 +7495,31 @@ void MainWindow::on_btnDelBook_clicked() {
 void MainWindow::on_textEditNotes_textChanged() {
   if (ui->listBook->currentRow() < 0) return;
 
-  QString str = curFile + "|" + ui->listBook->currentItem()->text() + "|" +
-                ui->listBook->currentItem()->toolTip();
-  for (int i = 0; i < listBookmarks.count(); i++) {
-  }
-
   QString qfile = QDir::homePath() + "/.config/QtiASL/bookNotes.ini";
   QSettings Reg(qfile, QSettings::IniFormat);
   Reg.setValue(curFile + ui->listBook->currentItem()->text(),
                ui->textEditNotes->toPlainText());
+}
+
+void MainWindow::on_listBook_currentRowChanged(int currentRow) {
+  if (currentRow < 0) return;
+
+  QString qfile = QDir::homePath() + "/.config/QtiASL/bookNotes.ini";
+  QSettings Reg(qfile, QSettings::IniFormat);
+  QString strNotes =
+      Reg.value(curFile + ui->listBook->item(currentRow)->text()).toString();
+
+  QString strTip;
+
+  for (int j = 0; j < listBookmarks.count(); j++) {
+    QString str0 = curFile + "|" + ui->listBook->item(currentRow)->text() + "|";
+    QString str1 = listBookmarks.at(j);
+    if (str1.contains(str0)) {
+      str1.replace(str0, "");
+      strTip = str1;
+      break;
+    }
+  }
+
+  ui->listBook->item(currentRow)->setToolTip(strTip + "\n\n" + strNotes);
 }
