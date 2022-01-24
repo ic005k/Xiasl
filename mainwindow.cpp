@@ -14,7 +14,7 @@
 #endif
 #include "methods.h"
 
-QString CurVerison = "1.1.41";
+QString CurVerison = "1.1.42";
 QString fileName, curFile, dragFileName, findStr, findPath, search_string,
     curFindFile;
 
@@ -7425,21 +7425,19 @@ void MainWindow::init_Bookmarks() {
 
       QString addStr = curFile + "|" + QString::number(line + 1) + "|" +
                        textEdit->text(line).trimmed();
-      /*bool re = false;
-      for (int j = 0; j < listBookmarks.count(); j++) {
-        if (listBookmarks.at(j) == addStr) {
-          re = true;
-          break;
-        }
-      }*/
+
       listBookmarks.append(addStr);
     } else
       break;
-    // qDebug() << i << line;
   }
 
+#if (QT_VERSION <= QT_VERSION_CHECK(5, 9, 9))
+  listBookmarks = listBookmarks.toSet().toList();
+#else
   listBookmarks = QSet<QString>(listBookmarks.begin(), listBookmarks.end())
                       .values();  //去重
+#endif
+
   saveBookmarks();
 
   getBookmarks();
