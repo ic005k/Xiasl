@@ -14,7 +14,7 @@
 #endif
 #include "methods.h"
 
-QString CurVerison = "1.1.44";
+QString CurVerison = "1.1.45";
 QString fileName, curFile, dragFileName, findStr, findPath, search_string,
     curFindFile;
 
@@ -7479,10 +7479,10 @@ void MainWindow::on_btnDelBook_clicked() {
     textEdit->SendScintilla(QsciScintilla::SCI_MARKERDELETE, line - 1);
   }
 
+  QString str = curFile + "|" + QString::number(line) + "|";
   for (int i = 0; i < listBookmarks.count(); i++) {
-    QString str = curFile + "|" + QString::number(line) + "|" +
-                  ui->listBook->currentItem()->toolTip();
-    if (str == listBookmarks.at(i)) {
+    QString str1 = listBookmarks.at(i);
+    if (str1.contains(str)) {
       listBookmarks.removeAt(i);
       break;
     }
