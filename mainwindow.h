@@ -784,6 +784,8 @@ class MainWindow : public QMainWindow {
 
   void on_btnDelBook_clicked();
 
+  void on_textEditNotes_textChanged();
+
  private:
   QTimer* tmeShowFindProgress;
   QPoint winPos;

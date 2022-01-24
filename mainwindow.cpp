@@ -14,7 +14,7 @@
 #endif
 #include "methods.h"
 
-QString CurVerison = "1.1.42";
+QString CurVerison = "1.1.43";
 QString fileName, curFile, dragFileName, findStr, findPath, search_string,
     curFindFile;
 
@@ -5558,6 +5558,7 @@ void MainWindow::on_tabWidget_textEdit_tabBarClicked(int index) {
   //初始化fsm
   init_fsmSyncOpenedFile(curFile);
 
+  ui->textEditNotes->clear();
   getBookmarks();
 
   textEdit->setFocus();
@@ -7406,6 +7407,11 @@ void MainWindow::on_listBook_itemClicked(QListWidgetItem* item) {
   textEdit->setFocus();
   int line = ui->listBook->currentItem()->text().toInt();
   textEdit->setCursorPosition(line - 1, 0);
+
+  QString qfile = QDir::homePath() + "/.config/QtiASL/bookNotes.ini";
+  QSettings Reg(qfile, QSettings::IniFormat);
+  ui->textEditNotes->setPlainText(
+      Reg.value(curFile + ui->listBook->currentItem()->text()).toString());
 }
 
 void MainWindow::init_Bookmarks() {
@@ -7472,4 +7478,18 @@ void MainWindow::on_btnDelBook_clicked() {
   ui->listBook->takeItem(row);
 
   saveBookmarks();
+}
+
+void MainWindow::on_textEditNotes_textChanged() {
+  if (ui->listBook->currentRow() < 0) return;
+
+  QString str = curFile + "|" + ui->listBook->currentItem()->text() + "|" +
+                ui->listBook->currentItem()->toolTip();
+  for (int i = 0; i < listBookmarks.count(); i++) {
+  }
+
+  QString qfile = QDir::homePath() + "/.config/QtiASL/bookNotes.ini";
+  QSettings Reg(qfile, QSettings::IniFormat);
+  Reg.setValue(curFile + ui->listBook->currentItem()->text(),
+               ui->textEditNotes->toPlainText());
 }
