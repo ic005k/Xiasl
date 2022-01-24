@@ -858,7 +858,7 @@ class MainWindow : public QMainWindow {
 
   void init_menu();
 
-  void init_tool_ui();
+  void init_Tool_UI();
 
   void init_recentFiles();
 

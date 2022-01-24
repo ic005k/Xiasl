@@ -247,7 +247,7 @@ MainWindow::MainWindow(QWidget* parent)
 
   init_filesystem();
 
-  init_tool_ui();
+  init_Tool_UI();
 
   loadTabFiles();
 
@@ -4138,7 +4138,7 @@ void MainWindow::init_recentFiles() {
   }
 }
 
-void MainWindow::init_tool_ui() {
+void MainWindow::init_Tool_UI() {
   if (mac || osx1012) this->setUnifiedTitleAndToolBarOnMac(false);
   ui->toolBar->setHidden(true);
   ui->btnFind->setIcon(QIcon(":/icon/find.png"));
@@ -4150,7 +4150,6 @@ void MainWindow::init_tool_ui() {
   ui->btnErrorN->setIcon(QIcon(":/icon/3.png"));
 
   // 书签
-
   ui->frameBook->layout()->setMargin(0);
   ui->frameBook->layout()->setSpacing(1);
   ui->listBook->setStyleSheet(ui->listWidget->styleSheet());
@@ -4162,6 +4161,17 @@ void MainWindow::init_tool_ui() {
   for (int i = 0; i < count; i++) {
     listBookmarks.append(Reg.value("book" + QString::number(i)).toString());
   }
+
+  ui->listBook->setContextMenuPolicy(Qt::CustomContextMenu);
+  QMenu* menu = new QMenu(this);
+  QAction* act = new QAction(tr("Delete"), this);
+  menu->addAction(act);
+  connect(act, &QAction::triggered, [=]() { on_btnDelBook_clicked(); });
+  connect(ui->listBook, &QTreeView::customContextMenuRequested,
+          [=](const QPoint& pos) {
+            Q_UNUSED(pos);
+            menu->exec(QCursor::pos());
+          });
 
   // 初始化搜索
   textEditSerach = new QsciScintilla;
@@ -7379,7 +7389,7 @@ void MainWindow::getBookmarks() {
 }
 
 void MainWindow::on_actionBookmarks_List_2_triggered() {
-  init_Bookmarks();
+  getBookmarks();
 
   if (ui->frameBook->isHidden()) {
     ui->frameBook->setHidden(false);
@@ -7415,19 +7425,21 @@ void MainWindow::init_Bookmarks() {
 
       QString addStr = curFile + "|" + QString::number(line + 1) + "|" +
                        textEdit->text(line).trimmed();
-      bool re = false;
+      /*bool re = false;
       for (int j = 0; j < listBookmarks.count(); j++) {
         if (listBookmarks.at(j) == addStr) {
           re = true;
           break;
         }
-      }
-      if (!re) listBookmarks.append(addStr);
+      }*/
+      listBookmarks.append(addStr);
     } else
       break;
     // qDebug() << i << line;
   }
 
+  listBookmarks = QSet<QString>(listBookmarks.begin(), listBookmarks.end())
+                      .values();  //去重
   saveBookmarks();
 
   getBookmarks();
