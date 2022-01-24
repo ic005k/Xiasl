@@ -14,7 +14,7 @@
 #endif
 #include "methods.h"
 
-QString CurVerison = "1.1.43";
+QString CurVerison = "1.1.44";
 QString fileName, curFile, dragFileName, findStr, findPath, search_string,
     curFindFile;
 
@@ -7414,6 +7414,7 @@ void MainWindow::on_actionBookmarks_List_2_triggered() {
 }
 
 void MainWindow::on_listBook_itemClicked(QListWidgetItem* item) {
+  Q_UNUSED(item);
   if (ui->listBook->count() == 0) return;
 
   textEdit->setFocus();
@@ -7499,11 +7500,20 @@ void MainWindow::on_textEditNotes_textChanged() {
   QSettings Reg(qfile, QSettings::IniFormat);
   Reg.setValue(curFile + ui->listBook->currentItem()->text(),
                ui->textEditNotes->toPlainText());
+
+  refreshItemTip(ui->listBook->currentRow());
 }
 
 void MainWindow::on_listBook_currentRowChanged(int currentRow) {
   if (currentRow < 0) return;
+}
 
+void MainWindow::on_listBook_itemSelectionChanged() {
+  int currentRow = ui->listBook->currentRow();
+  if (currentRow < 0) return;
+}
+
+void MainWindow::refreshItemTip(int currentRow) {
   QString qfile = QDir::homePath() + "/.config/QtiASL/bookNotes.ini";
   QSettings Reg(qfile, QSettings::IniFormat);
   QString strNotes =

@@ -545,7 +545,8 @@ class MainWindow : public QMainWindow {
   void init_Bookmarks();
   void saveBookmarks();
 
- protected:
+  void refreshItemTip(int currentRow);
+  protected:
   void closeEvent(QCloseEvent* event) override;
   void dragEnterEvent(QDragEnterEvent* e) override;
   void dropEvent(QDropEvent* e) override;
@@ -787,6 +788,8 @@ class MainWindow : public QMainWindow {
   void on_textEditNotes_textChanged();
 
   void on_listBook_currentRowChanged(int currentRow);
+
+  void on_listBook_itemSelectionChanged();
 
  private:
   QTimer* tmeShowFindProgress;
