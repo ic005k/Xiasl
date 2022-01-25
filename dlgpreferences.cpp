@@ -14,7 +14,7 @@ dlgPreferences::dlgPreferences(QWidget* parent)
 
 dlgPreferences::~dlgPreferences() { delete ui; }
 
-void dlgPreferences::on_btnFont_clicked() { mw_one->set_font(); }
+void dlgPreferences::on_btnFont_clicked() { mw_one->setFont(); }
 
 void dlgPreferences::on_cboxWrapWord_stateChanged(int arg1) {
   Q_UNUSED(arg1);

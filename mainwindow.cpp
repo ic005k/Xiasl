@@ -14,7 +14,7 @@
 #endif
 #include "methods.h"
 
-QString CurVerison = "1.1.46";
+QString CurVerison = "1.1.47";
 QString fileName, curFile, dragFileName, findStr, findPath, search_string,
     curFindFile;
 
@@ -127,22 +127,10 @@ MainWindow::MainWindow(QWidget* parent)
 
 #endif
 
-  QString qfile = QDir::homePath() + "/.config/QtiASL/QtiASL.ini";
-  QSettings Reg(qfile, QSettings::IniFormat);
-
   //获取背景色
   QPalette pal = ui->treeWidget->palette();
   QBrush brush = pal.window();
   red = brush.color().red();
-
-  ui->frameTip->setAutoFillBackground(true);
-  ui->frameTip->setPalette(QPalette(QColor(255, 204, 204)));
-  ui->btnYes->setDefault(true);
-  ui->frameTip->setHidden(true);
-
-  QDir dir;
-  if (dir.mkpath(QDir::homePath() + "/.config/QtiASL/")) {
-  }
 
   QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
 
@@ -156,7 +144,6 @@ MainWindow::MainWindow(QWidget* parent)
   dlgset = new dlgPreferences(this);
 
   miniDlg = new miniDialog(this);
-  miniDlgEdit->setFont(font);
   miniDlg->close();
 
   miniEdit = new MiniEditor(this);
@@ -173,14 +160,55 @@ MainWindow::MainWindow(QWidget* parent)
 
   init_UIStyle();
 
-  ui->tabWidget_textEdit->setDocumentMode(false);
-  ui->tabWidget_textEdit->tabBar()->installEventFilter(
-      this);  //安装事件过滤器以禁用鼠标滚轮切换标签页
-  connect(ui->tabWidget_textEdit, SIGNAL(tabCloseRequested(int)), this,
-          SLOT(closeTab(int)));
-  ui->tabWidget_textEdit->setIconSize(QSize(7, 7));
+  init_UI_Layout();
 
+  timer = new QTimer(this);
+  connect(timer, SIGNAL(timeout()), this, SLOT(timer_linkage()));
+  tmeShowFindProgress = new QTimer(this);
+  connect(tmeShowFindProgress, SIGNAL(timeout()), this,
+          SLOT(on_ShowFindProgress()));
+
+  manager = new QNetworkAccessManager(this);
+  connect(manager, SIGNAL(finished(QNetworkReply*)), this,
+          SLOT(replyFinished(QNetworkReply*)));
+  blAutoCheckUpdate = true;
+  CheckUpdate();
+
+  init_filesystem();
+
+  init_Tool_UI();
+
+  loadTabFiles();
+
+  loadFindString();
+
+  readINIProxy();
+
+  ui->fBox->setMouseTracking(true);
+  ui->dockMiniEdit->layout()->addWidget(miniEdit);
+  ui->dockMiniEdit->layout()->addWidget(ui->fBox);
+
+  init_ScrollBox();
+
+  One = false;
+  blInit = false;
+  loading = false;
+}
+
+MainWindow::~MainWindow() {
+  delete ui;
+
+  mythread->quit();
+  mythread->wait();
+
+  mySearchThread->quit();
+  mySearchThread->wait();
+}
+
+void MainWindow::init_UI_Layout() {
   // 分割窗口
+  QString qfile = QDir::homePath() + "/.config/QtiASL/QtiASL.ini";
+  QSettings Reg(qfile, QSettings::IniFormat);
   ui->centralwidget->layout()->setContentsMargins(2, 2, 2, 2);
   ui->centralwidget->layout()->setSpacing(1);
   QSplitter* splitterH = new QSplitter(Qt::Horizontal, this);
@@ -224,57 +252,8 @@ MainWindow::MainWindow(QWidget* parent)
   //设置鼠标追踪
   ui->centralwidget->setMouseTracking(true);
   this->setMouseTracking(true);
-  ui->toolBar->setMouseTracking(true);
   ui->frameInfo->setMouseTracking(true);
   ui->statusbar->setMouseTracking(true);
-
-  timer = new QTimer(this);
-  connect(timer, SIGNAL(timeout()), this, SLOT(timer_linkage()));
-  tmeShowFindProgress = new QTimer(this);
-  connect(tmeShowFindProgress, SIGNAL(timeout()), this,
-          SLOT(on_ShowFindProgress()));
-
-  winPos.setX(this->x());
-  winPos.setY(this->y());
-  tmrWatchPos = new QTimer(this);
-  connect(tmrWatchPos, SIGNAL(timeout()), this, SLOT(timer_watch_pos()));
-
-  manager = new QNetworkAccessManager(this);
-  connect(manager, SIGNAL(finished(QNetworkReply*)), this,
-          SLOT(replyFinished(QNetworkReply*)));
-  blAutoCheckUpdate = true;
-  CheckUpdate();
-
-  init_filesystem();
-
-  init_Tool_UI();
-
-  loadTabFiles();
-
-  loadFindString();
-
-  readINIProxy();
-
-  ui->fBox->setMouseTracking(true);
-  init_miniEdit();
-  ui->dockMiniEdit->layout()->addWidget(miniEdit);
-  ui->dockMiniEdit->layout()->addWidget(ui->fBox);
-  syncMiniEdit();
-  init_ScrollBox();
-
-  One = false;
-  blInit = false;
-  loading = false;
-}
-
-MainWindow::~MainWindow() {
-  delete ui;
-
-  mythread->quit();
-  mythread->wait();
-
-  mySearchThread->quit();
-  mySearchThread->wait();
 }
 
 void MainWindow::loadTabFiles() {
@@ -2307,11 +2286,13 @@ void MainWindow::refresh_tree() {
 }
 
 void MainWindow::on_btnRefreshTree() {
-  syncMiniEdit();
+  init_MiniText();
   refresh_tree();
 }
 
-void MainWindow::syncMiniEdit() {
+void MainWindow::init_MiniText() {
+  miniLexer = init_Lexer(curFile);
+  init_MiniEdit();
   int row, col;
   textEdit->getCursorPosition(&row, &col);
   miniEdit->clear();
@@ -4149,6 +4130,14 @@ void MainWindow::init_Tool_UI() {
   ui->btnErrorP->setIcon(QIcon(":/icon/1.png"));
   ui->btnErrorN->setIcon(QIcon(":/icon/3.png"));
 
+  // textEdit 标签页
+  ui->tabWidget_textEdit->setDocumentMode(false);
+  ui->tabWidget_textEdit->tabBar()->installEventFilter(
+      this);  //安装事件过滤器以禁用鼠标滚轮切换标签页
+  connect(ui->tabWidget_textEdit, SIGNAL(tabCloseRequested(int)), this,
+          SLOT(closeTab(int)));
+  ui->tabWidget_textEdit->setIconSize(QSize(7, 7));
+
   // 书签
   ui->lblBookmarks->setAlignment(Qt::AlignCenter);
   ui->lblNotes->setAlignment(Qt::AlignCenter);
@@ -4222,6 +4211,28 @@ void MainWindow::init_Tool_UI() {
   setEditFindCompleter();
   connect(ui->editFind->lineEdit(), &QLineEdit::returnPressed, this,
           &MainWindow::on_editFind_ReturnPressed);
+  ui->editReplace->setClearButtonEnabled(true);
+
+  if (red < 55) {
+    QPalette palette;
+    palette = ui->editFind->palette();
+    palette.setColor(QPalette::Base, QColor(50, 50, 50));
+    palette.setColor(QPalette::Text, Qt::white);
+    ui->editFind->setPalette(palette);
+
+  } else {
+    QPalette palette;
+    palette = ui->editFind->palette();
+    palette.setColor(QPalette::Base, Qt::white);
+    palette.setColor(QPalette::Text, Qt::black);
+    ui->editFind->setPalette(palette);
+  }
+
+  // 文件被其它修改后的提示
+  ui->frameTip->setAutoFillBackground(true);
+  ui->frameTip->setPalette(QPalette(QColor(255, 204, 204)));
+  ui->btnYes->setDefault(true);
+  ui->frameTip->setHidden(true);
 }
 
 void MainWindow::init_menu() {
@@ -4358,7 +4369,7 @@ void MainWindow::setLexer(QsciLexer* textLexer, QsciScintilla* textEdit) {
   red = brush.color().red();
 
   //设置行号栏宽度、颜色、字体
-  QFont m_font;
+  QFont m_font = get_Font();
 
 #ifdef Q_OS_WIN32
   textEdit->setMarginWidth(0, 50);
@@ -4403,7 +4414,6 @@ void MainWindow::setLexer(QsciLexer* textLexer, QsciScintilla* textEdit) {
   textEdit->setMarginSensitivity(a, true);
   textEdit->setFolding(QsciScintilla::BoxedTreeFoldStyle);  //折叠样式
 
-  m_font.setFamily(font.family());
   textEdit->setMarginsFont(m_font);
 
   Methods::setColorMatch(red, textLexer);
@@ -4504,7 +4514,7 @@ void MainWindow::setLexer(QsciLexer* textLexer, QsciScintilla* textEdit) {
   textEdit->setMarkerBackgroundColor(QColor("#eaf593"), 2);*/
 }
 
-void MainWindow::init_miniEdit() {
+void MainWindow::init_MiniEdit() {
   // miniEdit = new MiniEditor(this);
   miniEdit->setFrameShape(QFrame::NoFrame);
   miniEdit->verticalScrollBar()->installEventFilter(this);
@@ -4563,7 +4573,7 @@ void MainWindow::init_miniEdit() {
   this->setAcceptDrops(true);
 }
 
-void MainWindow::init_edit() {
+void MainWindow::init_Edit() {
   textEdit = new QsciScintilla(this);
   textEdit->setFrameShape(QFrame::NoFrame);
   textEdit->installEventFilter(this);
@@ -4595,12 +4605,28 @@ void MainWindow::init_edit() {
   connect(textEdit->verticalScrollBar(), SIGNAL(valueChanged(int)), this,
           SLOT(setValue2()));
 
+  QFont font = get_Font();
+
   textEdit->setFont(font);
   textEdit->setMarginsFont(font);
 
   textEdit->setLexer(myTextLexer);
 
+  myTextLexer->setFont(font);
+  setLexer(myTextLexer, textEdit);
+
+  //接受文件拖放打开
+  textEdit->setAcceptDrops(false);
+  this->setAcceptDrops(true);
+}
+
+QFont MainWindow::get_Font() {
+  QDir dir;
+  if (dir.mkpath(QDir::homePath() + "/.config/QtiASL/")) {
+  }
+
   //读取字体
+  QFont font;
   QString qfile = QDir::homePath() + "/.config/QtiASL/QtiASL.ini";
   QSettings Reg(qfile, QSettings::IniFormat);
   if (mac || osx1012) font.setFamily(Reg.value("FontName", "Menlo").toString());
@@ -4612,37 +4638,7 @@ void MainWindow::init_edit() {
   font.setItalic(Reg.value("FontItalic").toBool());
   font.setUnderline(Reg.value("FontUnderline").toBool());
 
-  myTextLexer->setFont(font);
-  setLexer(myTextLexer, textEdit);
-
-  if (!linuxOS) {
-    ui->treeWidget->setFont(font.family());
-    miniDlgEdit->setFont(ui->treeWidget->font());
-  }
-
-  ui->treeView->setFont(font);
-  ui->treeWidget->setFont(font);
-
-  //接受文件拖放打开
-  textEdit->setAcceptDrops(false);
-  this->setAcceptDrops(true);
-
-  ui->editReplace->setClearButtonEnabled(true);
-
-  if (red < 55) {
-    QPalette palette;
-    palette = ui->editFind->palette();
-    palette.setColor(QPalette::Base, QColor(50, 50, 50));
-    palette.setColor(QPalette::Text, Qt::white);
-    ui->editFind->setPalette(palette);
-
-  } else {
-    QPalette palette;
-    palette = ui->editFind->palette();
-    palette.setColor(QPalette::Base, Qt::white);
-    palette.setColor(QPalette::Text, Qt::black);
-    ui->editFind->setPalette(palette);
-  }
+  return font;
 }
 
 void MainWindow::init_treeWidget() {
@@ -4650,6 +4646,13 @@ void MainWindow::init_treeWidget() {
   QScreen* screen = QGuiApplication::primaryScreen();
   w = screen->size().width();
   Q_UNUSED(w);
+
+  QFont font = get_Font();
+  ui->treeView->setFont(font);
+  ui->treeWidget->setFont(font);
+  if (!linuxOS) {
+    ui->treeWidget->setFont(font.family());
+  }
 
   treeWidgetBak = new QTreeWidget;
 
@@ -5168,23 +5171,8 @@ void MainWindow::newFile(QString file) {
   ui->editWarnings->clear();
   ui->editRemarks->clear();
 
-  if (file == "" || QFileInfo(file).suffix().toLower() == "dsl" ||
-      QFileInfo(file).suffix().toLower() == "asl") {
-    myTextLexer = new QscilexerCppAttach;
-    miniLexer = new QscilexerCppAttach;
-  } else if (QFileInfo(file).suffix().toLower() == "py") {
-    myTextLexer = new QsciLexerPython;
-    miniLexer = new QsciLexerPython;
-  } else if (QFileInfo(file).suffix().toLower() == "c" ||
-             QFileInfo(file).suffix().toLower() == "cpp") {
-    myTextLexer = new QsciLexerCPP;
-    miniLexer = new QsciLexerCPP;
-  } else {
-    myTextLexer = new QscilexerCppAttach;
-    miniLexer = new QscilexerCppAttach;
-  }
-
-  init_edit();
+  myTextLexer = init_Lexer(file);
+  init_Edit();
   // init_miniEdit();
 
   MyTabPage* page = new MyTabPage;
@@ -5238,6 +5226,39 @@ void MainWindow::newFile(QString file) {
   ui->treeWidget->setHidden(false);
 }
 
+QsciLexer* MainWindow::init_Lexer(QString file) {
+  QsciLexer* myTextLexer;
+  QString strSuffix;
+  if (file != "")
+    strSuffix = QFileInfo(file).suffix().toLower();
+  else
+    strSuffix = "";
+
+  if (strSuffix == "" || strSuffix == "dsl" || strSuffix == "asl") {
+    myTextLexer = new QscilexerCppAttach;
+    return myTextLexer;
+  }
+
+  if (strSuffix == "py") {
+    myTextLexer = new QsciLexerPython;
+    return myTextLexer;
+  }
+
+  if (strSuffix == "c" || strSuffix == "cpp") {
+    myTextLexer = new QsciLexerCPP;
+    return myTextLexer;
+  }
+
+  if (strSuffix == "md") {
+    myTextLexer = new QsciLexerMarkdown;
+    return myTextLexer;
+  }
+
+  myTextLexer = new QscilexerCppAttach;
+
+  return myTextLexer;
+}
+
 void MainWindow::on_btnReplaceFind() {
   on_btnReplace();
   if (find_down) {
@@ -5247,9 +5268,10 @@ void MainWindow::on_btnReplaceFind() {
 }
 
 /*菜单：设置字体*/
-void MainWindow::set_font() {
+void MainWindow::setFont() {
   bool ok;
   QFontDialog fd;
+  QFont font = get_Font();
 
   font = fd.getFont(&ok, font);
 
@@ -5291,7 +5313,6 @@ void MainWindow::set_wrap() {
   }
 }
 
-/* 重载窗体重绘事件 */
 void MainWindow::paintEvent(QPaintEvent* event) {
   Q_UNUSED(event);
 
@@ -5303,9 +5324,16 @@ void MainWindow::paintEvent(QPaintEvent* event) {
     red = c_red;
     init_UIStyle();
     //注意：1.代码折叠线的颜色 2.双引号输入时的背景色
+
     for (int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i++) {
-      return;
-      init_edit();
+      QsciScintilla* edit = getCurrentEditor(i);
+      QString file = getCurrentFileName(i);
+      myTextLexer = init_Lexer(file);
+      edit->setLexer(myTextLexer);
+      setLexer(myTextLexer, edit);
+
+      miniLexer = init_Lexer(file);
+      init_MiniText();
     }
   }
 }
@@ -6245,7 +6273,7 @@ void MiniEditor::showZoomWin(int x, int y) {
   miniDlg->setGeometry(mw_one->ui->dockMiniEdit->x() - w - 1, y1, w, h);
 
   if (miniDlg->isHidden()) {
-    QFont font = mw_one->font;
+    QFont font = mw_one->get_Font();
     font.setPointSizeF(10);
     miniDlgEdit->setFont(font);
     miniDlg->show();
@@ -6921,7 +6949,7 @@ void MainWindow::init_UIStyle() {
 
   if (red > 55) {
     ui->treeWidget->setStyleSheet(treeWidgetStyleLight);
-    ui->treeFind->setStyleSheet(ui->treeWidget->styleSheet());
+    ui->treeFind->setStyleSheet(treeFindStyleLight);
     ui->listWidget->setStyleSheet(infoShowStyleLight);
     ui->treeView->setStyleSheet(treeViewStyleLight);
 
@@ -6931,7 +6959,7 @@ void MainWindow::init_UIStyle() {
     lblLayer->setPalette(label_palette);
   } else {
     ui->treeWidget->setStyleSheet(treeWidgetStyleDark);
-    ui->treeFind->setStyleSheet(ui->treeWidget->styleSheet());
+    ui->treeFind->setStyleSheet(treeFindStyleDark);
     ui->listWidget->setStyleSheet(infoShowStyleDark);
     ui->treeView->setStyleSheet(treeViewStyleDark);
 
@@ -7015,13 +7043,6 @@ void MainWindow::on_btnMiniMap_clicked() {
 }
 
 void MainWindow::on_actionNew_triggered() { newFile(""); }
-
-void MainWindow::timer_watch_pos() {
-  QPoint curPos(this->x(), this->y());
-  if (winPos != curPos) {
-    winPos = curPos;
-  }
-}
 
 void MainWindow::on_treeFind_itemClicked(QTreeWidgetItem* item, int column) {
   if (column == 0) {

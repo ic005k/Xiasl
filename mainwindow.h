@@ -4,6 +4,7 @@
 #include <Qsci/qsciapis.h>
 #include <Qsci/qscilexercoffeescript.h>
 #include <Qsci/qscilexercpp.h>
+#include <Qsci/qscilexermarkdown.h>
 #include <Qsci/qscilexerpython.h>
 #include <Qsci/qscilexerverilog.h>
 #include <Qsci/qsciscintilla.h>
@@ -133,7 +134,7 @@ class MainWindow : public QMainWindow {
   bool blAutoCheckUpdate = false;
   QStringList reLoadByModiList;
   dlgPreferences* dlgset;
-  void set_font();
+  void setFont();
   void set_wrap();
   QLabel* lblEncoding;
   bool blInit = false;
@@ -173,8 +174,6 @@ class MainWindow : public QMainWindow {
   QProcess* pk;
 
   RecentFiles* m_recentFiles;
-
-  QFont font;
 
   RecentFiles* m_ssdtFiles;
 
@@ -222,6 +221,40 @@ class MainWindow : public QMainWindow {
        QTreeView::branch:selected {background: rgba(66 ,92 ,141, 255);selection-background-color:rgba(66 ,92 ,141, 255);}\
        QTreeView::item:hover{background-color:rgba(127,255,0,50)}\
        QTreeView::item:selected{background-color:rgba(66 ,92 ,141, 255); color:rgba(226,230,237,255);}"
+
+      "QTreeView::branch:open:has-children:!has-siblings,QTreeView::branch:"
+      "open:has-children:has-siblings {image: url(:/icon/sub.svg);}"
+
+      "QTreeView::branch:has-children:!has-siblings:closed,QTreeView::branch:"
+      "closed:has-children:has-siblings {image: url(:/icon/main.svg);}";
+
+  QString treeFindStyleLight =
+      "QTreeView::branch:hover {background-color:rgba(127,255,0,50)}"
+
+      "QTreeView::branch:selected {background: rgb(180 ,209 ,255);"
+      "selection-background-color:rgb(180 ,209 ,255);}"
+
+      "QTreeWidget::item:hover{background-color:rgba(127,255,0,50)}"
+
+      "QTreeWidget::item:selected{background-color:rgb(180 ,209 ,255); "
+      "color:rgb(5,5,5);} "
+
+      "QTreeView::branch:open:has-children:!has-siblings,QTreeView::branch:"
+      "open:has-children:has-siblings {image: url(:/icon/sub.svg);}"
+
+      "QTreeView::branch:has-children:!has-siblings:closed,QTreeView::branch:"
+      "closed:has-children:has-siblings {image: url(:/icon/main.svg);}";
+
+  QString treeFindStyleDark =
+      "QTreeView::branch:hover {background-color:rgba(127,255,0,50)}"
+
+      "QTreeView::branch:selected {background: rgb(66 ,92 ,141);"
+      "selection-background-color:rgb(66 ,92 ,141);}"
+
+      "QTreeWidget::item:hover{background-color:rgba(127,255,0,50)}"
+
+      "QTreeWidget::item:selected{background-color:rgb(66 ,92 ,141); "
+      "color:rgb(226,230,237);} "
 
       "QTreeView::branch:open:has-children:!has-siblings,QTreeView::branch:"
       "open:has-children:has-siblings {image: url(:/icon/sub.svg);}"
@@ -529,7 +562,7 @@ class MainWindow : public QMainWindow {
         }";
 
   void init_RecentOpenMenuItem();
-  void init_miniEdit();
+  void init_MiniEdit();
 
   MiniEditor* getCurrentMiniEditor(int index);
 
@@ -546,7 +579,14 @@ class MainWindow : public QMainWindow {
   void saveBookmarks();
 
   void refreshItemTip(int currentRow);
-  protected:
+
+  QsciLexer* init_Lexer(QString file);
+
+  void init_MiniText();
+
+  QFont get_Font();
+
+ protected:
   void closeEvent(QCloseEvent* event) override;
   void dragEnterEvent(QDragEnterEvent* e) override;
   void dropEvent(QDropEvent* e) override;
@@ -578,7 +618,7 @@ class MainWindow : public QMainWindow {
   void setValue2();
 
  private slots:
-  void timer_watch_pos();
+
   void on_actionExpandAll();
 
   void on_actionCollapseAll();
@@ -792,8 +832,6 @@ class MainWindow : public QMainWindow {
   void on_listBook_itemSelectionChanged();
 
  private:
-  QTimer* tmeShowFindProgress;
-  QPoint winPos;
   QMenu* menuTabList;
   bool isDrag;
   QPoint m_position;
@@ -838,6 +876,7 @@ class MainWindow : public QMainWindow {
   QString ver;
 
   QTimer* timer;
+  QTimer* tmeShowFindProgress;
 
   QTextEdit* textEditTemp;
 
@@ -871,7 +910,7 @@ class MainWindow : public QMainWindow {
 
   void init_info_edit();
 
-  void init_edit();
+  void init_Edit();
 
   void init_treeWidget();
 
@@ -899,7 +938,6 @@ class MainWindow : public QMainWindow {
                      QList<QTreeWidgetItem*> tw_list);
 
   void set_mark(int linenr);
-  void syncMiniEdit();
 
   bool DeleteDirectory(const QString& path);
   bool enterEdit(QPoint pp, QsciScintilla* btn);
@@ -927,6 +965,7 @@ class MainWindow : public QMainWindow {
   void init_fsmSyncOpenedFile(QString OpenedFile);
   void init_listForRecentFile(QString fileName);
   void setEditFindMarker();
+  void init_UI_Layout();
 };
 
 class MiniEditor : public QsciScintilla {
