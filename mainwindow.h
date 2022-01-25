@@ -966,7 +966,8 @@ class MainWindow : public QMainWindow {
   void init_listForRecentFile(QString fileName);
   void setEditFindMarker();
   void init_UI_Layout();
-};
+  void init_Widget();
+  };
 
 class MiniEditor : public QsciScintilla {
   Q_OBJECT

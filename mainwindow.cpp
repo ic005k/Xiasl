@@ -94,10 +94,6 @@ MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
   ui->setupUi(this);
 
-  QDir dir;
-  if (dir.mkpath(QDir::homePath() + "/.config/QtiASL/")) {
-  }
-
   loading = true;
   installEventFilter(this);
   blInit = true;
@@ -131,6 +127,54 @@ MainWindow::MainWindow(QWidget* parent)
 
 #endif
 
+  init_Widget();
+
+  init_statusBar();
+
+  init_menu();
+
+  init_recentFiles();
+
+  init_info_edit();
+
+  init_treeWidget();
+
+  init_UIStyle();
+
+  init_UI_Layout();
+
+  init_filesystem();
+
+  init_Tool_UI();
+
+  loadTabFiles();
+
+  loadFindString();
+
+  readINIProxy();
+
+  init_ScrollBox();
+
+  One = false;
+  blInit = false;
+  loading = false;
+}
+
+MainWindow::~MainWindow() {
+  delete ui;
+
+  mythread->quit();
+  mythread->wait();
+
+  mySearchThread->quit();
+  mySearchThread->wait();
+}
+
+void MainWindow::init_Widget() {
+  QDir dir;
+  if (dir.mkpath(QDir::homePath() + "/.config/QtiASL/")) {
+  }
+
   //获取背景色
   QPalette pal = ui->treeWidget->palette();
   QBrush brush = pal.window();
@@ -152,20 +196,6 @@ MainWindow::MainWindow(QWidget* parent)
 
   miniEdit = new MiniEditor(this);
 
-  init_statusBar();
-
-  init_menu();
-
-  init_recentFiles();
-
-  init_info_edit();
-
-  init_treeWidget();
-
-  init_UIStyle();
-
-  init_UI_Layout();
-
   timer = new QTimer(this);
   connect(timer, SIGNAL(timeout()), this, SLOT(timer_linkage()));
   tmeShowFindProgress = new QTimer(this);
@@ -177,36 +207,6 @@ MainWindow::MainWindow(QWidget* parent)
           SLOT(replyFinished(QNetworkReply*)));
   blAutoCheckUpdate = true;
   CheckUpdate();
-
-  init_filesystem();
-
-  init_Tool_UI();
-
-  loadTabFiles();
-
-  loadFindString();
-
-  readINIProxy();
-
-  ui->fBox->setMouseTracking(true);
-  ui->dockMiniEdit->layout()->addWidget(miniEdit);
-  ui->dockMiniEdit->layout()->addWidget(ui->fBox);
-
-  init_ScrollBox();
-
-  One = false;
-  blInit = false;
-  loading = false;
-}
-
-MainWindow::~MainWindow() {
-  delete ui;
-
-  mythread->quit();
-  mythread->wait();
-
-  mySearchThread->quit();
-  mySearchThread->wait();
 }
 
 void MainWindow::init_UI_Layout() {
@@ -252,6 +252,10 @@ void MainWindow::init_UI_Layout() {
   });
 
   ui->centralwidget->layout()->addWidget(ui->frameBook);
+
+  ui->fBox->setMouseTracking(true);
+  ui->dockMiniEdit->layout()->addWidget(miniEdit);
+  ui->dockMiniEdit->layout()->addWidget(ui->fBox);
 
   //设置鼠标追踪
   ui->centralwidget->setMouseTracking(true);
@@ -6965,6 +6969,20 @@ void MainWindow::init_UIStyle() {
     label_palette.setColor(QPalette::WindowText, QColor(226, 230, 237));
     lblLayer->setPalette(label_palette);
   }
+
+  // miniDlgEdit
+  QColor colorB, colorF;
+
+  if (red > 55) {
+    colorB.setRgb(245, 245, 245, 255);
+    colorF.setRgb(0, 0, 0, 255);
+  } else {
+    colorB.setRgb(50, 50, 50, 255);
+    colorF.setRgb(245, 245, 245, 255);
+  }
+
+  miniDlgEdit->setPaper(colorB);
+  miniDlgEdit->setColor(colorF);
 }
 
 void MainWindow::on_btnTabList_clicked() {}
