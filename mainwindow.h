@@ -134,7 +134,7 @@ class MainWindow : public QMainWindow {
   bool blAutoCheckUpdate = false;
   QStringList reLoadByModiList;
   dlgPreferences* dlgset;
-  void setFont();
+  void set_Font();
   void set_wrap();
   QLabel* lblEncoding;
   bool blInit = false;

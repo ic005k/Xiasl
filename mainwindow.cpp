@@ -94,6 +94,10 @@ MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
   ui->setupUi(this);
 
+  QDir dir;
+  if (dir.mkpath(QDir::homePath() + "/.config/QtiASL/")) {
+  }
+
   loading = true;
   installEventFilter(this);
   blInit = true;
@@ -4621,10 +4625,6 @@ void MainWindow::init_Edit() {
 }
 
 QFont MainWindow::get_Font() {
-  QDir dir;
-  if (dir.mkpath(QDir::homePath() + "/.config/QtiASL/")) {
-  }
-
   //读取字体
   QFont font;
   QString qfile = QDir::homePath() + "/.config/QtiASL/QtiASL.ini";
@@ -5268,7 +5268,7 @@ void MainWindow::on_btnReplaceFind() {
 }
 
 /*菜单：设置字体*/
-void MainWindow::setFont() {
+void MainWindow::set_Font() {
   bool ok;
   QFontDialog fd;
   QFont font = get_Font();
@@ -5287,7 +5287,6 @@ void MainWindow::setFont() {
 
     //存储字体信息
     QString qfile = QDir::homePath() + "/.config/QtiASL/QtiASL.ini";
-    QFile file(qfile);
 
     QSettings Reg(qfile, QSettings::IniFormat);
     Reg.setValue("FontName", font.family());
@@ -5295,8 +5294,6 @@ void MainWindow::setFont() {
     Reg.setValue("FontBold", font.bold());
     Reg.setValue("FontItalic", font.italic());
     Reg.setValue("FontUnderline", font.underline());
-
-    file.close();
   }
 }
 
