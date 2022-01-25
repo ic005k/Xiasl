@@ -7213,10 +7213,11 @@ void MainWindow::searchInFolders() {
               << "*.bat"
               << "*.txt"
               << "*.py"
+              << "*.md"
               << "*.plist";
 
   QStringList fmt =
-      QString("dsl;asl;c;cpp;h;hpp;mm;bat;txt;py;plist").split(';');
+      QString("dsl;asl;c;cpp;h;hpp;mm;md;bat;txt;py;plist").split(';');
 
   files.clear();
   if (!isIncludeSubDir) {
