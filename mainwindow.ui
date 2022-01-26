@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1106</width>
+    <width>1124</width>
     <height>675</height>
    </rect>
   </property>
@@ -805,6 +805,9 @@ QTreeView::branch:!has-children:!has-siblings:adjoins-item{border-image:url(:/ic
        </item>
        <item row="1" column="0">
         <widget class="QListWidget" name="listBook">
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
          <property name="frameShape">
           <enum>QFrame::NoFrame</enum>
          </property>
@@ -1130,8 +1133,8 @@ QListWidget::item:selected
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1106</width>
-     <height>24</height>
+     <width>1124</width>
+     <height>30</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">

@@ -28,6 +28,8 @@ class Methods : public QObject {
   static void getAllFolds(const QString &foldPath, QStringList &folds);
   static void getAllFiles(const QString &foldPath, QStringList &folds,
                           const QStringList &formats);
+
+  static void init_Margin(QsciScintilla *textEdit);
  signals:
 };
 

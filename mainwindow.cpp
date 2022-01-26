@@ -14,7 +14,7 @@
 #endif
 #include "methods.h"
 
-QString CurVerison = "1.1.47";
+QString CurVerison = "1.1.48";
 QString fileName, curFile, dragFileName, findStr, findPath, search_string,
     curFindFile;
 
@@ -990,7 +990,8 @@ void MainWindow::btnCompile_clicked() {
   QFileInfo appInfo(qApp->applicationDirPath());
   co = new QProcess;
 
-  if (!curFile.isEmpty()) Save();
+  // if (!curFile.isEmpty()) Save();
+  Save();
 
   lblMsg->setText(tr("Compiling..."));
 
@@ -1231,8 +1232,8 @@ void MainWindow::readResult(int exitCode) {
   QTextBlock block = ui->editErrors->document()->findBlockByNumber(0);
   ui->editErrors->setTextCursor(QTextCursor(block));
 
-  //清除所有标记
-  textEdit->SendScintilla(QsciScintilla::SCI_MARKERDELETEALL);
+  //清除所有标记,5号标记为编译错误标记
+  textEdit->SendScintilla(QsciScintilla::SCI_MARKERDELETEALL, 5);
 
   float a = qTime.elapsed() / 1000.00;
   lblMsg->setText(tr("Compiled") + "(" + QTime::currentTime().toString() +
@@ -1857,36 +1858,24 @@ void MainWindow::gotoLine(QTextEdit* edit) {
 }
 
 void MainWindow::setErrorMarkers(int linenr) {
-  // SCI_MARKERGET 参数用来设置标记，默认为圆形标记
-  // textEdit->SendScintilla(QsciScintilla::SCI_MARKERGET, linenr - 1);
-
   // 目前采用箭头
   // 具体定义在此：https://www.scintilla.org/ScintillaDoc.html#SCI_MARKERDEFINE
-  textEdit->SendScintilla(QsciScintilla::SCI_MARKERDEFINE, 0,
-                          QsciScintilla::SC_MARK_SHORTARROW);
-
-  // SCI_MARKERSETFORE，SCI_MARKERSETBACK设置标记前景和背景标记
-  textEdit->SendScintilla(QsciScintilla::SCI_MARKERSETFORE, 0, QColor(Qt::red));
-  textEdit->SendScintilla(QsciScintilla::SCI_MARKERSETBACK, 0, QColor(Qt::red));
-  textEdit->SendScintilla(QsciScintilla::SCI_MARKERADD, linenr - 1);
 
   // 下划线
   // textEdit->SendScintilla(QsciScintilla::SCI_STYLESETUNDERLINE, linenr,
   // true);
   // textEdit->SendScintilla(QsciScintilla::SCI_MARKERDEFINE, 0,
   // QsciScintilla::SC_MARK_UNDERLINE);
+
+  // 5号标记在前面已定义
+  textEdit->SendScintilla(QsciScintilla::SCI_MARKERADD, linenr - 1, 5);
 }
 
 void MainWindow::setBookmarks(int linenr) {
-  textEdit->SendScintilla(QsciScintilla::SCI_MARKERDEFINE, 0,
-                          QsciScintilla::SC_MARK_BOOKMARK);
+  // 注意前后对应，如果不是采用命令发送的消息
+  // textEdit->markerAdd(linenr, 4);
 
-  // SCI_MARKERSETFORE，SCI_MARKERSETBACK设置标记前景和背景标记
-  textEdit->SendScintilla(QsciScintilla::SCI_MARKERSETFORE, 0,
-                          QColor(Qt::blue));
-  textEdit->SendScintilla(QsciScintilla::SCI_MARKERSETBACK, 0,
-                          QColor(Qt::blue));
-  textEdit->SendScintilla(QsciScintilla::SCI_MARKERADD, linenr);
+  textEdit->SendScintilla(QsciScintilla::SCI_MARKERADD, linenr, 4);
 }
 
 void MainWindow::getCppErrorLine(int i) {
@@ -4366,7 +4355,15 @@ void MainWindow::init_menu() {
   ui->actionCompiling->setEnabled(false);
 }
 
-void MainWindow::setLexer(QsciLexer* textLexer, QsciScintilla* textEdit) {
+int MainWindow::get_Red() {
+  //获取背景色
+  QPalette pal = ui->treeWidget->palette();
+  QBrush brush = pal.window();
+  int red = brush.color().red();
+  return red;
+}
+
+void MainWindow::set_MyStyle(QsciLexer* textLexer, QsciScintilla* textEdit) {
   //获取背景色
   QPalette pal = ui->treeWidget->palette();
   QBrush brush = pal.window();
@@ -4390,35 +4387,9 @@ void MainWindow::setLexer(QsciLexer* textLexer, QsciScintilla* textEdit) {
   m_font.setPointSize(12);
 #endif
 
-  int a;
-  // 行号区域
-  a = 0;
-  textEdit->setMarginType(a, QsciScintilla::NumberMargin);
-  textEdit->setMarginLineNumbers(a, true);
-
-  // 编译错误标记
-  a = 1;
-  textEdit->setMarginType(a, QsciScintilla::SymbolMargin);
-  textEdit->setMarginLineNumbers(a, false);
-  textEdit->setMarginWidth(a, 15);
-  textEdit->setMarginSensitivity(a, true);
-
-  // 跳转书签
-  a = 2;
-  textEdit->SendScintilla(QsciScintilla::SCI_SETMARGINTYPEN, a,
-                          QsciScintilla::SC_MARGIN_SYMBOL);
-  textEdit->SendScintilla(QsciScintilla::SCI_SETMARGINWIDTHN, a, 15);
-  textEdit->SendScintilla(QsciScintilla::SCI_SETMARGINMASKN, a, 0x01);
-
-  //自动折叠区域
-  a = 3;
-  textEdit->setMarginType(a, QsciScintilla::SymbolMargin);
-  textEdit->setMarginLineNumbers(a, false);
-  textEdit->setMarginWidth(a, 2);
-  textEdit->setMarginSensitivity(a, true);
-  textEdit->setFolding(QsciScintilla::BoxedTreeFoldStyle);  //折叠样式
-
   textEdit->setMarginsFont(m_font);
+
+  Methods::init_Margin(textEdit);
 
   Methods::setColorMatch(red, textLexer);
 
@@ -4613,15 +4584,14 @@ void MainWindow::init_Edit() {
 
   textEdit->setFont(font);
   textEdit->setMarginsFont(font);
-
-  textEdit->setLexer(myTextLexer);
-
   myTextLexer->setFont(font);
-  setLexer(myTextLexer, textEdit);
+  textEdit->setLexer(myTextLexer);
 
   //接受文件拖放打开
   textEdit->setAcceptDrops(false);
   this->setAcceptDrops(true);
+
+  set_MyStyle(myTextLexer, textEdit);
 }
 
 QFont MainWindow::get_Font() {
@@ -5278,7 +5248,7 @@ void MainWindow::set_Font() {
     for (int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i++) {
       myTextLexer->setFont(font);
       getCurrentEditor(i)->setLexer(myTextLexer);
-      setLexer(myTextLexer, getCurrentEditor(i));
+      set_MyStyle(myTextLexer, getCurrentEditor(i));
     }
 
     ui->treeView->setFont(font);
@@ -5326,7 +5296,7 @@ void MainWindow::paintEvent(QPaintEvent* event) {
       QString file = getCurrentFileName(i);
       myTextLexer = init_Lexer(file);
       edit->setLexer(myTextLexer);
-      setLexer(myTextLexer, edit);
+      set_MyStyle(myTextLexer, edit);
 
       miniLexer = init_Lexer(file);
       init_MiniText();
@@ -7394,7 +7364,6 @@ void MainWindow::on_cboxFindScope_currentTextChanged(const QString& arg1) {
 void MainWindow::on_actionSet_Bookmark_triggered() {
   int row, col;
   textEdit->getCursorPosition(&row, &col);
-  // setBookmarks(row);
 
   QString text = textEdit->text(row).trimmed();
   QString addStr = curFile + "|" + QString::number(row + 1) + "|" + text;
@@ -7519,7 +7488,8 @@ void MainWindow::on_btnDelBook_clicked() {
   int row = ui->listBook->currentRow();
   int line = ui->listBook->currentItem()->text().toInt();
   for (int i = 0; i < 20; i++) {
-    textEdit->SendScintilla(QsciScintilla::SCI_MARKERDELETE, line - 1);
+    textEdit->SendScintilla(QsciScintilla::SCI_MARKERDELETE, line - 1,
+                            4);  // 4号标签为书签
   }
 
   QString str = curFile + "|" + QString::number(line) + "|";

@@ -586,6 +586,8 @@ class MainWindow : public QMainWindow {
 
   QFont get_Font();
 
+  int get_Red();
+
  protected:
   void closeEvent(QCloseEvent* event) override;
   void dragEnterEvent(QDragEnterEvent* e) override;
@@ -932,7 +934,7 @@ class MainWindow : public QMainWindow {
 
   void regACPI_win();
 
-  void setLexer(QsciLexer* textLexer, QsciScintilla* textEdit);
+  void set_MyStyle(QsciLexer* textLexer, QsciScintilla* textEdit);
 
   void update_member(bool show, QString str_void,
                      QList<QTreeWidgetItem*> tw_list);

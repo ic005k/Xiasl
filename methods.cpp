@@ -11,6 +11,68 @@ extern QString curFindFile;
 
 Methods::Methods(QObject* parent) : QObject{parent} {}
 
+void Methods::init_Margin(QsciScintilla* textEdit) {
+  int a;
+
+  // 1.行号区域
+  a = 0;
+  // textEdit->SendScintilla(QsciScintilla::SCI_SETMARGINTYPEN, a,
+  //                        QsciScintilla::SC_MARGIN_NUMBER);
+  // textEdit->SendScintilla(QsciScintilla::SCI_SETMARGINWIDTHN, a, 50);
+  // textEdit->SendScintilla(QsciScintilla::SCI_SETMARGINMASKN, a, 0x01);
+
+  textEdit->setMarginType(a, QsciScintilla::NumberMargin);
+  textEdit->setMarginLineNumbers(a, true);
+  textEdit->setMarginSensitivity(a, true);
+
+  // 2.跳转书签
+  a = 1;
+  textEdit->setMarginType(a, QsciScintilla::SymbolMargin);
+  textEdit->setMarginLineNumbers(a, false);
+  textEdit->setMarginWidth(a, 12);
+  textEdit->setMarginSensitivity(a, true);
+
+  // 以下两种方法二选一
+  // textEdit->setMarginMarkerMask(a, 1 << 4);
+  // textEdit->markerDefine(QsciScintilla::Bookmark, 4);
+  // textEdit->setMarkerBackgroundColor(QColor("#eaf593"), 5);
+
+  textEdit->SendScintilla(QsciScintilla::SCI_SETMARGINMASKN, a, 1 << 4);
+  textEdit->SendScintilla(QsciScintilla::SCI_MARKERDEFINE, 4,
+                          QsciScintilla::SC_MARK_BOOKMARK);
+  textEdit->SendScintilla(QsciScintilla::SCI_MARKERSETFORE, 4,
+                          QColor(Qt::blue));
+  textEdit->SendScintilla(QsciScintilla::SCI_MARKERSETBACK, 4,
+                          QColor(Qt::blue));
+
+  // 3.自动折叠区域
+  a = 2;
+  textEdit->setMarginType(a, QsciScintilla::SymbolMargin);
+  textEdit->setMarginLineNumbers(a, false);
+  textEdit->setMarginWidth(a, 2);
+  textEdit->setMarginSensitivity(a, true);
+  textEdit->setFolding(QsciScintilla::BoxedTreeFoldStyle);  //折叠样式
+
+  // 4.编译错误标记区域
+  a = 3;
+  textEdit->setMarginType(a, QsciScintilla::SymbolMargin);
+  textEdit->setMarginLineNumbers(a, false);
+  textEdit->setMarginWidth(a, 13);
+  textEdit->setMarginSensitivity(a, true);
+
+  // 以下两种方法二选一
+  // textEdit->setMarginMarkerMask(a, 1 << 5);
+  // textEdit->markerDefine(QsciScintilla::RightArrow, 5);
+  // textEdit->setMarkerForegroundColor(Qt::red, 5);
+  // textEdit->setMarkerBackgroundColor(Qt::red, 5);
+
+  textEdit->SendScintilla(QsciScintilla::SCI_SETMARGINMASKN, a, 1 << 5);
+  textEdit->SendScintilla(QsciScintilla::SCI_MARKERDEFINE, 5,
+                          QsciScintilla::SC_MARK_SHORTARROW);
+  textEdit->SendScintilla(QsciScintilla::SCI_MARKERSETFORE, 5, QColor(Qt::red));
+  textEdit->SendScintilla(QsciScintilla::SCI_MARKERSETBACK, 5, QColor(Qt::red));
+}
+
 void Methods::getAllFolds(const QString& foldPath, QStringList& folds) {
   QDirIterator it(foldPath, QDir::Dirs | QDir::NoDotAndDotDot,
                   QDirIterator::Subdirectories);
