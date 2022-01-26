@@ -57,7 +57,7 @@ void Methods::init_Margin(QsciScintilla* textEdit) {
   a = 3;
   textEdit->setMarginType(a, QsciScintilla::SymbolMargin);
   textEdit->setMarginLineNumbers(a, false);
-  textEdit->setMarginWidth(a, 13);
+  textEdit->setMarginWidth(a, 12);
   textEdit->setMarginSensitivity(a, true);
 
   // 以下两种方法二选一
