@@ -137,7 +137,7 @@ class MainWindow : public QMainWindow {
   void set_Font();
   void set_wrap();
   QLabel* lblEncoding;
-  bool blInit = false;
+
   int getDockWidth();
 
   int getMiniDockX();
@@ -641,9 +641,9 @@ class MainWindow : public QMainWindow {
 
   void kextstat();
 
-  void on_btnRefreshTree();
+  void on_RefreshTree();
 
-  void refresh_tree();
+  void on_StartRefreshThread();
 
   void timer_linkage();
 
@@ -831,6 +831,8 @@ class MainWindow : public QMainWindow {
 
   void on_listBook_itemSelectionChanged();
 
+  void on_btnBookmark_clicked();
+
  private:
   QMenu* menuTabList;
   bool isDrag;
@@ -850,8 +852,6 @@ class MainWindow : public QMainWindow {
   int parse_UpdateJSON(QString str);
 
   void loadTabFiles();
-
-  bool One = false;
 
   QString shownName;
 
@@ -967,7 +967,7 @@ class MainWindow : public QMainWindow {
   void setEditFindMarker();
   void init_UI_Layout();
   void init_Widget();
-  };
+};
 
 class MiniEditor : public QsciScintilla {
   Q_OBJECT

@@ -722,6 +722,13 @@ QTreeView::branch:!has-children:!has-siblings:adjoins-item{border-image:url(:/ic
             </property>
            </widget>
           </item>
+          <item row="0" column="0">
+           <widget class="QToolButton" name="btnTabList">
+            <property name="text">
+             <string>L</string>
+            </property>
+           </widget>
+          </item>
           <item row="0" column="2">
            <widget class="QToolButton" name="btnNew">
             <property name="toolTip">
@@ -729,6 +736,16 @@ QTreeView::branch:!has-children:!has-siblings:adjoins-item{border-image:url(:/ic
             </property>
             <property name="text">
              <string>N</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="4">
+           <widget class="QToolButton" name="btnMiniMap">
+            <property name="toolTip">
+             <string>Mini Map</string>
+            </property>
+            <property name="text">
+             <string>Map</string>
             </property>
            </widget>
           </item>
@@ -754,20 +771,13 @@ QTreeView::branch:!has-children:!has-siblings:adjoins-item{border-image:url(:/ic
             </property>
            </widget>
           </item>
-          <item row="0" column="0">
-           <widget class="QToolButton" name="btnTabList">
-            <property name="text">
-             <string>L</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="4">
-           <widget class="QToolButton" name="btnMiniMap">
+          <item row="0" column="5">
+           <widget class="QToolButton" name="btnBookmark">
             <property name="toolTip">
-             <string>Mini Map</string>
+             <string>Bookmarks</string>
             </property>
             <property name="text">
-             <string>Map</string>
+             <string>B</string>
             </property>
            </widget>
           </item>
@@ -1121,7 +1131,7 @@ QListWidget::item:selected
      <x>0</x>
      <y>0</y>
      <width>1106</width>
-     <height>30</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -1182,7 +1192,7 @@ QListWidget::item:selected
     </property>
     <widget class="QMenu" name="menuProxy_selection_for_download">
      <property name="title">
-      <string>Select the mirror server for upgrade download</string>
+      <string>Select Mirror Server</string>
      </property>
      <addaction name="actProxy1"/>
      <addaction name="actProxy2"/>
@@ -1301,7 +1311,7 @@ QListWidget::item:selected
   </action>
   <action name="actionGenerate">
    <property name="text">
-    <string>Generate ACPI tables</string>
+    <string>Generate ACPI Tables</string>
    </property>
   </action>
   <action name="actionCompiling">
@@ -1340,22 +1350,22 @@ QListWidget::item:selected
   </action>
   <action name="actionGo_to_previous_error">
    <property name="text">
-    <string>Go to previous error</string>
+    <string>Previous Error</string>
    </property>
   </action>
   <action name="actionGo_to_the_next_error">
    <property name="text">
-    <string>Go to the next error</string>
+    <string>Next Error</string>
    </property>
   </action>
   <action name="actionRefreshTree">
    <property name="text">
-    <string>RefreshTree</string>
+    <string>Refresh Tree</string>
    </property>
   </action>
   <action name="actionFindPrevious">
    <property name="text">
-    <string>FindPrevious</string>
+    <string>Find Previous</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+8</string>
@@ -1363,7 +1373,7 @@ QListWidget::item:selected
   </action>
   <action name="actionFindNext">
    <property name="text">
-    <string>FindNext</string>
+    <string>Find Next</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+9</string>
@@ -1384,7 +1394,7 @@ QListWidget::item:selected
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Information window</string>
+    <string>Information Window</string>
    </property>
   </action>
   <action name="actionMembers_win">
@@ -1395,7 +1405,7 @@ QListWidget::item:selected
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Members list window</string>
+    <string>Members List Window</string>
    </property>
   </action>
   <action name="actionDSDecompile">
@@ -1454,7 +1464,7 @@ QListWidget::item:selected
   </action>
   <action name="actionOpen_directory">
    <property name="text">
-    <string>Open the directory of the current file</string>
+    <string>Open Directory of  Current File</string>
    </property>
   </action>
   <action name="actionUTF_8">
@@ -1483,7 +1493,7 @@ QListWidget::item:selected
   </action>
   <action name="actionClose_tab">
    <property name="text">
-    <string>Close tab</string>
+    <string>Close Tab</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+W</string>
@@ -1554,7 +1564,7 @@ QListWidget::item:selected
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Automatic line feeds</string>
+    <string>Automatic Line Feeds</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Return</string>

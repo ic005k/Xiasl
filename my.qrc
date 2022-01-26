@@ -43,5 +43,6 @@
         <file>icon/c0.png</file>
         <file>icon/list.png</file>
         <file>icon/map.png</file>
+        <file>icon/book.png</file>
     </qresource>
 </RCC>

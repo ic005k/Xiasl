@@ -95,14 +95,8 @@ MainWindow::MainWindow(QWidget* parent)
   ui->setupUi(this);
 
   loading = true;
-  installEventFilter(this);
-  blInit = true;
-  loadLocal();
-  listMd5.clear();
 
-  ver = "Xiasl V" + CurVerison + "        ";
-  setWindowTitle(ver);
-  ver = "";
+  loadLocal();
 
 #ifdef Q_OS_WIN32
   regACPI_win();
@@ -155,8 +149,6 @@ MainWindow::MainWindow(QWidget* parent)
 
   init_ScrollBox();
 
-  One = false;
-  blInit = false;
   loading = false;
 }
 
@@ -174,6 +166,13 @@ void MainWindow::init_Widget() {
   QDir dir;
   if (dir.mkpath(QDir::homePath() + "/.config/QtiASL/")) {
   }
+
+  installEventFilter(this);
+
+  listMd5.clear();
+  ver = "Xiasl V" + CurVerison + "        ";
+  setWindowTitle(ver);
+  ver = "";
 
   //获取背景色
   QPalette pal = ui->treeWidget->palette();
@@ -559,7 +558,7 @@ void MainWindow::loadFile(const QString& fileName, int row, int col) {
 
   if (ReLoad)  //文本重装之后刷新树并回到之前的位置
   {
-    refresh_tree();
+    on_StartRefreshThread();
     textEdit->setCursorPosition(RowNum, ColNum);
   }
 
@@ -610,7 +609,6 @@ void MainWindow::loadFile(const QString& fileName, int row, int col) {
   QIcon icon(":/icon/md0.svg");
   ui->tabWidget_textEdit->tabBar()->setTabIcon(
       ui->tabWidget_textEdit->currentIndex(), icon);
-  One = false;
 
   updateMd5(fileName);
   addFilesWatch();
@@ -785,7 +783,6 @@ bool MainWindow::saveFile(const QString& fileName) {
   QIcon icon(":/icon/md0.svg");
   ui->tabWidget_textEdit->tabBar()->setTabIcon(
       ui->tabWidget_textEdit->currentIndex(), icon);
-  One = false;
 
   //刷新文件路径
   QWidget* pWidget =
@@ -1318,7 +1315,7 @@ void MainWindow::miniEdit_cursorPositionChanged() {}
 /*换行之后，1s后再刷新成员树*/
 void MainWindow::timer_linkage() {
   if (!loading) {
-    on_btnRefreshTree();
+    on_RefreshTree();
 
     timer->stop();
   }
@@ -1478,9 +1475,7 @@ void MainWindow::on_StartSearch(QsciScintilla* textEdit, QString file) {
   if (loading) return;
 
   ui->tabWidget_misc->setCurrentIndex(2);
-  if (!blInit) {
-    ui->editFind->setFocus();
-  }
+  ui->editFind->setFocus();
 
   clearSearchHighlight(textEdit);
 
@@ -2270,7 +2265,7 @@ void MainWindow::update_ui_tw() {
   }
 }
 
-void MainWindow::refresh_tree() {
+void MainWindow::on_StartRefreshThread() {
   if (!thread_end) {
     break_run = true;
 
@@ -2293,9 +2288,9 @@ void MainWindow::refresh_tree() {
   mythread->start();
 }
 
-void MainWindow::on_btnRefreshTree() {
+void MainWindow::on_RefreshTree() {
   init_MiniText();
-  refresh_tree();
+  on_StartRefreshThread();
 }
 
 void MainWindow::init_MiniText() {
@@ -4147,6 +4142,7 @@ void MainWindow::init_Tool_UI() {
   ui->tabWidget_textEdit->setIconSize(QSize(7, 7));
 
   // 书签
+  ui->btnBookmark->setIcon(QIcon(":/icon/book.png"));
   ui->lblBookmarks->setAlignment(Qt::AlignCenter);
   ui->lblNotes->setAlignment(Qt::AlignCenter);
   ui->frameBook->layout()->setMargin(0);
@@ -4284,7 +4280,7 @@ void MainWindow::init_menu() {
 
   ui->actionRefreshTree->setShortcut(tr("ctrl+r"));
   connect(ui->actionRefreshTree, &QAction::triggered, this,
-          &MainWindow::on_btnRefreshTree);
+          &MainWindow::on_RefreshTree);
   if (mac) ui->actionRefreshTree->setIconVisibleInMenu(false);
 
   if (mac) ui->actionFindPrevious->setIconVisibleInMenu(false);
@@ -5213,7 +5209,6 @@ void MainWindow::newFile(QString file) {
   QIcon icon(":/icon/md0.svg");
   ui->tabWidget_textEdit->tabBar()->setTabIcon(
       ui->tabWidget_textEdit->tabBar()->count() - 1, icon);
-  One = false;
 
   curFile = "";
   shownName = "";
@@ -5547,6 +5542,18 @@ QString MainWindow::getCurrentFileName(int index) {
 }
 
 void MainWindow::on_tabWidget_textEdit_tabBarClicked(int index) {
+  if (!thread_end) {
+    break_run = true;
+
+    mythread->quit();
+    mythread->wait();
+
+    /*等待线程结束,以使最后一次刷新可以完成*/
+    while (!thread_end) {
+      QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+    }
+  }
+
   miniDlg->close();
 
   if (index == -1)  //点击标签页之外的区域
@@ -5575,7 +5582,7 @@ void MainWindow::on_tabWidget_textEdit_tabBarClicked(int index) {
   }
 
   ui->treeWidget->clear();
-  on_btnRefreshTree();
+  on_RefreshTree();
 
   QFileInfo f(curFile);
   if (f.suffix().toLower() == "dsl" || f.suffix().toLower() == "asl" ||
@@ -5599,8 +5606,6 @@ void MainWindow::on_tabWidget_textEdit_tabBarClicked(int index) {
   textEdit->getCursorPosition(&rowDrag, &colDrag);
   vs = textEdit->verticalScrollBar()->sliderPosition();
   hs = textEdit->horizontalScrollBar()->sliderPosition();
-
-  One = false;
 }
 
 void MainWindow::init_fsmSyncOpenedFile(QString OpenedFile) {
@@ -7570,4 +7575,8 @@ void MainWindow::refreshItemTip(int currentRow) {
   }
 
   ui->listBook->item(currentRow)->setToolTip(strTip + "\n\n" + strNotes);
+}
+
+void MainWindow::on_btnBookmark_clicked() {
+  on_actionBookmarks_List_2_triggered();
 }
