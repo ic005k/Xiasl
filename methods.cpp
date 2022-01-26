@@ -25,7 +25,7 @@ void Methods::init_Margin(QsciScintilla* textEdit) {
   textEdit->setMarginLineNumbers(a, true);
   textEdit->setMarginSensitivity(a, true);
 
-  // 2.跳转书签
+  // 2.书签
   a = 1;
   textEdit->setMarginType(a, QsciScintilla::SymbolMargin);
   textEdit->setMarginLineNumbers(a, false);
