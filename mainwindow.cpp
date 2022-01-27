@@ -14,7 +14,7 @@
 #endif
 #include "methods.h"
 
-QString CurVerison = "1.1.49";
+QString CurVerison = "1.1.50";
 QString fileName, curFile, dragFileName, findStr, findPath, search_string,
     curFindFile;
 
@@ -5567,7 +5567,6 @@ void MainWindow::on_tabWidget_textEdit_tabBarClicked(int index) {
   //初始化fsm
   init_fsmSyncOpenedFile(curFile);
 
-  ui->textEditNotes->clear();
   getBookmarks();
 
   textEdit->setFocus();
@@ -7382,7 +7381,11 @@ void MainWindow::on_actionSet_Bookmark_triggered() {
 }
 
 void MainWindow::getBookmarks() {
-  if (curFile == "" || loading || listBookmarks.count() == 0) return;
+  if (curFile == "" || loading || listBookmarks.count() == 0) {
+    ui->listBook->clear();
+    ui->textEditNotes->clear();
+    return;
+  }
 
   QString qfile = QDir::homePath() + "/.config/QtiASL/bookNotes.ini";
   QSettings Reg(qfile, QSettings::IniFormat);
@@ -7451,16 +7454,16 @@ void MainWindow::init_Bookmarks() {
 
   // SCI_MARKERNEXT(line lineStart, int markerMask) → line
   for (int i = 1; i <= textEdit->lines(); i++) {
-      line = textEdit->SendScintilla(QsciScintilla::SCI_MARKERNEXT, i, 1 << 4);
-      if (line != -1) {
-          i = line;
+    line = textEdit->SendScintilla(QsciScintilla::SCI_MARKERNEXT, i, 1 << 4);
+    if (line != -1) {
+      i = line;
 
-          QString addStr = curFile + "|" + QString::number(line + 1) + "|"
-                           + textEdit->text(line).trimmed();
+      QString addStr = curFile + "|" + QString::number(line + 1) + "|" +
+                       textEdit->text(line).trimmed();
 
-          listBookmarks.append(addStr);
-      } else
-          break;
+      listBookmarks.append(addStr);
+    } else
+      break;
   }
 
 #if (QT_VERSION <= QT_VERSION_CHECK(5, 9, 9))
