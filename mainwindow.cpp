@@ -14,7 +14,7 @@
 #endif
 #include "methods.h"
 
-QString CurVerison = "1.1.50";
+QString CurVerison = "1.1.51";
 QString fileName, curFile, dragFileName, findStr, findPath, search_string,
     curFindFile;
 
@@ -7414,17 +7414,27 @@ void MainWindow::getBookmarks() {
       }
     }
   }
+
+  int row, col;
+  textEdit->getCursorPosition(&row, &col);
+  for (int i = 0; i < ui->listBook->count(); i++) {
+    if (ui->listBook->item(i)->text() == QString::number(row + 1)) {
+      ui->listBook->setCurrentRow(i);
+      on_listBook_itemClicked(ui->listBook->currentItem());
+      break;
+    }
+  }
 }
 
-void MainWindow::on_actionBookmarks_List_2_triggered() {
+void MainWindow::on_actionViewBookmarks_triggered() {
   getBookmarks();
 
   if (ui->frameBook->isHidden()) {
     ui->frameBook->setHidden(false);
-    ui->actionBookmarks_List_2->setChecked(true);
+    ui->actionViewBookmarks->setChecked(true);
   } else {
     ui->frameBook->setHidden(true);
-    ui->actionBookmarks_List_2->setChecked(false);
+    ui->actionViewBookmarks->setChecked(false);
   }
 }
 
@@ -7552,5 +7562,5 @@ void MainWindow::refreshItemTip(int currentRow) {
 }
 
 void MainWindow::on_btnBookmark_clicked() {
-  on_actionBookmarks_List_2_triggered();
+  on_actionViewBookmarks_triggered();
 }

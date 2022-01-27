@@ -821,7 +821,7 @@ class MainWindow : public QMainWindow {
 
   void on_actionSet_Bookmark_triggered();
 
-  void on_actionBookmarks_List_2_triggered();
+  void on_actionViewBookmarks_triggered();
 
   void on_listBook_itemClicked(QListWidgetItem* item);
 

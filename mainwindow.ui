@@ -1134,7 +1134,7 @@ QListWidget::item:selected
      <x>0</x>
      <y>0</y>
      <width>1124</width>
-     <height>30</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -1185,7 +1185,7 @@ QListWidget::item:selected
     <addaction name="actionMembers_win"/>
     <addaction name="actionInfo_win"/>
     <addaction name="actionMinimap"/>
-    <addaction name="actionBookmarks_List_2"/>
+    <addaction name="actionViewBookmarks"/>
     <addaction name="separator"/>
     <addaction name="actionAutomatic_Line_Feeds"/>
    </widget>
@@ -1586,7 +1586,7 @@ QListWidget::item:selected
     <string>Bookmarks List</string>
    </property>
   </action>
-  <action name="actionBookmarks_List_2">
+  <action name="actionViewBookmarks">
    <property name="checkable">
     <bool>true</bool>
    </property>
