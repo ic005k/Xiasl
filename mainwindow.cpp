@@ -14,7 +14,7 @@
 #endif
 #include "methods.h"
 
-QString CurVerison = "1.1.51";
+QString CurVerison = "1.1.52";
 QString fileName, curFile, dragFileName, findStr, findPath, search_string,
     curFindFile;
 
@@ -7417,6 +7417,7 @@ void MainWindow::getBookmarks() {
 
   int row, col;
   textEdit->getCursorPosition(&row, &col);
+  ui->textEditNotes->clear();
   for (int i = 0; i < ui->listBook->count(); i++) {
     if (ui->listBook->item(i)->text() == QString::number(row + 1)) {
       ui->listBook->setCurrentRow(i);
