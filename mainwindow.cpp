@@ -14,7 +14,7 @@
 #endif
 #include "methods.h"
 
-QString CurVerison = "1.1.52";
+QString CurVerison = "1.1.53";
 QString fileName, curFile, dragFileName, findStr, findPath, search_string,
     curFindFile;
 
@@ -4158,6 +4158,7 @@ void MainWindow::init_Tool_UI() {
           });
 
   // 初始化搜索
+  ui->chkSubDir->setHidden(true);
   isIncludeSubDir = true;
   textEditSerach = new QsciScintilla;
   ui->frameInFolder->setHidden(true);
@@ -7306,10 +7307,13 @@ void MainWindow::on_chkSubDir_clicked(bool checked) {
 }
 
 void MainWindow::on_cboxFindScope_currentIndexChanged(int index) {
-  if (index == 2)
+  if (index == 2) {
     ui->frameInFolder->setHidden(false);
-  else
+    ui->chkSubDir->setHidden(false);
+  } else {
     ui->frameInFolder->setHidden(true);
+    ui->chkSubDir->setHidden(true);
+  }
 }
 
 void MainWindow::on_btnStopFind_clicked() {
