@@ -54,7 +54,7 @@ jobs:
           chmod +x bin/release/${targetName}.app/Contents/MacOS/patchmatic
           chmod +x bin/release/${targetName}.app/Contents/MacOS/patchmatic-legacy
           mkdir bin/release/${targetName}.app/Contents/Frameworks
-          cp ExtBin/5.9.9/libqscintilla2_qt5.15.0.0.dylib bin/release/${targetName}.app/Contents/Frameworks/libqscintilla2_qt5.15.dylib
+          cp ExtBin/5.9.9/libqscintilla2_qt5.15.1.1.dylib bin/release/${targetName}.app/Contents/Frameworks/libqscintilla2_qt5.15.dylib
           rm -rf bin/release/${targetName}.app/Contents/PlugIns/bearer          
           macdeployqt bin/release/${targetName}.app -dmg
               
