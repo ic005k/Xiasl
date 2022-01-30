@@ -7481,7 +7481,7 @@ void MainWindow::init_Bookmarks() {
       break;
   }
 
-#if (QT_VERSION <= QT_VERSION_CHECK(5, 9, 9))
+#if (QT_VERSION <= QT_VERSION_CHECK(5, 15, 0))
   listBookmarks = listBookmarks.toSet().toList();
 #else
   listBookmarks = QSet<QString>(listBookmarks.begin(), listBookmarks.end())
