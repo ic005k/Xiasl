@@ -14,7 +14,7 @@
 #endif
 #include "methods.h"
 
-QString CurVerison = "1.1.55";
+QString CurVerison = "1.1.56";
 QString fileName, curFile, dragFileName, findStr, findPath, search_string,
     curFindFile;
 
