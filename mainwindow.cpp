@@ -6043,6 +6043,8 @@ void MiniEditor::wheelEvent(QWheelEvent* event) {
 }
 
 void MiniEditor::showZoomWin(int x, int y) {
+    mw_one->repaint();
+
   int totalLines = this->lines();
 
   if (x < 15) {
