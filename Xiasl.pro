@@ -12,7 +12,7 @@ CONFIG += c++11
 
 macx{
 LIBS+= \
-    libqscintilla2_qt5.15.1.1.dylib
+    libqscintilla2_qt5.15.0.0.dylib
 }
 
 win32{
