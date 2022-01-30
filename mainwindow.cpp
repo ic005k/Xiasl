@@ -14,7 +14,7 @@
 #endif
 #include "methods.h"
 
-QString CurVerison = "1.1.56";
+QString CurVerison = "1.1.57";
 QString fileName, curFile, dragFileName, findStr, findPath, search_string,
     curFindFile;
 
@@ -7570,4 +7570,6 @@ void MainWindow::refreshItemTip(int currentRow) {
 
 void MainWindow::on_btnBookmark_clicked() {
   on_actionViewBookmarks_triggered();
+  update();
+  repaint();
 }
