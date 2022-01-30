@@ -6010,6 +6010,8 @@ void MiniEditor::mouseMoveEvent(QMouseEvent* event) {
   mw_one->repaint();
   if (!textEditScroll) {
     showZoomWin(event->x(), event->y());
+    mw_one->update();
+    mw_one->repaint();
   }
 }
 
@@ -6043,8 +6045,6 @@ void MiniEditor::wheelEvent(QWheelEvent* event) {
 }
 
 void MiniEditor::showZoomWin(int x, int y) {
-    mw_one->repaint();
-
   int totalLines = this->lines();
 
   if (x < 15) {
