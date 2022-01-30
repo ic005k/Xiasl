@@ -114,7 +114,7 @@ MainWindow::MainWindow(QWidget* parent)
   ui->actionGenerate->setEnabled(true);
   mac = true;
 
-#if (QT_VERSION <= QT_VERSION_CHECK(5, 9, 9))
+#if (QT_VERSION <= QT_VERSION_CHECK(5, 15, 0))
   osx1012 = true;
   mac = false;
 #endif
