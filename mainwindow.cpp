@@ -14,7 +14,7 @@
 #endif
 #include "methods.h"
 
-QString CurVerison = "1.1.57";
+QString CurVerison = "1.1.58";
 QString fileName, curFile, dragFileName, findStr, findPath, search_string,
     curFindFile;
 
@@ -6010,8 +6010,10 @@ void MiniEditor::mouseMoveEvent(QMouseEvent* event) {
   mw_one->repaint();
   if (!textEditScroll) {
     showZoomWin(event->x(), event->y());
-    mw_one->update();
-    mw_one->repaint();
+    if (mw_one->mac || mw_one->osx1012) {
+      mw_one->update();
+      mw_one->repaint();
+    }
   }
 }
 
