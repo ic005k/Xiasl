@@ -14,7 +14,7 @@
 #endif
 #include "methods.h"
 
-QString CurVerison = "1.1.61";
+QString CurVerison = "1.1.62";
 QString fileName, curFile, dragFileName, findStr, findPath, search_string,
     curFindFile;
 
@@ -209,8 +209,8 @@ void MainWindow::init_Widget() {
 
 void MainWindow::init_UI_Layout() {
   // 分割窗口
-  QString qfile = strIniFile;
-  QSettings Reg(qfile, QSettings::IniFormat);
+
+  QSettings Reg(strIniFile, QSettings::IniFormat);
   ui->centralwidget->layout()->setContentsMargins(2, 2, 2, 2);
   ui->centralwidget->layout()->setSpacing(1);
   QSplitter* splitterH = new QSplitter(Qt::Horizontal, this);
@@ -264,8 +264,7 @@ void MainWindow::init_UI_Layout() {
 
 void MainWindow::loadTabFiles() {
   //读取标签页
-  QString qfile = QDir::homePath() + strIniFile;
-  QSettings Reg(qfile, QSettings::IniFormat);
+  QSettings Reg(strIniFile, QSettings::IniFormat);
   int count = Reg.value("count").toInt();
   bool yes = false;
 
@@ -487,8 +486,7 @@ void MainWindow::init_listForRecentFile(QString fileName) {
   if (recentFileList.count() == 21) recentFileList.removeAt(20);
   init_RecentOpenMenuItem();
 
-  QString qfile = QDir::homePath() + strIniFile;
-  QSettings Reg(qfile, QSettings::IniFormat);
+  QSettings Reg(strIniFile, QSettings::IniFormat);
   Reg.setValue("RecentOpenFileCount", recentFileList.count());
   for (int i = 0; i < recentFileList.count(); i++) {
     Reg.setValue("RecentOpenFile" + QString::number(i), recentFileList.at(i));
@@ -577,8 +575,7 @@ void MainWindow::loadFile(const QString& fileName, int row, int col) {
   ui->tabWidget_textEdit->tabBar()->setTabToolTip(
       ui->tabWidget_textEdit->currentIndex(), ft.filePath());
 
-  QString qfile = strIniFile;
-  QSettings Reg(qfile, QSettings::IniFormat);
+  QSettings Reg(strIniFile, QSettings::IniFormat);
   int count = Reg.value("miniMapCount").toInt();
   for (int i = 0; i < count; i++) {
     miniEdit->setHidden(Reg.value("miniMap" + fileName, false).toBool());
@@ -4071,8 +4068,8 @@ void MainWindow::init_RecentOpenMenuItem() {
   connect(actClear, &QAction::triggered, [=]() {
     recentFileList.clear();
     mnuRecentOpenFile->clear();
-    QString qfile = strIniFile;
-    QSettings Reg(qfile, QSettings::IniFormat);
+
+    QSettings Reg(strIniFile, QSettings::IniFormat);
     Reg.setValue("RecentOpenFileCount", recentFileList.count());
   });
   mnuRecentOpenFile->addAction(actClear);
@@ -4080,8 +4077,8 @@ void MainWindow::init_RecentOpenMenuItem() {
 
 void MainWindow::init_recentFiles() {
   //最近打开的文件
-  QString qfile = strIniFile;
-  QSettings Reg(qfile, QSettings::IniFormat);
+
+  QSettings Reg(strIniFile, QSettings::IniFormat);
   int count = Reg.value("RecentOpenFileCount", 0).toInt();
   for (int i = 0; i < count; i++) {
     QString str = Reg.value("RecentOpenFile" + QString::number(i)).toString();
@@ -4141,8 +4138,8 @@ void MainWindow::init_Tool_UI() {
   ui->listBook->setStyleSheet(ui->listWidget->styleSheet());
   ui->frameBook->setHidden(true);
   ui->frameBook->setFixedWidth(75);
-  QString qfile = strIniFile;
-  QSettings Reg(qfile, QSettings::IniFormat);
+
+  QSettings Reg(strIniFile, QSettings::IniFormat);
   int count = Reg.value("bookcount", 0).toInt();
   for (int i = 0; i < count; i++) {
     listBookmarks.append(Reg.value("book" + QString::number(i)).toString());
@@ -4339,12 +4336,12 @@ void MainWindow::init_menu() {
   dlgset->ui->cboxCompilationOptions->setEditable(true);
 
   //读取编译参数
-  QString qfile = strIniFile;
-  QFileInfo fi(qfile);
+
+  QFileInfo fi(strIniFile);
 
   if (fi.exists()) {
     // QSettings Reg(qfile, QSettings::NativeFormat);
-    QSettings Reg(qfile, QSettings::IniFormat);
+    QSettings Reg(strIniFile, QSettings::IniFormat);
     QString op = Reg.value("options").toString().trimmed();
     if (op.count() > 0) dlgset->ui->cboxCompilationOptions->setCurrentText(op);
 
@@ -4600,8 +4597,8 @@ void MainWindow::init_Edit() {
 QFont MainWindow::get_Font() {
   //读取字体
   QFont font;
-  QString qfile = strIniFile;
-  QSettings Reg(qfile, QSettings::IniFormat);
+
+  QSettings Reg(strIniFile, QSettings::IniFormat);
   if (mac || osx1012) font.setFamily(Reg.value("FontName", "Menlo").toString());
   if (win) font.setFamily(Reg.value("FontName", "consolas").toString());
   if (linuxOS) font.setFamily(Reg.value("FontName").toString());
@@ -4727,12 +4724,11 @@ void MainWindow::init_filesystem() {
   ui->tabWidget_misc->setCurrentIndex(0);
 
   //读取之前的目录
-  QString qfile = strIniFile;
 
-  QFileInfo fi(qfile);
+  QFileInfo fi(strIniFile);
 
   if (fi.exists()) {
-    QSettings Reg(qfile, QSettings::IniFormat);
+    QSettings Reg(strIniFile, QSettings::IniFormat);
 
     // 主窗口位置和大小
     int x, y, width, height;
@@ -4899,9 +4895,8 @@ void MainWindow::regACPI_win() {
 
 void MainWindow::closeEvent(QCloseEvent* event) {
   //存储编译选项
-  QString qfile = strIniFile;
-  QSettings Reg(qfile, QSettings::IniFormat);
-  QFile file(qfile);
+
+  QSettings Reg(strIniFile, QSettings::IniFormat);
 
   Reg.setValue("options",
                dlgset->ui->cboxCompilationOptions->currentText().trimmed());
@@ -5027,7 +5022,6 @@ void MainWindow::closeEvent(QCloseEvent* event) {
   }
 
   // Save scribble board
-  QString errorMessage;
   QSaveFile fileScribble(QDir::homePath() + "/.config/" + strAppName +
                          "/Scribble.txt");
   if (fileScribble.open(QFile::WriteOnly | QFile::Text)) {
@@ -5035,9 +5029,8 @@ void MainWindow::closeEvent(QCloseEvent* event) {
     out << ui->editScribble->document()->toPlainText();
 
     if (!fileScribble.commit()) {
-      errorMessage =
-          tr("Cannot write file %1:\n%2.")
-              .arg(QDir::toNativeSeparators(fileName), file.errorString());
+      qDebug() << tr("Cannot write file %1:\n%2.")
+                      .arg(QDir::toNativeSeparators(fileName));
     }
   }
 
@@ -5259,9 +5252,8 @@ void MainWindow::set_Font() {
     ui->treeWidget->setFont(font);
 
     //存储字体信息
-    QString qfile = strIniFile;
 
-    QSettings Reg(qfile, QSettings::IniFormat);
+    QSettings Reg(strIniFile, QSettings::IniFormat);
     Reg.setValue("FontName", font.family());
     Reg.setValue("FontSize", font.pointSize());
     Reg.setValue("FontBold", font.bold());
@@ -6672,8 +6664,7 @@ void MainWindow::on_actProxy5_triggered() {
 }
 
 void MainWindow::writeINIProxy() {
-  QString qfile = strIniFile;
-  QSettings Reg(qfile, QSettings::IniFormat);
+  QSettings Reg(strIniFile, QSettings::IniFormat);
   Reg.setValue("proxy1", ui->actProxy1->isChecked());
   Reg.setValue("proxy2", ui->actProxy2->isChecked());
   Reg.setValue("proxy3", ui->actProxy3->isChecked());
