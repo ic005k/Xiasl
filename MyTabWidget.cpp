@@ -199,9 +199,7 @@ void MyTabWidget::popPage(QWidget* page) {
     }
   });
 
-  QString qfile = QDir::homePath() + "/.config/QtiASL/QtiASL.ini";
-  // QFile file(qfile);
-  QSettings Reg(qfile, QSettings::IniFormat);
+  QSettings Reg(mw_one->strIniFile, QSettings::IniFormat);
   Reg.setValue("restore", true);
   Reg.setValue("count", 1);
 

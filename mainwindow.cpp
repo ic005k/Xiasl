@@ -14,7 +14,7 @@
 #endif
 #include "methods.h"
 
-QString CurVerison = "1.1.60";
+QString CurVerison = "1.1.61";
 QString fileName, curFile, dragFileName, findStr, findPath, search_string,
     curFindFile;
 
@@ -163,9 +163,8 @@ MainWindow::~MainWindow() {
 }
 
 void MainWindow::init_Widget() {
-  QDir dir;
-  if (dir.mkpath(QDir::homePath() + "/.config/QtiASL/")) {
-  }
+  strIniFile =
+      QDir::homePath() + "/.config/" + strAppName + "/" + strAppName + ".ini";
 
   installEventFilter(this);
 
@@ -210,7 +209,7 @@ void MainWindow::init_Widget() {
 
 void MainWindow::init_UI_Layout() {
   // 分割窗口
-  QString qfile = QDir::homePath() + "/.config/QtiASL/QtiASL.ini";
+  QString qfile = strIniFile;
   QSettings Reg(qfile, QSettings::IniFormat);
   ui->centralwidget->layout()->setContentsMargins(2, 2, 2, 2);
   ui->centralwidget->layout()->setSpacing(1);
@@ -265,7 +264,7 @@ void MainWindow::init_UI_Layout() {
 
 void MainWindow::loadTabFiles() {
   //读取标签页
-  QString qfile = QDir::homePath() + "/.config/QtiASL/QtiASL.ini";
+  QString qfile = QDir::homePath() + strIniFile;
   QSettings Reg(qfile, QSettings::IniFormat);
   int count = Reg.value("count").toInt();
   bool yes = false;
@@ -323,7 +322,9 @@ void MainWindow::about() {
   QString last = str + appInfo.lastModified().toString("yyyy-MM-dd hh:mm:ss");
   QString str1 =
       "<a style='color:blue;' href = "
-      "https://github.com/ic005k/QtiASL>Xiasl"
+      "https://github.com/ic005k/" +
+      strAppName +
+      ">Xiasl"
       "</a><br><br>";
 
   QMessageBox::about(this, "About",
@@ -486,7 +487,7 @@ void MainWindow::init_listForRecentFile(QString fileName) {
   if (recentFileList.count() == 21) recentFileList.removeAt(20);
   init_RecentOpenMenuItem();
 
-  QString qfile = QDir::homePath() + "/.config/QtiASL/QtiASL.ini";
+  QString qfile = QDir::homePath() + strIniFile;
   QSettings Reg(qfile, QSettings::IniFormat);
   Reg.setValue("RecentOpenFileCount", recentFileList.count());
   for (int i = 0; i < recentFileList.count(); i++) {
@@ -576,7 +577,7 @@ void MainWindow::loadFile(const QString& fileName, int row, int col) {
   ui->tabWidget_textEdit->tabBar()->setTabToolTip(
       ui->tabWidget_textEdit->currentIndex(), ft.filePath());
 
-  QString qfile = QDir::homePath() + "/.config/QtiASL/QtiASL.ini";
+  QString qfile = strIniFile;
   QSettings Reg(qfile, QSettings::IniFormat);
   int count = Reg.value("miniMapCount").toInt();
   for (int i = 0; i < count; i++) {
@@ -622,7 +623,7 @@ void MainWindow::setRecentFiles(QString fileName) {
   QFileInfo fInfo(fileName);
   QCoreApplication::setOrganizationName("ic005k");
   QCoreApplication::setOrganizationDomain("github.com/ic005k");
-  QCoreApplication::setApplicationName("QtiASL");
+  QCoreApplication::setApplicationName(strAppName);
   settings.setValue("currentDirectory", fInfo.absolutePath());
   // qDebug() << settings.fileName(); //最近打开的文件所保存的位置
 
@@ -698,7 +699,7 @@ bool MainWindow::maybeSave(QString info) {
         QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
 
   } else {
-    QMessageBox box(QMessageBox::Warning, "QtiASL",
+    QMessageBox box(QMessageBox::Warning, strAppName,
                     "文件内容已修改，是否保存？\n\n" + info);
     box.setStandardButtons(QMessageBox::Save | QMessageBox::Discard |
                            QMessageBox::Cancel);
@@ -1160,9 +1161,9 @@ void MainWindow::readCppResult(int exitCode) {
     connect(co, SIGNAL(finished(int)), this, SLOT(readCppRunResult(int)));
 
     if (!zh_cn)
-      QMessageBox::information(this, "QtiASL", "Compilation successful.");
+      QMessageBox::information(this, strAppName, "Compilation successful.");
     else {
-      QMessageBox message(QMessageBox::Information, "QtiASL",
+      QMessageBox message(QMessageBox::Information, strAppName,
                           tr("Compilation successful."));
       message.setStandardButtons(QMessageBox::Ok);
       message.setButtonText(QMessageBox::Ok, QString(tr("Ok")));
@@ -4036,7 +4037,8 @@ void MainWindow::init_info_edit() {
   ui->editScribble->setPlaceholderText(
       tr("This is a scribble board to temporarily record something, and the "
          "content will be saved and loaded automatically."));
-  QString fileScribble = QDir::homePath() + "/.config/QtiASL/Scribble.txt";
+  QString fileScribble =
+      QDir::homePath() + "/.config/" + strAppName + "/Scribble.txt";
   QFileInfo fi(fileScribble);
   if (fi.exists()) {
     QFile file(fileScribble);
@@ -4069,7 +4071,7 @@ void MainWindow::init_RecentOpenMenuItem() {
   connect(actClear, &QAction::triggered, [=]() {
     recentFileList.clear();
     mnuRecentOpenFile->clear();
-    QString qfile = QDir::homePath() + "/.config/QtiASL/QtiASL.ini";
+    QString qfile = strIniFile;
     QSettings Reg(qfile, QSettings::IniFormat);
     Reg.setValue("RecentOpenFileCount", recentFileList.count());
   });
@@ -4078,7 +4080,7 @@ void MainWindow::init_RecentOpenMenuItem() {
 
 void MainWindow::init_recentFiles() {
   //最近打开的文件
-  QString qfile = QDir::homePath() + "/.config/QtiASL/QtiASL.ini";
+  QString qfile = strIniFile;
   QSettings Reg(qfile, QSettings::IniFormat);
   int count = Reg.value("RecentOpenFileCount", 0).toInt();
   for (int i = 0; i < count; i++) {
@@ -4139,7 +4141,7 @@ void MainWindow::init_Tool_UI() {
   ui->listBook->setStyleSheet(ui->listWidget->styleSheet());
   ui->frameBook->setHidden(true);
   ui->frameBook->setFixedWidth(75);
-  QString qfile = QDir::homePath() + "/.config/QtiASL/book.ini";
+  QString qfile = strIniFile;
   QSettings Reg(qfile, QSettings::IniFormat);
   int count = Reg.value("bookcount", 0).toInt();
   for (int i = 0; i < count; i++) {
@@ -4337,7 +4339,7 @@ void MainWindow::init_menu() {
   dlgset->ui->cboxCompilationOptions->setEditable(true);
 
   //读取编译参数
-  QString qfile = QDir::homePath() + "/.config/QtiASL/QtiASL.ini";
+  QString qfile = strIniFile;
   QFileInfo fi(qfile);
 
   if (fi.exists()) {
@@ -4598,7 +4600,7 @@ void MainWindow::init_Edit() {
 QFont MainWindow::get_Font() {
   //读取字体
   QFont font;
-  QString qfile = QDir::homePath() + "/.config/QtiASL/QtiASL.ini";
+  QString qfile = strIniFile;
   QSettings Reg(qfile, QSettings::IniFormat);
   if (mac || osx1012) font.setFamily(Reg.value("FontName", "Menlo").toString());
   if (win) font.setFamily(Reg.value("FontName", "consolas").toString());
@@ -4725,7 +4727,7 @@ void MainWindow::init_filesystem() {
   ui->tabWidget_misc->setCurrentIndex(0);
 
   //读取之前的目录
-  QString qfile = QDir::homePath() + "/.config/QtiASL/QtiASL.ini";
+  QString qfile = strIniFile;
 
   QFileInfo fi(qfile);
 
@@ -4841,22 +4843,22 @@ void MainWindow::regACPI_win() {
   QString dir = qApp->applicationDirPath();
   //注意路径的替换
   appPath.replace("/", "\\");
-  QString type = "QtiASL";
+  QString type = strAppName;
   QSettings* regType =
       new QSettings("HKEY_CLASSES_ROOT\\.dsl", QSettings::NativeFormat);
   QSettings* regIcon = new QSettings("HKEY_CLASSES_ROOT\\.dsl\\DefaultIcon",
                                      QSettings::NativeFormat);
-  QSettings* regShell =
-      new QSettings("HKEY_CLASSES_ROOT\\QtiASL\\shell\\open\\command",
-                    QSettings::NativeFormat);
+  QSettings* regShell = new QSettings(
+      "HKEY_CLASSES_ROOT\\" + strAppName + "\\shell\\open\\command",
+      QSettings::NativeFormat);
 
   QSettings* regType1 =
       new QSettings("HKEY_CLASSES_ROOT\\.aml", QSettings::NativeFormat);
   QSettings* regIcon1 = new QSettings("HKEY_CLASSES_ROOT\\.aml\\DefaultIcon",
                                       QSettings::NativeFormat);
-  QSettings* regShell1 =
-      new QSettings("HKEY_CLASSES_ROOT\\QtiASL\\shell\\open\\command",
-                    QSettings::NativeFormat);
+  QSettings* regShell1 = new QSettings(
+      "HKEY_CLASSES_ROOT\\" + strAppName + "\\shell\\open\\command",
+      QSettings::NativeFormat);
 
   regType->remove("Default");
   regType->setValue("Default", type);
@@ -4897,7 +4899,7 @@ void MainWindow::regACPI_win() {
 
 void MainWindow::closeEvent(QCloseEvent* event) {
   //存储编译选项
-  QString qfile = QDir::homePath() + "/.config/QtiASL/QtiASL.ini";
+  QString qfile = strIniFile;
   QSettings Reg(qfile, QSettings::IniFormat);
   QFile file(qfile);
 
@@ -5026,7 +5028,8 @@ void MainWindow::closeEvent(QCloseEvent* event) {
 
   // Save scribble board
   QString errorMessage;
-  QSaveFile fileScribble(QDir::homePath() + "/.config/QtiASL/Scribble.txt");
+  QSaveFile fileScribble(QDir::homePath() + "/.config/" + strAppName +
+                         "/Scribble.txt");
   if (fileScribble.open(QFile::WriteOnly | QFile::Text)) {
     QTextStream out(&fileScribble);
     out << ui->editScribble->document()->toPlainText();
@@ -5256,7 +5259,7 @@ void MainWindow::set_Font() {
     ui->treeWidget->setFont(font);
 
     //存储字体信息
-    QString qfile = QDir::homePath() + "/.config/QtiASL/QtiASL.ini";
+    QString qfile = strIniFile;
 
     QSettings Reg(qfile, QSettings::IniFormat);
     Reg.setValue("FontName", font.family());
@@ -5711,8 +5714,8 @@ void MainWindow::readHelpResult(int exitCode) {
 
 void MainWindow::CheckUpdate() {
   QNetworkRequest quest;
-  quest.setUrl(
-      QUrl("https://api.github.com/repos/ic005k/QtiASL/releases/latest"));
+  quest.setUrl(QUrl("https://api.github.com/repos/ic005k/" + strAppName +
+                    "/releases/latest"));
   quest.setHeader(QNetworkRequest::UserAgentHeader, "RT-Thread ART");
   manager->get(quest);
 }
@@ -5747,8 +5750,6 @@ QString MainWindow::getUrl(QVariantList list) {
   if (win) Url = winUrl;
   if (linuxOS) Url = linuxUrl;
   if (osx1012) Url = osx1012Url;
-  // if (Url == "") Url = "https://github.com/ic005k/QtiASL/releases/latest";
-  // //让其返回""，后面判断会用到
 
   return Url;
 }
@@ -5782,8 +5783,6 @@ int MainWindow::parse_UpdateJSON(QString str) {
       int ret = QMessageBox::warning(this, "", warningStr, tr("Download"),
                                      tr("Cancel"));
       if (ret == 0) {
-        // Url = "https://github.com/ic005k/QtiASL/releases/latest";
-        // QDesktopServices::openUrl(QUrl(Url));
         ShowAutoUpdateDlg(false);
       }
     } else {
@@ -6673,7 +6672,7 @@ void MainWindow::on_actProxy5_triggered() {
 }
 
 void MainWindow::writeINIProxy() {
-  QString qfile = QDir::homePath() + "/.config/QtiASL/QtiASL.ini";
+  QString qfile = strIniFile;
   QSettings Reg(qfile, QSettings::IniFormat);
   Reg.setValue("proxy1", ui->actProxy1->isChecked());
   Reg.setValue("proxy2", ui->actProxy2->isChecked());
@@ -6683,8 +6682,7 @@ void MainWindow::writeINIProxy() {
 }
 
 void MainWindow::readINIProxy() {
-  QString qfile = QDir::homePath() + "/.config/QtiASL/QtiASL.ini";
-  QSettings Reg(qfile, QSettings::IniFormat);
+  QSettings Reg(strIniFile, QSettings::IniFormat);
 
   if (!Reg.allKeys().contains("proxy1")) {
     QLocale locale;
@@ -6885,7 +6883,7 @@ QString MainWindow::getMD5FromList(QString file) {
 void MainWindow::on_btnShowRepace_clicked() {}
 
 void MainWindow::on_actionReporting_Issues_triggered() {
-  QUrl url(QString("https://github.com/ic005k/QtiASL/issues"));
+  QUrl url(QString("https://github.com/ic005k/" + strAppName + "/issues"));
   QDesktopServices::openUrl(url);
 }
 
@@ -6895,7 +6893,8 @@ void MainWindow::on_actionUser_Guide_triggered() {
 }
 
 void MainWindow::on_actionLatest_Release_triggered() {
-  QUrl url(QString("https://github.com/ic005k/QtiASL/releases/latest"));
+  QUrl url(
+      QString("https://github.com/ic005k/" + strAppName + "/releases/latest"));
   QDesktopServices::openUrl(url);
 }
 
@@ -7392,8 +7391,7 @@ void MainWindow::getBookmarks() {
     return;
   }
 
-  QString qfile = QDir::homePath() + "/.config/QtiASL/bookNotes.ini";
-  QSettings Reg(qfile, QSettings::IniFormat);
+  QSettings Reg(strIniFile, QSettings::IniFormat);
 
   ui->listBook->clear();
   for (int i = 0; i < listBookmarks.count(); i++) {
@@ -7452,8 +7450,7 @@ void MainWindow::on_listBook_itemClicked(QListWidgetItem* item) {
   int line = ui->listBook->currentItem()->text().toInt();
   textEdit->setCursorPosition(line - 1, 0);
 
-  QString qfile = QDir::homePath() + "/.config/QtiASL/bookNotes.ini";
-  QSettings Reg(qfile, QSettings::IniFormat);
+  QSettings Reg(strIniFile, QSettings::IniFormat);
   ui->textEditNotes->setPlainText(
       Reg.value(curFile + ui->listBook->currentItem()->text()).toString());
 }
@@ -7495,8 +7492,7 @@ void MainWindow::init_Bookmarks() {
 }
 
 void MainWindow::saveBookmarks() {
-  QString qfile = QDir::homePath() + "/.config/QtiASL/book.ini";
-  QSettings Reg(qfile, QSettings::IniFormat);
+  QSettings Reg(strIniFile, QSettings::IniFormat);
   Reg.setValue("bookcount", listBookmarks.count());
   for (int i = 0; i < listBookmarks.count(); i++) {
     Reg.setValue("book" + QString::number(i), listBookmarks.at(i));
@@ -7529,8 +7525,7 @@ void MainWindow::on_btnDelBook_clicked() {
 void MainWindow::on_textEditNotes_textChanged() {
   if (ui->listBook->currentRow() < 0) return;
 
-  QString qfile = QDir::homePath() + "/.config/QtiASL/bookNotes.ini";
-  QSettings Reg(qfile, QSettings::IniFormat);
+  QSettings Reg(strIniFile, QSettings::IniFormat);
   Reg.setValue(curFile + ui->listBook->currentItem()->text(),
                ui->textEditNotes->toPlainText());
 
@@ -7547,8 +7542,7 @@ void MainWindow::on_listBook_itemSelectionChanged() {
 }
 
 void MainWindow::refreshItemTip(int currentRow) {
-  QString qfile = QDir::homePath() + "/.config/QtiASL/bookNotes.ini";
-  QSettings Reg(qfile, QSettings::IniFormat);
+  QSettings Reg(strIniFile, QSettings::IniFormat);
   QString strNotes =
       Reg.value(curFile + ui->listBook->item(currentRow)->text()).toString();
 

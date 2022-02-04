@@ -114,6 +114,8 @@ class MainWindow : public QMainWindow {
   ~MainWindow();
   Ui::MainWindow* ui;
 
+  QString strIniFile;
+  QString strAppName = "Xiasl";
   QStringList listBookmarks;
   static void highlighsearchtext(QString searchText, QsciScintilla* textEdit,
                                  QString file, bool addTreeItem);
