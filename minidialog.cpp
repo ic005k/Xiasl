@@ -1,5 +1,7 @@
 #include "minidialog.h"
 
+#include <QLabel>
+
 #include "ui_minidialog.h"
 
 extern QsciScintilla* miniDlgEdit;
@@ -13,9 +15,14 @@ miniDialog::miniDialog(QWidget* parent)
   ui->setupUi(this);
 
   setWindowFlags(Qt::FramelessWindowHint);
+
   ui->gridLayout_2->setMargin(0);
   miniDlgEdit = new ZoomEditor(this);
   ui->gridLayout->addWidget(miniDlgEdit);
+
+  QLabel *lblTip = new QLabel(miniDlgEdit);
+  lblTip->setText(tr("Left click: Position to the current line.") + "\n"
+                  + tr("Right click: Copy the current line."));
 
   QColor color;
 

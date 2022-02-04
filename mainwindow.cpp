@@ -14,7 +14,7 @@
 #endif
 #include "methods.h"
 
-QString CurVerison = "1.1.58";
+QString CurVerison = "1.1.59";
 QString fileName, curFile, dragFileName, findStr, findPath, search_string,
     curFindFile;
 
@@ -6010,10 +6010,9 @@ void MiniEditor::mouseMoveEvent(QMouseEvent* event) {
   mw_one->repaint();
   if (!textEditScroll) {
     showZoomWin(event->x(), event->y());
-    if (mw_one->mac || mw_one->osx1012) {
-      mw_one->update();
-      mw_one->repaint();
-    }
+
+    mw_one->update();
+    mw_one->repaint();
   }
 }
 
@@ -6061,6 +6060,7 @@ void MiniEditor::showZoomWin(int x, int y) {
   QString t1, t2, t3, t4, t5, t6, t7, t8, t9;
 
   miniDlgEdit->clear();
+  miniDlgEdit->append("\n\n\n");
 
   if (totalLines < 10) {
     currentLineText = this->text(4);
@@ -6071,7 +6071,7 @@ void MiniEditor::showZoomWin(int x, int y) {
       miniDlgEdit->SendScintilla(QsciScintilla::SCI_MARKERDELETEALL);
 
       // SCI_MARKERGET 参数用来设置标记，默认为圆形标记
-      miniDlgEdit->SendScintilla(QsciScintilla::SCI_MARKERGET, y0);
+      miniDlgEdit->SendScintilla(QsciScintilla::SCI_MARKERGET, y0 + 3);
 
       // SCI_MARKERSETFORE，SCI_MARKERSETBACK设置标记前景和背景标记
       miniDlgEdit->SendScintilla(QsciScintilla::SCI_MARKERSETFORE, 0,
@@ -6079,9 +6079,9 @@ void MiniEditor::showZoomWin(int x, int y) {
       miniDlgEdit->SendScintilla(QsciScintilla::SCI_MARKERSETBACK, 0,
                                  QColor(Qt::blue));
 
-      miniDlgEdit->SendScintilla(QsciScintilla::SCI_MARKERADD, y0);
+      miniDlgEdit->SendScintilla(QsciScintilla::SCI_MARKERADD, y0 + 3);
       //下划线
-      miniDlgEdit->SendScintilla(QsciScintilla::SCI_STYLESETUNDERLINE, y0 + 1,
+      miniDlgEdit->SendScintilla(QsciScintilla::SCI_STYLESETUNDERLINE, y0 + 4,
                                  true);
       miniDlgEdit->SendScintilla(QsciScintilla::SCI_MARKERDEFINE, 0,
                                  QsciScintilla::SC_MARK_UNDERLINE);
@@ -6114,7 +6114,7 @@ void MiniEditor::showZoomWin(int x, int y) {
       miniDlgEdit->SendScintilla(QsciScintilla::SCI_MARKERDELETEALL);
 
       // SCI_MARKERGET 参数用来设置标记，默认为圆形标记
-      miniDlgEdit->SendScintilla(QsciScintilla::SCI_MARKERGET, y0);
+      miniDlgEdit->SendScintilla(QsciScintilla::SCI_MARKERGET, y0 + 3);
 
       // SCI_MARKERSETFORE，SCI_MARKERSETBACK设置标记前景和背景标记
       miniDlgEdit->SendScintilla(QsciScintilla::SCI_MARKERSETFORE, 0,
@@ -6122,9 +6122,9 @@ void MiniEditor::showZoomWin(int x, int y) {
       miniDlgEdit->SendScintilla(QsciScintilla::SCI_MARKERSETBACK, 0,
                                  QColor(Qt::blue));
 
-      miniDlgEdit->SendScintilla(QsciScintilla::SCI_MARKERADD, y0);
+      miniDlgEdit->SendScintilla(QsciScintilla::SCI_MARKERADD, y0 + 3);
       //下划线
-      miniDlgEdit->SendScintilla(QsciScintilla::SCI_STYLESETUNDERLINE, y0 + 1,
+      miniDlgEdit->SendScintilla(QsciScintilla::SCI_STYLESETUNDERLINE, y0 + 4,
                                  true);
       miniDlgEdit->SendScintilla(QsciScintilla::SCI_MARKERDEFINE, 0,
                                  QsciScintilla::SC_MARK_UNDERLINE);
@@ -6165,9 +6165,9 @@ void MiniEditor::showZoomWin(int x, int y) {
       miniDlgEdit->SendScintilla(QsciScintilla::SCI_MARKERSETBACK, 0,
                                  QColor(Qt::blue));
 
-      miniDlgEdit->SendScintilla(QsciScintilla::SCI_MARKERADD, 4);
+      miniDlgEdit->SendScintilla(QsciScintilla::SCI_MARKERADD, 7);
       //下划线
-      miniDlgEdit->SendScintilla(QsciScintilla::SCI_STYLESETUNDERLINE, 5, true);
+      miniDlgEdit->SendScintilla(QsciScintilla::SCI_STYLESETUNDERLINE, 8, true);
       miniDlgEdit->SendScintilla(QsciScintilla::SCI_MARKERDEFINE, 0,
                                  QsciScintilla::SC_MARK_UNDERLINE);
     }
@@ -6225,10 +6225,6 @@ void MiniEditor::showZoomWin(int x, int y) {
     miniDlg->close();
     return;
   }
-
-  miniDlgEdit->append("\n");
-  miniDlgEdit->append(tr("Left click: Position to the current line.") + "\n");
-  miniDlgEdit->append(tr("Right click: Copy the current line."));
 
   int w = 600;
   if (mw_one->ui->tabWidget_textEdit->width() > w)
