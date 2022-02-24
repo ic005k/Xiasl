@@ -2,7 +2,7 @@
 
 ## Xiasl-- open source cross-platform DSDT&SSDT integrated development environment
 
-* Xiasl is a modern, lightweight, feature-rich cross-platform DSDT integrated development environment.
+* Xiasl is a modern, lightweight, feature-rich cross-platform DSDT IDE.
 
 ### Credits
 
