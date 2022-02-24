@@ -6,9 +6,9 @@
 
 ### Credits
 
-[ACPI](https://acpica.org/source) &nbsp; &nbsp; &nbsp; &nbsp; 
-[QSci](https://riverbankcomputing.com/software/qscintilla/download) &nbsp; &nbsp; &nbsp; &nbsp;  
-[patchmatic](https://github.com/RehabMan/OS-X-MaciASL-patchmatic) &nbsp; &nbsp; &nbsp; &nbsp;  
+[ACPI](https://acpica.org/source) &nbsp; &nbsp; &nbsp; &nbsp;
+[QSci](https://riverbankcomputing.com/software/qscintilla/download) &nbsp; &nbsp; &nbsp; &nbsp;
+[patchmatic](https://github.com/RehabMan/OS-X-MaciASL-patchmatic) &nbsp; &nbsp; &nbsp; &nbsp;
 
 
 ### 备注：此项目开始于2020年8月
