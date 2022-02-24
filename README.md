@@ -1,6 +1,6 @@
 [简体中文](https://github.com/ic005k/QtiASL/blob/master/READMe-cn.md) | [English](https://github.com/ic005k/QtiASL/blob/master/README.md)
 
-## Xiasl-- open source cross-platform DSDT&SSDT IDE
+## Xiasl-- Open source cross-platform DSDT&SSDT IDE
 
 * Xiasl is a modern, lightweight, feature-rich cross-platform DSDT IDE.
 
