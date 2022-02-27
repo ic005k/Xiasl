@@ -245,3 +245,70 @@ QString Methods::getTextEditLineText(QTextEdit* txtEdit, int i) {
   QString lineText = txtEdit->document()->findBlockByNumber(i).text().trimmed();
   return lineText;
 }
+
+#ifdef Q_OS_MAC
+void Methods::init_MacVerInfo(QString ver) {
+  QString str1 = qApp->applicationDirPath();
+  QString infoFile = str1.replace("MacOS", "Info.plist");
+
+  QTextEdit* edit = new QTextEdit;
+  edit->setPlainText(loadText(infoFile));
+
+  bool write = false;
+
+  for (int i = 0; i < edit->document()->lineCount(); i++) {
+    QString lineTxt = getTextEditLineText(edit, i).trimmed();
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+    if (lineTxt == "<key>CFBundleShortVersionString</key>" ||
+        lineTxt == "<key>CFBundleVersion</key>") {
+      QString nextTxt = getTextEditLineText(edit, i + 1).trimmed();
+      if (nextTxt != "<string>" + ver + "</string>") {
+        QTextBlock block = edit->document()->findBlockByNumber(i + 1);
+        QTextCursor cursor(block);
+        block = block.next();
+        cursor.select(QTextCursor::BlockUnderCursor);
+        cursor.removeSelectedText();
+        cursor.insertText("\n        <string>" + ver + "</string>");
+
+        write = true;
+      }
+    }
+#endif
+
+#if (QT_VERSION < QT_VERSION_CHECK(5, 15, 0))
+    if (lineTxt == "<key>CFBundleGetInfoString</key>") {
+      QString nextTxt = getTextEditLineText(edit, i + 1).trimmed();
+      if (nextTxt != "<string>" + ver + "</string>") {
+        QTextBlock block = edit->document()->findBlockByNumber(i + 1);
+        QTextCursor cursor(block);
+        block = block.next();
+        cursor.select(QTextCursor::BlockUnderCursor);
+        cursor.removeSelectedText();
+        cursor.insertText("\n        <string>" + ver + "</string>");
+
+        write = true;
+      }
+    }
+
+#endif
+  }
+
+  if (write) {
+    TextEditToFile(edit, infoFile);
+  }
+}
+#endif
+
+void Methods::TextEditToFile(QTextEdit* txtEdit, QString fileName) {
+  QFile* file;
+  file = new QFile;
+  file->setFileName(fileName);
+  bool ok = file->open(QIODevice::WriteOnly);
+  if (ok) {
+    QTextStream out(file);
+    out << txtEdit->toPlainText();
+    file->close();
+    delete file;
+  }
+}

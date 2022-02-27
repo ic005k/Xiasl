@@ -14,7 +14,7 @@
 #endif
 #include "methods.h"
 
-QString CurVerison = "1.1.62";
+QString CurVersion = "1.1.63";
 QString fileName, curFile, dragFileName, findStr, findPath, search_string,
     curFindFile;
 
@@ -169,7 +169,7 @@ void MainWindow::init_Widget() {
   installEventFilter(this);
 
   listMd5.clear();
-  ver = "Xiasl V" + CurVerison + "        ";
+  ver = "Xiasl V" + CurVersion + "        ";
   setWindowTitle(ver);
   ver = "";
 
@@ -327,7 +327,7 @@ void MainWindow::about() {
       "</a><br><br>";
 
   QMessageBox::about(this, "About",
-                     str1 + "V" + CurVerison + "<br><br>" + last);
+                     str1 + "V" + CurVersion + "<br><br>" + last);
 }
 
 QString MainWindow::openFile(QString fileName) {
@@ -5767,7 +5767,7 @@ int MainWindow::parse_UpdateJSON(QString str) {
     QString UpdateTime = root_Obj.value("published_at").toString();
     QString ReleaseNote = root_Obj.value("body").toString();
 
-    if (Verison > CurVerison && Url != "") {
+    if (Verison > CurVersion && Url != "") {
       QString warningStr = tr("New version detected!") + "\n" +
                            tr("Version: ") + "V" + Verison + "\n" +
                            tr("Published at: ") + UpdateTime + "\n" +

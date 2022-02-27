@@ -30,6 +30,8 @@ class Methods : public QObject {
                           const QStringList &formats);
 
   static void init_Margin(QsciScintilla *textEdit);
+  static void init_MacVerInfo(QString ver);
+  static void TextEditToFile(QTextEdit *txtEdit, QString fileName);
  signals:
 };
 
