@@ -10,6 +10,4 @@
 [QSci](https://riverbankcomputing.com/software/qscintilla/download) &nbsp; &nbsp; &nbsp; &nbsp;
 [patchmatic](https://github.com/RehabMan/OS-X-MaciASL-patchmatic) &nbsp; &nbsp; &nbsp; &nbsp;
 
-
-### 备注：此项目开始于2020年8月
-API: https://api.github.com/repos/ic005k/QtiASL/releases/latest
+API: https://api.github.com/repos/ic005k/Xiasl/releases/latest
