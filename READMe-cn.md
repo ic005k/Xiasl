@@ -10,4 +10,6 @@
 [QSci](https://riverbankcomputing.com/software/qscintilla/download) &nbsp; &nbsp; &nbsp; &nbsp;
 [patchmatic](https://github.com/RehabMan/OS-X-MaciASL-patchmatic) &nbsp; &nbsp; &nbsp; &nbsp;
 
+---
+
 API: https://api.github.com/repos/ic005k/Xiasl/releases/latest
