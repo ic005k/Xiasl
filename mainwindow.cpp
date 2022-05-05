@@ -14,7 +14,7 @@
 #endif
 #include "methods.h"
 
-QString CurVersion = "1.1.63";
+QString CurVersion = "1.1.64";
 QString fileName, curFile, dragFileName, findStr, findPath, search_string,
     curFindFile;
 
@@ -5004,22 +5004,25 @@ void MainWindow::closeEvent(QCloseEvent* event) {
   }
 
   // Save tabs
-  Reg.setValue("count", ui->tabWidget_textEdit->tabBar()->count());
-
-  for (int i = 0; i < ui->tabWidget_textEdit->tabBar()->count(); i++) {
+  int tabcount = ui->tabWidget_textEdit->tabBar()->count();
+  for (int i = 0; i < tabcount; i++) {
     pWidget = ui->tabWidget_textEdit->widget(i);
     lblCurrentFile = (QLabel*)pWidget->children().at(lblNumber);
+    if (lblCurrentFile->text() == tr("untitled") + ".dsl") {
+      tabcount--;
+    } else {
+      getCurrentEditor(i)->getCursorPosition(&rowDrag, &colDrag);
+      vs = getCurrentEditor(i)->verticalScrollBar()->sliderPosition();
+      hs = getCurrentEditor(i)->horizontalScrollBar()->sliderPosition();
 
-    getCurrentEditor(i)->getCursorPosition(&rowDrag, &colDrag);
-    vs = getCurrentEditor(i)->verticalScrollBar()->sliderPosition();
-    hs = getCurrentEditor(i)->horizontalScrollBar()->sliderPosition();
-
-    Reg.setValue(QString::number(i) + "/" + "file", lblCurrentFile->text());
-    Reg.setValue(QString::number(i) + "/" + "row", rowDrag);
-    Reg.setValue(QString::number(i) + "/" + "col", colDrag);
-    Reg.setValue(QString::number(i) + "/" + "vs", vs);
-    Reg.setValue(QString::number(i) + "/" + "hs", hs);
+      Reg.setValue(QString::number(i) + "/" + "file", lblCurrentFile->text());
+      Reg.setValue(QString::number(i) + "/" + "row", rowDrag);
+      Reg.setValue(QString::number(i) + "/" + "col", colDrag);
+      Reg.setValue(QString::number(i) + "/" + "vs", vs);
+      Reg.setValue(QString::number(i) + "/" + "hs", hs);
+    }
   }
+  Reg.setValue("count", tabcount);
 
   // Save scribble board
   QSaveFile fileScribble(QDir::homePath() + "/.config/" + strAppName +
