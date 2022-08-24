@@ -14,7 +14,7 @@
 #endif
 #include "methods.h"
 
-QString CurVersion = "1.1.65";
+QString CurVersion = "1.1.66";
 QString fileName, curFile, dragFileName, findStr, findPath, search_string,
     curFindFile;
 
@@ -7220,10 +7220,17 @@ void MainWindow::searchInFolders() {
               << "*.txt"
               << "*.py"
               << "*.md"
+              << "*.xml"
+              << "*.java"
+              << "*.kt"
+              << "*.pro"
+              << "*.gradle"
               << "*.plist";
 
   QStringList fmt =
-      QString("dsl;asl;c;cpp;h;hpp;mm;md;bat;txt;py;plist").split(';');
+      QString(
+          "dsl;asl;c;cpp;h;hpp;mm;bat;txt;py;md;xml;java;kt;pro;gradle;plist")
+          .split(';');
 
   files.clear();
   if (!isIncludeSubDir) {
