@@ -14,7 +14,7 @@
 #endif
 #include "methods.h"
 
-QString CurVersion = "1.1.66";
+QString CurVersion = "1.1.67";
 QString fileName, curFile, dragFileName, findStr, findPath, search_string,
     curFindFile;
 
@@ -828,7 +828,7 @@ void MainWindow::getACPITables(bool ssdt) {
   QProcess iasl;
   QStringList ssdtFiles;
 
-  QString acpiDir = QDir::homePath() + "/Desktop/ACPI Tables/";
+  QString acpiDir = QDir::homePath() + "/Xiasl/ACPI Tables/";
 
   QDir dir;
   if (dir.mkpath(acpiDir)) {
