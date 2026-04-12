@@ -1,84 +1,33 @@
 name: Linux
-# Qt官方没有linux平台的x86包
-on: 
+
+on:
   push:
     paths:
-      - '*.pro'
+      - 'CMakeLists.txt'
       - '**'
       - '.github/workflows/ubuntu.yml'
   pull_request:
     paths:
-      - '*.pro'
+      - 'CMakeLists.txt'
       - '**'
-      - '.github/workflows/ubuntu.yml' 
+      - '.github/workflows/ubuntu.yml'
+
 jobs:
   build:
     name: Build
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        #os: [ubuntu-18.04,ubuntu-20.04]
-        os: [ubuntu-20.04]
-        # qt_ver: [5.9.9,5.12.10,5.15.2]
-        qt_ver: [5.15.2]
-        qt_arch: [gcc_64]
-        
-    env:
-         targetName: Xiasl
-         VERSION: Linux
-      
-        
+    runs-on: ubuntu-22.04
+
     steps:
-      - name: Install Qt
-        uses: jurplel/install-qt-action@v2.13.0
-        with:
-          version: ${{ matrix.qt_ver }}
-          cached: 'false'
-      - name: ubuntu install GL library
-        run: sudo apt-get install -y libglew-dev libglfw3-dev libxcb*
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 1
-      - name: build ubuntu
+      - uses: actions/checkout@v4
+      - name: Install dependencies
         run: |
-          qmake
-          make
-          
-          
-      - name: install linuxdeployqt 
-        run: |
-          wget -c -nv "https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage"
-          chmod a+x linuxdeployqt-continuous-x86_64.AppImage            
-          
-      # 打包
-      - name: package
-        run: |
-         cp icon.png bin/release/icon.png
-         cp default.desktop bin/release/default.desktop
-         cp ExtBin/linux/iasl bin/release/iasl
-         chmod +x bin/release/iasl
-         mkdir bin/release/lib
-         cp libqscintilla2_qt5.so bin/release/lib/libqscintilla2_qt5.so.15
-         
-         export VERSION # linuxdeployqt uses this for naming the file
-         ./linuxdeployqt-continuous-x86_64.AppImage bin/release/${targetName} -unsupported-allow-new-glibc -appimage
-         chmod +x ${{ env.targetName }}-${{ env.VERSION }}-x86_64.AppImage
-          
-      # 上传artifacts          
-      - uses: actions/upload-artifact@v2
+          sudo apt-get update
+          sudo apt-get install -y cmake ninja-build qtbase5-dev qttools5-dev libqt5network5 libqscintilla2-qt5-dev
+      - name: Configure
+        run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+      - name: Build
+        run: cmake --build build --config Release
+      - uses: actions/upload-artifact@v4
         with:
-          
-          name: ${{ env.targetName }}-${{ env.VERSION }}-x86_64.AppImage
-          path: ${{ env.targetName }}-${{ env.VERSION }}-x86_64.AppImage
-          
-     # tag 上传Release
-      - name: uploadRelease
-        if: startsWith(github.event.ref, 'refs/tags/')
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ${{ env.targetName }}-${{ env.VERSION }}-x86_64.AppImage
-          asset_name: ${{ env.targetName }}-${{ env.VERSION }}-x86_64.AppImage
-          tag: ${{ github.ref }}
-          overwrite: true         
-          
+          name: Xiasl-Linux
+          path: build/Xiasl

@@ -17,11 +17,7 @@ function Main() {
 
     New-Item -ItemType Directory $archiveName
     # 拷贝exe
-    Copy-Item bin\release\$targetName $archiveName\
-    
-    # 拷贝第三方文件
-    Copy-Item ExtBin\win\*.* $archiveName\
-    Copy-Item qscintilla2_qt5.dll $archiveName\
+    Copy-Item build\\$targetName $archiveName\
     
     # 拷贝依赖
     windeployqt --qmldir . --plugindir $archiveName\plugins --no-translations --compiler-runtime $archiveName\$targetName
@@ -37,5 +33,4 @@ if ($null -eq $archiveName || $null -eq $targetName) {
     return
 }
 Main
-
 

@@ -1,79 +1,35 @@
 name: MacOS
 
-on: 
+on:
   push:
     paths:
-      - '*.pro'
+      - 'CMakeLists.txt'
       - '**'
       - '.github/workflows/macos.yml'
   pull_request:
     paths:
-      - '*.pro'
+      - 'CMakeLists.txt'
       - '**'
-      - '.github/workflows/macos.yml' 
+      - '.github/workflows/macos.yml'
+
 jobs:
   build:
     name: Build
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [macos-10.15]
-        # qt_ver: [5.9.9,5.12.10,5.15.2]
-        qt_ver: [5.15.2]
-        qt_arch: [clang_64]
-    env:
-      targetName: Xiasl
-      VERSION: Mac
-      
+    runs-on: macos-13
+
     steps:
-      - name: Install Qt
-        uses: jurplel/install-qt-action@v2.13.0
-        with:
-          version: ${{ matrix.qt_ver }}
-          cached: 'false'
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 1
-      - name: build macos
+      - uses: actions/checkout@v4
+      - name: Install dependencies
         run: |
-          qmake
-          make
-          
-      # 打包 拷贝依赖
-      # macdeployqt bin/release/${targetName}.app -qmldir=. -verbose=1 -dmg
-      - name: package
-        run: |
-          cp -r ExtBin/mac/. bin/release/${targetName}.app/Contents/MacOS/
-          chmod +x bin/release/${targetName}.app/Contents/MacOS/iasl
-          chmod +x bin/release/${targetName}.app/Contents/MacOS/patchmatic
-          chmod +x bin/release/${targetName}.app/Contents/MacOS/patchmatic-legacy
-          mkdir bin/release/${targetName}.app/Contents/Frameworks
-          cp libqscintilla2_qt5.15.0.0.dylib bin/release/${targetName}.app/Contents/Frameworks/libqscintilla2_qt5.15.dylib
-          rm -rf bin/release/${targetName}.app/Contents/PlugIns/bearer
-          
-          cp -f Info.plist bin/release/${targetName}.app/Contents/Info.plist
-          
-          macdeployqt bin/release/${targetName}.app -dmg
-              
-                    
-      # 上传artifacts          
-      - uses: actions/upload-artifact@v2
+          brew update
+          brew install cmake ninja qt@5 qscintilla2
+      - name: Configure
+        run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="$(brew --prefix qt@5)"
+      - name: Build
+        run: cmake --build build --config Release
+      - uses: actions/upload-artifact@v4
         with:
-          #name: ${{ env.targetName }}_${{ matrix.os }}_${{matrix.qt_ver}} # .zip
-          name: ${{ env.targetName }}_${{ env.VERSION }}
-          path: bin/release/${{ env.targetName }}.dmg
-          
-          
-      # tag 上传Release
-      - name: uploadRelease
-        if: startsWith(github.event.ref, 'refs/tags/')
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: bin/release/${{ env.targetName }}.dmg
-          
-          #asset_name: ${{ env.targetName }}_${{ matrix.os }}_${{ matrix.qt_ver }}.dmg
-          asset_name: ${{ env.targetName }}_${{ env.VERSION }}.dmg
-          
-          tag: ${{ github.ref }}
-          overwrite: true
+          name: Xiasl-MacOS
+          path: |
+            build/Xiasl
+            build/Xiasl.app
