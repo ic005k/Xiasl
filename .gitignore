@@ -80,3 +80,7 @@ bin/release/Xiasl.app/Contents/PlugIns/platforms/libqcocoa.dylib
 bin/release/Xiasl.app/Contents/PlugIns/printsupport/libcocoaprintersupport.dylib
 bin/release/Xiasl.app/Contents/PlugIns/styles/libqmacstyle.dylib
 bin/release/Xiasl.app/Contents/Resources/qt.conf
+
+# CMake build artifacts
+/build/
+CMakeUserPresets.json
