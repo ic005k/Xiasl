@@ -2,6 +2,7 @@
 
 #include <QTabBar>
 #include <QTabWidget>
+#include <QStandardPaths>
 
 #include "MyTabBar.h"
 #include "MyTabPage.h"
@@ -64,6 +65,18 @@ QWidgetList wdlist;
 QsciLexer *myTextLexer, *miniLexer;
 
 extern MainWindow* mw_one;
+
+namespace {
+QString resolveTool(const QString& toolName) {
+  QString toolPath = QStandardPaths::findExecutable(toolName);
+#ifdef Q_OS_WIN32
+  if (toolPath.isEmpty()) {
+    toolPath = QStandardPaths::findExecutable(toolName + ".exe");
+  }
+#endif
+  return toolPath.isEmpty() ? toolName : toolPath;
+}
+}  // namespace
 
 thread_one::thread_one(QObject* parent) : QThread(parent) {}
 SearchThread::SearchThread(QObject* parent) : QThread{parent} {}
@@ -352,8 +365,6 @@ QString MainWindow::openFile(QString fileName) {
       }
     }
 
-    QFileInfo appInfo(qApp->applicationDirPath());
-
     Decompile = new QProcess;
 
     //显示信息窗口并初始化表头
@@ -415,46 +426,12 @@ QString MainWindow::openFile(QString fileName) {
       QString dfile = fInfo.path() + "/" + files.at(i);
 
       try {
-#ifdef Q_OS_WIN32
-
-        Decompile->start(appInfo.filePath() + "/iasl.exe",
-                         QStringList() << "-d" << dfile);
-#endif
-
-#ifdef Q_OS_LINUX
-
-        Decompile->start(appInfo.filePath() + "/iasl", QStringList()
-                                                           << "-d" << dfile);
-
-#endif
-
-#ifdef Q_OS_MAC
-
-        Decompile->start(appInfo.filePath() + "/iasl", QStringList()
-                                                           << "-d" << dfile);
-#endif
+        Decompile->start(resolveTool("iasl"), QStringList() << "-d" << dfile);
 
         connect(Decompile, SIGNAL(finished(int)), this,
                 SLOT(readDecompileResult(int)));
 
-#ifdef Q_OS_WIN32
-
-        Decompile->execute(appInfo.filePath() + "/iasl.exe",
-                           QStringList() << "-d" << dfile);
-#endif
-
-#ifdef Q_OS_LINUX
-
-        Decompile->execute(appInfo.filePath() + "/iasl", QStringList()
-                                                             << "-d" << dfile);
-
-#endif
-
-#ifdef Q_OS_MAC
-
-        Decompile->execute(appInfo.filePath() + "/iasl", QStringList()
-                                                             << "-d" << dfile);
-#endif
+        Decompile->execute(resolveTool("iasl"), QStringList() << "-d" << dfile);
       } catch (...) {
         qDebug() << "error";
         Decompile->terminate();
@@ -822,8 +799,6 @@ void MainWindow::addFilesWatch() {
 }
 
 void MainWindow::getACPITables(bool ssdt) {
-  QFileInfo appInfo(qApp->applicationDirPath());
-
   QProcess dump;
   QProcess iasl;
   QStringList ssdtFiles;
@@ -842,10 +817,10 @@ void MainWindow::getACPITables(bool ssdt) {
 #ifdef Q_OS_WIN32
   dir.setCurrent(acpiDir);
 
-  dump.execute(appInfo.filePath() + "/acpidump.exe", QStringList() << "-b");
+  dump.execute(resolveTool("acpidump"), QStringList() << "-b");
 
   dir.setCurrent(acpiDir + "temp/");
-  dump.execute(appInfo.filePath() + "/acpidump.exe", QStringList() << "-b");
+  dump.execute(resolveTool("acpidump"), QStringList() << "-b");
 
   //设置文件过滤格式
   nameFilters << "ssdt*.dat";
@@ -855,7 +830,7 @@ void MainWindow::getACPITables(bool ssdt) {
 
   dir.setCurrent(acpiDir);
   if (!ssdt)
-    iasl.execute(appInfo.filePath() + "/iasl.exe",
+    iasl.execute(resolveTool("iasl"),
                  QStringList() << "-e" << ssdtFiles << "-d"
                                << "dsdt.dat");
 
@@ -863,16 +838,15 @@ void MainWindow::getACPITables(bool ssdt) {
 
 #ifdef Q_OS_LINUX
 
-  dump.execute(appInfo.filePath() + "/acpidump", QStringList() << "-b");
-  // iasl.execute(appInfo.filePath() + "/iasl", QStringList() << "-d"
+  dump.execute(resolveTool("acpidump"), QStringList() << "-b");
+  // iasl.execute(resolveTool("iasl"), QStringList() << "-d"
   //                                                         << "dsdt.dat");
 
 #endif
 
 #ifdef Q_OS_MAC
-  QString strExtBin = appInfo.filePath() + "/patchmatic";
-
-  if (QFile(strExtBin).exists()) {
+  QString strExtBin = QStandardPaths::findExecutable("patchmatic");
+  if (!strExtBin.isEmpty()) {
     dir.setCurrent(acpiDir);
     dump.execute(strExtBin, QStringList() << "-extractall" << acpiDir);
 
@@ -887,7 +861,7 @@ void MainWindow::getACPITables(bool ssdt) {
 
     dir.setCurrent(acpiDir);
     if (!ssdt)
-      iasl.execute(appInfo.filePath() + "/iasl",
+      iasl.execute(resolveTool("iasl"),
                    QStringList() << "-e" << ssdtFiles << "-d"
                                  << "dsdt.aml");
   }
@@ -985,7 +959,6 @@ void MainWindow::btnCompile_clicked() {
     return;
   }
 
-  QFileInfo appInfo(qApp->applicationDirPath());
   co = new QProcess;
 
   // if (!curFile.isEmpty()) Save();
@@ -999,17 +972,7 @@ void MainWindow::btnCompile_clicked() {
       cf_info.suffix().toLower() == "asl") {
     QString op = dlgset->ui->cboxCompilationOptions->currentText().trimmed();
 
-#ifdef Q_OS_WIN32
-    co->start(appInfo.filePath() + "/iasl.exe", QStringList() << op << curFile);
-#endif
-
-#ifdef Q_OS_LINUX
-    co->start(appInfo.filePath() + "/iasl", QStringList() << op << curFile);
-#endif
-
-#ifdef Q_OS_MAC
-    co->start(appInfo.filePath() + "/iasl", QStringList() << op << curFile);
-#endif
+    co->start(resolveTool("iasl"), QStringList() << op << curFile);
 
     connect(co, SIGNAL(finished(int)), this, SLOT(readResult(int)));
   }
@@ -5680,20 +5643,7 @@ void MainWindow::ds_Decompile() {
 
 void MainWindow::iaslUsage() {
   pk = new QProcess;
-
-  QFileInfo appInfo(qApp->applicationDirPath());
-
-#ifdef Q_OS_WIN32
-  pk->start(appInfo.filePath() + "/iasl.exe", QStringList() << "-h");
-#endif
-
-#ifdef Q_OS_LINUX
-  pk->start(appInfo.filePath() + "/iasl", QStringList() << "-h");
-#endif
-
-#ifdef Q_OS_MAC
-  pk->start(appInfo.filePath() + "/iasl", QStringList() << "-h");
-#endif
+  pk->start(resolveTool("iasl"), QStringList() << "-h");
 
   connect(pk, SIGNAL(finished(int)), this, SLOT(readHelpResult(int)));
 }

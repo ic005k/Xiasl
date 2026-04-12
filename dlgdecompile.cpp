@@ -1,8 +1,21 @@
 #include "dlgdecompile.h"
 #include "mainwindow.h"
 #include "ui_dlgdecompile.h"
+#include <QStandardPaths>
 
 extern MainWindow* mw_one;
+
+namespace {
+QString resolveTool(const QString& toolName) {
+    QString toolPath = QStandardPaths::findExecutable(toolName);
+#ifdef Q_OS_WIN32
+    if (toolPath.isEmpty()) {
+        toolPath = QStandardPaths::findExecutable(toolName + ".exe");
+    }
+#endif
+    return toolPath.isEmpty() ? toolName : toolPath;
+}
+} // namespace
 
 dlgDecompile::dlgDecompile(QWidget* parent)
     : QDialog(parent)
@@ -55,7 +68,6 @@ void dlgDecompile::on_btnRemoveSSDT_clicked()
 
 void dlgDecompile::on_btnDecompile_clicked()
 {
-    QFileInfo appInfo(qApp->applicationDirPath());
     Decompile = new QProcess;
 
     QStringList list;
@@ -65,39 +77,11 @@ void dlgDecompile::on_btnDecompile_clicked()
         list.append(ui->listSSDT->currentItem()->text());
     }
 
-#ifdef Q_OS_WIN32
-
-    Decompile->start(appInfo.filePath() + "/iasl.exe", QStringList() << "-e" << list << "-d" << ui->editDSDT->text());
-#endif
-
-#ifdef Q_OS_LINUX
-
-    Decompile->start(appInfo.filePath() + "/iasl", QStringList() << "-e" << list << "-d" << ui->editDSDT->text());
-
-#endif
-
-#ifdef Q_OS_MAC
-
-    Decompile->start(appInfo.filePath() + "/iasl", QStringList() << "-e" << list << "-d" << ui->editDSDT->text());
-#endif
+    Decompile->start(resolveTool("iasl"), QStringList() << "-e" << list << "-d" << ui->editDSDT->text());
 
     connect(Decompile, SIGNAL(finished(int)), this, SLOT(readDecompileResult(int)));
 
-#ifdef Q_OS_WIN32
-
-    Decompile->execute(appInfo.filePath() + "/iasl.exe", QStringList() << "-e" << list << "-d" << ui->editDSDT->text());
-#endif
-
-#ifdef Q_OS_LINUX
-
-    Decompile->execute(appInfo.filePath() + "/iasl", QStringList() << "-e" << list << "-d" << ui->editDSDT->text());
-
-#endif
-
-#ifdef Q_OS_MAC
-
-    Decompile->execute(appInfo.filePath() + "/iasl", QStringList() << "-e" << list << "-d" << ui->editDSDT->text());
-#endif
+    Decompile->execute(resolveTool("iasl"), QStringList() << "-e" << list << "-d" << ui->editDSDT->text());
 
     QFileInfo fi(ui->editDSDT->text());
     QString file = fi.path() + "/" + fi.baseName() + ".dsl";
